@@ -27,6 +27,7 @@ body {
   color: var(--text-dark);
   line-height: 1.6;
   overflow-x: hidden;
+  padding-top: 76px; /* Account for fixed navbar */
 }
 
 /* Smooth Scroll */
@@ -140,12 +141,118 @@ html {
 /* Navigation Styles */
 .navbar {
   transition: all 0.3s ease;
+  z-index: 1030 !important; /* Ensure navbar is above other content */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  display: flex !important; /* Ensure navbar is displayed */
 }
 
 .navbar-scrolled {
   background-color: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure navbar brand and links are visible */
+.navbar-brand {
+  color: var(--text-dark) !important;
+  font-weight: 600;
+  display: flex !important;
+  align-items: center;
+}
+
+/* Navbar nav container */
+.navbar-nav {
+  display: flex !important;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav .nav-item {
+  display: block;
+}
+
+.nav-link {
+  color: var(--text-dark) !important;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  padding: 0.5rem 1rem !important;
+  display: block;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.nav-link.active {
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+/* Ensure navbar toggler is visible on mobile */
+.navbar-toggler {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.25rem 0.5rem;
+  display: block;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Bootstrap navbar-collapse - Show on desktop (lg and up) */
+@media (min-width: 992px) {
+  .navbar-expand-lg .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .navbar-expand-lg .navbar-nav {
+    flex-direction: row !important;
+    display: flex !important;
+  }
+  
+  .navbar-expand-lg .navbar-toggler {
+    display: none !important;
+  }
+  
+  /* Force show navbar items on desktop */
+  .navbar-expand-lg .navbar-collapse.collapse {
+    display: flex !important;
+  }
+}
+
+/* Mobile menu */
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+  
+  .navbar-nav .nav-item {
+    width: 100%;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* Ensure collapse works on mobile */
+  .navbar-collapse:not(.show) {
+    display: none !important;
+  }
+  
+  .navbar-collapse.show {
+    display: block !important;
+  }
 }
 
 .nav-link {
