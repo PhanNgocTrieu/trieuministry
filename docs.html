@@ -131,20 +131,27 @@
 
     <!-- Preview Modal -->
     <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="pdfPreviewTitle">Xem trước tài liệu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" id="fullscreenBtn" title="Fullscreen">
+                <i class="fas fa-expand"></i>
+              </button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
           </div>
-          <div class="modal-body p-0">
-            <div class="ratio ratio-16x9">
-              <iframe id="pdfPreviewFrame" src="" title="PDF Preview" allowfullscreen></iframe>
+          <div class="modal-body p-0" id="pdfModalBody">
+            <div class="pdf-viewer-wrapper">
+              <iframe id="pdfPreviewFrame" src="" title="PDF Preview" allowfullscreen style="width: 100%; height: 80vh; border: none;"></iframe>
             </div>
           </div>
           <div class="modal-footer">
-            <a id="downloadFromModal" class="btn btn-primary" href="#" download>Download</a>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a id="downloadFromModal" class="btn btn-primary" href="#" download>
+              <i class="fas fa-download me-2"></i>Download
+            </a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
           </div>
         </div>
       </div>

@@ -524,6 +524,56 @@ footer {
   border: 1px solid #e2e8f0;
 }
 
+/* PDF Viewer Styles */
+.pdf-viewer-wrapper {
+  position: relative;
+  width: 100%;
+  background: #525252;
+  min-height: 500px;
+}
+
+#pdfPreviewFrame {
+  display: block;
+  width: 100%;
+}
+
+/* Fullscreen modal */
+.modal-content:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+.modal-content:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+.modal-content:-moz-full-screen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+.modal-content:-ms-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* When in fullscreen, make iframe fill the space */
+.modal-content:fullscreen #pdfPreviewFrame,
+.modal-content:-webkit-full-screen #pdfPreviewFrame,
+.modal-content:-moz-full-screen #pdfPreviewFrame,
+.modal-content:-ms-fullscreen #pdfPreviewFrame {
+  height: calc(100vh - 120px);
+}
+
 /* Docs */
 .doc-thumb-wrapper {
   position: relative;

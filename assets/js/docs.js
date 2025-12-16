@@ -110,19 +110,91 @@ function previewDoc(pathEncoded, titleEncoded) {
     const modalTitle = document.getElementById('pdfPreviewTitle');
     const iframe = document.getElementById('pdfPreviewFrame');
     const downloadBtn = document.getElementById('downloadFromModal');
+    const modalBody = document.getElementById('pdfModalBody');
 
     if (modalTitle) modalTitle.textContent = title || 'Xem trước tài liệu';
     if (downloadBtn) downloadBtn.href = path;
 
     // Use PDF.js viewer for better preview (works when served via http/https)
+    // PDF.js viewer already includes: zoom controls, page navigation, fullscreen, download, etc.
     const fullUrl = `${window.location.origin}/${path}`;
     const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fullUrl)}`;
-    if (iframe) iframe.src = viewerUrl;
+    
+    if (iframe) {
+        iframe.src = viewerUrl;
+        // Ensure iframe can go fullscreen
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('webkitallowfullscreen', 'true');
+        iframe.setAttribute('mozallowfullscreen', 'true');
+    }
+
+    // Setup fullscreen button
+    setupFullscreenButton();
 
     const modalEl = document.getElementById('pdfPreviewModal');
     if (modalEl) {
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
+        
+        // Reset iframe size when modal is shown
+        modalEl.addEventListener('shown.bs.modal', () => {
+            if (iframe && modalBody) {
+                // Set iframe height based on viewport
+                const vh = window.innerHeight * 0.8;
+                iframe.style.height = `${vh}px`;
+            }
+        });
+    }
+}
+
+function setupFullscreenButton() {
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const iframe = document.getElementById('pdfPreviewFrame');
+    const modal = document.getElementById('pdfPreviewModal');
+    
+    if (!fullscreenBtn || !iframe) return;
+
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+            // Enter fullscreen
+            const modalContent = modal?.querySelector('.modal-content');
+            if (modalContent) {
+                if (modalContent.requestFullscreen) {
+                    modalContent.requestFullscreen();
+                } else if (modalContent.webkitRequestFullscreen) {
+                    modalContent.webkitRequestFullscreen();
+                } else if (modalContent.mozRequestFullScreen) {
+                    modalContent.mozRequestFullScreen();
+                } else if (modalContent.msRequestFullscreen) {
+                    modalContent.msRequestFullscreen();
+                }
+            }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    });
+
+    // Update button icon based on fullscreen state
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+    document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+    document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
+
+    function updateFullscreenIcon() {
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+        const icon = fullscreenBtn.querySelector('i');
+        if (icon) {
+            icon.className = isFullscreen ? 'fas fa-compress' : 'fas fa-expand';
+        }
     }
 }
 
