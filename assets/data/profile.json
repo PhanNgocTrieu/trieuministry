@@ -3,18 +3,19 @@
   "title": "Your Title/Position",
   "email": "your.email@example.com",
   "location": "Your Location",
-  "bio": "A brief introduction about yourself...",
+  "image": "assets/images/profile/profile.jpg",
+  "bio": "A brief introduction about yourself. Share your story, passion, and what drives you. This is your space to connect with visitors and share who you are.",
   "currentWork": {
     "position": "Your Current Position",
     "company": "Company Name",
-    "description": "Description of your current work..."
+    "description": "Description of your current work, responsibilities, and what you're passionate about in your professional life."
   },
   "fundamentalFaith": {
     "title": "Fundamental Faith",
-    "description": "Your fundamental beliefs and values..."
+    "description": "Your fundamental beliefs and values. Share what you stand for, your core principles, and what guides you in life. This section is important for expressing your spiritual foundation and worldview."
   },
-  "skills": ["Skill 1", "Skill 2", "Skill 3"],
-  "interests": ["Interest 1", "Interest 2"],
+  "skills": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5"],
+  "interests": ["Interest 1", "Interest 2", "Interest 3", "Interest 4"],
   "socialLinks": {
     "github": "https://github.com/yourusername",
     "linkedin": "https://linkedin.com/in/yourusername",

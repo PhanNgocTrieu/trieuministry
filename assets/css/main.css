@@ -431,6 +431,58 @@ footer {
   }
 }
 
+/* Profile Page Styles */
+.hero-profile {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-image {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+  transform: scale(1.05);
+}
+
+.social-links-profile a {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: inline-block;
+}
+
+.social-links-profile a:hover {
+  transform: translateY(-5px);
+  opacity: 0.8;
+}
+
+.skills-container,
+.interests-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skills-container .badge,
+.interests-container .badge {
+  transition: transform 0.2s ease;
+}
+
+.skills-container .badge:hover,
+.interests-container .badge:hover {
+  transform: scale(1.1);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .section-padding {
@@ -439,6 +491,16 @@ footer {
   
   .hero-section {
     min-height: 300px;
+  }
+  
+  .hero-profile {
+    min-height: auto;
+    padding: 40px 0 !important;
+  }
+  
+  .profile-image {
+    width: 200px;
+    height: 200px;
   }
   
   .display-4 {
