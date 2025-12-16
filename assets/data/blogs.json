@@ -1,0 +1,18 @@
+{
+  "blogs": [
+    {
+      "id": 1,
+      "title": "Welcome to My Blog",
+      "slug": "welcome-to-my-blog",
+      "excerpt": "This is a sample blog post to get you started.",
+      "content": "<p>This is the full content of the blog post. You can add HTML here.</p><p>More paragraphs and content...</p>",
+      "author": "Your Name",
+      "date": "2024-01-15",
+      "category": "General",
+      "tags": ["welcome", "introduction"],
+      "image": "assets/images/blogs/sample.jpg",
+      "readingTime": 3
+    }
+  ]
+}
+

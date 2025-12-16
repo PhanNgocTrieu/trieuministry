@@ -1,0 +1,24 @@
+{
+  "name": "Your Name",
+  "title": "Your Title/Position",
+  "email": "your.email@example.com",
+  "location": "Your Location",
+  "bio": "A brief introduction about yourself...",
+  "currentWork": {
+    "position": "Your Current Position",
+    "company": "Company Name",
+    "description": "Description of your current work..."
+  },
+  "fundamentalFaith": {
+    "title": "Fundamental Faith",
+    "description": "Your fundamental beliefs and values..."
+  },
+  "skills": ["Skill 1", "Skill 2", "Skill 3"],
+  "interests": ["Interest 1", "Interest 2"],
+  "socialLinks": {
+    "github": "https://github.com/yourusername",
+    "linkedin": "https://linkedin.com/in/yourusername",
+    "email": "mailto:your.email@example.com"
+  }
+}
+

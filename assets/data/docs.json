@@ -1,0 +1,16 @@
+{
+  "documents": [
+    {
+      "id": 1,
+      "title": "Sample Document",
+      "description": "This is a sample document description.",
+      "filename": "sample.pdf",
+      "path": "assets/pdfs/sample.pdf",
+      "size": "1.2 MB",
+      "category": "General",
+      "uploadDate": "2024-01-10",
+      "thumbnail": "assets/images/docs/thumb1.jpg"
+    }
+  ]
+}
+
