@@ -355,30 +355,30 @@ static-website/
 ### **PHASE 4: BLOGS SYSTEM** (Step 8-11)
 
 #### Step 8: Blogs Data Structure
-- [ ] Tạo blogs.json với sample data
-- [ ] Define JSON schema
-- [ ] Tạo 2-3 sample blog posts
+- [x] Tạo blogs.json với sample data
+- [x] Define JSON schema
+- [x] Tạo 3 sample blog posts
 
 #### Step 9: Blogs List Page
-- [ ] Tạo blogs.html
-- [ ] Implement blog card component
-- [ ] Load blogs từ JSON
+- [x] Tạo blogs.html
+- [x] Implement blog card component
+- [x] Load blogs từ JSON
 - [ ] Grid/List layout toggle (optional)
-- [ ] Filter by category
-- [ ] Search functionality
+- [x] Filter by category
+- [x] Search functionality
 
 #### Step 10: Blog Detail Page
-- [ ] Tạo blog-detail.html (template)
-- [ ] Implement dynamic content loading từ JSON
-- [ ] URL routing với hash hoặc query params
-- [ ] Previous/Next navigation
-- [ ] Related posts
-- [ ] Reading time calculation
-- [ ] Reading progress bar
+- [x] Tạo blog-detail.html (template)
+- [x] Implement dynamic content loading từ JSON
+- [x] URL routing với query params (slug)
+- [x] Previous/Next navigation
+- [x] Related posts
+- [x] Reading time display (from data)
+- [x] Reading progress bar
 
 #### Step 11: Blog Features
-- [ ] Share buttons
-- [ ] Print functionality
+- [x] Share buttons (Web Share + clipboard fallback)
+- [x] Print functionality
 - [ ] Dark mode toggle (optional)
 - [ ] Font size adjustment (optional)
 
