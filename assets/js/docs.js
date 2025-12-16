@@ -104,29 +104,34 @@ function applyDocFilters(docs) {
     });
 }
 
+let pdfDoc = null;
+let pageNum = 1;
+let pageRendering = false;
+let pageNumPending = null;
+let scale = 1.0;
+const scaleDelta = 0.2;
+
 function previewDoc(pathEncoded, titleEncoded) {
     const path = decodeURIComponent(pathEncoded);
     const title = decodeURIComponent(titleEncoded);
     const modalTitle = document.getElementById('pdfPreviewTitle');
-    const iframe = document.getElementById('pdfPreviewFrame');
     const downloadBtn = document.getElementById('downloadFromModal');
-    const modalBody = document.getElementById('pdfModalBody');
+    const canvasContainer = document.getElementById('pdfCanvasContainer');
+    const iframe = document.getElementById('pdfPreviewFrame');
+    const loading = document.getElementById('pdfLoading');
 
     if (modalTitle) modalTitle.textContent = title || 'Xem trước tài liệu';
     if (downloadBtn) downloadBtn.href = path;
 
-    // Use PDF.js viewer for better preview (works when served via http/https)
-    // PDF.js viewer already includes: zoom controls, page navigation, fullscreen, download, etc.
-    const fullUrl = `${window.location.origin}/${path}`;
-    const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fullUrl)}`;
-    
-    if (iframe) {
-        iframe.src = viewerUrl;
-        // Ensure iframe can go fullscreen
-        iframe.setAttribute('allowfullscreen', 'true');
-        iframe.setAttribute('webkitallowfullscreen', 'true');
-        iframe.setAttribute('mozallowfullscreen', 'true');
-    }
+    // Reset state
+    pageNum = 1;
+    scale = 1.0;
+    pdfDoc = null;
+
+    // Show loading, hide others
+    if (loading) loading.style.display = 'block';
+    if (canvasContainer) canvasContainer.style.display = 'none';
+    if (iframe) iframe.style.display = 'none';
 
     // Setup fullscreen button
     setupFullscreenButton();
@@ -136,13 +141,191 @@ function previewDoc(pathEncoded, titleEncoded) {
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
         
-        // Reset iframe size when modal is shown
         modalEl.addEventListener('shown.bs.modal', () => {
-            if (iframe && modalBody) {
-                // Set iframe height based on viewport
-                const vh = window.innerHeight * 0.8;
-                iframe.style.height = `${vh}px`;
+            loadPDF(path);
+        });
+    }
+}
+
+async function loadPDF(path) {
+    const loading = document.getElementById('pdfLoading');
+    const canvasContainer = document.getElementById('pdfCanvasContainer');
+    const iframe = document.getElementById('pdfPreviewFrame');
+
+    try {
+        // Wait for PDF.js to be available
+        let retries = 0;
+        while (typeof pdfjsLib === 'undefined' && retries < 10) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+
+        if (typeof pdfjsLib === 'undefined') {
+            throw new Error('PDF.js library not loaded. Please refresh the page.');
+        }
+
+        // Set up PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // Use absolute URL if needed (for GitHub Pages)
+        let pdfPath = path;
+        if (!path.startsWith('http')) {
+            // If path is relative, make it absolute
+            pdfPath = path.startsWith('/') ? path : '/' + path;
+        }
+        
+        // Load PDF
+        const loadingTask = pdfjsLib.getDocument({
+            url: pdfPath,
+            httpHeaders: {},
+            withCredentials: false
+        });
+        
+        pdfDoc = await loadingTask.promise;
+        
+        // Hide loading, show canvas
+        if (loading) loading.style.display = 'none';
+        if (canvasContainer) canvasContainer.style.display = 'block';
+        
+        // Update page count
+        const pageCountEl = document.getElementById('pageCount');
+        if (pageCountEl) pageCountEl.textContent = pdfDoc.numPages;
+        
+        // Render first page
+        renderPage(pageNum);
+        
+        // Setup controls
+        setupPDFControls();
+        
+    } catch (error) {
+        console.error('Error loading PDF:', error);
+        
+        // Hide loading
+        if (loading) loading.style.display = 'none';
+        
+        // Show error message
+        const errorMsg = error.message || 'Không thể tải PDF';
+        Components.Toast.error(errorMsg);
+        
+        // Fallback to iframe with direct PDF link
+        if (iframe) {
+            iframe.src = path;
+            iframe.style.display = 'block';
+            iframe.setAttribute('allowfullscreen', 'true');
+        }
+    }
+}
+
+function renderPage(num) {
+    if (!pdfDoc) {
+        console.error('PDF document not loaded');
+        return;
+    }
+    
+    pageRendering = true;
+    
+    pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale: scale });
+        const canvas = document.getElementById('pdfCanvas');
+        
+        if (!canvas) {
+            console.error('Canvas element not found');
+            pageRendering = false;
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+        
+        const renderTask = page.render(renderContext);
+        
+        renderTask.promise.then(() => {
+            pageRendering = false;
+            if (pageNumPending !== null) {
+                renderPage(pageNumPending);
+                pageNumPending = null;
             }
+            
+            // Update page number
+            const pageNumEl = document.getElementById('pageNum');
+            const zoomLevelEl = document.getElementById('zoomLevel');
+            if (pageNumEl) pageNumEl.textContent = num;
+            if (zoomLevelEl) zoomLevelEl.textContent = Math.round(scale * 100) + '%';
+        }).catch((error) => {
+            console.error('Error rendering page:', error);
+            pageRendering = false;
+            Components.Toast.error('Lỗi khi render trang PDF');
+        });
+    }).catch((error) => {
+        console.error('Error getting page:', error);
+        pageRendering = false;
+        Components.Toast.error('Lỗi khi tải trang PDF');
+    });
+}
+
+function queueRenderPage(num) {
+    if (pageRendering) {
+        pageNumPending = num;
+    } else {
+        renderPage(num);
+    }
+}
+
+function setupPDFControls() {
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const fitWidthBtn = document.getElementById('fitWidth');
+    
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        });
+    }
+    
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        });
+    }
+    
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+            scale += scaleDelta;
+            queueRenderPage(pageNum);
+        });
+    }
+    
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+            if (scale <= scaleDelta) return;
+            scale -= scaleDelta;
+            queueRenderPage(pageNum);
+        });
+    }
+    
+    if (fitWidthBtn) {
+        fitWidthBtn.addEventListener('click', () => {
+            // Calculate scale to fit width
+            pdfDoc.getPage(pageNum).then((page) => {
+                const container = document.querySelector('.pdf-canvas-wrapper');
+                const containerWidth = container.clientWidth - 40; // padding
+                const viewport = page.getViewport({ scale: 1.0 });
+                scale = containerWidth / viewport.width;
+                queueRenderPage(pageNum);
+            });
         });
     }
 }

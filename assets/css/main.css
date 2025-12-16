@@ -537,6 +537,30 @@ footer {
   width: 100%;
 }
 
+.pdf-controls {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pdf-canvas-wrapper {
+  background: #525252;
+}
+
+#pdfCanvas {
+  margin: 0 auto;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#pdfLoading {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Fullscreen modal */
 .modal-content:fullscreen {
   width: 100vw;
