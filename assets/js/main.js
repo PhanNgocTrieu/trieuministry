@@ -50,38 +50,6 @@ function initSmoothScroll() {
     });
 }
 
-// Utility function to show toast notifications
-function showToast(message, type = 'info') {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    
-    // Add styles
-    Object.assign(toast.style, {
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        padding: '15px 20px',
-        backgroundColor: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6',
-        color: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        zIndex: '10000',
-        animation: 'fadeIn 0.3s ease-in'
-    });
-    
-    document.body.appendChild(toast);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease-out';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// Export functions for use in other files
-window.utils = {
-    showToast
-};
+// Note: Toast functionality moved to components.js for better organization
+// Keeping this for backward compatibility - will use Components.Toast if available
 

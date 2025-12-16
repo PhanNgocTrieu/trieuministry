@@ -295,7 +295,7 @@ static-website/
 - [x] Khởi tạo Git repository
 - [x] Setup .gitignore
 - [x] Tạo README.md với hướng dẫn
-- [ ] Setup GitHub repository (cần push lên GitHub)
+- [x] Setup GitHub repository (cần push lên GitHub)
 
 #### Step 2: Setup Dependencies
 - [x] Link TailwindCSS (CDN hoặc npm)
@@ -317,18 +317,18 @@ static-website/
 ### **PHASE 2: NAVIGATION & LAYOUT** (Step 4-5)
 
 #### Step 4: Navigation System
-- [ ] Tạo navigation.js
-- [ ] Implement smooth scroll
-- [ ] Active page highlighting
-- [ ] Mobile menu toggle
-- [ ] Sticky navigation bar
+- [x] Tạo navigation.js
+- [x] Implement smooth scroll
+- [x] Active page highlighting
+- [x] Mobile menu toggle
+- [x] Sticky navigation bar
 
 #### Step 5: Common Components
-- [ ] Header/Navbar component
-- [ ] Footer component
-- [ ] Loading spinner
-- [ ] Back to top button
-- [ ] Toast notifications (nếu cần)
+- [x] Header/Navbar component (template created)
+- [x] Footer component (template created)
+- [x] Loading spinner
+- [x] Back to top button
+- [x] Toast notifications (enhanced)
 
 ---
 
