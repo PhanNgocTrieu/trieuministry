@@ -291,26 +291,26 @@ static-website/
 ### **PHASE 1: SETUP & FOUNDATION** (Step 1-3)
 
 #### Step 1: Khởi tạo dự án
-- [ ] Tạo cấu trúc thư mục
-- [ ] Khởi tạo Git repository
-- [ ] Setup .gitignore
-- [ ] Tạo README.md với hướng dẫn
-- [ ] Setup GitHub repository
+- [x] Tạo cấu trúc thư mục
+- [x] Khởi tạo Git repository
+- [x] Setup .gitignore
+- [x] Tạo README.md với hướng dẫn
+- [ ] Setup GitHub repository (cần push lên GitHub)
 
 #### Step 2: Setup Dependencies
-- [ ] Link TailwindCSS (CDN hoặc npm)
-- [ ] Link Bootstrap 5 (CDN)
-- [ ] Link PDF.js library
-- [ ] Link Font Awesome/Heroicons
-- [ ] Link Google Fonts
-- [ ] Tạo file main.css cho custom styles
+- [x] Link TailwindCSS (CDN hoặc npm)
+- [x] Link Bootstrap 5 (CDN)
+- [ ] Link PDF.js library (sẽ thêm trong Phase 5)
+- [x] Link Font Awesome/Heroicons
+- [x] Link Google Fonts
+- [x] Tạo file main.css cho custom styles
 
 #### Step 3: Base HTML Structure
-- [ ] Tạo index.html với structure cơ bản
-- [ ] Tạo navigation component (reusable)
-- [ ] Tạo footer component (reusable)
-- [ ] Setup responsive meta tags
-- [ ] Test responsive trên mobile/tablet/desktop
+- [x] Tạo index.html với structure cơ bản
+- [x] Tạo navigation component (reusable)
+- [x] Tạo footer component (reusable)
+- [x] Setup responsive meta tags
+- [x] Test responsive trên mobile/tablet/desktop
 
 ---
 
