@@ -387,31 +387,28 @@ static-website/
 ### **PHASE 5: DOCUMENTS SYSTEM** (Step 12-15)
 
 #### Step 12: Documents Data Structure
-- [ ] Tạo docs.json với sample data
-- [ ] Upload sample PDF files vào assets/pdfs/
+- [x] Tạo docs.json với sample data
+- [ ] Upload sample PDF files vào assets/pdfs/ (placeholder paths)
 - [ ] Tạo thumbnails cho PDFs (optional)
 
 #### Step 13: Documents List Page
-- [ ] Tạo docs.html
-- [ ] Document card component
-- [ ] Load documents từ JSON
-- [ ] Filter và search
-- [ ] File size formatting
+- [x] Tạo docs.html
+- [x] Document card component
+- [x] Load documents từ JSON
+- [x] Filter và search
+- [ ] File size formatting (dùng dữ liệu có sẵn)
 
 #### Step 14: PDF Preview System
-- [ ] Integrate PDF.js
-- [ ] Tạo preview modal
-- [ ] Implement PDF viewer với controls:
-  - Zoom in/out
-  - Page navigation
-  - Fullscreen mode
-  - Download button
-- [ ] Error handling cho PDF loading
+- [x] Integrate PDF.js (embed viewer via hosted PDF.js)
+- [x] Tạo preview modal
+- [ ] Implement PDF viewer controls (zoom/nav/fullscreen) - viewer cung cấp sẵn
+- [x] Download button trong modal
+- [x] Error handling (toast + placeholder)
 
 #### Step 15: Download Functionality
-- [ ] Download button implementation
-- [ ] Download counter (localStorage)
-- [ ] Download progress indicator
+- [x] Download button implementation
+- [x] Download counter (localStorage)
+- [ ] Download progress indicator (optional)
 - [ ] File validation
 
 ---

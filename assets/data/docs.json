@@ -10,6 +10,28 @@
       "category": "General",
       "uploadDate": "2024-01-10",
       "thumbnail": "assets/images/docs/thumb1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Tài liệu đức tin",
+      "description": "Ghi chú về hành trình đức tin và nền tảng giá trị.",
+      "filename": "faith-notes.pdf",
+      "path": "assets/pdfs/faith-notes.pdf",
+      "size": "2.4 MB",
+      "category": "Faith",
+      "uploadDate": "2024-02-12",
+      "thumbnail": "assets/images/docs/thumb2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Hướng dẫn làm việc từ xa",
+      "description": "Checklist và thói quen để làm việc từ xa hiệu quả.",
+      "filename": "remote-guide.pdf",
+      "path": "assets/pdfs/remote-guide.pdf",
+      "size": "1.8 MB",
+      "category": "Work",
+      "uploadDate": "2024-03-08",
+      "thumbnail": "assets/images/docs/thumb3.jpg"
     }
   ]
 }
