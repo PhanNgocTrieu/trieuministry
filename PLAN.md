@@ -401,7 +401,7 @@ static-website/
 #### Step 14: PDF Preview System
 - [x] Integrate PDF.js (embed viewer via hosted PDF.js)
 - [x] Tạo preview modal
-- [x] Implement PDF viewer controls (zoom/nav/fullscreen) - PDF.js viewer có sẵn + fullscreen button
+- [ ] Implement PDF viewer controls (zoom/nav/fullscreen) - viewer cung cấp sẵn
 - [x] Download button trong modal
 - [x] Error handling (toast + placeholder)
 
