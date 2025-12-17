@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initPageTransitions();
 });
 
-// Initialize Navigation
-function initNavigation() {
+// Initialize Navigation (Global)
+window.initNavigation = function () {
     const currentPath = window.location.pathname;
     const currentPage = currentPath.split('/').pop() || 'index.html';
     const navLinks = document.querySelectorAll('.nav-link');
@@ -46,29 +46,32 @@ function initNavigation() {
 
 // Handle Smooth Page Exits
 function initPageTransitions() {
+    // Disabled: Handled by router.js
+    /*
     document.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', function (e) {
+        link.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
             const target = this.getAttribute('target');
-
+            
             // Skip if external, hash, or blank target
             if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || target === '_blank') return;
-
+            
             // Check if it's a local internal link
             if (window.location.hostname === this.hostname) {
                 e.preventDefault();
-
+                
                 // Add exit animation class
                 document.body.classList.add('page-exit');
-
+                
                 // Wait for animation then navigate
                 // Increased wait time to 400ms to allow fadeOut to complete partially
                 setTimeout(() => {
                     window.location.href = href;
-                }, 400);
+                }, 400); 
             }
         });
     });
+    */
 }
 
 // Mobile Menu Toggle - Enhanced for Bootstrap 5
