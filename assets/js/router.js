@@ -61,7 +61,7 @@ class TurboRouter {
 
         try {
             // Fetch content with cache busting
-            const fetchUrl = new URL(url, window.location.origin);
+            const fetchUrl = new URL(url, document.baseURI);
             // FORCE NEW TIMESTAMP to bypass browser cache
             fetchUrl.searchParams.set('v', Date.now());
             const response = await fetch(fetchUrl);
