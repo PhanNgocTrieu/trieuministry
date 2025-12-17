@@ -1,0 +1,97 @@
+{
+    "nav": {
+        "brand": "TrieuMinistry",
+        "home": "Home",
+        "about": "About",
+        "blogs": "Blogs",
+        "docs": "Documents",
+        "prayers": "Prayers",
+        "donate": "Donate"
+    },
+    "home": {
+        "hero": {
+            "title": "Connecting Faith & Spreading Love",
+            "subtitle": "Building a community of prayer, sharing, and supporting each other in the name of Jesus.",
+            "cta_prayer": "Join in Prayer",
+            "cta_donate": "Donate"
+        },
+        "mission": {
+            "label": "Mission",
+            "title": "Why Join Us?",
+            "mission_1": {
+                "title": "Connect the Community",
+                "content": "A place where God's children from all over can connect, share testimonies, and encourage one another."
+            },
+            "mission_2": {
+                "title": "Pray for Each Other",
+                "content": "Bearing each other's burdens in prayer, believing that God hears and answers our requests."
+            },
+            "mission_3": {
+                "title": "Spread Love",
+                "content": "Setting an example for others to be grateful to God, spreading love for God and love for others."
+            }
+        },
+        "cta": {
+            "title": "Are you ready to join us?",
+            "btn_prayer": "Send a Prayer",
+            "btn_donate": "Donate Now"
+        },
+        "daily_verse": {
+            "content": "\"Do not lie to each other, since you have taken off your old self with its practices and have put on the new self, which is being renewed in knowledge in the image of its Creator. Here there is no Gentile or Jew, circumcised or uncircumcised, barbarian, Scythian, slave or free, but Christ is all, and is in all.\"",
+            "citation": "Colossians 3:9-11"
+        }
+    },
+    "profile": {
+        "hero": {
+            "title": "About Trieu",
+            "subtitle": "A journey of faith, sharing, and vision to serve God's Kingdom."
+        },
+        "founder": {
+            "label": "Personnel",
+            "role": "Founder",
+            "quote": "\"I believe that everyone has a special mission in God's eternal plan.\""
+        }
+    },
+    "blogs": {
+        "hero": {
+            "title": "Sharing & Reflection",
+            "subtitle": "Articles, testimonies, and spiritual reflections to encourage your faith daily."
+        }
+    },
+    "docs": {
+        "hero": {
+            "title": "Resources",
+            "subtitle": "Download free books, Bible study materials, and training curriculums."
+        }
+    },
+    "prayers": {
+        "hero": {
+            "title": "Prayer & Intercession",
+            "subtitle": "Share prayers and intercede for one another in love."
+        }
+    },
+    "donate": {
+        "hero": {
+            "title": "Support & Partnership",
+            "subtitle": "Thank you for trusting, partnering, and supporting Trieu's ministry!"
+        }
+    },
+    "footer": {
+        "description": "We believe that prayer has the power to change any situation. Let us build a strong life of faith together.",
+        "links_title": "Links",
+        "contact_title": "Contact",
+        "address": "Da Nang city, Vietnam",
+        "copyright": "&copy; 2025 TrieuMinistry. All rights reserved.",
+        "designed_by": "Designed with <i class='fas fa-heart text-danger mx-1'></i> for God's Glory"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Success",
+        "read_more": "Read More",
+        "preview": "Preview",
+        "download": "Download",
+        "share": "Share",
+        "close": "Close"
+    }
+}

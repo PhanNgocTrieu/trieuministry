@@ -151,6 +151,7 @@ class TurboRouter {
                 !src.includes('components.js') &&
                 !src.includes('navigation.js') &&
                 !src.includes('router.js') &&
+                !src.includes('i18n.js') &&
                 !src.includes('bootstrap'); // Bootstrap bundle usually doesn't need reload
         });
 

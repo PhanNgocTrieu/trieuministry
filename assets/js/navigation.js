@@ -3,6 +3,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     initNavigation();
     initMobileMenu();
+
+    if (window.i18n) {
+        initLanguageSwitcher();
+    } else {
+        console.error('[Navigation] i18n not found, skipping switcher init');
+    }
+
     initSmoothScrollNavigation();
     initPageTransitions();
 });
@@ -117,3 +124,63 @@ function initSmoothScrollNavigation() {
         });
     });
 }
+
+// Language Switcher Injection
+function initLanguageSwitcher() {
+    const navbarNav = document.querySelector('#navbarNav .navbar-nav');
+    if (!navbarNav) return;
+
+    // Check if switcher already exists to avoid duplication on router navigation
+    if (document.getElementById('lang-switcher-li')) return;
+
+    // Create Switcher Item
+    const li = document.createElement('li');
+    li.id = 'lang-switcher-li';
+    li.className = 'nav-item d-flex align-items-center ms-lg-3';
+
+    const currentLang = localStorage.getItem('app_lang') || 'vi';
+    const isVi = currentLang === 'vi';
+
+    li.innerHTML = `
+        <button class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center gap-2" 
+                id="lang-switcher-btn" 
+                aria-label="Switch Language">
+            <span class="flag-icon fw-bold">${isVi ? '🇺🇸' : '🇻🇳'}</span>
+            <span class="lang-text small fw-bold">${isVi ? 'EN' : 'VI'}</span>
+        </button>
+    `;
+
+    navbarNav.appendChild(li);
+
+    // Event Listener
+    const btn = li.querySelector('#lang-switcher-btn');
+    btn.addEventListener('click', async function () {
+        if (!window.i18n) {
+            console.error('i18n service not initialized');
+            return;
+        }
+        const newLang = window.i18n.getCurrentLang() === 'vi' ? 'en' : 'vi';
+
+        // Disable button while switching
+        btn.disabled = true;
+
+        await window.i18n.switchLanguage(newLang);
+
+        // Update Button UI
+        const isViNow = newLang === 'vi';
+        btn.querySelector('.flag-icon').textContent = isViNow ? '🇺🇸' : '🇻🇳';
+        btn.querySelector('.lang-text').textContent = isViNow ? 'EN' : 'VI';
+
+        btn.disabled = false;
+
+        // Close mobile menu if open
+        const navbarCollapse = document.querySelector('#navbarNav');
+        if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+            const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+            if (bsCollapse) bsCollapse.hide();
+        }
+    });
+}
+
+// Expose to window for Router to re-init
+window.initLanguageSwitcher = initLanguageSwitcher;
