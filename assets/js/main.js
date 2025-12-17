@@ -4,6 +4,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Website loaded successfully!');
 
+    // Add page transition class
+    document.body.classList.add('page-transition');
+
     // Initialize all components
     initBackToTop();
     initSmoothScroll();
