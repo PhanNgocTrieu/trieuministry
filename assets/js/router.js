@@ -14,7 +14,8 @@ class TurboRouter {
             const link = e.target.closest('a');
             if (this.shouldIntercept(link)) {
                 e.preventDefault();
-                this.navigate(link.getAttribute('href'));
+                // Use absolute URL from browser resolution
+                this.navigate(link.href);
             }
         });
 
