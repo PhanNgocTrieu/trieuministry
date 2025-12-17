@@ -570,28 +570,28 @@ static-website/
 ### **PHASE 10: ENHANCEMENTS & FIREBASE** (Step 27-29)
 
 #### Step 27: UI/UX Enhancements
-- [ ] **Favicon**: Create and link custom favicon.
-- [ ] **Animations**:
-    - [ ] Navbar transitions (backdrop blur).
-    - [ ] Hover effects for buttons/cards (`hover-lift`, `hover-scale`).
-    - [ ] Page transitions.
+- [x] **Favicon**: Create and link custom favicon.
+- [x] **Animations**:
+    - [x] Navbar transitions (backdrop blur).
+    - [x] Hover effects for buttons/cards (`hover-lift`, `hover-scale`).
+    - [x] Page transitions.
 
 #### Step 28: Firebase Integration (Prayers)
-- [ ] **Setup**: Create Firebase Project & Config.
-- [ ] **Backend**: Replace LocalStorage with Firestore Database.
-- [ ] **Features**:
-    - [ ] Real-time Prayer Requests.
-    - [ ] Live "Amen/Praying" counter.
+- [x] **Setup**: Create Firebase Project & Config.
+- [x] **Backend**: Replace LocalStorage with Firestore Database.
+- [x] **Features**:
+    - [x] Real-time Prayer Requests.
+    - [x] Live "Amen/Praying" counter.
 
 #### Step 29: Progressive Web App (PWA)
-- [ ] **Manifest**: Create `manifest.json`.
-- [ ] **Icons**: Generate app icons (192x192, 512x512).
-- [ ] **Installable**: Allow "Add to Home Screen".
+- [x] **Manifest**: Create `manifest.json`.
+- [x] **Icons**: Generate app icons (192x192, 512x512).
+- [x] **Installable**: Allow "Add to Home Screen".
 
-**📋 Technical Implementation (Planned - Phase 10):**
-- **Visuals**: Will add `favicon.ico` and smooth Navbar animations using CSS backdrop-filter.
-- **Firebase**: Will proceed with Firebase Firestore setup. Instead of `localStorage.setItem`, the app will use `addDoc(collection(db, "prayers"), data)`.
-- **PWA**: Will generate a `manifest.json` file linked in `<head>` so mobile browsers recognize the site as an installable app.
+**📋 Technical Implementation (Phase 10):**
+- **Visuals**: Added `favicon.ico` and smooth Navbar animations using CSS backdrop-filter.
+- **Firebase**: Proceeded with Firebase Firestore setup. Instead of `localStorage.setItem`, the app uses `addDoc(collection(db, "prayers"), data)`.
+- **PWA**: Generated a `manifest.json` file linked in `<head>` so mobile browsers recognize the site as an installable app.
 
 
 ---
@@ -599,10 +599,10 @@ static-website/
 ### **PHASE 11: DEPLOYMENT** (Step 30-32)
 
 #### Step 30: GitHub Setup
-- [ ] Push code lên GitHub
-- [ ] Setup GitHub Pages
-- [ ] Configure custom domain (nếu có)
-- [ ] Test deployment
+- [x] Push code lên GitHub
+- [x] Setup GitHub Pages
+- [x] Configure custom domain (nếu có)
+- [x] Test deployment
 
 #### Step 31: Documentation
 - [ ] Update README.md với:
@@ -615,12 +615,39 @@ static-website/
 - [ ] Usage guide
 
 #### Step 32: Final Testing & Launch
-- [ ] Test tất cả features trên production
-- [ ] Check broken links
-- [ ] Verify all forms work
-- [ ] Test PDF preview và download
-- [ ] Performance audit
-- [ ] Launch! 🚀
+- [x] Test tất cả features trên production
+- [x] Check broken links
+- [x] Verify all forms work
+- [x] Test PDF preview và download
+- [x] Performance audit
+- [x] Launch! 🚀
+
+---
+
+### **PHASE 12: INTERNATIONALIZATION & SECURITY** (Future)
+
+#### Step 33: Multi-language Support (i18n)
+- [ ] Create language resource files (vi.json, en.json)
+- [ ] Implement language switcher in Navbar
+- [ ] Auto-detect language or save preference to localStorage
+
+#### Step 34: Admin Authentication & Permissions
+- [ ] Implement Firebase Auth (Google/Email)
+- [ ] Set up "Admin" role logic
+- [ ] **Prayer Deletion**: Hide "Delete" button for non-admins
+- [ ] **Security**: Configure Firestore Security Rules
+
+---
+
+### **PHASE 13: CONTENT MANAGEMENT & UI POLISH** (Future)
+
+#### Step 35: Responsive Hero Section
+- [ ] Redesign Hero for better mobile/tablet scaling
+- [ ] Reduce excessive whitespace
+
+#### Step 36: Rich Text Editor for Blogs
+- [ ] Integrate a lightweight editor (e.g., QuillJS or TinyMCE)
+- [ ] Support basic formatting (Bold, Italic, Lists) for blog creation
 
 ---
 
