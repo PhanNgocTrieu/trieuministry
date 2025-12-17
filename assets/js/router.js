@@ -14,6 +14,18 @@ class TurboRouter {
             const link = e.target.closest('a');
             if (this.shouldIntercept(link)) {
                 e.preventDefault();
+
+                // Close Mobile Menu if open
+                const navbarCollapse = document.querySelector('#navbarNav');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
+                        bsCollapse.hide();
+                    } else {
+                        navbarCollapse.classList.remove('show');
+                    }
+                }
+
                 // Use absolute URL from browser resolution
                 this.navigate(link.href);
             }
