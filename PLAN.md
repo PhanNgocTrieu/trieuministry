@@ -416,23 +416,23 @@ static-website/
 ### **PHASE 6: PRAYERS PAGE** (Step 16-18)
 
 #### Step 16: Prayers Page Structure
-- [ ] Tạo prayers.html
-- [ ] Prayer request form
-- [ ] Prayer list display
-- [ ] Prayer card component
+- [x] Tạo prayers.html
+- [x] Prayer request form
+- [x] Prayer list display
+- [x] Prayer card component
 
 #### Step 17: Prayers Functionality
-- [ ] Form validation
-- [ ] Save prayer requests (localStorage hoặc JSON)
-- [ ] Display prayer list
-- [ ] Filter: All/Answered/Unanswered
-- [ ] Mark as answered feature
-- [ ] Delete prayer request (optional)
+- [x] Form validation
+- [x] Save prayer requests (localStorage)
+- [x] Display prayer list
+- [x] Filter: All/Answered/Unanswered
+- [x] Mark as answered feature
+- [x] Delete prayer request
 
 #### Step 18: Prayers Integration
+- [x] Prayer counter
+- [x] Share prayer functionality
 - [ ] Integrate với Formspree (optional - để gửi email)
-- [ ] Prayer counter
-- [ ] Share prayer functionality
 - [ ] Export prayers (optional)
 
 ---
