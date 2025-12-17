@@ -21,6 +21,33 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="https://phanngoctrieu.github.io/trieuministry/profile.html">
+    <meta property="og:title" content="Về TrieuMinistry - Phan Ngọc Triệu">
+    <meta property="og:description" content="Hành trình đức tin, sự chia sẻ và khải tượng phục vụ Vương quốc Chúa.">
+    <meta property="og:image" content="assets/images/profile/profile.jpg">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Phan Ngoc Trieu",
+      "url": "https://phanngoctrieu.github.io/trieuministry/profile.html",
+      "image": "assets/images/profile/profile.jpg",
+      "jobTitle": "Ministry Founder",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "TrieuMinistry"
+      },
+      "sameAs": [
+        "https://www.facebook.com/yourprofile",
+        "https://www.youtube.com/yourchannel"
+      ]
+    }
+    </script>
+
     <style>
         .profile-hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/images/hero_bg.png');
@@ -89,7 +116,7 @@
                             <img src="assets/images/profile/profile.jpg" alt="Phan Ngoc Trieu"
                                 class="img-fluid rounded-circle shadow-lg"
                                 style="width: 300px; height: 300px; object-fit: cover; border: 5px solid white;"
-                                onerror="this.src='https://via.placeholder.com/300?text=Avatar'">
+                                loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Avatar'">
                             <div class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-3 shadow"
                                 style="transform: translate(10%, 10%);">
                                 <i class="fas fa-quote-right fa-2x"></i>

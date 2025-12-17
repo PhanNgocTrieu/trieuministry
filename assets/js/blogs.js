@@ -45,7 +45,7 @@ function renderBlogs(blogs) {
         const card = document.createElement('div');
         card.className = 'card h-100 shadow-sm';
         card.innerHTML = `
-            <img src="${blog.image || ''}" class="card-img-top blog-card-image" alt="${blog.title}" onerror="this.src='https://via.placeholder.com/600x360?text=Blog'">
+            <img src="${blog.image || ''}" class="card-img-top blog-card-image" alt="${blog.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x360?text=Blog'">
             <div class="card-body d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="badge bg-light text-dark border">${blog.category || 'General'}</span>
