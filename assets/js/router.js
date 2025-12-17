@@ -65,7 +65,14 @@ class TurboRouter {
             const fetchUrl = new URL(url, document.baseURI);
             // FORCE NEW TIMESTAMP to bypass browser cache
             fetchUrl.searchParams.set('v', Date.now());
+
+            console.log('[Router] Fetching:', fetchUrl.href);
+
             const response = await fetch(fetchUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const html = await response.text();
 
             // Parse content
@@ -86,7 +93,6 @@ class TurboRouter {
 
             if (newMain && currentMain) {
                 currentMain.innerHTML = newMain.innerHTML;
-                // Copy classes if any (e.g., specific page styling)
                 currentMain.className = newMain.className;
             } else {
                 // Fallback for pages without <main>
@@ -98,11 +104,6 @@ class TurboRouter {
 
             // Re-run scripts
             this.executeScripts(newDoc);
-
-            // Animation: Remove Fade Out, Add Fade In
-            document.body.classList.remove('page-exit');
-            document.body.classList.add('page-transition');
-            setTimeout(() => document.body.classList.remove('page-transition'), 500);
 
             // Re-initialize Global Components
             this.reinitGlobal();
@@ -117,8 +118,15 @@ class TurboRouter {
             }
 
         } catch (error) {
-            console.log('Navigation failed/cancelled:', error);
-            // window.location.reload(); // Don't force reload on fetch error usually
+            console.error('[Router] Navigation failed, forcing reload:', error);
+            // FALLBACK: Force standard browser navigation if SPA methods fail
+            window.location.assign(url);
+            return; // Exit function, browser will reload
+        } finally {
+            // Animation: Remove Fade Out, Add Fade In
+            document.body.classList.remove('page-exit');
+            document.body.classList.add('page-transition');
+            setTimeout(() => document.body.classList.remove('page-transition'), 500);
         }
     }
 
