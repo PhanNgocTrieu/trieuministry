@@ -312,6 +312,12 @@ static-website/
 - [x] Setup responsive meta tags
 - [x] Test responsive trên mobile/tablet/desktop
 
+**📋 Technical Implementation (Phase 1):**
+- **Foundation**: Established Git repository and basic file structure.
+- **Dependencies**: Integrated Bootstrap 5 and TailwindCSS via CDN for rapid styling flexibility.
+- **Assets**: Created `assets/css/main.css` for custom overrides and `assets/js` for future logic.
+
+
 ---
 
 ### **PHASE 2: NAVIGATION & LAYOUT** (Step 4-5)
@@ -329,6 +335,12 @@ static-website/
 - [x] Loading spinner
 - [x] Back to top button
 - [x] Toast notifications (enhanced)
+
+**📋 Technical Implementation (Phase 2):**
+- **Navigation**: Implemented `navigation.js` using `DOMContentLoaded` to inject the navbar dynamically, facilitating easier updates across multiple pages.
+- **Scroll**: Added a scroll listener for `sticky-top` effects and a "Back to Top" button that appears after scrolling 300px.
+- **Utilities**: Created a reusable `Toast` class in `components.js` for non-blocking UI notifications.
+
 
 ---
 
@@ -349,6 +361,12 @@ static-website/
 - [x] Animations và transitions
 - [x] Image optimization (placeholder with error handling)
 - [x] Test trên các devices (responsive CSS added)
+
+**📋 Technical Implementation (Phase 3):**
+- **Profile Layout**: Built `profile.html` with a split-screen design (Avatar left/top, Info right/bottom) using Bootstrap grid.
+- **Hardcoded Content**: Decided to hardcode profile data directly in HTML for better SEO and easier editing, rather than fetching from JSON.
+- **Interactive Elements**: Added hover effects to social icons and skill badges using custom CSS utility classes.
+
 
 ---
 
@@ -382,6 +400,13 @@ static-website/
 - [ ] Dark mode toggle (optional)
 - [ ] Font size adjustment (optional)
 
+**📋 Technical Implementation (Phase 4):**
+- **Data Source**: Created `blogs.json` to store post metadata and content.
+- **Dynamic Rendering**: `blogs.js` fetches JSON and uses `innerHTML` to render cards.
+- **Search & Filter**: Implemented client-side filtering (by category/tag/title) with debounce to optimize performance.
+- **Routing**: `blog-detail.html` uses `URLSearchParams` to identify which post to load (e.g., `?slug=my-post`).
+
+
 ---
 
 ### **PHASE 5: DOCUMENTS SYSTEM** (Step 12-15)
@@ -411,6 +436,12 @@ static-website/
 - [ ] Download progress indicator (optional)
 - [ ] File validation
 
+**📋 Technical Implementation (Phase 5):**
+- **PDF Viewer**: Integrated Mozilla's `PDF.js` via iframe to allow reading documents without leaving the site.
+- **Listing**: Similar to Blogs, `docs.js` fetches `docs.json` to render the document library grid.
+- **Preview Modal**: Used a full-screen Bootstrap modal to contain the PDF viewer for an immersive reading experience.
+
+
 ---
 
 ### **PHASE 6: PRAYERS PAGE** (Step 16-18)
@@ -435,23 +466,37 @@ static-website/
 - [ ] Integrate với Formspree (optional - để gửi email)
 - [ ] Export prayers (optional)
 
+**📋 Technical Implementation (Phase 6):**
+- **Local Storage**: Implemented `prayers.js` to save requests to browser's `localStorage` for simplified persistence without a backend (initially).
+- **CRUD Operations**: Wrote functions to Add, Remove, and Update prayer status (Answered/Unanswered) directly in the DOM.
+- **UI Feedback**: Used Toast notifications to confirm actions like "Prayer Submitted" or "Deleted".
+
+
 ---
 
 ### **PHASE 7: DONATE PAGE** (Step 19-20)
 
 #### Step 19: Donate Page Structure
 - [x] Tạo donate.html
-- [x] QR Code display section
+- [x] QR Code display section (Responsive)
 - [x] Bank account information section
 - [x] Thank you message section
-- [x] Copy to clipboard functionality
+- [x] Request Appeal Modal (Feature added)
+- [x] Navbar & Footer consistent with Landing Page
 
 #### Step 20: Donate Features
-- [x] QR Code image (tạo sẵn hoặc generate)
+- [x] QR Code image (`assets/images/donate/personal_qr.jpg`)
 - [x] Copy account number button
-- [x] Multiple payment methods display
+- [x] "Gửi yêu cầu kêu gọi" feature (mailto Integration)
 - [x] Donation purpose explanation
 - [x] Contact information
+
+**📋 Technical Implementation (Phase 7):**
+- **Read-only Mode**: Simplified `donate.js` to remove redundant CRUD logic, focusing on displaying appeals from `appeals.json`.
+- **Request Modal**: Integrated Bootstrap 5 Modal for "Request Appeal", preventing accidental submissions by using a direct `mailto:` link generator in JavaScript.
+- **QR Code Path**: Updated image path to `assets/images/donate/personal_qr.jpg` to organize assets better.
+
+
 
 ---
 
@@ -475,23 +520,29 @@ static-website/
 - [x] Smooth scrolling
 - [x] Interactive elements
 
+**📋 Technical Implementation (Phase 8):**
+- **Structure**: Rewrote `index.html` to remove legacy "My Profile" sections, replacing them with a modern Hero section (`hero_bg.png`), "Why Join?" features, and "Verse of the Day".
+- **Animations**: Implemented `IntersectionObserver` in `main.js` to trigger `.fade-in-up` animations when elements scroll into view.
+- **Components**: Standardized Navbar and Footer across all pages (`donate.html`, `prayers.html`, etc.) for consistent branding ("TrieuMinistry").
+
+
 ---
 
 ### **PHASE 9: OPTIMIZATION & POLISH** (Step 23-26)
 
 #### Step 23: Performance Optimization
-- [ ] Image optimization (compress, WebP format)
-- [ ] Lazy loading cho images
+- [x] Image optimization (compress, WebP format)
+- [x] Lazy loading cho images (`loading="lazy"`)
 - [ ] Minify CSS và JavaScript
 - [ ] Code splitting (nếu cần)
 - [ ] Cache strategy
 
 #### Step 24: SEO Optimization
 - [x] Meta tags cho mỗi page
-- [ ] Open Graph tags
-- [ ] Structured data (JSON-LD)
-- [ ] Sitemap.xml
-- [ ] robots.txt
+- [x] Open Graph tags (Facebook/Zalo sharing)
+- [x] Structured data (JSON-LD for Organization & Person)
+- [x] Sitemap.xml
+- [x] robots.txt
 
 #### Step 25: Accessibility
 - [x] Alt text cho images
@@ -507,17 +558,53 @@ static-website/
 - [x] Test trên Edge
 - [x] Test trên mobile browsers
 
+**📋 Technical Implementation (Phase 9):**
+- **SEO**: Added Open Graph tags (`og:title`, `og:image`) to all HTML pages for better social sharing.
+- **Schema**: Injected JSON-LD structured data (`Organization`, `Person`) into `index.html` and `profile.html` to help Google Search understand the site content.
+- **Performance**: Added `loading="lazy"` to all `<img>` tags (including dynamic ones in `blogs.js`) to speed up initial page load.
+- **Crawlers**: Created `robots.txt` and `sitemap.xml` to guide search engine bots.
+
+
 ---
 
-### **PHASE 10: DEPLOYMENT** (Step 27-29)
+### **PHASE 10: ENHANCEMENTS & FIREBASE** (Step 27-29)
 
-#### Step 27: GitHub Setup
+#### Step 27: UI/UX Enhancements
+- [ ] **Favicon**: Create and link custom favicon.
+- [ ] **Animations**:
+    - [ ] Navbar transitions (backdrop blur).
+    - [ ] Hover effects for buttons/cards (`hover-lift`, `hover-scale`).
+    - [ ] Page transitions.
+
+#### Step 28: Firebase Integration (Prayers)
+- [ ] **Setup**: Create Firebase Project & Config.
+- [ ] **Backend**: Replace LocalStorage with Firestore Database.
+- [ ] **Features**:
+    - [ ] Real-time Prayer Requests.
+    - [ ] Live "Amen/Praying" counter.
+
+#### Step 29: Progressive Web App (PWA)
+- [ ] **Manifest**: Create `manifest.json`.
+- [ ] **Icons**: Generate app icons (192x192, 512x512).
+- [ ] **Installable**: Allow "Add to Home Screen".
+
+**📋 Technical Implementation (Planned - Phase 10):**
+- **Visuals**: Will add `favicon.ico` and smooth Navbar animations using CSS backdrop-filter.
+- **Firebase**: Will proceed with Firebase Firestore setup. Instead of `localStorage.setItem`, the app will use `addDoc(collection(db, "prayers"), data)`.
+- **PWA**: Will generate a `manifest.json` file linked in `<head>` so mobile browsers recognize the site as an installable app.
+
+
+---
+
+### **PHASE 11: DEPLOYMENT** (Step 30-32)
+
+#### Step 30: GitHub Setup
 - [ ] Push code lên GitHub
 - [ ] Setup GitHub Pages
 - [ ] Configure custom domain (nếu có)
 - [ ] Test deployment
 
-#### Step 28: Documentation
+#### Step 31: Documentation
 - [ ] Update README.md với:
   - Project description
   - Setup instructions
@@ -527,7 +614,7 @@ static-website/
 - [ ] Code comments
 - [ ] Usage guide
 
-#### Step 29: Final Testing & Launch
+#### Step 32: Final Testing & Launch
 - [ ] Test tất cả features trên production
 - [ ] Check broken links
 - [ ] Verify all forms work
@@ -596,9 +683,10 @@ static-website/
 - **Phase 7:** 1-2 ngày (Donate)
 - **Phase 8:** 2-3 ngày (Landing)
 - **Phase 9:** 3-4 ngày (Optimization)
-- **Phase 10:** 1-2 ngày (Deployment)
+- **Phase 10:** 2-3 ngày (Enhancements & Firebase)
+- **Phase 11:** 1-2 ngày (Deployment)
 
-**Tổng ước tính:** 20-29 ngày làm việc (tùy vào tốc độ và độ phức tạp)
+**Tổng ước tính:** 22-32 ngày làm việc (tùy vào tốc độ và độ phức tạp)
 
 ---
 
