@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,18 +24,25 @@
     <!-- TailwindCSS CDN - Configured to not conflict with Bootstrap -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        important: false,
-        corePlugins: { preflight: false }
-      }
+        tailwind.config = {
+            important: false,
+            corePlugins: { preflight: false }
+        }
     </script>
     <style>
-      @media (min-width: 992px) {
-        .navbar-expand-lg .navbar-collapse { display: flex !important; }
-        .navbar-expand-lg .navbar-nav { display: flex !important; flex-direction: row !important; }
-      }
+        @media (min-width: 992px) {
+            .navbar-expand-lg .navbar-collapse {
+                display: flex !important;
+            }
+
+            .navbar-expand-lg .navbar-nav {
+                display: flex !important;
+                flex-direction: row !important;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="reading-progress" id="readingProgress"></div>
 
@@ -45,7 +53,8 @@
                 <i class="fas fa-heart text-primary me-2"></i>
                 My Profile
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -79,7 +88,8 @@
                 <div class="row">
                     <div class="col-lg-8">
                         <article class="card shadow-sm border-0 mb-4">
-                            <img src="" alt="Blog image" class="card-img-top blog-detail-image" id="blogImage" onerror="this.src='https://via.placeholder.com/900x400?text=Blog+Image'">
+                            <img src="" alt="Blog image" class="card-img-top blog-detail-image" id="blogImage"
+                                onerror="this.src='https://via.placeholder.com/900x400?text=Blog+Image'">
                             <div class="card-body p-4" id="blogContent">
                                 <!-- Content will be injected here -->
                             </div>
@@ -88,8 +98,10 @@
                         <div class="d-flex flex-wrap gap-2 mb-4" id="blogTags"></div>
 
                         <div class="d-flex flex-wrap gap-2 mb-4">
-                            <button class="btn btn-outline-primary" id="shareBtn"><i class="fas fa-share-alt me-2"></i>Chia sẻ</button>
-                            <button class="btn btn-outline-secondary" id="printBtn"><i class="fas fa-print me-2"></i>In</button>
+                            <button class="btn btn-outline-primary" id="shareBtn"><i
+                                    class="fas fa-share-alt me-2"></i>Chia sẻ</button>
+                            <button class="btn btn-outline-secondary" id="printBtn"><i
+                                    class="fas fa-print me-2"></i>In</button>
                         </div>
 
                         <div class="d-flex justify-content-between mb-5" id="prevNextNav"></div>
@@ -109,16 +121,69 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
+            <div class="row g-4 mb-5">
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-4 text-primary"><i class="fas fa-church me-2"></i>TrieuMinistry</h4>
+                    <p class="text-secondary mb-4">
+                        Chúng tôi tin rằng sự cầu nguyện có quyền năng thay đổi mọi hoàn cảnh. Hãy cùng nhau xây dựng
+                        đời sống đức tin vững mạnh.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4">Liên kết</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><a href="index.html"
+                                class="text-decoration-none text-secondary hover-text-white">Trang chủ</a></li>
+                        <li class="mb-2"><a href="profile.html"
+                                class="text-decoration-none text-secondary hover-text-white">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="blogs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Bài viết</a></li>
+                        <li class="mb-2"><a href="docs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Tài liệu</a></li>
+                        <li class="mb-2"><a href="prayers.html"
+                                class="text-decoration-none text-secondary hover-text-white">Cầu nguyện</a></li>
+                        <li class="mb-2"><a href="donate.html"
+                                class="text-decoration-none text-secondary hover-text-white">Dâng hiến</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Liên hệ</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-3 d-flex"><i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i> <span>TP.
+                                Đà Nẵng, Việt Nam</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+                            <span>phantrieu580@gmail.com</span>
+                        </li>
+                        <li class="mb-3 d-flex"><i class="fas fa-phone-alt mt-1 me-3 text-primary"></i> <span>0974 210
+                                249</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25">
+
+            <div class="row pt-3 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-secondary mb-0">&copy; 2025 TrieuMinistry. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-secondary mb-0">Designed with <i class="fas fa-heart text-danger mx-1"></i> for
+                        God's Glory</p>
                 </div>
             </div>
         </div>
@@ -136,5 +201,5 @@
     <script src="assets/js/router.js"></script>
     <script src="assets/js/blog-detail.js"></script>
 </body>
-</html>
 
+</html>
