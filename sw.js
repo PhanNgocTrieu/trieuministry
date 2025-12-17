@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trieuministry-v3';
+const CACHE_NAME = 'trieuministry-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -20,6 +20,9 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
+    // Force immediate activation
+    self.skipWaiting();
+
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
@@ -45,6 +48,9 @@ self.addEventListener('fetch', (event) => {
 
 // Activate Event (Cleanup old caches)
 self.addEventListener('activate', (event) => {
+    // Take control of all clients immediately
+    event.waitUntil(clients.claim());
+
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
