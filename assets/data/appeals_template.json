@@ -1,0 +1,34 @@
+{
+    "appeals": [
+        {
+            "id": "1",
+            "title": "Hỗ trợ mua nhạc cụ cho Ban Nhạc",
+            "description": "Chúng ta cần nâng cấp dàn âm thanh và nhạc cụ để phục vụ Chúa tốt hơn trong các buổi nhóm.",
+            "targetAmount": 20000000,
+            "currentAmount": 5500000,
+            "deadline": "2024-12-31",
+            "bankInfo": {
+                "bankName": "MB Bank",
+                "accountNumber": "0974210249",
+                "accountName": "PHAN NGOC TRIEU",
+                "content": "Ung ho nhac cu"
+            },
+            "qrImage": "assets/images/qr-placeholder.svg"
+        },
+        {
+            "id": "2",
+            "title": "Quỹ Truyền Giáo",
+            "description": "Hỗ trợ chi phí đi lại và tổ chức các chương trình truyền giảng tin lành tại vùng sâu vùng xa.",
+            "targetAmount": 10000000,
+            "currentAmount": 2000000,
+            "deadline": "2024-11-30",
+            "bankInfo": {
+                "bankName": "MB Bank",
+                "accountNumber": "0974210249",
+                "accountName": "PHAN NGOC TRIEU",
+                "content": "Quy truyen giao"
+            },
+            "qrImage": "assets/images/qr-placeholder.svg"
+        }
+    ]
+}

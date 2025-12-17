@@ -1,0 +1,54 @@
+{
+    "blogs": [
+        {
+            "id": 1,
+            "title": "Welcome to My Blog",
+            "slug": "welcome-to-my-blog",
+            "excerpt": "Giới thiệu ngắn về blog và mục đích chia sẻ nội dung.",
+            "content": "<p>Chào mừng bạn đến với blog cá nhân. Đây là nơi tôi chia sẻ các suy nghĩ, hành trình đức tin, và những kinh nghiệm nghề nghiệp.</p><p>Bạn có thể mong đợi các bài viết về đức tin, công việc, học tập và cuộc sống hằng ngày.</p>",
+            "author": "Your Name",
+            "date": "2024-01-15",
+            "category": "General",
+            "tags": [
+                "welcome",
+                "intro"
+            ],
+            "image": "assets/images/blogs/sample-1.jpg",
+            "readingTime": 3
+        },
+        {
+            "id": 2,
+            "title": "Hành trình đức tin",
+            "slug": "hanh-trinh-duc-tin",
+            "excerpt": "Những cột mốc quan trọng trong hành trình đức tin cá nhân.",
+            "content": "<p>Đức tin không phải là điểm đến, mà là hành trình. Tôi bắt đầu từ những ngày còn nhỏ, được gia đình dẫn dắt, và lớn lên trong cộng đồng đức tin.</p><p>Trong hành trình đó, có những lúc mạnh mẽ, có những lúc hoài nghi. Nhưng qua tất cả, tôi học được sự trung tín và ân điển.</p>",
+            "author": "Your Name",
+            "date": "2024-02-10",
+            "category": "Faith",
+            "tags": [
+                "faith",
+                "journey",
+                "reflection"
+            ],
+            "image": "assets/images/blogs/sample-2.jpg",
+            "readingTime": 5
+        },
+        {
+            "id": 3,
+            "title": "Làm việc từ xa hiệu quả",
+            "slug": "lam-viec-tu-xa-hieu-qua",
+            "excerpt": "Một số thói quen và công cụ giúp làm việc từ xa năng suất.",
+            "content": "<p>Làm việc từ xa đòi hỏi kỷ luật, giao tiếp rõ ràng, và công cụ phù hợp. Tôi thường bắt đầu ngày mới với danh sách ưu tiên, chia block thời gian, và giữ liên lạc thường xuyên với đội nhóm.</p><p>Các công cụ tôi dùng: Notion cho ghi chú, Slack cho giao tiếp, và các công cụ quản lý nhiệm vụ.</p>",
+            "author": "Your Name",
+            "date": "2024-03-05",
+            "category": "Work",
+            "tags": [
+                "productivity",
+                "remote",
+                "work"
+            ],
+            "image": "assets/images/blogs/sample-3.jpg",
+            "readingTime": 4
+        }
+    ]
+}
