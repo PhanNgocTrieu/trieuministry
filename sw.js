@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trieuministry-v2';
+const CACHE_NAME = 'trieuministry-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
