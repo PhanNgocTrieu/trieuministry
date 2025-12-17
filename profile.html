@@ -1,77 +1,68 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Personal Profile - Learn more about me, my work, and beliefs">
-    <title>Profile - Personal Profile</title>
-    
+    <meta name="description" content="Về Chúng Tôi - TrieuMinistry">
+    <title>Giới Thiệu - TrieuMinistry</title>
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS - Load before TailwindCSS to prevent overrides -->
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
-    
-    <!-- TailwindCSS CDN - Configured to not conflict with Bootstrap -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        important: false,
-        corePlugins: {
-          preflight: false,
-        }
-      }
-    </script>
+
     <style>
-      @media (min-width: 992px) {
-        .navbar-expand-lg .navbar-collapse {
-          display: flex !important;
+        .profile-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/images/hero_bg.png');
+            background-size: cover;
+            background-position: center;
+            padding: 100px 0;
+            color: white;
         }
-        .navbar-expand-lg .navbar-nav {
-          display: flex !important;
-          flex-direction: row !important;
-        }
-      }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-heart text-primary me-2"></i>
-                My Profile
+            <a class="navbar-brand fw-bold text-primary" href="index.html">
+                <i class="fas fa-church me-2"></i>
+                TrieuMinistry
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
+                        <a class="nav-link" href="index.html">Trang chủ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profile.html">Profile</a>
+                        <a class="nav-link active" href="profile.html">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="blogs.html">Blogs</a>
+                        <a class="nav-link" href="blogs.html">Bài viết</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="docs.html">Docs</a>
+                        <a class="nav-link" href="docs.html">Tài liệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="prayers.html">Prayers</a>
+                        <a class="nav-link" href="prayers.html">Cầu nguyện</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="donate.html">Donate</a>
+                        <a class="nav-link" href="donate.html">Dâng hiến</a>
                     </li>
                 </ul>
             </div>
@@ -81,139 +72,80 @@
     <!-- Main Content -->
     <main>
         <!-- Hero Section -->
-        <section class="hero-profile bg-gradient-primary text-white py-5">
-            <div class="container py-5">
-                <div class="row align-items-center">
-                    <div class="col-lg-4 text-center mb-4 mb-lg-0">
-                        <div class="profile-image-wrapper">
-                            <img src="assets/images/profile/profile.jpg" alt="Profile Picture" class="profile-image img-fluid rounded-circle shadow-lg" id="profileImage" onerror="this.src='https://via.placeholder.com/300x300?text=Profile+Picture'">
+        <section class="profile-hero text-center mb-5">
+            <div class="container fade-in-up">
+                <h1 class="display-4 fw-bold mb-3">Về TrieuMinistry</h1>
+                <p class="lead mx-auto" style="max-width: 700px;">Hành trình đức tin, sự chia sẻ và khải tượng phục vụ
+                    Vương quốc Chúa.</p>
+            </div>
+        </section>
+
+        <!-- About Founder -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-5 text-center fade-in-up">
+                        <div class="position-relative d-inline-block">
+                            <img src="assets/images/profile/profile.jpg" alt="Phan Ngoc Trieu"
+                                class="img-fluid rounded-circle shadow-lg"
+                                style="width: 300px; height: 300px; object-fit: cover; border: 5px solid white;"
+                                onerror="this.src='https://via.placeholder.com/300?text=Avatar'">
+                            <div class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-3 shadow"
+                                style="transform: translate(10%, 10%);">
+                                <i class="fas fa-quote-right fa-2x"></i>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-8">
-                        <h1 class="display-4 fw-bold mb-3" id="profileName">Your Name</h1>
-                        <p class="lead mb-3" id="profileTitle">Your Title/Position</p>
-                        <p class="mb-3" id="profileLocation">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            <span>Your Location</span>
-                        </p>
-                        <div class="social-links-profile" id="socialLinks">
-                            <a href="#" class="text-white me-3" aria-label="GitHub">
-                                <i class="fab fa-github fa-2x"></i>
-                            </a>
-                            <a href="#" class="text-white me-3" aria-label="LinkedIn">
-                                <i class="fab fa-linkedin fa-2x"></i>
-                            </a>
-                            <a href="#" class="text-white" aria-label="Email">
-                                <i class="fas fa-envelope fa-2x"></i>
-                            </a>
+                    <div class="col-lg-7 fade-in-up" style="animation-delay: 0.2s;">
+                        <span class="text-primary fw-bold text-uppercase ls-2">Người Sáng Lập</span>
+                        <h2 class="fw-bold mb-4">Phan Ngọc Triệu</h2>
+                        <p class="text-muted lead mb-4">"Tôi tin rằng mỗi người đều có một sứ mạng đặc biệt trong kế
+                            hoạch đời đời của Đức Chúa Trời."</p>
+                        <p>Xin chào, tôi là Triệu. Website này là nơi tôi chia sẻ những bài học thuộc linh, tài liệu
+                            huấn luyện và những lời chứng về quyền năng của Chúa. Mong rằng qua những tài liệu và bài
+                            viết tại đây, đức tin của bạn sẽ được khích lệ và tăng trưởng.</p>
+                        <div class="mt-4 d-flex gap-3">
+                            <a href="#" class="btn btn-outline-dark rounded-circle"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="btn btn-outline-dark rounded-circle"><i class="fab fa-youtube"></i></a>
+                            <a href="mailto:phantrieu580@gmail.com" class="btn btn-outline-dark rounded-circle"><i
+                                    class="fas fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- About Section -->
-        <section class="section-padding bg-light">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <h2 class="text-center mb-5">
-                            <i class="fas fa-user text-primary me-2"></i>
-                            About Me
-                        </h2>
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body p-4">
-                                <p class="lead text-center mb-4" id="profileBio">
-                                    A brief introduction about yourself...
-                                </p>
+        <!-- Vision & Mission -->
+        <section class="py-5 bg-light mt-5">
+            <div class="container py-4">
+                <div class="row g-4 text-center">
+                    <div class="col-md-4 fade-in-up">
+                        <div class="card h-100 border-0 shadow-sm hover-lift p-4">
+                            <div class="card-body">
+                                <i class="fas fa-eye fa-3x text-primary mb-3"></i>
+                                <h4 class="fw-bold">Khải Tượng</h4>
+                                <p class="text-muted">Xây dựng một cộng đồng Cơ Đốc nhân vững mạnh, am hiểu Lời Chúa và
+                                    sống đạo giữa đời thường.</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Current Work Section -->
-        <section class="section-padding">
-            <div class="container">
-                <h2 class="text-center mb-5">
-                    <i class="fas fa-briefcase text-primary me-2"></i>
-                    Current Work
-                </h2>
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body p-4">
-                                <h4 class="card-title mb-3" id="workPosition">
-                                    <i class="fas fa-building text-primary me-2"></i>
-                                    Your Current Position
-                                </h4>
-                                <h5 class="text-muted mb-3" id="workCompany">Company Name</h5>
-                                <p class="card-text" id="workDescription">
-                                    Description of your current work...
-                                </p>
+                    <div class="col-md-4 fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="card h-100 border-0 shadow-sm hover-lift p-4">
+                            <div class="card-body">
+                                <i class="fas fa-bullseye fa-3x text-danger mb-3"></i>
+                                <h4 class="fw-bold">Sứ Mệnh</h4>
+                                <p class="text-muted">Cung cấp tài liệu, bài giảng và kết nối cầu nguyện để trang bị cho
+                                    con dân Chúa.</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Fundamental Faith Section -->
-        <section class="section-padding bg-light">
-            <div class="container">
-                <h2 class="text-center mb-5">
-                    <i class="fas fa-heart text-primary me-2"></i>
-                    Fundamental Faith
-                </h2>
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body p-4">
-                                <h4 class="card-title mb-3" id="faithTitle">
-                                    <i class="fas fa-cross text-primary me-2"></i>
-                                    Fundamental Faith
-                                </h4>
-                                <p class="card-text" id="faithDescription">
-                                    Your fundamental beliefs and values...
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills & Interests Section -->
-        <section class="section-padding">
-            <div class="container">
-                <div class="row">
-                    <!-- Skills -->
-                    <div class="col-lg-6 mb-4 mb-lg-0">
-                        <h2 class="text-center mb-4">
-                            <i class="fas fa-tools text-primary me-2"></i>
-                            Skills
-                        </h2>
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body p-4">
-                                <div class="skills-container" id="skillsContainer">
-                                    <!-- Skills will be loaded here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Interests -->
-                    <div class="col-lg-6">
-                        <h2 class="text-center mb-4">
-                            <i class="fas fa-star text-primary me-2"></i>
-                            Interests
-                        </h2>
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body p-4">
-                                <div class="interests-container" id="interestsContainer">
-                                    <!-- Interests will be loaded here -->
-                                </div>
+                    <div class="col-md-4 fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="card h-100 border-0 shadow-sm hover-lift p-4">
+                            <div class="card-body">
+                                <i class="fas fa-heart fa-3x text-success mb-3"></i>
+                                <h4 class="fw-bold">Giá Trị Cốt Lõi</h4>
+                                <p class="text-muted">Yêu Chúa - Yêu Người - Trung Tín - Phục Vụ.</p>
                             </div>
                         </div>
                     </div>
@@ -223,16 +155,68 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
+            <div class="row g-4 mb-5">
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-4 text-primary"><i class="fas fa-church me-2"></i>TrieuMinistry</h4>
+                    <p class="text-secondary mb-4">
+                        Chúng tôi tin rằng sự cầu nguyện có quyền năng thay đổi mọi hoàn cảnh. Hãy cùng nhau xây dựng
+                        đời sống đức tin vững mạnh.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4">Liên kết</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><a href="index.html"
+                                class="text-decoration-none text-secondary hover-text-white">Trang chủ</a></li>
+                        <li class="mb-2"><a href="profile.html"
+                                class="text-decoration-none text-secondary hover-text-white">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="blogs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Bài viết</a></li>
+                        <li class="mb-2"><a href="docs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Tài liệu</a></li>
+                        <li class="mb-2"><a href="prayers.html"
+                                class="text-decoration-none text-secondary hover-text-white">Cầu nguyện</a></li>
+                        <li class="mb-2"><a href="donate.html"
+                                class="text-decoration-none text-secondary hover-text-white">Dâng hiến</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Liên hệ</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-3 d-flex"><i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i> <span>TP.
+                                Hồ Chí Minh, Việt Nam</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+                            <span>phantrieu580@gmail.com</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-phone-alt mt-1 me-3 text-primary"></i> <span>0974 210
+                                249</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25">
+
+            <div class="row pt-3 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-secondary mb-0">&copy; 2025 TrieuMinistry. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-secondary mb-0">Designed with <i class="fas fa-heart text-danger mx-1"></i> for
+                        God's Glory</p>
                 </div>
             </div>
         </div>
@@ -243,16 +227,11 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
     <script src="assets/js/components.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/navigation.js"></script>
-    
-    <!-- Profile Page JS -->
-    <script src="assets/js/profile.js"></script>
 </body>
-</html>
 
+</html>

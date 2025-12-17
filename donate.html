@@ -89,22 +89,34 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-heart text-primary me-2"></i>
-                My Profile
+            <a class="navbar-brand fw-bold text-primary" href="index.html">
+                <i class="fas fa-church me-2"></i>
+                TrieuMinistry
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="docs.html">Docs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prayers.html">Prayers</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="donate.html">Donate</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="blogs.html">Bài viết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="docs.html">Tài liệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="prayers.html">Cầu nguyện</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="donate.html">Dâng hiến</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -262,16 +274,65 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
+            <div class="row g-4 mb-5">
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-4 text-primary"><i class="fas fa-church me-2"></i>TrieuMinistry</h4>
+                    <p class="text-secondary mb-4">
+                        Chúng tôi tin rằng sự cầu nguyện có quyền năng thay đổi mọi hoàn cảnh. Hãy cùng nhau xây dựng
+                        đời sống đức tin vững mạnh.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4">Liên kết</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><a href="index.html"
+                                class="text-decoration-none text-secondary hover-text-white">Trang chủ</a></li>
+                        <li class="mb-2"><a href="prayers.html"
+                                class="text-decoration-none text-secondary hover-text-white">Cầu nguyện</a></li>
+                        <li class="mb-2"><a href="donate.html"
+                                class="text-decoration-none text-secondary hover-text-white">Dâng hiến</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Về
+                                chúng tôi</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Liên hệ</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-3 d-flex"><i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i> <span>TP.
+                                Hồ Chí Minh, Việt Nam</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+                            <span>phantrieu580@gmail.com</span>
+                        </li>
+                        <li class="mb-3 d-flex"><i class="fas fa-phone-alt mt-1 me-3 text-primary"></i> <span>0974 210
+                                249</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25">
+
+            <div class="row pt-3 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-secondary mb-0">&copy; 2025 TrieuMinistry. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-secondary mb-0">Designed with <i class="fas fa-heart text-danger mx-1"></i> for
+                        God's Glory</p>
                 </div>
             </div>
         </div>

@@ -1,198 +1,302 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Docs - Tài liệu PDF, tải về và xem trước">
-    <title>Docs - Personal Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tài liệu Cơ Đốc, sách, bài học và tài liệu huấn luyện - TrieuMinistry">
+  <title>Tài Liệu - TrieuMinistry</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/main.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/main.css">
 
-    <!-- TailwindCSS CDN - Configured to not conflict with Bootstrap -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        important: false,
-        corePlugins: { preflight: false }
-      }
-    </script>
-    <style>
-      @media (min-width: 992px) {
-        .navbar-expand-lg .navbar-collapse { display: flex !important; }
-        .navbar-expand-lg .navbar-nav { display: flex !important; flex-direction: row !important; }
-      }
-    </style>
+  <style>
+    .doc-thumb-wrapper {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+      background-color: #f8f9fa;
+    }
+
+    .doc-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .card:hover .doc-thumb {
+      transform: scale(1.05);
+    }
+
+    .doc-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-heart text-primary me-2"></i>
-                My Profile
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="docs.html">Docs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prayers.html">Prayers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="donate.html">Donate</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-primary" href="index.html">
+        <i class="fas fa-church me-2"></i>
+        TrieuMinistry
+      </a>
+      <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">Giới thiệu</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="blogs.html">Bài viết</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="docs.html">Tài liệu</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="prayers.html">Cầu nguyện</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="donate.html">Dâng hiến</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    <main>
-        <!-- Hero -->
-        <section class="hero-section bg-gradient-primary text-white py-5">
-            <div class="container py-4">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <h1 class="display-5 fw-bold mb-3">Tài liệu PDF</h1>
-                        <p class="lead mb-0">Xem trước, tải xuống và đọc các tài liệu hữu ích.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Filters -->
-        <section class="section-padding bg-light">
-            <div class="container">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="row g-3 align-items-center">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Tìm kiếm</label>
-                                <input type="text" class="form-control" id="searchDocInput" placeholder="Tên tài liệu, mô tả...">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Danh mục</label>
-                                <select class="form-select" id="categoryDocFilter">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
-                                <button class="btn btn-outline-secondary" id="resetFilters">Reset</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Docs List -->
-        <section class="section-padding">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Danh sách tài liệu</h2>
-                    <span class="text-muted" id="docsCountLabel">0 tài liệu</span>
-                </div>
-                <div class="row g-4" id="docsContainer"></div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <button class="back-to-top" aria-label="Back to top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- Preview Modal -->
-    <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="pdfPreviewTitle">Xem trước tài liệu</h5>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-sm btn-outline-primary" id="fullscreenBtn" title="Fullscreen">
-                <i class="fas fa-expand"></i>
-              </button>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+  <main>
+    <!-- Hero -->
+    <section class="hero-section bg-gradient-primary text-white py-5 mt-5">
+      <div class="container py-4 fade-in-up">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-3">Kho Tài Liệu</h1>
+            <p class="lead mb-0">Tải xuống sách, tài liệu học Kinh Thánh và giáo trình huấn luyện miễn phí.</p>
           </div>
-          <div class="modal-body p-0" id="pdfModalBody">
-            <div class="pdf-viewer-wrapper">
-              <!-- PDF.js Canvas Container -->
-              <div id="pdfCanvasContainer" style="display: none;">
-                <div class="pdf-controls bg-light p-2 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <div class="d-flex gap-2 align-items-center">
-                    <button class="btn btn-sm btn-outline-secondary" id="prevPage"><i class="fas fa-chevron-left"></i></button>
-                    <span class="text-muted small">
-                      <span id="pageNum">1</span> / <span id="pageCount">1</span>
-                    </span>
-                    <button class="btn btn-sm btn-outline-secondary" id="nextPage"><i class="fas fa-chevron-right"></i></button>
-                  </div>
-                  <div class="d-flex gap-2 align-items-center">
-                    <button class="btn btn-sm btn-outline-secondary" id="zoomOut"><i class="fas fa-search-minus"></i></button>
-                    <span class="text-muted small" id="zoomLevel">100%</span>
-                    <button class="btn btn-sm btn-outline-secondary" id="zoomIn"><i class="fas fa-search-plus"></i></button>
-                    <button class="btn btn-sm btn-outline-secondary" id="fitWidth">Fit Width</button>
-                  </div>
-                </div>
-                <div class="pdf-canvas-wrapper" style="overflow: auto; max-height: 70vh; text-align: center; padding: 20px;">
-                  <canvas id="pdfCanvas"></canvas>
-                </div>
-              </div>
-              <!-- Fallback iframe (for browsers that support native PDF) -->
-              <iframe id="pdfPreviewFrame" src="" title="PDF Preview" allowfullscreen style="width: 100%; height: 80vh; border: none; display: none;"></iframe>
-              <!-- Loading indicator -->
-              <div id="pdfLoading" class="text-center p-5">
-                <div class="loading-spinner"></div>
-                <p class="mt-3 text-muted">Đang tải PDF...</p>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <a id="downloadFromModal" class="btn btn-primary" href="#" download>
-              <i class="fas fa-download me-2"></i>Download
-            </a>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <div class="col-lg-4 text-center d-none d-lg-block fade-in-up" style="animation-delay: 0.1s;">
+            <i class="fas fa-book-reader fa-6x opacity-50"></i>
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="section-padding bg-light">
+      <div class="container">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-5">
+                <label class="form-label fw-semibold">Tìm kiếm</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                  <input type="text" class="form-control" id="searchDocInput" placeholder="Tên sách, tài liệu...">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Danh mục</label>
+                <select class="form-select" id="categoryDocFilter">
+                  <option value="">Tất cả</option>
+                </select>
+              </div>
+              <div class="col-md-3 d-flex align-items-end justify-content-md-end">
+                <button class="btn btn-outline-secondary w-100 w-md-auto" id="resetFilters">
+                  <i class="fas fa-undo me-2"></i>Làm mới
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Docs List -->
+    <section class="section-padding">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0 fw-bold">Tài liệu mới nhất</h2>
+          <span class="badge bg-primary rounded-pill px-3 py-2" id="docsCountLabel">0 tài liệu</span>
+        </div>
+        <div class="row g-4" id="docsContainer">
+          <!-- Loading State -->
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white pt-5 pb-3 mt-5">
+    <div class="container">
+      <div class="row g-4 mb-5">
+        <div class="col-md-5">
+          <h4 class="fw-bold mb-4 text-primary"><i class="fas fa-church me-2"></i>TrieuMinistry</h4>
+          <p class="text-secondary mb-4">
+            Chúng tôi tin rằng sự cầu nguyện có quyền năng thay đổi mọi hoàn cảnh. Hãy cùng nhau xây dựng đời sống đức
+            tin vững mạnh.
+          </p>
+          <div class="d-flex gap-3">
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+              style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+              style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                class="fab fa-youtube"></i></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+              style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <h5 class="fw-bold mb-4">Liên kết</h5>
+          <ul class="list-unstyled text-secondary">
+            <li class="mb-2"><a href="index.html" class="text-decoration-none text-secondary hover-text-white">Trang
+                chủ</a></li>
+            <li class="mb-2"><a href="profile.html" class="text-decoration-none text-secondary hover-text-white">Giới
+                thiệu</a></li>
+            <li class="mb-2"><a href="blogs.html" class="text-decoration-none text-secondary hover-text-white">Bài
+                viết</a></li>
+            <li class="mb-2"><a href="docs.html" class="text-decoration-none text-secondary hover-text-white">Tài
+                liệu</a></li>
+            <li class="mb-2"><a href="prayers.html" class="text-decoration-none text-secondary hover-text-white">Cầu
+                nguyện</a></li>
+            <li class="mb-2"><a href="donate.html" class="text-decoration-none text-secondary hover-text-white">Dâng
+                hiến</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-4">
+          <h5 class="fw-bold mb-4">Liên hệ</h5>
+          <ul class="list-unstyled text-secondary">
+            <li class="mb-3 d-flex"><i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i> <span>TP. Hồ Chí Minh,
+                Việt Nam</span></li>
+            <li class="mb-3 d-flex"><i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+              <span>phantrieu580@gmail.com</span></li>
+            <li class="mb-3 d-flex"><i class="fas fa-phone-alt mt-1 me-3 text-primary"></i> <span>0974 210 249</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="border-secondary opacity-25">
+
+      <div class="row pt-3 align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="small text-secondary mb-0">&copy; 2025 TrieuMinistry. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <p class="small text-secondary mb-0">Designed with <i class="fas fa-heart text-danger mx-1"></i> for God's
+            Glory</p>
+        </div>
+      </div>
     </div>
+  </footer>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- PDF.js from CDN - Load before docs.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="assets/js/components.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/navigation.js"></script>
-    <script src="assets/js/docs.js"></script>
+  <!-- Back to Top Button -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Preview Modal -->
+  <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfPreviewTitle">Xem trước tài liệu</h5>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="fullscreenBtn" title="Fullscreen">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body p-0" id="pdfModalBody">
+          <div class="pdf-viewer-wrapper">
+            <!-- PDF.js Canvas Container -->
+            <div id="pdfCanvasContainer" style="display: none;">
+              <div
+                class="pdf-controls bg-light p-2 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex gap-2 align-items-center">
+                  <button class="btn btn-sm btn-outline-secondary" id="prevPage"><i
+                      class="fas fa-chevron-left"></i></button>
+                  <span class="text-muted small">
+                    <span id="pageNum">1</span> / <span id="pageCount">1</span>
+                  </span>
+                  <button class="btn btn-sm btn-outline-secondary" id="nextPage"><i
+                      class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                  <button class="btn btn-sm btn-outline-secondary" id="zoomOut"><i
+                      class="fas fa-search-minus"></i></button>
+                  <span class="text-muted small" id="zoomLevel">100%</span>
+                  <button class="btn btn-sm btn-outline-secondary" id="zoomIn"><i
+                      class="fas fa-search-plus"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" id="fitWidth">Fit Width</button>
+                </div>
+              </div>
+              <div class="pdf-canvas-wrapper"
+                style="overflow: auto; max-height: 70vh; text-align: center; padding: 20px;">
+                <canvas id="pdfCanvas"></canvas>
+              </div>
+            </div>
+            <!-- Fallback iframe (for browsers that support native PDF) -->
+            <iframe id="pdfPreviewFrame" src="" title="PDF Preview" allowfullscreen
+              style="width: 100%; height: 80vh; border: none; display: none;"></iframe>
+            <!-- Loading indicator -->
+            <div id="pdfLoading" class="text-center p-5">
+              <div class="loading-spinner"></div>
+              <p class="mt-3 text-muted">Đang tải PDF...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a id="downloadFromModal" class="btn btn-primary" href="#" download>
+            <i class="fas fa-download me-2"></i>Download
+          </a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="assets/js/components.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/navigation.js"></script>
+  <script src="assets/js/docs.js"></script>
 </body>
-</html>
 
+</html>

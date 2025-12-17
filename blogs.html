@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Blogs - Bài viết, journel, chia sẻ cá nhân">
-    <title>Blogs - Personal Profile</title>
+    <meta name="description" content="Bài viết, suy ngẫm và chia sẻ từ TrieuMinistry">
+    <title>Bài Viết - TrieuMinistry</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,43 +20,40 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
-
-    <!-- TailwindCSS CDN - Configured to not conflict with Bootstrap -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        important: false,
-        corePlugins: {
-          preflight: false,
-        }
-      }
-    </script>
-    <style>
-      @media (min-width: 992px) {
-        .navbar-expand-lg .navbar-collapse { display: flex !important; }
-        .navbar-expand-lg .navbar-nav { display: flex !important; flex-direction: row !important; }
-      }
-    </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-heart text-primary me-2"></i>
-                My Profile
+            <a class="navbar-brand fw-bold text-primary" href="index.html">
+                <i class="fas fa-church me-2"></i>
+                TrieuMinistry
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="docs.html">Docs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="prayers.html">Prayers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="donate.html">Donate</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="blogs.html">Bài viết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="docs.html">Tài liệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="prayers.html">Cầu nguyện</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="donate.html">Dâng hiến</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -63,66 +61,124 @@
 
     <main>
         <!-- Hero -->
-        <section class="hero-section bg-gradient-primary text-white py-5">
-            <div class="container py-4">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <h1 class="display-5 fw-bold mb-3">Blogs & Journals</h1>
-                        <p class="lead mb-0">Đọc các bài viết, suy ngẫm, và chia sẻ hành trình.</p>
-                    </div>
-                </div>
+        <section class="hero-section bg-light py-5 text-center mt-5">
+            <div class="container py-4 fade-in-up">
+                <h1 class="display-4 fw-bold mb-3">Tâm Tình & Chia Sẻ</h1>
+                <p class="lead text-muted mb-0" style="max-width: 600px; margin: 0 auto;">Những bài viết, lời chứng và
+                    suy ngẫm thuộc linh giúp khích lệ đức tin của bạn mỗi ngày.</p>
             </div>
         </section>
 
         <!-- Filters -->
-        <section class="section-padding bg-light">
+        <section class="section-padding bg-white sticky-top shadow-sm" style="top: 70px; z-index: 9;">
             <div class="container">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="row g-3 align-items-center">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Tìm kiếm</label>
-                                <input type="text" class="form-control" id="searchInput" placeholder="Từ khóa, tiêu đề, nội dung...">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Danh mục</label>
-                                <select class="form-select" id="categoryFilter">
-                                    <option value="">Tất cả</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Tag</label>
-                                <input type="text" class="form-control" id="tagFilter" placeholder="Nhập tag, ví dụ: faith">
-                            </div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="searchInput"
+                                placeholder="Tìm kiếm bài viết...">
                         </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">Tất cả danh mục</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="fas fa-tag text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="tagFilter"
+                                placeholder="Lọc theo thẻ...">
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-md-end">
+                        <span class="text-muted fw-bold small" id="countLabel">0 bài</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Blog List -->
-        <section class="section-padding">
+        <section class="section-padding py-5">
             <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Bài viết</h2>
-                    <span class="text-muted" id="countLabel">0 bài</span>
+                <div class="row g-4" id="blogsContainer">
+                    <!-- Loading State -->
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="row g-4" id="blogsContainer"></div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="bg-dark text-white pt-5 pb-3">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
+            <div class="row g-4 mb-5">
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-4 text-primary"><i class="fas fa-church me-2"></i>TrieuMinistry</h4>
+                    <p class="text-secondary mb-4">
+                        Chúng tôi tin rằng sự cầu nguyện có quyền năng thay đổi mọi hoàn cảnh. Hãy cùng nhau xây dựng
+                        đời sống đức tin vững mạnh.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle"
+                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-4">Liên kết</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><a href="index.html"
+                                class="text-decoration-none text-secondary hover-text-white">Trang chủ</a></li>
+                        <li class="mb-2"><a href="profile.html"
+                                class="text-decoration-none text-secondary hover-text-white">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="blogs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Bài viết</a></li>
+                        <li class="mb-2"><a href="docs.html"
+                                class="text-decoration-none text-secondary hover-text-white">Tài liệu</a></li>
+                        <li class="mb-2"><a href="prayers.html"
+                                class="text-decoration-none text-secondary hover-text-white">Cầu nguyện</a></li>
+                        <li class="mb-2"><a href="donate.html"
+                                class="text-decoration-none text-secondary hover-text-white">Dâng hiến</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-4">Liên hệ</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-3 d-flex"><i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i> <span>TP.
+                                Hồ Chí Minh, Việt Nam</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+                            <span>phantrieu580@gmail.com</span></li>
+                        <li class="mb-3 d-flex"><i class="fas fa-phone-alt mt-1 me-3 text-primary"></i> <span>0974 210
+                                249</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25">
+
+            <div class="row pt-3 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-secondary mb-0">&copy; 2025 TrieuMinistry. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-secondary mb-0">Designed with <i class="fas fa-heart text-danger mx-1"></i> for
+                        God's Glory</p>
                 </div>
             </div>
         </div>
@@ -140,5 +196,5 @@
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/blogs.js"></script>
 </body>
-</html>
 
+</html>
