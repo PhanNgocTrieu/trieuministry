@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="200" height="200" fill="#f8f9fa"/>
+  <rect x="10" y="10" width="180" height="180" rx="10" ry="10" fill="none" stroke="#dee2e6" stroke-width="2"/>
+  <path d="M50 50 H90 V90 H50 Z M110 50 H150 V90 H110 Z M50 110 H90 V150 H50 Z" fill="#333"/>
+  <rect x="65" y="65" width="10" height="10" fill="white"/>
+  <rect x="125" y="65" width="10" height="10" fill="white"/>
+  <rect x="65" y="125" width="10" height="10" fill="white"/>
+  <path d="M110 110 H150 V150 H110 Z" fill="#333" opacity="0.5"/>
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#6c757d">QR CODE</text>
+</svg>

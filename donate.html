@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donate - Ủng hộ và Đồng hành">
+    <title>Donate - Personal Profile</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            important: false,
+            corePlugins: { preflight: false }
+        }
+    </script>
+    <style>
+        .bank-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .bank-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-container {
+            position: relative;
+            display: inline-block;
+            padding: 1rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .account-number {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.25rem;
+        }
+
+        .copy-btn {
+            transition: all 0.2s;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .thank-you-note {
+            background-color: #f8fff9;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fas fa-heart text-primary me-2"></i>
+                My Profile
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="docs.html">Docs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prayers.html">Prayers</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="donate.html">Donate</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section bg-gradient-primary text-white py-5">
+            <div class="container py-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-5 fw-bold mb-3">
+                            <i class="fas fa-hand-holding-heart me-3"></i>Hỗ trợ & Đồng hành
+                        </h1>
+                        <p class="lead mb-0">Cảm ơn anh/chị/em đã luôn đồng hành và ủng hộ chức vụ của mình.
+                            Mọi sự đóng góp đều là nguồn động viên lớn.
+                        </p>
+                        <p class="lead mb-0">Cảm ơn anh/chị/em đã luôn đồng hành và ủng hộ chức vụ của mình.
+                            Mọi sự đóng góp đều là nguồn động viên lớn.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <!-- Optional additional content/image for hero -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="section-padding py-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <!-- Bank Information Column -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card bank-card shadow-sm h-100">
+                            <div class="card-body p-4 p-lg-5">
+                                <h3 class="card-title fw-bold mb-4 text-primary">
+                                    <i class="fas fa-university me-2"></i>Thông tin chuyển khoản
+                                </h3>
+
+                                <div class="mb-4">
+                                    <label class="text-muted small text-uppercase fw-bold mb-1">Ngân hàng</label>
+                                    <div class="d-flex align-items-center">
+                                        <!-- Placeholder for Bank Logo -->
+                                        <div class="bg-light rounded p-2 me-3"
+                                            style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-landmark text-secondary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold">MB Bank</h5>
+                                            <span class="text-muted">Ngân hàng Quân đội</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-muted small text-uppercase fw-bold mb-1">Số tài khoản</label>
+                                    <div class="input-group">
+                                        <div class="form-control form-control-lg bg-light border-0 account-number"
+                                            id="accountNumber">0974210249</div>
+                                        <button class="btn btn-outline-primary copy-btn" type="button"
+                                            onclick="copyToClipboard('0974210249', 'Đã sao chép số tài khoản!')">
+                                            <i class="fas fa-copy me-2"></i>Sao chép
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-muted small text-uppercase fw-bold mb-1">Chủ tài khoản</label>
+                                    <h4 class="mb-0 fw-bold text-dark">PHAN NGOC TRIEU</h4>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="text-muted small text-uppercase fw-bold mb-1">Nội dung chuyển
+                                        khoản</label>
+                                    <div class="p-3 bg-light rounded text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>Dâng hiến cho Phan Ngoc Trieu
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Column -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card shadow-sm h-100 border-0">
+                            <div class="card-body p-4 text-center">
+                                <h4 class="fw-bold mb-4">Quét mã QR</h4>
+                                <div class="qr-container mb-4">
+                                    <img src="assets/images/profile/qr_donate.jpg" alt="QR Code Bank Transfer"
+                                        class="img-fluid rounded shadow-sm" width="200" height="200">
+                                </div>
+                                <p class="text-muted small mb-0">Mở ứng dụng ngân hàng của bạn và quét mã QR để chuyển
+                                    khoản nhanh chóng.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thank You Note -->
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-10">
+                        <div class="thank-you-note p-4 rounded shadow-sm">
+                            <div class="d-flex">
+                                <i class="fas fa-quote-left fa-2x text-success me-3 opacity-50"></i>
+                                <div>
+                                    <h5 class="fw-bold text-success mb-2">Lời cảm ơn</h5>
+                                    <p class="mb-0 text-dark">Cảm tạ Chúa vì đã cảm động tấm lòng của anh/chị/em để có
+                                        thể hỗ trợ cho tôi, cảm ơn anh/chị/em
+                                        đã rộng rãi trong sự dâng hiến và hỗ trợ này! Nguyện Chúa Jesus tiếp tục ban
+                                        phước trên công việc, đời sống và mục vụ cho anh/chị/em và nguyện Ngài tiếp tục
+                                        dùng anh chị em cho sự vinh hiển Ngài! Amen!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2024 Personal Profile. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white me-3" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-white me-3" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-white" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/components.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/navigation.js"></script>
+    <script>
+        // Active Component initialization if needed here specifically
+        // But main.js handles global inits.
+    </script>
+</body>
+
+</html>
