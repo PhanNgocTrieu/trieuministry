@@ -67,7 +67,13 @@
     "prayers": {
         "hero": {
             "title": "Cầu nguyện & Cầu thay",
-            "subtitle": "Chia sẻ những lời cầu nguyện và cầu thay cho nhau trong tình yêu thương."
+            "subtitle": "Chia sẻ những lời cầu nguyện và cầu thay cho nhau trong tình yêu thương.",
+            "btn_add": "Thêm lời cầu nguyện"
+        },
+        "stats": {
+            "total": "Tổng số lời cầu nguyện",
+            "answered": "Đã được đáp",
+            "pending": "Đang cầu nguyện"
         }
     },
     "donate": {

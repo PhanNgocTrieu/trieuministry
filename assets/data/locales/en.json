@@ -67,7 +67,13 @@
     "prayers": {
         "hero": {
             "title": "Prayer & Intercession",
-            "subtitle": "Share prayers and intercede for one another in love."
+            "subtitle": "Share prayers and intercede for one another in love.",
+            "btn_add": "Add Prayer Request"
+        },
+        "stats": {
+            "total": "Total Prayers",
+            "answered": "Answered",
+            "pending": "Pending"
         }
     },
     "donate": {
