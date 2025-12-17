@@ -69,6 +69,19 @@
             background-color: #f8fff9;
             border-left: 4px solid #28a745;
         }
+
+        .appeal-card {
+            transition: transform 0.2s;
+        }
+
+        .appeal-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -106,23 +119,31 @@
                         <h1 class="display-5 fw-bold mb-3">
                             <i class="fas fa-hand-holding-heart me-3"></i>Hỗ trợ & Đồng hành
                         </h1>
-                        <p class="lead mb-0">Cảm ơn anh/chị/em đã luôn đồng hành và ủng hộ chức vụ của mình.
-                            Mọi sự đóng góp đều là nguồn động viên lớn.
+                        <p class="lead mb-0">
+                            Cảm ơn Anh/Chị/Em đã tin tưởng, đồng hành và hỗ trợ chức vụ của Triều trong thời gian vừa
+                            qua!
+                            Mọi sự hỗ trợ đều là một sự chu cấp năng quyền từ Đức Chúa Trời và cũng chính là tấm lòng
+                            rời rộng bởi sự yêu mến Đức Chúa Trời của anh chị em.
                         </p>
-                        <p class="lead mb-0">Cảm ơn anh/chị/em đã luôn đồng hành và ủng hộ chức vụ của mình.
-                            Mọi sự đóng góp đều là nguồn động viên lớn.
-                        </p>
-                    </div>
-                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                        <!-- Optional additional content/image for hero -->
+                        <div class="mt-3 text-warning">
+                            <p class="mb-0"><i>"Đức Chúa Trời có quyền ban cho anh em đủ mọi thứ ơn đầy dẫy, hầu cho anh
+                                    em hằng đủ điều cần dùng trong mọi sự, lại còn có rời rộng nữa để làm các thứ việc
+                                    lành"</i></p>
+                            <p class="text-end mb-0"><i>(2 Cô-rinh-tô 9:8)</i></p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Main Content -->
+        <!-- SECTION 1: Personal Donation -->
         <section class="section-padding py-5">
             <div class="container">
+                <div class="d-flex align-items-center mb-4">
+                    <h2 class="fw-bold mb-0 me-3 text-primary"><i class="fas fa-user-circle me-2"></i>Dâng hiến</h2>
+                    <span class="badge bg-primary rounded-pill">Cá nhân</span>
+                </div>
+
                 <div class="row justify-content-center">
                     <!-- Bank Information Column -->
                     <div class="col-lg-6 mb-4">
@@ -199,13 +220,40 @@
                                 <i class="fas fa-quote-left fa-2x text-success me-3 opacity-50"></i>
                                 <div>
                                     <h5 class="fw-bold text-success mb-2">Lời cảm ơn</h5>
-                                    <p class="mb-0 text-dark">Cảm tạ Chúa vì đã cảm động tấm lòng của anh/chị/em để có
-                                        thể hỗ trợ cho tôi, cảm ơn anh/chị/em
-                                        đã rộng rãi trong sự dâng hiến và hỗ trợ này! Nguyện Chúa Jesus tiếp tục ban
-                                        phước trên công việc, đời sống và mục vụ cho anh/chị/em và nguyện Ngài tiếp tục
-                                        dùng anh chị em cho sự vinh hiển Ngài! Amen!</p>
+                                    <p class="mb-0 text-dark">
+                                        <i> Cảm tạ Chúa vì đã cảm động tấm lòng của anh/chị/em để có thể hỗ trợ cho tôi,
+                                            cảm ơn anh/chị/em đã rộng rãi trong sự dâng hiến và hỗ trợ này! Nguyện Chúa
+                                            Jesus tiếp tục ban phước trên công việc, sức khoẻ, đời sống và mục vụ của
+                                            anh/chị/em và nguyện Ngài tiếp tục dùng anh chị em cho sự vinh hiển Ngài!
+                                        </i>
+                                    </p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Ministry Appeals -->
+        <section class="section-padding py-5 bg-light">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="d-flex align-items-center">
+                        <h2 class="fw-bold mb-0 me-3 text-primary"><i class="fas fa-bullhorn me-2"></i>Kêu gọi dâng hiến
+                        </h2>
+                        <span class="badge bg-warning text-dark rounded-pill">Mục vụ</span>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestAppealModal">
+                        <i class="fas fa-envelope-open-text me-2"></i>Gửi yêu cầu kêu gọi
+                    </button>
+                </div>
+
+                <div id="appealsContainer" class="row g-4">
+                    <!-- Dynamic Appeals will be loaded here -->
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -233,15 +281,98 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Request Appeal Modal -->
+    <div class="modal fade" id="requestAppealModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Gửi yêu cầu kêu gọi
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-4">
+                        Hãy điền thông tin chi tiết về nhu cầu dâng hiến. Yêu cầu của bạn sẽ được gửi qua email để
+                        duyệt.
+                    </p>
+                    <form id="requestAppealForm">
+                        <div class="mb-3">
+                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="requesterName" required
+                                placeholder="Nguyễn Văn A">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại / Zalo <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="requesterPhone" required
+                                placeholder="0909xxxxxx">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tiêu đề kêu gọi <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="appealTitle" required
+                                placeholder="Vd: Hỗ trợ...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số tiền mục tiêu (VNĐ)</label>
+                            <input type="number" class="form-control" name="targetAmount" placeholder="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="appealContent" rows="4" required
+                                placeholder="Mô tả chi tiết về hoàn cảnh và nhu cầu..."></textarea>
+                        </div>
+
+                        <h6 class="fw-bold text-success mt-4 mb-3">Thông tin tài khoản nhận (Nếu có)</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tên Ngân hàng</label>
+                                <input type="text" class="form-control" name="bankName">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số tài khoản</label>
+                                <input type="text" class="form-control" name="accountNumber">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Tên chủ tài khoản</label>
+                                <input type="text" class="form-control" name="accountName">
+                            </div>
+                        </div>
+                        <div class="alert alert-info small">
+                            <i class="fas fa-info-circle me-1"></i> Nếu bạn có ảnh QR code, vui lòng đính kèm trực tiếp
+                            vào email sau khi nhấn Gửi.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="sendRequestBtn">
+                        <i class="fas fa-paper-plane me-2"></i>Gửi yêu cầu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0 shadow-none">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img src="" id="previewModalImage" class="img-fluid rounded shadow-lg" style="max-height: 90vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/components.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/navigation.js"></script>
-    <script>
-        // Active Component initialization if needed here specifically
-        // But main.js handles global inits.
-    </script>
+    <!-- Donate Logic Script -->
+    <script src="assets/js/donate.js"></script>
 </body>
 
 </html>

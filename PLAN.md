@@ -467,6 +467,7 @@ static-website/
   - Donate card
 - [ ] Featured content section
 - [ ] Call-to-action sections
+- [ ] Footer section: email, number, address, social links
 
 #### Step 22: Landing Page Polish
 - [ ] Animations và transitions
