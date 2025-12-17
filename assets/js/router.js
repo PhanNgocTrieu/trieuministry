@@ -178,7 +178,14 @@ class TurboRouter {
     reinitGlobal() {
         // Update active nav link
         if (typeof initNavigation === 'function') initNavigation();
+        if (typeof initNavigation === 'function') initNavigation();
+        if (typeof initMobileMenu === 'function') initMobileMenu(); // Re-attach mobile menu listeners
         if (typeof initScrollAnimations === 'function') initScrollAnimations();
+
+        // Re-apply translations to new content
+        if (window.i18n) {
+            window.i18n.translatePage();
+        }
 
         // Bootstrap components might need re-init (dropdowns/modals inside main)
         // Check for modals in new content and init them?

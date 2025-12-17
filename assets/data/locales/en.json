@@ -79,7 +79,12 @@
     "donate": {
         "hero": {
             "title": "Support & Partnership",
-            "subtitle": "Thank you for trusting, partnering, and supporting Trieu's ministry!"
+            "subtitle": "On the journey of faith, we cannot walk alone, each person will have their own position in the call of their own. However, the support and assistance of each person, regardless of their position, is necessary. Because the support and assistance of God's people in good deeds is a call from God for each of us."
+        },
+        "appeal": {
+            "title": "Appeal",
+            "content": "If you are moved and wish to donate to myself or the ministry called here, you can view the donation information below.",
+            "closing": "Thank you for trusting, accompanying, and supporting Trieu's ministry during the past time! Every support from you is a great provision from God through your generous hearts so that God's kingdom continues to expand on this earth."
         }
     },
     "footer": {
