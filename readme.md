@@ -1,81 +1,94 @@
-# Static Website - Personal Profile
+# TrieuMinistry - Personal Ministry Profile
 
-Website tĩnh đa chức năng cho profile cá nhân, blog, tài liệu, cầu nguyện và nhận hỗ trợ.
+Một website tĩnh hiện đại, tích hợp công nghệ PWA và Firebase, phục vụ cho mục vụ cá nhân, chia sẻ bài viết, tài liệu và cầu nguyện.
 
-## 📋 Tổng quan
+## 🌟 Tính Năng Chính
 
-Website này bao gồm các tính năng chính:
-- **Profile** - Thông tin cá nhân, công việc, niềm tin
-- **Blogs** - Bài viết và journal
-- **Docs** - Tài liệu PDF với preview
-- **Prayers** - Cầu nguyện & cầu thay
-- **Donate** - Nhận hỗ trợ qua QR và thông tin tài khoản
+*   **Profile Cá Nhân:** Giới thiệu bản thân, chức vụ, niềm tin và kỹ năng.
+*   **Blog/Journal:** Hệ thống bài viết động loading từ JSON, hỗ trợ tìm kiếm và lọc theo chủ đề.
+*   **Thư Viện Tài Liệu (Docs):** Xem và tải xuống tài liệu PDF trực tiếp trên web với trình xem PDF tích hợp.
+*   **Cầu Nguyện (Prayers):** Gửi lời cầu nguyện, đánh dấu đã trả lời, và xóa (dành cho Admin). Tích hợp Firebase Realtime.
+*   **Dâng Hiến (Donate):** Trang thông tin tài khoản và QR Code tiện lợi.
+*   **PWA (Progressive Web App):** Hỗ trợ cài đặt như app trên điện thoại, hoạt động ngoại tuyến cơ bản.
+*   **Dark Mode & Animations:** Giao diện hiện đại, mượt mà.
 
-## 🛠️ Tech Stack
+## 🛠️ Công Nghệ Sử Dụng
 
-- HTML5, CSS3, JavaScript (Vanilla)
-- TailwindCSS & Bootstrap 5
-- PDF.js (cho preview PDF)
-- GitHub Pages (deployment)
+*   **Frontend:** HTML5, CSS3, JavaScript (Vanilla ES6+).
+*   **UI Frameworks:** Bootstrap 5, FontAwesome 6.
+*   **Backend (BaaS):** Firebase Firestore (Lưu trữ lời cầu nguyện), Firebase Analytics.
+*   **Hosting:** GitHub Pages.
+*   **Tools:** PDF.js (Preview tài liệu).
 
-## 📖 Kế hoạch chi tiết
+## � Hướng Dẫn Cài Đặt (Local)
 
-Xem file **[PLAN.md](./PLAN.md)** để có kế hoạch đầy đủ với:
-- Cấu trúc dự án chi tiết
-- Breakdown từng tính năng
-- 29 bước implementation theo phases
-- Checklist để tracking progress
-- Timeline ước tính
+1.  **Clone repository:**
+    ```bash
+    git clone https://github.com/PhanNgocTrieu/trieuministry.git
+    cd trieuministry
+    ```
 
-## 🚀 Quick Start
+2.  **Chạy server ảo:**
+    Vì dự án sử dụng Modules (`type="module"`) và Service Worker, bạn cần chạy qua HTTP Server chứ không mở trực tiếp file HTML.
+    
+    *   **Cách 1 (VS Code):** Cài extension "Live Server" và bấm "Go Live".
+    *   **Cách 2 (Python):** `python3 -m http.server 5500`
+    *   **Cách 3 (Node):** `npx http-server .`
 
-1. Review `PLAN.md` để hiểu rõ cấu trúc
-2. Mở `index.html` trong browser để xem website
-3. Follow từng step trong plan để tiếp tục phát triển
-4. Update progress trong `PLAN.md`
+3.  **Truy cập:** Mở trình duyệt tại `http://127.0.0.1:5500`.
 
-## 📁 Cấu trúc dự án
+## 📝 Hướng Dẫn Quản Lý Nội Dung
 
+### 1. Thêm Bài Viết Mới (Blog)
+Mở file `assets/data/blogs.json`:
+```json
+{
+  "id": "new-post-id",
+  "title": "Tiêu đề bài viết",
+  "slug": "tieu-de-khong-dau",
+  "excerpt": "Mô tả ngắn hiển thị bên ngoài...",
+  "content": "<p>Nội dung bài viết dùng thẻ HTML...</p>",
+  "author": "Phan Ngọc Triệu",
+  "date": "2025-12-25",
+  "category": "Chủ đề",
+  "image": "assets/images/blogs/ten-anh.jpg",
+  "readingTime": 5
+}
 ```
-static-website/
-├── index.html              # Trang chủ
-├── assets/
-│   ├── css/
-│   │   └── main.css       # Custom CSS
-│   ├── js/
-│   │   ├── main.js        # Main JavaScript
-│   │   └── navigation.js  # Navigation logic
-│   ├── data/
-│   │   ├── blogs.json     # Blog data
-│   │   ├── docs.json      # Documents data
-│   │   └── profile.json   # Profile data
-│   └── images/            # Images folder
-└── PLAN.md                # Chi tiết kế hoạch
+
+### 2. Thêm Tài Liệu Mới (Docs)
+1.  Upload file PDF vào thư mục `assets/pdfs/`.
+2.  Mở file `assets/data/docs.json` và thêm:
+```json
+{
+  "id": 10,
+  "title": "Tên tài liệu",
+  "category": "Danh mục",
+  "size": "2.5 MB",
+  "date": "2025-12-20",
+  "file": "assets/pdfs/ten-file.pdf",
+  "image": "assets/images/docs/bg-doc-1.jpg"
+}
 ```
 
-## 🛠️ Setup
+## 🌐 Hướng Dẫn Deploy (GitHub Pages)
 
-1. Clone hoặc download project
-2. Mở `index.html` trong browser
-3. Hoặc sử dụng local server:
-   ```bash
-   # Python
-   python -m http.server 8000
-   
-   # Node.js
-   npx http-server
-   ```
+Dự án này được cấu hình để chạy tự động trên GitHub Pages.
 
-## 📝 Dependencies
+1.  Push code lên nhánh `main` trên GitHub.
+2.  Vào **Settings** > **Pages**.
+3.  Tại mục **Branch**, chọn `main` và folder `/ (root)`.
+4.  Bấm **Save**.
+5.  Web sẽ chạy tại: `https://phanngoctrieu.github.io/trieuministry/`
 
-Tất cả dependencies được load qua CDN:
-- Bootstrap 5.3.2
-- TailwindCSS (CDN)
-- Font Awesome 6.5.1
-- Google Fonts (Inter)
-- PDF.js (sẽ thêm trong Phase 5)
+**Lưu ý:**
+*   Hệ thống Router đã được tối ưu cho GitHub Pages (tự động nhận diện thư mục con).
+*   Nếu thấy lỗi 404, hãy đợi 1-2 phút và thử reload lại trang (đôi khi cache chưa cập nhật).
+
+## 📞 Liên Hệ
+
+*   **Email:** phantrieu580@gmail.com
+*   **Facebook:** [Phan Ngọc Triều](https://facebook.com)
 
 ---
-
-**Status:** ✅ Phase 1 Completed - Ready for Phase 2
-
+© 2025 TrieuMinistry. Designed for God's Glory.

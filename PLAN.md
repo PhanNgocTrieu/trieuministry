@@ -605,14 +605,14 @@ static-website/
 - [x] Test deployment
 
 #### Step 31: Documentation
-- [ ] Update README.md với:
+- [x] Update README.md với:
   - Project description
   - Setup instructions
   - How to add new blog posts
   - How to add new documents
   - Deployment guide
-- [ ] Code comments
-- [ ] Usage guide
+- [x] Code comments (Inline JS comments added)
+- [x] Usage guide (Included in README)
 
 #### Step 32: Final Testing & Launch
 - [x] Test tất cả features trên production
