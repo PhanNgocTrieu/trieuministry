@@ -8,17 +8,30 @@
     let scale = 1.0;
     const scaleDelta = 0.2;
 
-    function initDocsPage() {
+    // Global Init Function
+    window.initDocsPage = function () {
+        // Fix Modals
+        setupDocsModals();
         console.log('Docs Page Initializing...');
         loadDocs();
         setupDocFilters();
+    };
+
+    function setupDocsModals() {
+        const id = 'pdfPreviewModal';
+        // Cleanup old
+        const orphans = Array.from(document.body.children).filter(child => child.id === id);
+        orphans.forEach(orphan => orphan.remove());
+        // Move new
+        const el = document.getElementById(id);
+        if (el) document.body.appendChild(el);
     }
 
-    // Auto-init logic
+    // Auto-run condition
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDocsPage);
+        document.addEventListener('DOMContentLoaded', window.initDocsPage);
     } else {
-        initDocsPage();
+        window.initDocsPage();
     }
 
     async function loadDocs() {

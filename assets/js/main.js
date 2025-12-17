@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', function () {
     initBackToTop();
     initSmoothScroll();
     initScrollAnimations();
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registered', reg))
+            .catch(err => console.log('Service Worker registration failed', err));
+    }
 });
 
 // Scroll Animations
@@ -116,4 +123,13 @@ async function copyToClipboard(text, successMessage = 'Đã sao chép vào bộ 
 }
 
 // Make it globally available
+// Make clipboard global
 window.copyToClipboard = copyToClipboard;
+
+// Global Utility Helpers
+window.utils = {
+    showSuccess: (msg) => Components.Toast.success(msg),
+    showError: (msg) => Components.Toast.error(msg),
+    showInfo: (msg) => Components.Toast.info(msg),
+    showWarning: (msg) => Components.Toast.warning(msg)
+};

@@ -801,3 +801,19 @@ footer {
     height: 180px;
   }
 }
+
+/* FIX: Force Modal Z-Index to prevent backdrop overlap */
+.modal {
+  z-index: 10055 !important;
+  /* Higher than navbar */
+}
+
+.modal-backdrop {
+  z-index: 10050 !important;
+}
+
+/* Ensure modal content is visible */
+.modal-content {
+  background-color: #ffffff;
+  color: #333333;
+}

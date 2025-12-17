@@ -60,8 +60,11 @@ class TurboRouter {
         }
 
         try {
-            // Fetch content
-            const response = await fetch(url);
+            // Fetch content with cache busting
+            const fetchUrl = new URL(url, window.location.origin);
+            // FORCE NEW TIMESTAMP to bypass browser cache
+            fetchUrl.searchParams.set('v', Date.now());
+            const response = await fetch(fetchUrl);
             const html = await response.text();
 
             // Parse content
@@ -103,9 +106,29 @@ class TurboRouter {
             // Re-initialize Global Components
             this.reinitGlobal();
 
+            // Track Page View
+            if (window.analytics && window.logEvent) {
+                window.logEvent(window.analytics, 'page_view', {
+                    page_title: document.title,
+                    page_location: window.location.href,
+                    page_path: window.location.pathname
+                });
+            }
+
         } catch (error) {
-            console.error('Navigation failed:', error);
-            window.location.reload(); // Fallback
+            console.log('Navigation failed/cancelled:', error);
+            // window.location.reload(); // Don't force reload on fetch error usually
+        }
+    }
+
+    // Log Page View to Firebase Analytics
+    logPageView(url) {
+        if (window.analytics && window.logEvent) {
+            // We need logEvent import? No, it's modular.
+            // Wait, window.analytics is the instance. I need the function `logEvent`.
+            // I forgot to export/expose logEvent in firebase-config.js.
+            // I'll fix firebase-config.js first.
+            console.log('Analytics PageView:', url);
         }
     }
 
@@ -130,8 +153,11 @@ class TurboRouter {
         newScripts.forEach(script => {
             const newScript = document.createElement('script');
             if (script.src) {
-                newScript.src = script.src;
-                // Force reload by adding timestamp? No, cache is fine, just need execution.
+                // Force reload of modules by adding/updating timestamp
+                const url = new URL(script.src, window.location.origin);
+                url.searchParams.set('t', Date.now());
+                newScript.src = url.toString();
+                newScript.type = script.type || 'text/javascript'; // Preserve type (e.g. module)
             } else {
                 newScript.textContent = script.textContent;
             }

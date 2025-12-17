@@ -257,6 +257,145 @@
                 </div>
             </div>
         </section>
+        <!-- Add Prayer Modal -->
+        <div class="modal fade" id="addPrayerModal" tabindex="-1" aria-labelledby="addPrayerModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPrayerModalLabel">
+                            <i class="fas fa-praying-hands me-2"></i>Thêm lời cầu nguyện
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addPrayerForm">
+                            <div class="mb-3">
+                                <label for="prayerName" class="form-label">Tên của bạn <span class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <input type="text" class="form-control" id="prayerName"
+                                    placeholder="Nhập tên hoặc để trống để ẩn danh">
+                            </div>
+                            <div class="mb-3">
+                                <label for="prayerContent" class="form-label">Nội dung cầu nguyện <span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control" id="prayerContent" rows="4"
+                                    placeholder="Chia sẻ lời cầu nguyện của bạn..." required></textarea>
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập nội dung cầu nguyện
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="prayerAction" class="form-label">Chúa hành động <span
+                                        class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <textarea class="form-control" id="prayerAction" rows="3"
+                                    placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="prayerCategory" class="form-label">Danh mục <span class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <select class="form-select" id="prayerCategory">
+                                    <option value="">Chọn danh mục</option>
+                                    <option value="health">Sức khỏe</option>
+                                    <option value="family">Gia đình</option>
+                                    <option value="work">Công việc</option>
+                                    <option value="faith">Đức tin</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="submitPrayerBtn">
+                            <i class="fas fa-paper-plane me-2"></i>Gửi lời cầu nguyện
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Prayer Modal -->
+        <div class="modal fade" id="editPrayerModal" tabindex="-1" aria-labelledby="editPrayerModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPrayerModalLabel">
+                            <i class="fas fa-edit me-2"></i>Chỉnh sửa lời cầu nguyện
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editPrayerForm">
+                            <input type="hidden" id="editPrayerId">
+                            <div class="mb-3">
+                                <label for="editPrayerName" class="form-label">Tên của bạn <span class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <input type="text" class="form-control" id="editPrayerName"
+                                    placeholder="Nhập tên hoặc để trống để ẩn danh">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPrayerContent" class="form-label">Nội dung cầu nguyện <span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control" id="editPrayerContent" rows="4"
+                                    placeholder="Chia sẻ lời cầu nguyện của bạn..." required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPrayerAction" class="form-label">Chúa hành động <span
+                                        class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <textarea class="form-control" id="editPrayerAction" rows="3"
+                                    placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPrayerCategory" class="form-label">Danh mục <span
+                                        class="text-muted">(Tùy
+                                        chọn)</span></label>
+                                <select class="form-select" id="editPrayerCategory">
+                                    <option value="">Chọn danh mục</option>
+                                    <option value="health">Sức khỏe</option>
+                                    <option value="family">Gia đình</option>
+                                    <option value="work">Công việc</option>
+                                    <option value="faith">Đức tin</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="updatePrayerBtn">
+                            <i class="fas fa-save me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Prayer Modal -->
+        <div class="modal fade" id="viewPrayerModal" tabindex="-1" aria-labelledby="viewPrayerModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewPrayerModalLabel">
+                            <i class="fas fa-praying-hands me-2"></i>Chi tiết lời cầu nguyện
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="viewPrayerContent">
+                            <!-- Content will be dynamically inserted -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -328,150 +467,17 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- Add Prayer Modal -->
-    <div class="modal fade" id="addPrayerModal" tabindex="-1" aria-labelledby="addPrayerModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPrayerModalLabel">
-                        <i class="fas fa-praying-hands me-2"></i>Thêm lời cầu nguyện
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addPrayerForm">
-                        <div class="mb-3">
-                            <label for="prayerName" class="form-label">Tên của bạn <span class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <input type="text" class="form-control" id="prayerName"
-                                placeholder="Nhập tên hoặc để trống để ẩn danh">
-                        </div>
-                        <div class="mb-3">
-                            <label for="prayerContent" class="form-label">Nội dung cầu nguyện <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control" id="prayerContent" rows="4"
-                                placeholder="Chia sẻ lời cầu nguyện của bạn..." required></textarea>
-                            <div class="invalid-feedback">
-                                Vui lòng nhập nội dung cầu nguyện
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="prayerAction" class="form-label">Chúa hành động <span class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <textarea class="form-control" id="prayerAction" rows="3"
-                                placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="prayerCategory" class="form-label">Danh mục <span class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <select class="form-select" id="prayerCategory">
-                                <option value="">Chọn danh mục</option>
-                                <option value="health">Sức khỏe</option>
-                                <option value="family">Gia đình</option>
-                                <option value="work">Công việc</option>
-                                <option value="faith">Đức tin</option>
-                                <option value="other">Khác</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="submitPrayerBtn">
-                        <i class="fas fa-paper-plane me-2"></i>Gửi lời cầu nguyện
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Edit Prayer Modal -->
-    <div class="modal fade" id="editPrayerModal" tabindex="-1" aria-labelledby="editPrayerModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editPrayerModalLabel">
-                        <i class="fas fa-edit me-2"></i>Chỉnh sửa lời cầu nguyện
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editPrayerForm">
-                        <input type="hidden" id="editPrayerId">
-                        <div class="mb-3">
-                            <label for="editPrayerName" class="form-label">Tên của bạn <span class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <input type="text" class="form-control" id="editPrayerName"
-                                placeholder="Nhập tên hoặc để trống để ẩn danh">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editPrayerContent" class="form-label">Nội dung cầu nguyện <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control" id="editPrayerContent" rows="4"
-                                placeholder="Chia sẻ lời cầu nguyện của bạn..." required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editPrayerAction" class="form-label">Chúa hành động <span
-                                    class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <textarea class="form-control" id="editPrayerAction" rows="3"
-                                placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editPrayerCategory" class="form-label">Danh mục <span class="text-muted">(Tùy
-                                    chọn)</span></label>
-                            <select class="form-select" id="editPrayerCategory">
-                                <option value="">Chọn danh mục</option>
-                                <option value="health">Sức khỏe</option>
-                                <option value="family">Gia đình</option>
-                                <option value="work">Công việc</option>
-                                <option value="faith">Đức tin</option>
-                                <option value="other">Khác</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="updatePrayerBtn">
-                        <i class="fas fa-save me-2"></i>Lưu thay đổi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- View Prayer Modal -->
-    <div class="modal fade" id="viewPrayerModal" tabindex="-1" aria-labelledby="viewPrayerModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewPrayerModalLabel">
-                        <i class="fas fa-praying-hands me-2"></i>Chi tiết lời cầu nguyện
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="viewPrayerContent">
-                        <!-- Content will be dynamically inserted -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/components.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/navigation.js"></script>
+    <script type="module" src="assets/js/firebase-config.js"></script>
     <script src="assets/js/router.js"></script>
-    <script src="assets/js/prayers.js"></script>
+    <script type="module" src="assets/js/prayers.js"></script>
 </body>
 
 </html>
