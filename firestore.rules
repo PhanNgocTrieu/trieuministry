@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check admin role (Custom Claim or Hardcoded)
+    // Here we trust the client logic effectively unless we set custom claims.
+    // Ideally: request.auth.token.admin == true;
+    // For now, allow write if authenticated. Admin check is mostly UI side without Cloud Functions.
+    // SECURITY NOTE: With client-side only admin check, a savvy user could spoof.
+    // To properly secure, we'd need Cloud Functions to set Custom Claims.
+    // For this static site scope, we will rely on checking 'userId' match.
+    
+    match /prayers/{prayerId} {
+      allow read: if true;
+      
+      // Allow create if user is signed in (Anon or Email)
+      allow create: if request.auth != null;
+
+      // Allow update if:
+      // 1. User owns the doc (request.auth.uid == resource.data.userId)
+      // 2. OR User is the specific Admin Email (Hardcoded for simplicity in this context)
+      allow update: if request.auth != null && 
+                    (request.auth.uid == resource.data.userId || 
+                     request.auth.token.email == 'phantrieu580@gmail.com' || 
+                     request.auth.token.email == 'admin@trieuministry.com');
+                     
+      // Allow delete ONLY if Admin
+      allow delete: if request.auth != null && 
+                    (request.auth.token.email == 'phantrieu580@gmail.com' || 
+                     request.auth.token.email == 'admin@trieuministry.com');
+    }
+  }
+}

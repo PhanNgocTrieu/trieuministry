@@ -107,8 +107,23 @@ class TurboRouter {
                 currentMain.innerHTML = newMain.innerHTML;
                 currentMain.className = newMain.className;
             } else {
-                // Fallback for pages without <main>
-                document.body.innerHTML = newDoc.body.innerHTML;
+                // Fallback: If structure differs too much, rely on body swap (risky for scripts) or force reload
+                // But better to try to find content wrapper.
+                // For now, if no main, we do nothing or reload. 
+                // However, let's also swap Footer if it exists
+            }
+
+            // Swap Footer
+            const newFooter = newDoc.querySelector('footer');
+            const currentFooter = document.querySelector('footer');
+            if (newFooter && currentFooter) {
+                currentFooter.innerHTML = newFooter.innerHTML;
+                currentFooter.className = newFooter.className;
+
+                // Re-bind Footer Events (like the Admin Lock) if they were inline? 
+                // No, they are usually bound via document delegation or init scripts.
+                // Our SetupAdminTrigger creates listeners on specific IDs.
+                // So re-running scripts/init functions is crucial.
             }
 
             // Scroll to top

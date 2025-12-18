@@ -48,6 +48,9 @@ self.addEventListener('fetch', (event) => {
                 }
 
                 // Clone response to cache it
+                // Check if request is valid (http/https)
+                if (!event.request.url.startsWith('http')) return response;
+
                 const responseToCache = response.clone();
                 caches.open(CACHE_NAME)
                     .then((cache) => {

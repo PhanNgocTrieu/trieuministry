@@ -272,6 +272,11 @@
                                 <input type="text" class="form-control" id="prayerName"
                                     placeholder="Nhập tên hoặc để trống để ẩn danh">
                             </div>
+                            <!-- Honey Pot Field for Spam (Hidden) -->
+                            <div class="d-none" aria-hidden="true">
+                                <label for="website">Website</label>
+                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                            </div>
                             <div class="mb-3">
                                 <label for="prayerContent" class="form-label">Nội dung cầu nguyện <span
                                         class="text-danger">*</span></label>
@@ -392,6 +397,31 @@
                 </div>
             </div>
         </div>
+
+        <!-- Admin Login Modal -->
+        <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-user-shield me-2"></i>Admin Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="adminLoginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="adminEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="adminPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="adminLoginBtn">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -465,9 +495,12 @@
                         rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="small text-secondary mb-0" data-i18n="footer.designed_by">Designed with <i
-                            class="fas fa-heart text-danger mx-1"></i> for
-                        God's Glory</p>
+                    <p class="small text-secondary mb-0">
+                        <span data-i18n="footer.designed_by">Designed with <i class="fas fa-heart text-danger mx-1"></i>
+                            for God's Glory</span>
+                        <a href="#" id="visibleAdminTrigger" class="text-secondary ms-2" title="Admin Login"><i
+                                class="fas fa-lock"></i></a>
+                    </p>
                 </div>
             </div>
         </div>

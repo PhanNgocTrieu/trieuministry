@@ -176,6 +176,33 @@ html {
   }
 }
 
+/* Modal Fixes - True Centering */
+.modal {
+  padding-right: 0 !important;
+  z-index: 1060 !important;
+}
+
+.modal-dialog-centered {
+  display: flex !important;
+  align-items: center !important;
+  min-height: calc(100% - 1rem) !important;
+  margin: auto !important;
+  /* Critical for centering */
+}
+
+/* Ensure backdrop covers everything */
+.modal-backdrop {
+  z-index: 1050 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* Fix for body padding when modal is open */
+body.modal-open {
+  padding-right: 0 !important;
+  overflow: hidden !important;
+}
+
 /* Navigation Styles */
 .navbar {
   transition: all 0.3s ease;
@@ -443,12 +470,45 @@ footer li:hover {
   border: none;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+/* Fix Dropdown Clipping in Cards */
+.prayer-card {
+  overflow: visible !important;
+  /* Allow dropdown to spill out */
+  z-index: 1;
+  /* Base level */
 }
 
-/* Footer */
+/* Ensure active/hovered card stays on top so dropdown isn't covered by next card */
+.prayer-card:hover,
+.prayer-card:focus-within {
+  z-index: 100 !important;
+  transform: translateY(-5px);
+  /* Keep hover effect compatible */
+}
+
+/* Dropdown styling enhancements */
+.dropdown-menu {
+  border-radius: 12px !important;
+  padding: 0.5rem !important;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dropdown-item {
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-gray);
+  transform: translateX(5px);
+}
+
+.dropdown-item:active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
 footer {
   margin-top: auto;
 }
