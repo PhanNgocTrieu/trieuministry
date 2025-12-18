@@ -50,18 +50,55 @@
             "label": "Nhân sự",
             "role": "Người sáng lập",
             "quote": "\"Tôi tin rằng mỗi người đều có một sứ mạng đặc biệt trong kế hoạch đời đời của Đức Chúa Trời.\""
+        },
+        "vision": {
+            "title": "Khải Tượng",
+            "content": "Xây dựng một cộng đồng Cơ Đốc nhân vững mạnh, am hiểu Lời Chúa và sống đạo giữa đời thường."
+        },
+        "mission": {
+            "title": "Sứ Mệnh",
+            "content": "Cung cấp tài liệu, bài giảng và kết nối cầu nguyện để trang bị cho con dân Chúa."
+        },
+        "values": {
+            "title": "Giá Trị Cốt Lõi",
+            "content": "Yêu Chúa - Yêu Người - Trung Tín - Phục Vụ."
         }
     },
     "blogs": {
         "hero": {
             "title": "Tâm Tình & Chia Sẻ",
             "subtitle": "Những bài viết, lời chứng và suy ngẫm thuộc linh giúp khích lệ đức tin của bạn mỗi ngày."
+        },
+        "list": {
+            "search_placeholder": "Tìm kiếm bài viết...",
+            "category_all": "Tất cả danh mục",
+            "tag_placeholder": "Lọc theo thẻ...",
+            "count_suffix": "bài",
+            "read_more": "Đọc tiếp",
+            "empty": "Hiện không có dữ liệu.",
+            "empty_filtered": "Chưa có bài viết nào phù hợp.",
+            "error_load": "Không tải được danh sách bài viết",
+            "min_read": "phút đọc"
         }
     },
     "docs": {
         "hero": {
             "title": "Kho Tài Liệu",
             "subtitle": "Tải xuống sách, tài liệu học Kinh Thánh và giáo trình huấn luyện miễn phí."
+        },
+        "list": {
+            "title": "Tài liệu mới nhất",
+            "search_placeholder": "Tên sách, tài liệu...",
+            "category_all": "Tất cả",
+            "reset": "Làm mới",
+            "count_suffix": "tài liệu",
+            "empty": "Hiện không có dữ liệu.",
+            "empty_filtered": "Không tìm thấy tài liệu phù hợp.",
+            "error_load": "Không tải được danh sách tài liệu"
+        },
+        "modal": {
+            "preview_title": "Xem trước tài liệu",
+            "download": "Tải xuống"
         }
     },
     "prayers": {
@@ -74,6 +111,40 @@
             "total": "Tổng số lời cầu nguyện",
             "answered": "Đã được đáp",
             "pending": "Đang cầu nguyện"
+        },
+        "list": {
+            "title": "Danh sách lời cầu nguyện",
+            "search_label": "Tìm kiếm",
+            "search_placeholder": "Tìm theo tên hoặc nội dung...",
+            "filter_label": "Lọc theo trạng thái",
+            "filter_reset": "Đặt lại",
+            "empty_title": "Chưa có lời cầu nguyện nào",
+            "empty_sub": "Hãy thêm lời cầu nguyện đầu tiên của bạn"
+        },
+        "form": {
+            "name_label": "Tên của bạn",
+            "name_optional": "(Tùy chọn)",
+            "name_placeholder": "Nhập tên hoặc để trống để ẩn danh",
+            "content_label": "Nội dung cầu nguyện",
+            "content_placeholder": "Chia sẻ lời cầu nguyện của bạn...",
+            "action_label": "Chúa hành động",
+            "action_placeholder": "Ghi lại cách Chúa hành động...",
+            "category_label": "Danh mục",
+            "category_placeholder": "Chọn danh mục",
+            "submit": "Gửi lời cầu nguyện",
+            "update": "Cập nhật"
+        },
+        "status": {
+            "all": "Tất cả",
+            "not_prayed": "Chưa cầu nguyện",
+            "prayed": "Đã cầu nguyện",
+            "answered": "Đã được đáp",
+            "update_header": "Cập nhật trạng thái"
+        },
+        "modal": {
+            "add_title": "Thêm lời cầu nguyện",
+            "edit_title": "Chỉnh sửa lời cầu nguyện",
+            "view_title": "Chi tiết lời cầu nguyện"
         }
     },
     "donate": {
@@ -85,6 +156,59 @@
             "title": "Kêu gọi",
             "content": "Nếu anh chị em cảm động và có lòng muốn dâng hiến cho chính tôi hoặc cho mục vụ đang được kêu gọi ở đây, anh chị em có thể xem thông tin dâng hiến bên dưới.",
             "closing": "Cảm ơn Anh/Chị/Em đã tin tưởng, đồng hành và hỗ trợ chức vụ của Triều trong thời gian vừa qua! Mỗi sự hỗ trợ của anh chị em chính là sự chu cấp lớn lao đến từ Đức Chúa Trời qua tấm lòng rồi rộng của anh chị em hầu cho vương quốc Chúa tiếp tục được mở mang trên đất này"
+        },
+        "personal": {
+            "title": "Dâng hiến",
+            "badge": "Cá nhân"
+        },
+        "bank": {
+            "title": "Thông tin chuyển khoản",
+            "bank_label": "Ngân hàng",
+            "account_number_label": "Số tài khoản",
+            "copy": "Sao chép",
+            "account_name_label": "Chủ tài khoản",
+            "content_label": "Nội dung chuyển khoản"
+        },
+        "qr": {
+            "title": "Quét mã QR",
+            "instruction": "Sử dụng App ngân hàng để quét"
+        },
+        "thanks": {
+            "title": "Lời cảm ơn",
+            "content": "Cảm tạ Chúa vì đã cảm động tấm lòng của anh/chị/em để có thể hỗ trợ cho tôi, cảm ơn anh/chị/em đã rộng rãi trong sự dâng hiến và hỗ trợ này! Nguyện Chúa Jesus tiếp tục ban phước trên công việc, sức khoẻ, đời sống và mục vụ của anh/chị/em và nguyện Ngài tiếp tục dùng anh chị em cho sự vinh hiển Ngài!"
+        },
+        "ministry": {
+            "title": "Kêu gọi dâng hiến",
+            "badge": "Mục vụ",
+            "request_btn": "Gửi yêu cầu kêu gọi"
+        },
+        "form": {
+            "title": "Gửi yêu cầu kêu gọi",
+            "warning": "Thông tin sẽ được duyệt qua email trước khi đăng.",
+            "name": "Họ và tên",
+            "phone": "SĐT / Zalo",
+            "target": "Mục tiêu (VNĐ)",
+            "appeal_title": "Tiêu đề kêu gọi",
+            "content": "Nội dung chi tiết",
+            "bank_info": "Thông tin nhận (Nếu có)",
+            "bank_name": "Ngân hàng",
+            "bank_account": "Số tài khoản",
+            "bank_owner": "Tên chủ tài khoản",
+            "qr_note": "Đính kèm QR trong email",
+            "cancel": "Hủy",
+            "send": "Gửi ngay"
+        },
+        "js_appeals": {
+            "empty": "Hiện chưa có lời kêu gọi nào.",
+            "target": "Mục tiêu",
+            "completed": "hoàn thành",
+            "bank_info_title": "Thông tin chuyển khoản",
+            "deadline": "Hạn chót"
+        },
+        "js_form": {
+            "error_required": "Vui lòng điền đầy đủ thông tin bắt buộc",
+            "success_email": "Đang mở Email...",
+            "error_generic": "Có lỗi xảy ra"
         }
     },
     "footer": {
@@ -103,6 +227,7 @@
         "preview": "Xem trước",
         "download": "Tải xuống",
         "share": "Chia sẻ",
+        "anonymous": "Ẩn danh",
         "close": "Đóng"
     }
 }

@@ -595,7 +595,7 @@ function renderPrayers() {
 }
 
 function createPrayerCard(prayer) {
-    const displayName = prayer.name || 'Ẩn danh';
+    const displayName = prayer.name || window.i18n.t('common.anonymous');
     const categoryLabel = prayer.category ? categoryLabels[prayer.category] : '';
     const formattedDate = formatDate(prayer.date);
 
@@ -627,16 +627,16 @@ function createPrayerCard(prayer) {
                     <i class="fas ${statusConfig.icon} me-1"></i>${statusConfig.text}
                 </button>
                 <ul class="dropdown-menu shadow border-0">
-                    <li><h6 class="dropdown-header text-muted text-uppercase small ls-1">Cập nhật trạng thái</h6></li>
+                    <li><h6 class="dropdown-header text-muted text-uppercase small ls-1">${window.i18n.t('prayers.status.update_header')}</h6></li>
                     <li><a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0)" onclick="changeStatus('${prayer.id}', 'not_prayed')">
-                        <i class="fas fa-circle text-secondary fa-fw"></i> Chưa cầu nguyện
+                        <i class="fas fa-circle text-secondary fa-fw"></i> ${window.i18n.t('prayers.status.not_prayed')}
                     </a></li>
                     <li><a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0)" onclick="changeStatus('${prayer.id}', 'prayed')">
-                        <i class="fas fa-praying-hands text-warning fa-fw"></i> Đã cầu nguyện
+                        <i class="fas fa-praying-hands text-warning fa-fw"></i> ${window.i18n.t('prayers.status.prayed')}
                     </a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0)" onclick="changeStatus('${prayer.id}', 'answered')">
-                        <i class="fas fa-check-circle text-success fa-fw"></i> Đã được đáp
+                        <i class="fas fa-check-circle text-success fa-fw"></i> ${window.i18n.t('prayers.status.answered')}
                     </a></li>
                 </ul>
             </div>

@@ -126,7 +126,7 @@
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <div class="text-muted mb-3"><i class="fas fa-heart-broken fa-3x"></i></div>
-                    <p class="text-muted">Hiện chưa có lời kêu gọi nào.</p>
+                    <p class="text-muted">${window.i18n.t('donate.js_appeals.empty')}</p>
                 </div>`;
             return;
         }
@@ -167,16 +167,16 @@
                     <div class="mb-4">
                         <div class="d-flex justify-content-between text-small mb-1">
                             <span class="fw-bold">${formatMoney(appeal.currentAmount)}</span>
-                            <span class="text-muted">Mục tiêu: ${formatMoney(appeal.targetAmount)}</span>
+                            <span class="text-muted">${window.i18n.t('donate.js_appeals.target')}: ${formatMoney(appeal.targetAmount)}</span>
                         </div>
                         <div class="progress text-small">
                             <div class="progress-bar bg-success" role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <small class="text-muted text-end d-block mt-1">${progress}% hoàn thành</small>
+                        <small class="text-muted text-end d-block mt-1">${progress}% ${window.i18n.t('donate.js_appeals.completed')}</small>
                     </div>
                     
                     <div class="bg-light p-3 rounded">
-                        <h6 class="fw-bold small text-uppercase text-muted mb-2"><i class="fas fa-info-circle me-1"></i>Thông tin chuyển khoản</h6>
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2"><i class="fas fa-info-circle me-1"></i>${window.i18n.t('donate.js_appeals.bank_info_title')}</h6>
                         <div class="row align-items-center">
                             <div class="col-8">
                                 <div class="small">
@@ -196,7 +196,7 @@
                             </div>
                         </div>
                     </div>
-                    ${appeal.deadline ? `<div class="mt-3 text-danger small"><i class="fas fa-clock me-1"></i>Hạn chót: ${new Date(appeal.deadline).toLocaleDateString('vi-VN')}</div>` : ''}
+                    ${appeal.deadline ? `<div class="mt-3 text-danger small"><i class="fas fa-clock me-1"></i>${window.i18n.t('donate.js_appeals.deadline')}: ${new Date(appeal.deadline).toLocaleDateString('vi-VN')}</div>` : ''}
                 </div>
             </div>
         `;
@@ -270,7 +270,7 @@
             const missing = requiredFn.filter(field => !formData.get(field));
 
             if (missing.length > 0) {
-                const msg = 'Vui lòng điền đầy đủ thông tin bắt buộc';
+                const msg = window.i18n.t('donate.js_form.error_required');
                 if (window.utils && window.utils.showError) window.utils.showError(msg);
                 else alert(msg);
                 return;
@@ -316,11 +316,11 @@
 
             form.reset();
 
-            if (window.utils && window.utils.showSuccess) window.utils.showSuccess("Đang mở Email...");
+            if (window.utils && window.utils.showSuccess) window.utils.showSuccess(window.i18n.t('donate.js_form.success_email'));
 
         } catch (error) {
             console.error('Error handling appeal request:', error);
-            alert('Có lỗi xảy ra: ' + error.message);
+            alert(window.i18n.t('donate.js_form.error_generic') + ': ' + error.message);
         }
     }
 

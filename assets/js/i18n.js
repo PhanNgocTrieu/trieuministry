@@ -110,6 +110,12 @@ class I18nService {
         }, obj);
     }
 
+    t(key) {
+        const data = this.translations[this.currentLang];
+        if (!data) return key;
+        return this.getNestedValue(data, key) || key;
+    }
+
     updateHtmlLangAttribute() {
         document.documentElement.lang = this.currentLang;
     }

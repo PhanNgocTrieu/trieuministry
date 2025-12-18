@@ -50,18 +50,55 @@
             "label": "Personnel",
             "role": "Founder",
             "quote": "\"I believe that everyone has a special mission in God's eternal plan.\""
+        },
+        "vision": {
+            "title": "Vision",
+            "content": "Building a strong Christian community, understanding God's Word, and living out faith in daily life."
+        },
+        "mission": {
+            "title": "Mission",
+            "content": "Providing materials, sermons, and prayer connections to equip God's people."
+        },
+        "values": {
+            "title": "Core Values",
+            "content": "Love God - Love People - Faithfulness - Service."
         }
     },
     "blogs": {
         "hero": {
             "title": "Sharing & Reflection",
             "subtitle": "Articles, testimonies, and spiritual reflections to encourage your faith daily."
+        },
+        "list": {
+            "search_placeholder": "Search articles...",
+            "category_all": "All Categories",
+            "tag_placeholder": "Filter by tag...",
+            "count_suffix": "posts",
+            "read_more": "Read More",
+            "empty": "No data available.",
+            "empty_filtered": "No matching posts found.",
+            "error_load": "Failed to load blogs",
+            "min_read": "min read"
         }
     },
     "docs": {
         "hero": {
             "title": "Resources",
             "subtitle": "Download free books, Bible study materials, and training curriculums."
+        },
+        "list": {
+            "title": "Latest Resources",
+            "search_placeholder": "Search books, documents...",
+            "category_all": "All",
+            "reset": "Reset",
+            "count_suffix": "items",
+            "empty": "No data available.",
+            "empty_filtered": "No matching documents found.",
+            "error_load": "Failed to load documents"
+        },
+        "modal": {
+            "preview_title": "Preview Document",
+            "download": "Download"
         }
     },
     "prayers": {
@@ -74,6 +111,40 @@
             "total": "Total Prayers",
             "answered": "Answered",
             "pending": "Pending"
+        },
+        "list": {
+            "title": "Prayer List",
+            "search_label": "Search",
+            "search_placeholder": "Search by name or content...",
+            "filter_label": "Filter by status",
+            "filter_reset": "Reset",
+            "empty_title": "No prayers found",
+            "empty_sub": "Be the first to add a prayer request"
+        },
+        "form": {
+            "name_label": "Your Name",
+            "name_optional": "(Optional)",
+            "name_placeholder": "Enter name or leave blank for anonymous",
+            "content_label": "Prayer Request",
+            "content_placeholder": "Share your prayer request...",
+            "action_label": "God's Action",
+            "action_placeholder": "Record how God answered...",
+            "category_label": "Category",
+            "category_placeholder": "Select category",
+            "submit": "Submit Prayer",
+            "update": "Update"
+        },
+        "status": {
+            "all": "All",
+            "not_prayed": "Not Prayed",
+            "prayed": "Prayed",
+            "answered": "Answered",
+            "update_header": "Update Status"
+        },
+        "modal": {
+            "add_title": "Add Prayer Request",
+            "edit_title": "Edit Prayer Request",
+            "view_title": "Prayer Detail"
         }
     },
     "donate": {
@@ -85,6 +156,59 @@
             "title": "Appeal",
             "content": "If you are moved and wish to donate to myself or the ministry called here, you can view the donation information below.",
             "closing": "Thank you for trusting, accompanying, and supporting Trieu's ministry during the past time! Every support from you is a great provision from God through your generous hearts so that God's kingdom continues to expand on this earth."
+        },
+        "personal": {
+            "title": "Donation",
+            "badge": "Personal"
+        },
+        "bank": {
+            "title": "Bank Transfer Info",
+            "bank_label": "Bank",
+            "account_number_label": "Account Number",
+            "copy": "Copy",
+            "account_name_label": "Account Holder",
+            "content_label": "Transfer Content"
+        },
+        "qr": {
+            "title": "Scan QR Code",
+            "instruction": "Use Banking App to scan"
+        },
+        "thanks": {
+            "title": "Thank You",
+            "content": "We thank God for moving your hearts to support us. Thank you for your generosity! May Jesus continue to bless your work, health, life, and ministry, and may He use you for His glory!"
+        },
+        "ministry": {
+            "title": "Ministry Appeals",
+            "badge": "Ministry",
+            "request_btn": "Submit Appeal Request"
+        },
+        "form": {
+            "title": "Submit Appeal Request",
+            "warning": "Information will be reviewed via email before posting.",
+            "name": "Full Name",
+            "phone": "Phone / Zalo",
+            "target": "Target Amount (VND)",
+            "appeal_title": "Appeal Title",
+            "content": "Detailed Content",
+            "bank_info": "Receiving Info (If any)",
+            "bank_name": "Bank Name",
+            "bank_account": "Account Number",
+            "bank_owner": "Account Holder Name",
+            "qr_note": "Attach QR in email",
+            "cancel": "Cancel",
+            "send": "Send Now"
+        },
+        "js_appeals": {
+            "empty": "No appeals found.",
+            "target": "Target",
+            "completed": "completed",
+            "bank_info_title": "Transfer Info",
+            "deadline": "Deadline"
+        },
+        "js_form": {
+            "error_required": "Please fill in all required fields",
+            "success_email": "Opening Email...",
+            "error_generic": "An error occurred"
         }
     },
     "footer": {
@@ -103,6 +227,7 @@
         "preview": "Preview",
         "download": "Download",
         "share": "Share",
+        "anonymous": "Anonymous",
         "close": "Close"
     }
 }

@@ -210,22 +210,27 @@
                     <div class="card-body">
                         <div class="row g-3 align-items-center">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Tìm kiếm</label>
+                                <label class="form-label fw-semibold" data-i18n="prayers.list.search_label">Tìm
+                                    kiếm</label>
                                 <input type="text" class="form-control" id="searchPrayerInput"
-                                    placeholder="Tìm theo tên hoặc nội dung...">
+                                    placeholder="Tìm theo tên hoặc nội dung..."
+                                    data-i18n-placeholder="prayers.list.search_placeholder">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Lọc theo trạng thái</label>
+                                <label class="form-label fw-semibold" data-i18n="prayers.list.filter_label">Lọc theo
+                                    trạng thái</label>
                                 <select class="form-select" id="statusFilter">
-                                    <option value="all">Tất cả</option>
-                                    <option value="not_prayed">Chưa cầu nguyện</option>
-                                    <option value="prayed">Đã cầu nguyện</option>
-                                    <option value="answered">Đã được đáp</option>
+                                    <option value="all" data-i18n="prayers.status.all">Tất cả</option>
+                                    <option value="not_prayed" data-i18n="prayers.status.not_prayed">Chưa cầu nguyện
+                                    </option>
+                                    <option value="prayed" data-i18n="prayers.status.prayed">Đã cầu nguyện</option>
+                                    <option value="answered" data-i18n="prayers.status.answered">Đã được đáp</option>
                                 </select>
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
                                 <button class="btn btn-outline-secondary w-100" id="resetFilters">
-                                    <i class="fas fa-redo me-2"></i>Reset
+                                    <i class="fas fa-redo me-2"></i><span
+                                        data-i18n="prayers.list.filter_reset">Reset</span>
                                 </button>
                             </div>
                         </div>
@@ -234,7 +239,7 @@
 
                 <!-- Prayer List -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="mb-0">Danh sách lời cầu nguyện</h2>
+                    <h2 class="mb-0" data-i18n="prayers.list.title">Danh sách lời cầu nguyện</h2>
                     <span class="text-muted" id="prayersCountLabel">0 lời cầu nguyện</span>
                 </div>
 
@@ -245,10 +250,12 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="text-center py-5" style="display: none;">
                     <i class="fas fa-praying-hands fa-4x text-muted mb-3"></i>
-                    <h4 class="text-muted">Chưa có lời cầu nguyện nào</h4>
-                    <p class="text-muted">Hãy thêm lời cầu nguyện đầu tiên của bạn</p>
+                    <h4 class="text-muted" data-i18n="prayers.list.empty_title">Chưa có lời cầu nguyện nào</h4>
+                    <p class="text-muted" data-i18n="prayers.list.empty_sub">Hãy thêm lời cầu nguyện đầu tiên của bạn
+                    </p>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPrayerModal">
-                        <i class="fas fa-plus me-2"></i>Thêm lời cầu nguyện
+                        <i class="fas fa-plus me-2"></i><span data-i18n="prayers.hero.btn_add">Thêm lời cầu
+                            nguyện</span>
                     </button>
                 </div>
             </div>
@@ -260,17 +267,20 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addPrayerModalLabel">
-                            <i class="fas fa-praying-hands me-2"></i>Thêm lời cầu nguyện
+                            <i class="fas fa-praying-hands me-2"></i><span data-i18n="prayers.modal.add_title">Thêm lời
+                                cầu nguyện</span>
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="addPrayerForm">
                             <div class="mb-3">
-                                <label for="prayerName" class="form-label">Tên của bạn <span class="text-muted">(Tùy
-                                        chọn)</span></label>
+                                <label for="prayerName" class="form-label"><span data-i18n="prayers.form.name_label">Tên
+                                        của bạn</span> <span class="text-muted"
+                                        data-i18n="prayers.form.name_optional">(Tùy chọn)</span></label>
                                 <input type="text" class="form-control" id="prayerName"
-                                    placeholder="Nhập tên hoặc để trống để ẩn danh">
+                                    placeholder="Nhập tên hoặc để trống để ẩn danh"
+                                    data-i18n-placeholder="prayers.form.name_placeholder">
                             </div>
                             <!-- Honey Pot Field for Spam (Hidden) -->
                             <div class="d-none" aria-hidden="true">
@@ -278,26 +288,33 @@
                                 <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
                             </div>
                             <div class="mb-3">
-                                <label for="prayerContent" class="form-label">Nội dung cầu nguyện <span
+                                <label for="prayerContent" class="form-label"><span
+                                        data-i18n="prayers.form.content_label">Nội dung cầu nguyện</span> <span
                                         class="text-danger">*</span></label>
                                 <textarea class="form-control" id="prayerContent" rows="4"
-                                    placeholder="Chia sẻ lời cầu nguyện của bạn..." required></textarea>
+                                    placeholder="Chia sẻ lời cầu nguyện của bạn..."
+                                    data-i18n-placeholder="prayers.form.content_placeholder" required></textarea>
                                 <div class="invalid-feedback">
                                     Vui lòng nhập nội dung cầu nguyện
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="prayerAction" class="form-label">Chúa hành động <span
-                                        class="text-muted">(Tùy
+                                <label for="prayerAction" class="form-label"><span
+                                        data-i18n="prayers.form.action_label">Chúa hành động</span> <span
+                                        class="text-muted" data-i18n="prayers.form.name_optional">(Tùy
                                         chọn)</span></label>
                                 <textarea class="form-control" id="prayerAction" rows="3"
-                                    placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."></textarea>
+                                    placeholder="Ghi lại cách Chúa hành động trong lời cầu nguyện này..."
+                                    data-i18n-placeholder="prayers.form.action_placeholder"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="prayerCategory" class="form-label">Danh mục <span class="text-muted">(Tùy
-                                        chọn)</span></label>
-                                <select class="form-select" id="prayerCategory">
-                                    <option value="">Chọn danh mục</option>
+                                <label for="prayerCategory" class="form-label"><span
+                                        data-i18n="prayers.form.category_label">Danh mục</span> <span class="text-muted"
+                                        data-i18n="prayers.form.name_optional">(Tùy chọn)</span></label>
+                                <select class="form-select" id="prayerCategory"
+                                    data-i18n-placeholder="prayers.form.category_placeholder">
+                                    <option value="" data-i18n="prayers.form.category_placeholder">Chọn danh mục
+                                    </option>
                                     <option value="health">Sức khỏe</option>
                                     <option value="family">Gia đình</option>
                                     <option value="work">Công việc</option>

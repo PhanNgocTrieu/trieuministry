@@ -14,7 +14,7 @@
 
     async function loadBlogs() {
         const spinner = new Components.LoadingSpinner();
-        spinner.show('Đang tải bài viết...');
+        spinner.show(window.i18n.t('common.loading'));
 
         try {
             const res = await fetch('assets/data/blogs.json');
@@ -32,14 +32,15 @@
             }
         } catch (err) {
             console.error(err);
-            Components.Toast.error('Không tải được danh sách bài viết');
-            renderEmptyState('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+            Components.Toast.error(window.i18n.t('blogs.list.error_load'));
+            renderEmptyState(window.i18n.t('blogs.list.error_load'));
         } finally {
             spinner.hide();
         }
     }
 
-    function renderEmptyState(message = 'Hiện không có dữ liệu.') {
+    function renderEmptyState(message) {
+        const msg = message || window.i18n.t('blogs.list.empty');
         const container = document.getElementById('blogsContainer');
         const countLabel = document.getElementById('countLabel');
 
@@ -47,11 +48,11 @@
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-newspaper fa-4x text-muted mb-3 opacity-25"></i>
-                    <p class="text-muted lead">${message}</p>
+                    <p class="text-muted lead">${msg}</p>
                 </div>
             `;
         }
-        if (countLabel) countLabel.textContent = '0 bài';
+        if (countLabel) countLabel.textContent = `0 ${window.i18n.t('blogs.list.count_suffix')}`;
     }
 
     function renderBlogs(blogs) {
@@ -62,10 +63,10 @@
         container.innerHTML = '';
 
         const filtered = applyFilters(blogs);
-        if (countLabel) countLabel.textContent = `${filtered.length} bài`;
+        if (countLabel) countLabel.textContent = `${filtered.length} ${window.i18n.t('blogs.list.count_suffix')}`;
 
         if (filtered.length === 0) {
-            renderEmptyState('Chưa có bài viết nào phù hợp.');
+            renderEmptyState(window.i18n.t('blogs.list.empty_filtered'));
             return;
         }
 
@@ -80,7 +81,7 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-light text-dark border">${blog.category || 'General'}</span>
-                        <small class="text-muted"><i class="fas fa-clock me-1"></i>${blog.readingTime || 3} phút đọc</small>
+                        <small class="text-muted"><i class="fas fa-clock me-1"></i>${blog.readingTime || 3} ${window.i18n.t('blogs.list.min_read')}</small>
                     </div>
                     <h5 class="card-title">${blog.title}</h5>
                     <p class="card-text text-muted">${blog.excerpt}</p>
@@ -89,7 +90,7 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted"><i class="fas fa-calendar me-1"></i>${blog.date}</small>
-                        <a class="btn btn-sm btn-primary" href="blog-detail.html?slug=${blog.slug}">Đọc bài</a>
+                        <a class="btn btn-sm btn-primary" href="blog-detail.html?slug=${blog.slug}">${window.i18n.t('blogs.list.read_more')}</a>
                     </div>
                 </div>
             `;
@@ -113,7 +114,7 @@
         if (!categoryFilter) return;
 
         const categories = Array.from(new Set(blogs.map(b => b.category).filter(Boolean)));
-        categoryFilter.innerHTML = '<option value="">Tất cả</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        categoryFilter.innerHTML = `<option value="">${window.i18n.t('blogs.list.category_all')}</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
     function applyFilters(blogs) {

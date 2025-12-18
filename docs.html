@@ -128,21 +128,22 @@
           <div class="card-body">
             <div class="row g-3 align-items-center">
               <div class="col-md-5">
-                <label class="form-label fw-semibold">Tìm kiếm</label>
+                <label class="form-label fw-semibold" data-i18n="docs.list.search_placeholder">Tìm kiếm</label>
                 <div class="input-group">
                   <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
-                  <input type="text" class="form-control" id="searchDocInput" placeholder="Tên sách, tài liệu...">
+                  <input type="text" class="form-control" id="searchDocInput" placeholder="Tên sách, tài liệu..."
+                    data-i18n-placeholder="docs.list.search_placeholder">
                 </div>
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-semibold">Danh mục</label>
+                <label class="form-label fw-semibold" data-i18n="prayers.form.category_label">Danh mục</label>
                 <select class="form-select" id="categoryDocFilter">
-                  <option value="">Tất cả</option>
+                  <option value="" data-i18n="docs.list.category_all">Tất cả</option>
                 </select>
               </div>
               <div class="col-md-3 d-flex align-items-end justify-content-md-end">
                 <button class="btn btn-outline-secondary w-100 w-md-auto" id="resetFilters">
-                  <i class="fas fa-undo me-2"></i>Làm mới
+                  <i class="fas fa-undo me-2"></i><span data-i18n="docs.list.reset">Làm mới</span>
                 </button>
               </div>
             </div>
@@ -155,8 +156,9 @@
     <section class="section-padding">
       <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="mb-0 fw-bold">Tài liệu mới nhất</h2>
-          <span class="badge bg-primary rounded-pill px-3 py-2" id="docsCountLabel">0 tài liệu</span>
+          <h2 class="mb-0 fw-bold" data-i18n="docs.list.title">Tài liệu mới nhất</h2>
+          <span class="badge bg-primary rounded-pill px-3 py-2" id="docsCountLabel">0 <span
+              data-i18n="docs.list.count_suffix">tài liệu</span></span>
         </div>
         <div class="row g-4" id="docsContainer">
           <!-- Loading State -->
@@ -173,7 +175,7 @@
       <div class="modal-dialog modal-fullscreen-lg-down modal-xl modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="pdfPreviewTitle">Xem trước tài liệu</h5>
+            <h5 class="modal-title" id="pdfPreviewTitle" data-i18n="docs.modal.preview_title">Xem trước tài liệu</h5>
             <div class="d-flex gap-2">
               <button type="button" class="btn btn-sm btn-outline-primary" id="fullscreenBtn" title="Fullscreen">
                 <i class="fas fa-expand"></i>
@@ -222,7 +224,7 @@
           </div>
           <div class="modal-footer">
             <a id="downloadFromModal" class="btn btn-primary" href="#" download>
-              <i class="fas fa-download me-2"></i>Download
+              <i class="fas fa-download me-2"></i><span data-i18n="docs.modal.download">Download</span>
             </a>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
           </div>

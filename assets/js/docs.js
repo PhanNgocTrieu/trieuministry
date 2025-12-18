@@ -36,7 +36,7 @@
 
     async function loadDocs() {
         const spinner = new Components.LoadingSpinner();
-        spinner.show('Đang tải tài liệu...');
+        spinner.show(window.i18n.t('common.loading'));
 
         try {
             const res = await fetch('assets/data/docs.json');
@@ -54,14 +54,15 @@
             }
         } catch (err) {
             console.error(err);
-            Components.Toast.error('Không tải được danh sách tài liệu');
-            renderEmptyState('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+            Components.Toast.error(window.i18n.t('docs.list.error_load'));
+            renderEmptyState(window.i18n.t('docs.list.error_load'));
         } finally {
             spinner.hide();
         }
     }
 
-    function renderEmptyState(message = 'Hiện không có dữ liệu.') {
+    function renderEmptyState(message) {
+        const msg = message || window.i18n.t('docs.list.empty');
         const container = document.getElementById('docsContainer');
         const countLabel = document.getElementById('docsCountLabel');
 
@@ -69,11 +70,11 @@
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-folder-open fa-4x text-muted mb-3 opacity-25"></i>
-                    <p class="text-muted lead">${message}</p>
+                    <p class="text-muted lead">${msg}</p>
                 </div>
             `;
         }
-        if (countLabel) countLabel.textContent = '0 tài liệu';
+        if (countLabel) countLabel.textContent = `0 ${window.i18n.t('docs.list.count_suffix')}`;
     }
 
     function renderDocs(docs) {
@@ -83,10 +84,10 @@
         container.innerHTML = '';
 
         const filtered = applyDocFilters(docs);
-        if (countLabel) countLabel.textContent = `${filtered.length} tài liệu`;
+        if (countLabel) countLabel.textContent = `${filtered.length} ${window.i18n.t('docs.list.count_suffix')}`;
 
         if (filtered.length === 0) {
-            renderEmptyState('Không tìm thấy tài liệu phù hợp.');
+            renderEmptyState(window.i18n.t('docs.list.empty_filtered'));
             return;
         }
 
@@ -142,7 +143,7 @@
         const category = document.getElementById('categoryDocFilter');
         if (!category) return;
         const categories = Array.from(new Set(docs.map(d => d.category).filter(Boolean)));
-        category.innerHTML = '<option value=\"\">Tất cả</option>' + categories.map(c => `<option value=\"${c}\">${c}</option>`).join('');
+        category.innerHTML = `<option value="">${window.i18n.t('docs.list.category_all')}</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
     function applyDocFilters(docs) {
