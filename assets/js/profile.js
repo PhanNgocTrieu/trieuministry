@@ -97,17 +97,20 @@
         // Social Links
         if (data.socialLinks) {
             const socialContainer = document.getElementById('socialLinks');
-            if (socialContainer && data.socialLinks.github) {
-                const githubLink = socialContainer.querySelector('a[aria-label="GitHub"]');
-                if (githubLink) githubLink.href = data.socialLinks.github;
-            }
-            if (socialContainer && data.socialLinks.linkedin) {
-                const linkedinLink = socialContainer.querySelector('a[aria-label="LinkedIn"]');
-                if (linkedinLink) linkedinLink.href = data.socialLinks.linkedin;
-            }
-            if (socialContainer && data.socialLinks.email) {
-                const emailLink = socialContainer.querySelector('a[aria-label="Email"]');
-                if (emailLink) emailLink.href = data.socialLinks.email;
+            if (socialContainer) {
+                const links = {
+                    facebook: socialContainer.querySelector('a[aria-label="Facebook"]'),
+                    youtube: socialContainer.querySelector('a[aria-label="YouTube"]'),
+                    github: socialContainer.querySelector('a[aria-label="GitHub"]'),
+                    email: socialContainer.querySelector('a[aria-label="Email"]'),
+                    linkedin: socialContainer.querySelector('a[aria-label="LinkedIn"]')
+                };
+
+                if (links.facebook && data.socialLinks.facebook) links.facebook.href = data.socialLinks.facebook;
+                if (links.youtube && data.socialLinks.youtube) links.youtube.href = data.socialLinks.youtube;
+                if (links.github && data.socialLinks.github) links.github.href = data.socialLinks.github;
+                if (links.email && data.socialLinks.email) links.email.href = data.socialLinks.email;
+                if (links.linkedin && data.socialLinks.linkedin) links.linkedin.href = data.socialLinks.linkedin;
             }
         }
 
@@ -145,21 +148,6 @@
             }
         }
 
-        // Skills Section
-        if (data.skills && Array.isArray(data.skills)) {
-            const skillsContainer = document.getElementById('skillsContainer');
-            if (skillsContainer) {
-                skillsContainer.innerHTML = '';
-                data.skills.forEach(skill => {
-                    const skillBadge = document.createElement('span');
-                    skillBadge.className = 'badge bg-primary me-2 mb-2 p-2';
-                    skillBadge.style.fontSize = '0.9rem';
-                    skillBadge.textContent = skill;
-                    skillsContainer.appendChild(skillBadge);
-                });
-            }
-        }
-
         // Interests Section
         if (data.interests && Array.isArray(data.interests)) {
             const interestsContainer = document.getElementById('interestsContainer');
@@ -174,9 +162,9 @@
                 });
             }
         }
-
-        // Add fade-in animation moved to initAnimations
     }
+
+    // Add fade-in animation moved to initAnimations
 
     // Initialize Calling Section Toggle
     function initCallingToggle() {
