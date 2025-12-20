@@ -1,9 +1,19 @@
 // Profile Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function () {
-    loadProfileData();
+    // loadProfileData(); // Disabled as profile content is now static/i18n
+    initAnimations();
     initCallingToggle();
 });
+
+function initAnimations() {
+    // Add fade-in animation
+    document.querySelectorAll('.card').forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.add('fade-in');
+        }, index * 100);
+    });
+}
 
 // Load profile data from JSON
 async function loadProfileData() {
@@ -128,13 +138,7 @@ function populateProfile(data) {
         }
     }
 
-    // Add fade-in animation
-    document.querySelectorAll('.card').forEach((card, index) => {
-        setTimeout(() => {
-            card.classList.add('fade-in');
-        }, index * 100);
-    });
-
+    // Add fade-in animation moved to initAnimations
 }
 
 // Initialize Calling Section Toggle
