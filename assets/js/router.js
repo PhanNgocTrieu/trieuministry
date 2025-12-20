@@ -78,8 +78,6 @@ class TurboRouter {
             // FORCE NEW TIMESTAMP to bypass browser cache
             fetchUrl.searchParams.set('v', Date.now());
 
-            console.log('[Router] Fetching:', fetchUrl.href);
-
             const response = await fetch(fetchUrl);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -164,11 +162,15 @@ class TurboRouter {
             // Wait, window.analytics is the instance. I need the function `logEvent`.
             // I forgot to export/expose logEvent in firebase-config.js.
             // I'll fix firebase-config.js first.
-            console.log('Analytics PageView:', url);
+            // console.log('Analytics PageView:', url);
         }
     }
 
     executeScripts(newDoc) {
+        // cleanup old scripts that were added by router
+        const oldScripts = document.querySelectorAll('script[data-router-script="true"]');
+        oldScripts.forEach(s => s.remove());
+
         // Find page-specific scripts in the new document
         // We look for scripts in 'assets/js/' that are NOT main.js, components.js, navigation.js, router.js
         const newScripts = Array.from(newDoc.querySelectorAll('script')).filter(script => {
@@ -182,13 +184,9 @@ class TurboRouter {
                 !src.includes('bootstrap'); // Bootstrap bundle usually doesn't need reload
         });
 
-        // Remove old specific scripts? 
-        // Actually, re-appending them usually triggers re-execution.
-        // We'll clean up old known page scripts to avoid duplicates/memory leaks if possible,
-        // but simple re-injection is safer for now.
-
         newScripts.forEach(script => {
             const newScript = document.createElement('script');
+            newScript.setAttribute('data-router-script', 'true'); // Mark for cleanup
             if (script.src) {
                 // Force reload of modules by adding/updating timestamp
                 const url = new URL(script.src, window.location.origin);

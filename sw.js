@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trieuministry-v8-ignore-search';
+const CACHE_NAME = 'trieuministry-v9-refresh';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

@@ -1,7 +1,8 @@
 // Blogs List Page
 (function () {
+    let allBlogs = []; // Store blogs globally for filtering
+
     function initBlogsPage() {
-        console.log('Blogs Page Initializing...');
         loadBlogs();
         setupFilters();
     }
@@ -20,21 +21,26 @@
         ensureI18n(initBlogsPage);
     }
 
-    let allBlogs = []; // Store blogs globally for filtering
-
     async function loadBlogs() {
         if (allBlogs.length > 0) {
             renderBlogs(allBlogs);
             return;
         }
 
-        const spinner = new Components.LoadingSpinner();
-        spinner.show(window.i18n.t('common.loading'));
-
         try {
-            const res = await fetch('assets/data/blogs.json');
-            if (!res.ok) throw new Error('Failed to load blogs');
-            const data = await res.json();
+            // Create a timeout promise
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Request timed out')), 5000)
+            );
+
+            // Fetch with timeout
+            const response = await Promise.race([
+                fetch('assets/data/blogs.json'),
+                timeout
+            ]);
+
+            if (!response.ok) throw new Error('Failed to load blogs');
+            const data = await response.json();
 
             // Ensure array
             allBlogs = Array.isArray(data.blogs) ? data.blogs : [];
@@ -46,11 +52,9 @@
                 populateFilters(allBlogs);
             }
         } catch (err) {
-            console.error(err);
-            Components.Toast.error(window.i18n.t('blogs.list.error_load'));
-            renderEmptyState(window.i18n.t('blogs.list.error_load'));
-        } finally {
-            spinner.hide();
+            console.error('[Blogs] Error:', err);
+            // Ensure error state is shown so spinner disappears
+            renderEmptyState(window.i18n.t('blogs.list.error_load') + ': ' + err.message);
         }
     }
 
@@ -60,10 +64,14 @@
         const countLabel = document.getElementById('countLabel');
 
         if (container) {
+            // This acts as hiding the spinner because it overwrites the container content
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-newspaper fa-4x text-muted mb-3 opacity-25"></i>
                     <p class="text-muted lead">${msg}</p>
+                    <button class="btn btn-outline-primary mt-3" onclick="location.reload()">
+                        <i class="fas fa-sync me-2"></i>Thử lại
+                    </button>
                 </div>
             `;
         }
@@ -75,7 +83,7 @@
         const countLabel = document.getElementById('countLabel');
         if (!container) return;
 
-        container.innerHTML = '';
+        container.innerHTML = ''; // This removes the spinner
 
         const filtered = applyFilters(blogs);
         if (countLabel) countLabel.textContent = `${filtered.length}`;
@@ -117,11 +125,12 @@
     }
 
     function setupFilters() {
+        const handleFilter = debounce(() => renderBlogs(allBlogs), 200);
+
         ['searchInput', 'categoryFilter', 'tagFilter'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                // Use arrow function to preserve 'this' context if needed, but here simple call is fine
-                el.addEventListener('input', () => debounce(() => renderBlogs(allBlogs), 200)());
+                el.addEventListener('input', handleFilter);
             }
         });
 
@@ -130,7 +139,6 @@
             resetBtn.addEventListener('click', () => {
                 document.getElementById('searchInput').value = '';
                 document.getElementById('categoryFilter').value = '';
-                // Clear tags if input exists (assuming it was removed in updated HTML as per request, but good to check)
                 const tagFilter = document.getElementById('tagFilter');
                 if (tagFilter) tagFilter.value = '';
 
