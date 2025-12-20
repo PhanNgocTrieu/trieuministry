@@ -324,11 +324,20 @@
         }
     }
 
+    function ensureI18n(callback) {
+        if (window.i18n && window.i18n.isReady) {
+            callback();
+        } else {
+            // Check if i18n is present but just not ready, or wait for event
+            window.addEventListener('i18nReady', callback, { once: true });
+        }
+    }
+
     // Auto-run condition - CRITICAL for SPA
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', window.initDonatePage);
+        document.addEventListener('DOMContentLoaded', () => ensureI18n(window.initDonatePage));
     } else {
-        window.initDonatePage();
+        ensureI18n(window.initDonatePage);
     }
 
 })();
