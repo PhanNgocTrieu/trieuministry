@@ -9,6 +9,7 @@ class I18nService {
         this.currentLang = 'vi'; // Default
         this.translations = {};
         this.baseDir = 'assets/data/locales/';
+        this.isReady = false;
 
         try {
             const saved = localStorage.getItem('app_lang');
@@ -23,6 +24,9 @@ class I18nService {
         await this.loadTranslations(this.currentLang);
         this.translatePage();
         this.updateHtmlLangAttribute();
+
+        this.isReady = true;
+        window.dispatchEvent(new CustomEvent('i18nReady'));
     }
 
     async loadTranslations(lang) {
