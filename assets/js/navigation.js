@@ -129,4 +129,4 @@ function initSmoothScrollNavigation() {
 // function initLanguageSwitcher() { ... }
 
 // Expose to window for Router to re-init
-window.initLanguageSwitcher = initLanguageSwitcher;
+// window.initLanguageSwitcher = initLanguageSwitcher;
