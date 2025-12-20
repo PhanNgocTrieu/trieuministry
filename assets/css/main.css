@@ -388,6 +388,16 @@ body.modal-open {
   color: white;
 }
 
+.page-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/hero_bg.png');
+  background-size: cover;
+  background-position: center;
+  padding: 100px 0;
+  text-align: center;
+  color: white;
+  margin-top: 3rem;
+}
+
 .hero-section .overlay {
   position: absolute;
   top: 0;
@@ -904,27 +914,28 @@ footer {
   background-color: #ffffff;
   color: #333333;
 }
+
 /* Calling Section Collapse Logic */
 .collapsed-content {
-    max-height: 150px;
-    overflow: hidden;
-    position: relative;
-    transition: max-height 0.5s ease-out;
+  max-height: 150px;
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.5s ease-out;
 }
 
 .collapsed-content::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
 }
 
 .expanded-content {
-    max-height: 2000px;
-    /* Large enough value */
-    transition: max-height 0.5s ease-in;
-    position: relative;
+  max-height: 2000px;
+  /* Large enough value */
+  transition: max-height 0.5s ease-in;
+  position: relative;
 }
