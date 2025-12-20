@@ -97,6 +97,18 @@
         // Populate Fields
         setText('docCategory', doc.category || 'General');
         setText('docTitle', doc.title);
+
+        // Scripture
+        const scriptureEl = document.getElementById('docScripture');
+        if (scriptureEl) {
+            if (doc.scripture) {
+                scriptureEl.style.display = 'block';
+                scriptureEl.querySelector('span').textContent = doc.scripture;
+            } else {
+                scriptureEl.style.display = 'none';
+            }
+        }
+
         setText('docAuthor', doc.author || 'Unknown Author');
 
         updateDescription(doc);

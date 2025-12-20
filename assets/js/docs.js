@@ -159,6 +159,12 @@
                         <h5 class="card-title fw-bold text-dark mb-2 text-truncate-2" style="min-height: 3rem; line-height: 1.4;">
                             ${doc.title}
                         </h5>
+                        
+                        ${doc.scripture ? `
+                        <div class="mb-2">
+                            <small class="text-secondary"><i class="fas fa-bible me-1 text-primary"></i>${doc.scripture}</small>
+                        </div>
+                        ` : ''}
                         <p class="card-text text-secondary small mb-4 text-truncate-3 flex-grow-1" style="line-height: 1.6;">
                             ${desc}
                         </p>
