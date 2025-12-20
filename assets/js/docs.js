@@ -60,7 +60,7 @@
         if (countLabel) countLabel.textContent = `0 ${window.i18n.t('docs.list.count_suffix')}`;
     }
 
-    function renderDocsGrid(docs) {
+    async function renderDocsGrid(docs) {
         const container = document.getElementById('docsSectionsContainer');
         const countLabel = document.getElementById('docsCountLabel');
         if (!container) return;
@@ -79,19 +79,32 @@
 
         if (countLabel) countLabel.textContent = `${filtered.length} ${window.i18n.t('docs.list.count_suffix')}`;
 
-        if (filtered.length === 0) {
-            renderEmptyState(window.i18n.t('docs.list.empty_filtered'));
-            return;
+        // Ensure Grid Exists
+        let gridRow = document.getElementById('docsGridRow');
+        if (!gridRow) {
+            container.innerHTML = `<div class="row g-4 justify-content-center" id="docsGridRow" style="transition: opacity 0.3s ease; opacity: 1;"></div>`;
+            gridRow = document.getElementById('docsGridRow');
         }
 
-        // Single Grid Container
-        container.innerHTML = `<div class="row g-4 justify-content-center" id="docsGridRow"></div>`;
-        const gridRow = document.getElementById('docsGridRow');
+        // Animate Out
+        gridRow.style.opacity = '0';
 
-        // Render all docs in one grid
-        filtered.forEach(doc => {
-            gridRow.innerHTML += createDocCard(doc);
-        });
+        // Wait for transition, then update and fade in
+        await new Promise(r => setTimeout(r, 200));
+
+        if (filtered.length === 0) {
+            gridRow.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-folder-open fa-4x text-muted mb-3 opacity-25"></i>
+                    <p class="text-muted lead">${window.i18n.t('docs.list.empty_filtered')}</p>
+                </div>
+            `;
+        } else {
+            gridRow.innerHTML = filtered.map(doc => createDocCard(doc)).join('');
+        }
+
+        // Animate In
+        gridRow.style.opacity = '1';
     }
 
     function createDocCard(doc) {
@@ -174,10 +187,17 @@
     function populateDocFilters(docs) {
         const category = document.getElementById('categoryDocFilter');
         if (!category) return;
+
+        // Prevent re-populating if already populated (assuming static categories)
+        if (category.options.length > 1) return;
+
         const categories = Array.from(new Set(docs.map(d => d.category).filter(Boolean)));
         // Preserve "All" option
+        const currentVal = category.value;
         category.innerHTML = `<option value="">${window.i18n.t('docs.list.category_all')}</option>` +
             categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+        if (currentVal) category.value = currentVal;
     }
 
     function debounce(fn, delay) {
