@@ -1,3 +1,28 @@
 {
-  "documents": []
+  "documents": [
+    {
+      "id": "worship-team-lessons",
+      "title": "Worship Team Lessons",
+      "author": "Trieu John",
+      "description": "A comprehensive guide to the Inductive Bible Study method, focusing on observation, interpretation, and application. This resource helps readers engage deeply with Scripture, understanding the historical context and original meaning to apply God's Word effectively in their lives.",
+      "category": "Bible Study",
+      "path": "assets/resources/bible_study/_worship_team_lessons.pdf",
+      "thumbnail": "assets/images/docs/bible_study/_worship_team_lessons.png",
+      "uploadDate": "2025-12-20",
+      "size": "2.5 MB",
+      "language": "English/Vietnamese"
+    },
+    {
+      "id": "can-i-help-you",
+      "title": "Can I Help You",
+      "author": "Trieu John",
+      "description": "A comprehensive guide to the Inductive Bible Study method, focusing on observation, interpretation, and application. This resource helps readers engage deeply with Scripture, understanding the historical context and original meaning to apply God's Word effectively in their lives.",
+      "category": "Sharing",
+      "path": "assets/resources/sharing/_can_i_help_you.pdf",
+      "thumbnail": "assets/images/docs/sharing/_can_i_help_you.jpg",
+      "uploadDate": "2025-12-20",
+      "size": "2.5 MB",
+      "language": "English/Vietnamese"
+    }
+  ]
 }

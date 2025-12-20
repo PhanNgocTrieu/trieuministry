@@ -1,0 +1,46 @@
+/* Main CSS - Additions for Document Cards */
+
+/* Line Truncation */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Card Hover Effects */
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+.hover-card:hover img {
+    transform: scale(1.05);
+}
+
+.hover-opacity {
+    transition: opacity 0.3s ease;
+}
+
+.hover-card:hover .hover-opacity {
+    opacity: 1 !important;
+}
+
+/* Badge Tweaks */
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+.border-primary-subtle {
+    border-color: rgba(13, 110, 253, 0.2) !important;
+}
