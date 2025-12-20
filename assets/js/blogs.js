@@ -85,20 +85,21 @@
             const card = document.createElement('div');
             card.className = 'card h-100 shadow-sm';
             card.innerHTML = `
-                <img src="${blog.image || ''}" class="card-img-top blog-card-image" alt="${blog.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x360?text=Blog'">
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-light text-dark border">${blog.category || 'General'}</span>
                         <small class="text-muted"><i class="fas fa-clock me-1"></i>${blog.readingTime || 3} ${window.i18n.t('blogs.list.min_read')}</small>
                     </div>
-                    <h5 class="card-title">${blog.title}</h5>
-                    <p class="card-text text-muted">${blog.excerpt}</p>
-                    <div class="mt-auto d-flex flex-wrap gap-2 mb-3">
-                        ${(blog.tags || []).map(t => `<span class="badge bg-secondary-subtle text-dark border">${t}</span>`).join('')}
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted"><i class="fas fa-calendar me-1"></i>${blog.date}</small>
-                        <a class="btn btn-sm btn-primary" href="blog-detail.html?slug=${blog.slug}">${window.i18n.t('blogs.list.read_more')}</a>
+                    <h5 class="card-title fw-bold text-primary">${blog.title}</h5>
+                    <p class="card-text text-muted flex-grow-1">${blog.excerpt}</p>
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            ${(blog.tags || []).map(t => `<span class="badge bg-secondary-subtle text-dark border">${t}</span>`).join('')}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>${blog.date}</small>
+                            <a class="btn btn-sm btn-outline-primary rounded-pill px-3" href="blog-detail.html?slug=${blog.slug}">${window.i18n.t('blogs.list.read_more')}</a>
+                        </div>
                     </div>
                 </div>
             `;

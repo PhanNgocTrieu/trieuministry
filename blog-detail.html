@@ -91,35 +91,26 @@
 
         <section class="section-padding">
             <div class="container">
-                <div class="row">
+                <div class="row justify-content-center">
                     <div class="col-lg-8">
-                        <article class="card shadow-sm border-0 mb-4">
-                            <img src="" alt="Blog image" class="card-img-top blog-detail-image" id="blogImage"
-                                onerror="this.src='https://via.placeholder.com/900x400?text=Blog+Image'">
-                            <div class="card-body p-4" id="blogContent">
+                        <article class="card shadow-sm border-0 mb-4 bg-white">
+                            <div class="card-body p-4 p-md-5" id="blogContent">
                                 <!-- Content will be injected here -->
                             </div>
                         </article>
 
-                        <div class="d-flex flex-wrap gap-2 mb-4" id="blogTags"></div>
+                        <div class="d-flex flex-wrap gap-2 mb-5" id="blogTags"></div>
 
-                        <div class="d-flex flex-wrap gap-2 mb-4">
-                            <button class="btn btn-outline-primary" id="shareBtn"><i
+                        <hr class="my-5">
+
+                        <div class="d-flex flex-wrap gap-2 mb-4 justify-content-center">
+                            <button class="btn btn-outline-primary rounded-pill px-4" id="shareBtn"><i
                                     class="fas fa-share-alt me-2"></i>Chia sẻ</button>
-                            <button class="btn btn-outline-secondary" id="printBtn"><i
-                                    class="fas fa-print me-2"></i>In</button>
+                            <button class="btn btn-outline-secondary rounded-pill px-4" id="printBtn"
+                                onclick="window.print()"><i class="fas fa-print me-2"></i>In bài viết</button>
                         </div>
 
                         <div class="d-flex justify-content-between mb-5" id="prevNextNav"></div>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-body">
-                                <h5 class="fw-semibold mb-3">Bài liên quan</h5>
-                                <div id="relatedPosts" class="d-flex flex-column gap-3"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -216,7 +207,7 @@
     <script src="assets/js/navigation.js?v=4"></script>
     <script type="module" src="assets/js/firebase-config.js?v=4"></script>
     <script src="assets/js/router.js?v=4"></script>
-    <script src="assets/js/blog-detail.js?v=4"></script>
+    <script src="assets/js/blog-detail.js?v=5"></script>
 </body>
 
 </html>

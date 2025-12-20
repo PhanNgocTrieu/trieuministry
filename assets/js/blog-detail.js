@@ -1,8 +1,10 @@
 // Blog Detail Page
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogDetail);
+} else {
     initBlogDetail();
-});
+}
 
 async function initBlogDetail() {
     const params = new URLSearchParams(window.location.search);
@@ -29,7 +31,6 @@ async function initBlogDetail() {
         const blog = blogs[index];
         renderBlog(blog);
         renderPrevNext(blogs, index);
-        renderRelated(blogs, blog);
         setupShare(blog);
         setupPrint();
         setupProgress();
@@ -48,15 +49,13 @@ function renderBlog(blog) {
     document.getElementById('blogReadingTime').textContent = `${blog.readingTime || 3} phút đọc`;
     document.getElementById('blogCategory').textContent = blog.category || 'General';
 
-    const img = document.getElementById('blogImage');
-    img.src = blog.image || '';
-    img.alt = blog.title;
+    document.getElementById('blogCategory').textContent = blog.category || 'General';
 
     const contentEl = document.getElementById('blogContent');
-    contentEl.innerHTML = blog.content || '';
+    contentEl.innerHTML = blog.content || '<p class="text-muted fst-italic">Nội dung đang cập nhật...</p>';
 
     const tagsEl = document.getElementById('blogTags');
-    tagsEl.innerHTML = (blog.tags || []).map(t => `<span class="badge bg-secondary me-2">${t}</span>`).join('');
+    tagsEl.innerHTML = (blog.tags || []).map(t => `<span class="badge bg-secondary-subtle text-dark border me-2">${t}</span>`).join('');
 }
 
 function renderPrevNext(blogs, index) {
@@ -71,22 +70,6 @@ function renderPrevNext(blogs, index) {
         html += `<a class="btn btn-outline-primary" href="blog-detail.html?slug=${next.slug}">${next.title} &raquo;</a>`;
     }
     nav.innerHTML = html;
-}
-
-function renderRelated(blogs, blog) {
-    const relatedEl = document.getElementById('relatedPosts');
-    if (!relatedEl) return;
-    const related = blogs.filter(b => b.slug !== blog.slug && b.category === blog.category).slice(0, 3);
-    if (!related.length) {
-        relatedEl.innerHTML = '<small class="text-muted">Chưa có bài liên quan.</small>';
-        return;
-    }
-    relatedEl.innerHTML = related.map(r => `
-        <div class="related-item">
-            <a href="blog-detail.html?slug=${r.slug}" class="fw-semibold text-decoration-none">${r.title}</a>
-            <div class="text-muted small">${r.date}</div>
-        </div>
-    `).join('');
 }
 
 function setupShare(blog) {
