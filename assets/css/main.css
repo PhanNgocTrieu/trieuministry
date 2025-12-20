@@ -792,12 +792,42 @@ footer {
   border-radius: 0;
 }
 
-.modal-content:-moz-full-screen {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  border-radius: 0;
+
+/* Premium Blog Filter */
+.glass-filter-container {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
+
+.search-wrapper .search-icon,
+.position-relative .search-icon {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  z-index: 5;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.glass-filter-container .form-control,
+.glass-filter-container .form-select {
+  transition: all 0.3s ease;
+}
+
+.glass-filter-container .form-control:focus,
+.glass-filter-container .form-select:focus {
+  background: white;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+}
+
+.glass-filter-container .form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-position: right 1.25rem center;
+}
+
 
 .modal-content:-ms-fullscreen {
   width: 100vw;

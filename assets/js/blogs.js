@@ -20,7 +20,14 @@
         ensureI18n(initBlogsPage);
     }
 
+    let allBlogs = []; // Store blogs globally for filtering
+
     async function loadBlogs() {
+        if (allBlogs.length > 0) {
+            renderBlogs(allBlogs);
+            return;
+        }
+
         const spinner = new Components.LoadingSpinner();
         spinner.show(window.i18n.t('common.loading'));
 
@@ -30,13 +37,13 @@
             const data = await res.json();
 
             // Ensure array
-            const blogs = Array.isArray(data.blogs) ? data.blogs : [];
+            allBlogs = Array.isArray(data.blogs) ? data.blogs : [];
 
-            if (blogs.length === 0) {
+            if (allBlogs.length === 0) {
                 renderEmptyState();
             } else {
-                renderBlogs(blogs);
-                populateFilters(blogs);
+                renderBlogs(allBlogs);
+                populateFilters(allBlogs);
             }
         } catch (err) {
             console.error(err);
@@ -60,7 +67,7 @@
                 </div>
             `;
         }
-        if (countLabel) countLabel.textContent = `0 ${window.i18n.t('blogs.list.count_suffix')}`;
+        if (countLabel) countLabel.textContent = `0`;
     }
 
     function renderBlogs(blogs) {
@@ -71,7 +78,7 @@
         container.innerHTML = '';
 
         const filtered = applyFilters(blogs);
-        if (countLabel) countLabel.textContent = `${filtered.length} ${window.i18n.t('blogs.list.count_suffix')}`;
+        if (countLabel) countLabel.textContent = `${filtered.length}`;
 
         if (filtered.length === 0) {
             renderEmptyState(window.i18n.t('blogs.list.empty_filtered'));
@@ -113,23 +120,45 @@
         ['searchInput', 'categoryFilter', 'tagFilter'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.addEventListener('input', debounce(loadBlogs, 200));
+                // Use arrow function to preserve 'this' context if needed, but here simple call is fine
+                el.addEventListener('input', () => debounce(() => renderBlogs(allBlogs), 200)());
             }
         });
+
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('categoryFilter').value = '';
+                // Clear tags if input exists (assuming it was removed in updated HTML as per request, but good to check)
+                const tagFilter = document.getElementById('tagFilter');
+                if (tagFilter) tagFilter.value = '';
+
+                renderBlogs(allBlogs);
+            });
+        }
     }
 
     function populateFilters(blogs) {
         const categoryFilter = document.getElementById('categoryFilter');
         if (!categoryFilter) return;
 
+        // Check if options are already populated (length > 1 means more than just placeholder)
+        if (categoryFilter.options.length > 1) return;
+
         const categories = Array.from(new Set(blogs.map(b => b.category).filter(Boolean)));
-        categoryFilter.innerHTML = `<option value="">${window.i18n.t('blogs.list.category_all')}</option>` + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        // Preserve existing first option (placeholder)
+        const placeholder = categoryFilter.options[0].outerHTML;
+        categoryFilter.innerHTML = placeholder + categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
     function applyFilters(blogs) {
-        const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
-        const category = document.getElementById('categoryFilter')?.value || '';
-        const tag = (document.getElementById('tagFilter')?.value || '').toLowerCase();
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+
+        // Safety check if elements are missing
+        const search = (searchInput?.value || '').toLowerCase();
+        const category = categoryFilter?.value || '';
 
         return blogs.filter(blog => {
             const matchesSearch = !search ||
@@ -137,8 +166,7 @@
                 blog.excerpt.toLowerCase().includes(search) ||
                 (blog.content && blog.content.toLowerCase().includes(search));
             const matchesCategory = !category || blog.category === category;
-            const matchesTag = !tag || (blog.tags || []).some(t => t.toLowerCase().includes(tag));
-            return matchesSearch && matchesCategory && matchesTag;
+            return matchesSearch && matchesCategory;
         });
     }
 

@@ -101,34 +101,36 @@
         </section>
 
         <!-- Filters -->
-        <section class="section-padding bg-white sticky-top shadow-sm" style="top: 70px; z-index: 9;">
-            <div class="container">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i
-                                    class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" id="searchInput"
-                                placeholder="Tìm kiếm bài viết..."
-                                data-i18n-placeholder="blogs.list.search_placeholder">
+        <section class="section-padding bg-white shadow-sm">
+            <div class="container relative-z-10">
+                <div class="glass-filter-container p-4 rounded-4 shadow-sm bg-white">
+                    <div class="row g-4 align-items-end">
+                        <div class="col-lg-5">
+                            <h6 class="text-uppercase fw-bold text-muted small mb-2 ls-1">Tìm kiếm bài viết</h6>
+                            <div class="search-wrapper position-relative">
+                                <i class="fas fa-search search-icon text-muted"></i>
+                                <input type="text"
+                                    class="form-control form-control-lg border-0 bg-light rounded-3 ps-5 py-3 shadow-none"
+                                    id="searchInput" placeholder="Tìm kiếm theo tiêu đề..."
+                                    data-i18n-placeholder="blogs.list.search_placeholder">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" id="categoryFilter">
-                            <option value="" data-i18n="blogs.list.category_all">Tất cả danh mục</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i
-                                    class="fas fa-tag text-muted"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" id="tagFilter"
-                                placeholder="Lọc theo thẻ..." data-i18n-placeholder="blogs.list.tag_placeholder">
+                        <div class="col-md-8 col-lg-5">
+                            <h6 class="text-uppercase fw-bold text-muted small mb-2 ls-1">Danh mục</h6>
+                            <div class="position-relative">
+                                <i class="fas fa-filter search-icon text-muted" style="z-index: 5;"></i>
+                                <select
+                                    class="form-select form-select-lg border-0 bg-light rounded-3 ps-5 py-3 shadow-none"
+                                    id="categoryFilter" style="cursor: pointer;">
+                                    <option value="" data-i18n="blogs.list.category_all">Tất cả danh mục</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2 text-md-end">
-                        <span class="text-muted fw-bold small" id="countLabel">0 <span
-                                data-i18n="blogs.list.count_suffix">bài</span></span>
+                        <div class="col-md-4 col-lg-2">
+                            <button class="btn btn-primary btn-lg w-100 rounded-3 py-3 fw-bold" id="resetBtn">
+                                <i class="fas fa-redo-alt me-2"></i>Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
