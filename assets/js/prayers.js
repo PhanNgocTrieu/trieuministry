@@ -236,11 +236,20 @@ function setupModals() {
     }
 }
 
+// i18n Guard
+function ensureI18n(callback) {
+    if (window.i18n && window.i18n.isReady) {
+        callback();
+    } else {
+        window.addEventListener('i18nReady', callback, { once: true });
+    }
+}
+
 // Auto-run logic
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.initPrayersPage);
+    document.addEventListener('DOMContentLoaded', () => ensureI18n(window.initPrayersPage));
 } else {
-    window.initPrayersPage();
+    ensureI18n(window.initPrayersPage);
 }
 
 /**
@@ -577,12 +586,12 @@ function renderPrayers() {
     if (filteredPrayers.length === 0) {
         container.innerHTML = '';
         if (emptyState) emptyState.style.display = 'block';
-        if (countLabel) countLabel.textContent = '0 lời cầu nguyện';
+        if (countLabel) countLabel.textContent = `0 ${window.i18n.t('prayers.list.count_suffix')}`;
         return;
     }
 
     if (emptyState) emptyState.style.display = 'none';
-    if (countLabel) countLabel.textContent = `${filteredPrayers.length} lời cầu nguyện`;
+    if (countLabel) countLabel.textContent = `${filteredPrayers.length} ${window.i18n.t('prayers.list.count_suffix')}`;
 
     // Sort: Not Prayed -> Prayed -> Answered. Then by Date Desc.
     const statusOrder = { 'not_prayed': 0, 'prayed': 1, 'answered': 2 };

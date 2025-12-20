@@ -134,6 +134,7 @@
             "search_placeholder": "Tìm theo tên hoặc nội dung...",
             "filter_label": "Lọc theo trạng thái",
             "filter_reset": "Đặt lại",
+            "count_suffix": "lời cầu nguyện",
             "empty_title": "Chưa có lời cầu nguyện nào",
             "empty_sub": "Hãy thêm lời cầu nguyện đầu tiên của bạn"
         },

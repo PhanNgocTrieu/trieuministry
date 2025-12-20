@@ -134,6 +134,7 @@
             "search_placeholder": "Search by name or content...",
             "filter_label": "Filter by status",
             "filter_reset": "Reset",
+            "count_suffix": "prayers",
             "empty_title": "No prayers found",
             "empty_sub": "Be the first to add a prayer request"
         },

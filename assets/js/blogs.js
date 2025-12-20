@@ -6,10 +6,18 @@
         setupFilters();
     }
 
+    function ensureI18n(callback) {
+        if (window.i18n && window.i18n.isReady) {
+            callback();
+        } else {
+            window.addEventListener('i18nReady', callback, { once: true });
+        }
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initBlogsPage);
+        document.addEventListener('DOMContentLoaded', () => ensureI18n(initBlogsPage));
     } else {
-        initBlogsPage();
+        ensureI18n(initBlogsPage);
     }
 
     async function loadBlogs() {
