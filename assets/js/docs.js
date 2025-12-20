@@ -82,7 +82,7 @@
         // Ensure Grid Exists
         let gridRow = document.getElementById('docsGridRow');
         if (!gridRow) {
-            container.innerHTML = `<div class="row g-4 justify-content-center" id="docsGridRow" style="transition: opacity 0.3s ease; opacity: 1;"></div>`;
+            container.innerHTML = `<div class="row g-4" id="docsGridRow" style="transition: opacity 0.3s ease; opacity: 1;"></div>`;
             gridRow = document.getElementById('docsGridRow');
         }
 
@@ -123,45 +123,54 @@
 
         return `
             <div class="col-sm-6 col-lg-4 col-xl-3">
-                <div class="card h-100 border-0 shadow-sm hover-card transition-all" 
-                     style="cursor: pointer; overflow: hidden;"
+                <div class="card h-100 border-0 shadow hover-card rounded-4 overflow-hidden" 
+                     style="cursor: pointer;"
                      onclick="window.location.href='doc-detail.html?id=${doc.id}'">
                     
-                    <!-- Image Container with Aspect Ratio -->
-                    <div class="position-relative overflow-hidden" style="padding-top: 140%; background: #f8f9fa;">
+                    <!-- Image Container -->
+                    <div class="position-relative overflow-hidden" style="padding-top: 130%; background: #f8f9fa;">
                         <img src="${thumb}" 
-                             class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-transform" 
-                             style="transition: transform 0.5s ease;"
+                             class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" 
+                             style="transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);"
                              alt="${doc.title}"
                              onerror="this.src='assets/images/docs/default.jpg'">
                         
-                        <!-- Overlay on Hover -->
-                        <div class="card-img-overlay d-flex align-items-center justify-content-center bg-dark bg-opacity-25 opacity-0 hover-opacity transition-all">
-                            <span class="btn btn-light rounded-pill px-4 shadow-sm">
-                                <i class="fas fa-eye me-2"></i>Chi tiết
+                        <!-- Premium Badge (Optional, can be logic based) -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-white text-dark shadow-sm rounded-pill px-3 py-2 fw-normal small">
+                                <i class="fas fa-book-open me-1 text-primary"></i> Free
+                            </span>
+                        </div>
+
+                        <!-- Hover Overlay -->
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-opacity transition-all">
+                            <span class="btn btn-light rounded-pill px-4 py-2 shadow-lg fw-bold transform-y-5">
+                                <i class="fas fa-eye me-2"></i>Xem chi tiết
                             </span>
                         </div>
                     </div>
 
-                    <div class="card-body d-flex flex-column p-3">
-                        <div class="mb-2">
-                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
+                    <div class="card-body d-flex flex-column p-4">
+                        <div class="mb-3">
+                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
                                 ${doc.category || 'General'}
                              </span>
                         </div>
-                        <h6 class="card-title fw-bold text-dark mb-2 text-truncate-2" style="min-height: 2.4rem; line-height: 1.2;">
+                        <h5 class="card-title fw-bold text-dark mb-2 text-truncate-2" style="min-height: 3rem; line-height: 1.4;">
                             ${doc.title}
-                        </h6>
-                        <p class="card-text text-muted small mb-3 text-truncate-3 flex-grow-1" style="line-height: 1.4;">
+                        </h5>
+                        <p class="card-text text-secondary small mb-4 text-truncate-3 flex-grow-1" style="line-height: 1.6;">
                             ${desc}
                         </p>
                         
                         <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
-                            <div class="d-flex align-items-center text-secondary small">
-                                <i class="fas fa-user-circle me-2"></i>
-                                <span class="text-truncate" style="max-width: 100px;">${doc.author || 'Unknown'}</span>
+                            <div class="d-flex align-items-center text-muted small fw-medium">
+                                <i class="fas fa-user-circle me-2 text-primary"></i>
+                                <span class="text-truncate" style="max-width: 120px;">${doc.author || 'TrieuMinistry'}</span>
                             </div>
-                            <small class="text-muted"><i class="fas fa-download me-1"></i> PDF</small>
+                            <span class="text-primary small fw-bold hover-underline">
+                                <i class="fas fa-download me-1"></i> Tải về
+                            </span>
                         </div>
                     </div>
                 </div>

@@ -100,6 +100,18 @@
           <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
             <a class="btn btn-primary rounded-pill px-4" href="donate.html" data-i18n="nav.donate">Dâng hiến</a>
           </li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button"
+                id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-globe me-1"></i> <span id="currentLangLabel">Tiếng Việt</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                <li><a class="dropdown-item" href="#" onclick="window.i18n.switchLanguage('vi')">Tiếng Việt</a></li>
+                <li><a class="dropdown-item" href="#" onclick="window.i18n.switchLanguage('en')">English</a></li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
@@ -107,7 +119,8 @@
 
   <main>
     <!-- Hero -->
-    <section class="hero-section bg-gradient-primary text-white py-5 mt-5">
+    <section class="hero-section bg-gradient-primary text-white pt-5 pb-5 mt-5"
+      style="padding-bottom: 5rem !important;">
       <div class="container py-4 fade-in-up">
         <div class="row align-items-center">
           <div class="col-lg-8">
@@ -123,27 +136,34 @@
     </section>
 
     <!-- Filters -->
-    <section class="pt-5 pb-3 bg-light">
+    <section class="py-5 bg-light">
       <div class="container">
-        <div class="card shadow-sm border-0">
-          <div class="card-body">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-body p-4">
             <div class="row g-3 align-items-center">
               <div class="col-md-5">
-                <label class="form-label fw-semibold" data-i18n="docs.list.search_placeholder">Tìm kiếm</label>
+                <label class="form-label fw-bold text-secondary small text-uppercase ls-1"
+                  data-i18n="docs.list.search_placeholder">Tìm kiếm</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
-                  <input type="text" class="form-control" id="searchDocInput" placeholder="Tên sách, tài liệu..."
-                    data-i18n-placeholder="docs.list.search_placeholder">
+                  <span class="input-group-text bg-light border-0 text-primary ps-3"><i
+                      class="fas fa-search"></i></span>
+                  <input type="text" class="form-control bg-light border-0 py-2" id="searchDocInput"
+                    placeholder="Tên sách, tài liệu..." data-i18n-placeholder="docs.list.search_placeholder">
                 </div>
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-semibold" data-i18n="prayers.form.category_label">Danh mục</label>
-                <select class="form-select" id="categoryDocFilter">
-                  <option value="" data-i18n="docs.list.category_all">Tất cả</option>
-                </select>
+                <label class="form-label fw-bold text-secondary small text-uppercase ls-1"
+                  data-i18n="prayers.form.category_label">Danh mục</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0 text-primary ps-3"><i
+                      class="fas fa-filter"></i></span>
+                  <select class="form-select bg-light border-0 py-2" id="categoryDocFilter">
+                    <option value="" data-i18n="docs.list.category_all">Tất cả</option>
+                  </select>
+                </div>
               </div>
               <div class="col-md-3 d-flex align-items-end justify-content-md-end">
-                <button class="btn btn-outline-secondary w-100 w-md-auto" id="resetFilters">
+                <button class="btn btn-primary w-100 py-2 rounded-pill shadow-sm hover-scale" id="resetFilters">
                   <i class="fas fa-undo me-2"></i><span data-i18n="docs.list.reset">Làm mới</span>
                 </button>
               </div>
@@ -156,18 +176,25 @@
     <!-- Docs List -->
     <section class="pb-5 pt-3 bg-light">
       <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="mb-0 fw-bold" data-i18n="docs.list.title">Tài liệu mới nhất</h2>
-          <span class="badge bg-primary rounded-pill px-3 py-2" id="docsCountLabel">0 <span
-              data-i18n="docs.list.count_suffix">tài liệu</span></span>
-        </div>
+        <!-- Unified Premium Card -->
+        <div class="bg-white rounded-4 shadow-lg p-4 p-md-5 position-relative overflow-hidden">
+          <!-- Header -->
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 border-bottom border-3 pb-3 position-relative">
+            <div>
+              <h2 class="mb-1 fw-bold text-dark display-6" data-i18n="docs.list.title">Tài liệu mới nhất</h2>
+            </div>
+            <span class="badge bg-primary rounded-pill px-4 py-2 mt-3 mt-md-0 shadow-sm transition-all hover-scale"
+              id="docsCountLabel">0 <span data-i18n="docs.list.count_suffix">tài liệu</span></span>
+          </div>
 
-        <!-- Category Sections Container -->
-        <div id="docsSectionsContainer">
-          <!-- Loading -->
-          <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
+          <!-- Category Sections Container -->
+          <div id="docsSectionsContainer" class="position-relative">
+            <!-- Loading -->
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </div>
           </div>
         </div>

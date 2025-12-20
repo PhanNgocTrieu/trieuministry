@@ -1,6 +1,8 @@
 // Profile Page JavaScript
 (function () {
-    document.addEventListener('DOMContentLoaded', function () {
+    const BIRTH_YEAR = 1999;
+
+    function init() {
         // loadProfileData(); // Disabled as profile content is now static/i18n
         initAnimations();
         initCallingToggle();
@@ -8,21 +10,43 @@
         // Initial render attempt (safe if i18n is ready)
         if (window.i18n && window.i18n.isReady) {
             renderBioWithAge();
+        } else {
+            // Fallback if i18n not ready yet
+            renderBioWithAge();
         }
-    });
+    }
+
+    // Run init immediately if DOM is ready (Turbo Router case), otherwise wait
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
     // Listen for i18n events
     window.addEventListener('i18nReady', renderBioWithAge);
     window.addEventListener('languageChanged', renderBioWithAge);
 
-    const BIRTH_YEAR = 1999;
-
     function renderBioWithAge() {
-        const bioEl = document.querySelector('[data-i18n="profile.founder.bio"]');
-        if (!bioEl || !window.i18n) return;
+        console.log('[Profile] renderBioWithAge triggered');
+        // We use ID now instead of data-i18n to avoid race condition with i18n.js
+        const bioEl = document.getElementById('profileBio');
+        if (!bioEl) {
+            console.error('[Profile] #profileBio element not found');
+            return;
+        }
+        if (!window.i18n) {
+            console.error('[Profile] window.i18n not ready');
+            return;
+        }
+
+        const currentLang = window.i18n.currentLang;
+        console.log('[Profile] Current lang:', currentLang);
 
         // Get raw translation
         const rawText = window.i18n.t('profile.founder.bio');
+        console.log('[Profile] Raw text retrieved:', rawText ? rawText.substring(0, 30) + '...' : 'null');
+
         if (!rawText) return;
 
         // Calculate age
@@ -30,16 +54,10 @@
         const age = currentYear - BIRTH_YEAR;
 
         // Replace placeholder
-        // Using simple replace. i18n files should have {{age}}
-        const pattern = /\{\{age\}\}/g;
-        // Also handle replacing "26" just in case cached/old json is used? No, just pattern.
+        const finalText = rawText.replace(/\{\{age\}\}/g, age);
+        console.log('[Profile] Final text set:', finalText ? finalText.substring(0, 30) + '...' : 'empty');
 
-        const finalText = rawText.replace(pattern, age);
-
-        // Set content. 
-        // IMPORTANT: If we set innerHTML, i18n.js might overwrite it on next language change?
-        // Yes, but we are listening to 'languageChanged' which happens AFTER i18n updates content.
-        // So we will overwrite i18n's output (which contains {{age}}) with our value.
+        // Set content
         bioEl.innerHTML = finalText;
     }
 
