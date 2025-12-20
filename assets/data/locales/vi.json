@@ -105,6 +105,16 @@
         "modal": {
             "preview_title": "Xem trước tài liệu",
             "download": "Tải xuống"
+        },
+        "detail": {
+            "breadcrumb": "Chi tiết",
+            "about_title": "Giới thiệu về tài liệu",
+            "download_action": "Tải Xuống",
+            "prev": "Tài liệu trước",
+            "next": "Tài liệu sau",
+            "error_id": "Không tìm thấy ID tài liệu.",
+            "error_not_found": "Không tìm thấy tài liệu này.",
+            "error_fetch": "Đã xảy ra lỗi khi tải thông tin tài liệu."
         }
     },
     "prayers": {

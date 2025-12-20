@@ -125,6 +125,21 @@
                         <a class="btn btn-primary rounded-pill px-4" href="donate.html" data-i18n="nav.donate">Dâng
                             hiến</a>
                     </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button"
+                                id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-globe me-1"></i> <span id="currentLangLabel">Tiếng Việt</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="window.i18n.switchLanguage('vi')">Tiếng
+                                        Việt</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        onclick="window.i18n.switchLanguage('en')">English</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -96,7 +96,17 @@
 
     function createDocCard(doc) {
         const thumb = doc.thumbnail || 'assets/images/docs/default.jpg';
-        const desc = doc.description ? (doc.description.substring(0, 100) + '...') : '';
+
+        // Handle localized description
+        let descText = '';
+        if (typeof doc.description === 'object' && doc.description !== null) {
+            const currentLang = window.i18n ? window.i18n.currentLang : 'vi';
+            descText = doc.description[currentLang] || doc.description['vi'] || '';
+        } else {
+            descText = doc.description || '';
+        }
+
+        const desc = descText ? (descText.substring(0, 100) + '...') : '';
 
         return `
             <div class="col-sm-6 col-lg-4 col-xl-3">

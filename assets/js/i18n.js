@@ -24,6 +24,7 @@ class I18nService {
         await this.loadTranslations(this.currentLang);
         this.translatePage();
         this.updateHtmlLangAttribute();
+        this.updateLanguageLabel(this.currentLang);
 
         this.isReady = true;
         window.dispatchEvent(new CustomEvent('i18nReady'));
@@ -59,6 +60,7 @@ class I18nService {
 
             this.translatePage();
             this.updateHtmlLangAttribute();
+            this.updateLanguageLabel(lang);
 
             // Dispatch event for other components to react (e.g., re-render dynamic lists)
             window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
@@ -122,6 +124,13 @@ class I18nService {
 
     updateHtmlLangAttribute() {
         document.documentElement.lang = this.currentLang;
+    }
+
+    updateLanguageLabel(lang) {
+        const label = document.getElementById('currentLangLabel');
+        if (label) {
+            label.textContent = lang === 'vi' ? 'Tiếng Việt' : 'English';
+        }
     }
 
     getCurrentLang() {

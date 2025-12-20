@@ -57,6 +57,20 @@
                         <a class="nav-link" href="prayers.html" data-i18n="nav.prayers">Cầu nguyện</a>
                     </li>
                     <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button"
+                                id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-globe me-1"></i> <span id="currentLangLabel">Tiếng Việt</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="window.i18n.switchLanguage('vi')">Tiếng
+                                        Việt</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        onclick="window.i18n.switchLanguage('en')">English</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                         <a class="btn btn-primary rounded-pill px-4" href="donate.html" data-i18n="nav.donate">Dâng
                             hiến</a>
                     </li>
@@ -71,8 +85,10 @@
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="docs.html" class="text-decoration-none">Tài liệu</a></li>
-                        <li class="breadcrumb-item active" aria-current="page" id="breadcrumbTitle">Chi tiết</li>
+                        <li class="breadcrumb-item"><a href="docs.html" class="text-decoration-none"
+                                data-i18n="nav.docs">Tài liệu</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" id="breadcrumbTitle"
+                            data-i18n="docs.detail.breadcrumb">Chi tiết</li>
                     </ol>
                 </nav>
 
@@ -98,7 +114,8 @@
                                 </p>
 
                                 <div class="mb-5">
-                                    <h5 class="fw-bold mb-3">Giới thiệu về tài liệu</h5>
+                                    <h5 class="fw-bold mb-3" data-i18n="docs.detail.about_title">Giới thiệu về tài liệu
+                                    </h5>
                                     <p class="text-secondary lead" style="text-align: justify; line-height: 1.8;"
                                         id="docDescription">
                                         Description goes here...
@@ -126,8 +143,25 @@
 
                                 <div class="d-flex gap-3">
                                     <button id="downloadBtn" class="btn btn-primary btn-lg rounded-pill px-5">
-                                        <i class="fas fa-download me-2"></i> Tải Xuống
+                                        <i class="fas fa-download me-2"></i> <span
+                                            data-i18n="docs.detail.download_action">Tải Xuống</span>
                                     </button>
+                                </div>
+
+                                <!-- Navigation Buttons -->
+                                <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                                    <a id="prevDocBtn" href="#"
+                                        class="btn btn-outline-secondary rounded-pill px-4 text-decoration-none"
+                                        style="visibility: hidden;">
+                                        <i class="fas fa-arrow-left me-2"></i> <span
+                                            data-i18n="docs.detail.prev">Previous</span>
+                                    </a>
+                                    <a id="nextDocBtn" href="#"
+                                        class="btn btn-outline-secondary rounded-pill px-4 text-decoration-none"
+                                        style="visibility: hidden;">
+                                        <span data-i18n="docs.detail.next">Next</span> <i
+                                            class="fas fa-arrow-right ms-2"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

@@ -105,6 +105,16 @@
         "modal": {
             "preview_title": "Preview Document",
             "download": "Download"
+        },
+        "detail": {
+            "breadcrumb": "Detail",
+            "about_title": "About this Document",
+            "download_action": "Download",
+            "prev": "Previous Document",
+            "next": "Next Document",
+            "error_id": "Document ID not found.",
+            "error_not_found": "Document not found.",
+            "error_fetch": "Error loading document details."
         }
     },
     "prayers": {

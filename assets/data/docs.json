@@ -4,7 +4,10 @@
       "id": "worship-team-lessons",
       "title": "Worship Team Lessons",
       "author": "Trieu John",
-      "description": "A comprehensive guide to the Inductive Bible Study method, focusing on observation, interpretation, and application. This resource helps readers engage deeply with Scripture, understanding the historical context and original meaning to apply God's Word effectively in their lives.",
+      "description": {
+        "vi": "Đây là loại bài học Kinh Thánh được sử dụng để học cùng với ban thờ phượng tại Hội Thánh Vision trong năm 2024. Loạt bài này đi theo dòng lịch sử và được bắt đầu bằng sách Xuất Ai Cập cho đến Ê-xơ-tê và chưa có những bài sau đó. Với lượng bài học tập 10 bài dùng để có sự nhìn nhận tổng quan về Kinh Thánh cũng như là bài học áp dụng cho ban thờ phượng. Sách này chưa thật sự sâu sắc trong vấn đề thần học nên khi sử dụng cần nhận biết rằng đó là những bài học mà tôi học được qua quá trình cầu nguyện và học Lời Chúa. Ao ước và cầu nguyện rằng những lần xuất bản sau sẽ có sự sâu sắc hơn trong sự dẫn dắt của Thánh Linh.",
+        "en": "These are Bible lessons used for the Worship Team at Vision Church in 2024. This series follows the historical timeline, starting from Exodus to Esther. With about 10 lessons, it aims to provide a biblical overview and practical applications for worship team members. While not deeply theological, these lessons reflect my personal learnings through prayer and studying God's Word. I hope and pray that future editions will be deeper under the Holy Spirit's guidance."
+      },
       "category": "Bible Study",
       "path": "assets/resources/bible_study/_worship_team_lessons.pdf",
       "thumbnail": "assets/images/docs/bible_study/_worship_team_lessons.png",
@@ -16,7 +19,10 @@
       "id": "can-i-help-you",
       "title": "Can I Help You",
       "author": "Trieu John",
-      "description": "A comprehensive guide to the Inductive Bible Study method, focusing on observation, interpretation, and application. This resource helps readers engage deeply with Scripture, understanding the historical context and original meaning to apply God's Word effectively in their lives.",
+      "description": {
+        "vi": "Đây là bài chia sẻ được sử dụng trong chuyến retreat cùng với ban truyền thông Hội Thánh Vision với chủ đề \"Can I Help You\". Chủ đề này nương trên phân đoạn Kinh Thánh Phi-líp 2, với lời kêu gọi hãy mang lấy tâm tình như Đấng Christ đã có: Ngài vốn là Đấng Thánh nhưng đã trở nên con người để cứu chuộc nhân loại khỏi tội lỗi. Tôi tin rằng sự khiêm nhường giống như Đấng Christ là khởi đầu để chúng ta có thể thực sự giúp đỡ người khác.",
+        "en": "This message was shared during the Vision Church Media Team retreat with the theme \"Can I Help You\". Based on Philippians 2, it calls us to have the same mindset as Christ Jesus: who, being Holy, became human to redeem humanity from sin. I believe that Christ-like humility is the starting point for us to truly help others."
+      },
       "category": "Sharing",
       "path": "assets/resources/sharing/_can_i_help_you.pdf",
       "thumbnail": "assets/images/docs/sharing/_can_i_help_you.jpg",
