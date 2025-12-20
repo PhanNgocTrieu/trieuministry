@@ -1,7 +1,8 @@
 // Profile Page JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadProfileData();
+    initCallingToggle();
 });
 
 // Load profile data from JSON
@@ -11,7 +12,7 @@ async function loadProfileData() {
         if (!response.ok) {
             throw new Error('Failed to load profile data');
         }
-        
+
         const data = await response.json();
         populateProfile(data);
     } catch (error) {
@@ -29,23 +30,23 @@ function populateProfile(data) {
     if (data.name) {
         document.getElementById('profileName').textContent = data.name;
     }
-    
+
     if (data.title) {
         document.getElementById('profileTitle').textContent = data.title;
     }
-    
+
     if (data.location) {
         const locationEl = document.getElementById('profileLocation');
         if (locationEl) {
             locationEl.querySelector('span').textContent = data.location;
         }
     }
-    
+
     // Profile Image
     if (data.image) {
         document.getElementById('profileImage').src = data.image;
     }
-    
+
     // Social Links
     if (data.socialLinks) {
         const socialContainer = document.getElementById('socialLinks');
@@ -62,12 +63,12 @@ function populateProfile(data) {
             if (emailLink) emailLink.href = data.socialLinks.email;
         }
     }
-    
+
     // About Section
     if (data.bio) {
         document.getElementById('profileBio').textContent = data.bio;
     }
-    
+
     // Current Work Section
     if (data.currentWork) {
         if (data.currentWork.position) {
@@ -83,7 +84,7 @@ function populateProfile(data) {
             document.getElementById('workDescription').textContent = data.currentWork.description;
         }
     }
-    
+
     // Fundamental Faith Section
     if (data.fundamentalFaith) {
         if (data.fundamentalFaith.title) {
@@ -96,7 +97,7 @@ function populateProfile(data) {
             document.getElementById('faithDescription').textContent = data.fundamentalFaith.description;
         }
     }
-    
+
     // Skills Section
     if (data.skills && Array.isArray(data.skills)) {
         const skillsContainer = document.getElementById('skillsContainer');
@@ -111,7 +112,7 @@ function populateProfile(data) {
             });
         }
     }
-    
+
     // Interests Section
     if (data.interests && Array.isArray(data.interests)) {
         const interestsContainer = document.getElementById('interestsContainer');
@@ -126,12 +127,43 @@ function populateProfile(data) {
             });
         }
     }
-    
+
     // Add fade-in animation
     document.querySelectorAll('.card').forEach((card, index) => {
         setTimeout(() => {
             card.classList.add('fade-in');
         }, index * 100);
     });
+
+}
+
+// Initialize Calling Section Toggle
+function initCallingToggle() {
+    const toggleBtn = document.getElementById('toggleCallingBtn');
+    const contentWrapper = document.getElementById('callingContentWrapper');
+
+    if (toggleBtn && contentWrapper) {
+        toggleBtn.addEventListener('click', function () {
+            const isCollapsed = contentWrapper.classList.contains('collapsed-content');
+            const btnTextFn = toggleBtn.querySelector('.btn-text');
+            const icon = toggleBtn.querySelector('i');
+
+            if (isCollapsed) {
+                // Expand
+                contentWrapper.classList.remove('collapsed-content');
+                contentWrapper.classList.add('expanded-content');
+
+                if (btnTextFn) btnTextFn.textContent = window.i18n ? window.i18n.t('common.read_less') : 'Thu gọn';
+                if (icon) icon.className = 'fas fa-chevron-up ms-1';
+            } else {
+                // Collapse
+                contentWrapper.classList.remove('expanded-content');
+                contentWrapper.classList.add('collapsed-content');
+
+                if (btnTextFn) btnTextFn.textContent = window.i18n ? window.i18n.t('common.read_more') : 'Đọc thêm';
+                if (icon) icon.className = 'fas fa-chevron-down ms-1';
+            }
+        });
+    }
 }
 

@@ -51,6 +51,11 @@
             "role": "Founder",
             "quote": "\"I believe that everyone has a special mission in God's eternal plan.\""
         },
+        "calling": {
+            "title": "The Call",
+            "content_1": "After about four years of working at two companies (FPT Da Nang and LG Da Nang), and with many times the Lord stirring my heart, I have now decided to serve Him full-time. The Lord’s calling upon my life has unfolded through specific stages. It began with the realization that today’s young generation has yet to be fully reached by God’s Word, as there is still division and factionalism within the body of Christ, along with lingering attitudes of disrespect toward ethnic minorities. Yet the Word of God declares: “There is neither Jew nor Greek, there is neither slave nor free, there is no male and female, for you are all one in Christ Jesus” (Galatians 3:28). This verse has served both as a reminder of the unity of God’s children in Christ and as a personal calling for me to help students and young people come to know the Gospel of Jesus Christ, which brings true unity. In addition, I have also witnessed how members of the majority group often deceive those from minority groups, and I have listened to stories of ethnic minority youths feeling inferior to the Kinh people (the majority ethnicity in Vietnam). These experiences have deepened my burden for young people in the highlands and ethnic communities, that they may come to embrace their true worth in the Gospel of Jesus Christ.",
+            "content_2": "Although I sensed the Lord’s calling, it seemed to come too early in my life—when I was only in 11th or 12th grade. At that time, I shared about this calling with my older sister and brother-in-law (as they were the only two in my family who believed in Christ), but their opposition left me discouraged, and I set aside that mission. Yet, the calling of God remained in my heart. I often thought about it, and during the third year of the Basic Bible Course (around grade 12), I made a promise to dedicate my life to serving the Lord in the future. After that initial calling, through many readings of the Scriptures, the Word of God, and various mission trips (to Kon Tum, Cambodia, India, and others), as well as opportunities to share about Jesus, the fire for this calling was rekindled. While working at LG, I prayed about this matter for about a year, wrestling between continuing in full-time employment—where I was able to share Christ in the workplace and was also blessed by God with favor before company leaders, team managers, and even clients from Korea—or stepping into full-time ministry, dedicating myself completely to God’s Word and the preaching of the Gospel. The Lord stirred my heart more toward the path of ministry, reminding me of His Word in Philippians 2:13: “For it is God who works in you to will and to act in order to fulfill his good purpose.” I believe that the struggles within me and the burden I carried were truly God’s prompting for my life. Therefore, I made the decision to resign from my job and fully commit my time to serving the Lord—sharing the Gospel and nurturing the spiritual lives of students."
+        },
         "vision": {
             "title": "Vision",
             "content": "Building a strong Christian community, understanding God's Word, and living out faith in daily life."
@@ -224,6 +229,7 @@
         "error": "An error occurred",
         "success": "Success",
         "read_more": "Read More",
+        "read_less": "Read Less",
         "preview": "Preview",
         "download": "Download",
         "share": "Share",

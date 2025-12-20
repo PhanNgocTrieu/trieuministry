@@ -54,6 +54,10 @@
     }
     </script>
 
+    <!-- Custom Fonts: Lora for Calling Section -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
     <style>
         .profile-hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/images/hero_bg.png');
@@ -61,6 +65,39 @@
             background-position: center;
             padding: 100px 0;
             color: white;
+        }
+
+        /* Calling Section Specifics */
+        .calling-section {
+            font-family: 'Lora', serif;
+        }
+
+        .collapsed-content {
+            max-height: 250px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 0.8s ease-out;
+        }
+
+        .collapsed-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .expanded-content {
+            max-height: 2500px;
+            overflow: visible;
+        }
+
+        .expanded-content::after {
+            opacity: 0;
         }
     </style>
 </head>
@@ -147,6 +184,37 @@
                             <a href="#" class="btn btn-outline-dark rounded-circle"><i class="fab fa-youtube"></i></a>
                             <a href="mailto:phantrieu580@gmail.com" class="btn btn-outline-dark rounded-circle"><i
                                     class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Call Section -->
+        <section class="py-5 bg-white calling-section">
+            <div class="container fade-in-up">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bold" data-i18n="profile.calling.title">Tiếng Gọi</h2>
+                            <div class="d-flex justify-content-center">
+                                <hr class="w-10 text-primary opacity-100 border-3" style="width: 60px;">
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Content Wrapper -->
+                        <div id="callingContentWrapper" class="text-justify px-lg-5 collapsed-content fs-5"
+                            style="line-height: 1.8;">
+                            <p class="mb-4" data-i18n="profile.calling.content_1"></p>
+                            <p data-i18n="profile.calling.content_2"></p>
+                        </div>
+
+                        <!-- Toggle Button -->
+                        <div class="text-center mt-4">
+                            <button id="toggleCallingBtn" class="btn btn-outline-primary rounded-pill px-4 hover-scale">
+                                <span class="btn-text" data-i18n="common.read_more">Đọc thêm</span> <i
+                                    class="fas fa-chevron-down ms-1"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -284,6 +352,7 @@
     <script src="assets/js/components.js?v=4"></script>
     <script src="assets/js/main.js?v=4"></script>
     <script src="assets/js/navigation.js?v=4"></script>
+    <script src="assets/js/profile.js?v=4"></script>
     <script type="module" src="assets/js/firebase-config.js?v=4"></script>
     <script src="assets/js/router.js?v=4"></script>
 </body>

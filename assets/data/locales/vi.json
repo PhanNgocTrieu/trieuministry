@@ -51,6 +51,11 @@
             "role": "Người sáng lập",
             "quote": "\"Tôi tin rằng mỗi người đều có một sứ mạng đặc biệt trong kế hoạch đời đời của Đức Chúa Trời.\""
         },
+        "calling": {
+            "title": "Tiếng Gọi",
+            "content_1": "Sau chừng 4 năm làm việc tại hai công ty (FPT Đà Nẵng và LG Đà Nẵng), với nhiều lần Chúa đã thôi thúc trong tấm lòng tôi thì hiện tại tôi đã quyết định trở thành người hầu việc Chúa trọn thời gian. Tiếng gọi của Chúa dành cho tôi đường diễn ra thông qua những giai đoạn nhất định - đầu tiên là việc nhìn thấy Lời Chúa chưa được chạm đến các bạn trẻ ngày nay khi mà có sự phân rẻ, chia bè phái trong Đấng Christ và vẫn còn tư tưởng thiếu tôn trọng đối với các bạn dân tộc thiểu số, nhưng Lời Chúa có phán: “Tại đây không còn chia ra người Giu-đa hoặc người Gờ-réc; không còn người tôi mọi hoặc người tự chủ; không còn đàn ông hoặc đàn bà; vì trong Đức Chúa Jêsus Christ, anh em thảy đều làm một” (Ga-la-ti 3:28) – như là Lời nhắc nhở cho chính tôi về sự hiệp một của mỗi một con cái Chúa trong Đấng Christ và cũng như là sự kêu gọi cho chính tôi để giúp cho các bạn học sinh, sinh viên nhìn biết về Phúc Âm của Chúa Jesus Christ mang đến sự hiệp một. Bên cạnh đó, tôi cũng chứng kiến việc người dân tộc đa số lừa dối người thiểu số cũng như là lắng nghe việc các bạn thấy mình kém cỏi hơn những người Kinh (là dân tộc đa số ở Việt Nam) khiến tôi có tấm lòng cưu mang hơn cho các bạn vùng cao, vùng thiểu số để các bạn đón nhận giá trị thật của chính mình trong Phúc Âm của Chúa Jesus.",
+            "content_2": "Dù là tiếng gọi đó đã đến với tôi nhưng dường như nó đến quá sớm với tôi – lúc tôi mới chỉ học lớp 11 hay 12 gì đó, vì thế khi chia sẻ về tiếng gọi với chị hai và anh rể tôi (vì nhà tôi chỉ có hai anh chị tin Chúa) nhưng lại nhận được sự phản đối từ hai anh chị nên khiến cho tôi cũng phải hụt hẩn và dừng lại sứ mạng đó, tuy nhiên tiếng gọi của Ngài vẫn còn ở đó, đôi lúc tôi vẫn còn suy nghĩ về điều đó mà tôi cũng có lời hứa “sau này sẽ dâng mình hầu việc Chúa” những ngày cuối cùng của khóa Thánh Kinh Căn Bản năm 3 (độ chừng tôi học lớp 12). Sau lời kêu gọi đầu tiên đó, rồi nhiều lần đọc Kinh Thánh, bằng lời của Chúa và nhiều chuyến đi truyền giáo (KonTum, Cam-bu-chia, Ấn Độ,…) cũng như là những cơ hội chia sẻ về Chúa Jesus thì tôi lại được thắp lửa lên lần nữa về tiếng gọi này – tôi đã cầu nguyện cho vấn đề này chừng 1 năm trong khi làm việc tại công ty LG, với sự tranh đấu trong lòng cho việc tiếp tục công việc full-time và chia sẻ về Chúa tại nơi công sở (cả hai công ty tôi làm đều được Chúa ban ơn trước mặt các lãnh đạo công ty cũng như là lãnh đạo của team nên tôi luôn hoàn thành tốt công việc của mình tại công ty và nhận được sự tin tưởng của khách hàng và đội ngũ lãnh đạo bên Hàn Quốc) hay là hầu việc Chúa full-time bằng cách dành trọn thời gian cho Lời Chúa và đi chia sẻ Phúc Âm thì Chúa cho tấm lòng của tôi suy nghĩ, suy tư về con đường hầu việc Chúa nhiều hơn bởi lời Chúa cũng có nói trong Phi-líp 2:13 – “Vì ấy chính Đức Chúa Trời cảm động lòng anh em vừa muốn vừa làm theo ý tốt Ngài.”, tôi tin rằng sự đấu tranh và tấm lòng tôi cưu mang chính là sự thôi thúc của Đức Chúa Trời cho chính đời sống tôi nên tôi đã quyết định nghỉ việc và sẵn sàng để dành trọn thời gian cho công việc nhà Chúa, chia sẻ Phúc Âm và gây dựng đời sống cơ đốc cho những bạn sinh viên."
+        },
         "vision": {
             "title": "Khải Tượng",
             "content": "Xây dựng một cộng đồng Cơ Đốc nhân vững mạnh, am hiểu Lời Chúa và sống đạo giữa đời thường."
@@ -224,6 +229,7 @@
         "error": "Có lỗi xảy ra",
         "success": "Thành công",
         "read_more": "Đọc thêm",
+        "read_less": "Thu gọn",
         "preview": "Xem trước",
         "download": "Tải xuống",
         "share": "Chia sẻ",
