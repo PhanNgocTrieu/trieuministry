@@ -56,6 +56,16 @@ function renderBlog(blog) {
 
     const tagsEl = document.getElementById('blogTags');
     tagsEl.innerHTML = (blog.tags || []).map(t => `<span class="badge bg-secondary-subtle text-dark border me-2">${t}</span>`).join('');
+
+    // Update Facebook Comments URL
+    const commentsPlugin = document.querySelector('.fb-comments');
+    if (commentsPlugin) {
+        commentsPlugin.setAttribute('data-href', window.location.href);
+        // Re-parse Facebook plugins if FB SDK is loaded
+        if (window.FB && window.FB.XFBML) {
+            window.FB.XFBML.parse();
+        }
+    }
 }
 
 function renderPrevNext(blogs, index) {
