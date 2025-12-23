@@ -57,6 +57,10 @@ class TurboRouter {
             return false;
         }
 
+        if (href.includes('login.html') || href.includes('admin.html')) {
+            return false;
+        }
+
         return true;
     }
 

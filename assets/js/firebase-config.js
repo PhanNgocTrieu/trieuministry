@@ -4,13 +4,13 @@ import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.
 import { getAuth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCn_mealz-OoEI9jBav5jhoq-sxeQhaS8M",
-    authDomain: "trieuministry.firebaseapp.com",
-    projectId: "trieuministry",
-    storageBucket: "trieuministry.firebasestorage.app",
-    messagingSenderId: "741896838004",
-    appId: "1:741896838004:web:024ebc3397658df76aaa21",
-    measurementId: "G-ZDWXMP9CZ9"
+    apiKey: "AIzaSyBwsAzJR6M0lbk43k-WSRTabqaRSa2tNXk",
+    authDomain: "trieuministry-w.firebaseapp.com",
+    projectId: "trieuministry-w",
+    storageBucket: "trieuministry-w.firebasestorage.app",
+    messagingSenderId: "217860039598",
+    appId: "1:217860039598:web:e6b2bf7b5d3e642ee45e3f",
+    measurementId: "G-MCPY8SLH55"
 };
 
 // Initialize Firebase
@@ -25,4 +25,4 @@ window.logEvent = logEvent;
 window.db = db;
 window.auth = auth;
 
-export { db, analytics, logEvent, auth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut };
+export { app, db, analytics, logEvent, auth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut };
