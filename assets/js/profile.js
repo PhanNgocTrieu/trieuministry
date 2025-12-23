@@ -200,19 +200,54 @@
                 const icon = toggleBtn.querySelector('i');
 
                 if (isCollapsed) {
-                    // Expand
+                    // EXPAND
+                    // 1. Get the full height of the content
+                    const fullHeight = contentWrapper.scrollHeight + 'px';
+
+                    // 2. Set max-height explicitly to start animation
+                    // (It currently has 250px from class, so setting inline style overrides it)
+                    contentWrapper.style.maxHeight = fullHeight;
+
+                    // 3. Update classes
                     contentWrapper.classList.remove('collapsed-content');
                     contentWrapper.classList.add('expanded-content');
 
+                    // 4. Update Button UI
                     if (btnTextFn) btnTextFn.textContent = window.i18n ? window.i18n.t('common.read_less') : 'Thu gọn';
                     if (icon) icon.className = 'fas fa-chevron-up ms-1';
+
+                    // 5. Cleanup after transition
+                    // After animation ends, set max-height to 'none' so it remains responsive if window resizes
+                    setTimeout(() => {
+                        if (contentWrapper.classList.contains('expanded-content')) {
+                            contentWrapper.style.maxHeight = 'none';
+                        }
+                    }, 800); // Match CSS transition duration
+
                 } else {
-                    // Collapse
+                    // COLLAPSE
+                    // 1. Set height back to fixed pixel value (current height) before collapsing
+                    // This allows the transition to start from a specific value instead of 'none'
+                    contentWrapper.style.maxHeight = contentWrapper.scrollHeight + 'px';
+
+                    // Force reflow/repaint
+                    contentWrapper.offsetHeight;
+
+                    // 2. Set to collapsed height (null removes inline style, falling back to CSS class's 250px)
+                    // But to ensure smooth transition, we might need to set it explicitly if removing doesn't animate well.
+                    // Actually, removing inline style reverts to class style (250px), which triggers transition.
+                    contentWrapper.style.maxHeight = null;
+
+                    // 3. Update Classes
                     contentWrapper.classList.remove('expanded-content');
                     contentWrapper.classList.add('collapsed-content');
 
+                    // 4. Update Button UI
                     if (btnTextFn) btnTextFn.textContent = window.i18n ? window.i18n.t('common.read_more') : 'Đọc thêm';
                     if (icon) icon.className = 'fas fa-chevron-down ms-1';
+
+                    // Scroll back to top of section if it's way up? 
+                    // Optional: contentWrapper.scrollIntoView({ behavioral: 'smooth', block: 'center' });
                 }
             });
         }

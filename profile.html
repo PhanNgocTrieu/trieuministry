@@ -85,16 +85,18 @@
             height: 100px;
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.5s ease;
         }
 
         .expanded-content {
-            max-height: 2500px;
+            /* max-height handled by JS for smooth animation, falls back to none */
+            max-height: none;
             overflow: visible;
         }
 
         .expanded-content::after {
             opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
