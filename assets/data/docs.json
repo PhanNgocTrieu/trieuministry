@@ -47,6 +47,22 @@
       "uploadDate": "2025-12-20",
       "size": "2.5 MB",
       "language": "English/Vietnamese"
+    },
+    {
+      "id": "reason-for-coming",
+      "title": "Christmas 2022: Lý do Ngài đến",
+      "scripture": "Rô-ma 8:1-4",
+      "author": "Trieu John",
+      "description": {
+        "vi": "Christmas là dịp để chia sẻ về Chúa Jesus Christ và lí do thật sự mà Ngài đến là gì - đây là bài chia sẻ trong năm 2022 trong dịp Giáng Sinh.",
+        "en": "Christmas is a time to share about Jesus Christ and the true reason He came - this is a sharing from 2022 during Christmas."
+      },
+      "category": "Sharing",
+      "path": "assets/resources/sharing/_reason_for_coming.pdf",
+      "thumbnail": "assets/images/docs/sharing/_reason_for_coming.jpg",
+      "uploadDate": "2025-12-20",
+      "size": "2.5 MB",
+      "language": "Vietnamese"
     }
   ]
 }
