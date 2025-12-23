@@ -5,6 +5,7 @@
         "about": "About",
         "blogs": "Blogs",
         "docs": "Documents",
+        "ministry": "Ministry",
         "prayers": "Prayers",
         "donate": "Donate"
     },
@@ -117,6 +118,20 @@
             "error_id": "Document ID not found.",
             "error_not_found": "Document not found.",
             "error_fetch": "Error loading document details."
+        }
+    },
+    "ministry": {
+        "hero": {
+            "title": "Ministry & Appeals",
+            "subtitle": "Sharing prayer requests and ministry projects that need your partnership."
+        },
+        "prayers": {
+            "title": "Prayer Requests",
+            "description": "Prayer requests for personal and ministry needs. Please remember us in your prayers."
+        },
+        "letters": {
+            "title": "Appeals Letters",
+            "description": "Letters of sharing and appeals for partnership from benefactors and God's children."
         }
     },
     "prayers": {

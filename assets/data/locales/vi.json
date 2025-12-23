@@ -5,6 +5,7 @@
         "about": "Giới thiệu",
         "blogs": "Bài viết",
         "docs": "Tài liệu",
+        "ministry": "Mục vụ",
         "prayers": "Cầu nguyện",
         "donate": "Dâng hiến"
     },
@@ -117,6 +118,20 @@
             "error_id": "Không tìm thấy ID tài liệu.",
             "error_not_found": "Không tìm thấy tài liệu này.",
             "error_fetch": "Đã xảy ra lỗi khi tải thông tin tài liệu."
+        }
+    },
+    "ministry": {
+        "hero": {
+            "title": "Mục vụ & Kêu gọi",
+            "subtitle": "Chia sẻ những nhan đề cầu nguyện và các dự án mục vụ cần sự đồng hành."
+        },
+        "prayers": {
+            "title": "Nhan đề Cầu Nguyện",
+            "description": "Những vấn đề cầu nguyện cho cá nhân và mục vụ. Xin hãy nhớ đến chúng tôi trong lời cầu nguyện của bạn."
+        },
+        "letters": {
+            "title": "Thư Kêu Gọi",
+            "description": "Những lá thư tâm tình và kêu gọi sự đồng hành từ quý ân nhân và con cái Chúa."
         }
     },
     "prayers": {
