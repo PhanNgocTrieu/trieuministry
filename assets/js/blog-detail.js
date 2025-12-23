@@ -94,8 +94,17 @@ function setupShare(blog) {
                 // user canceled
             }
         } else {
-            navigator.clipboard.writeText(url);
-            Components.Toast.success('Đã copy liên kết');
+            try {
+                await navigator.clipboard.writeText(url);
+                // Requires Components.Toast or alert
+                if (window.Components && window.Components.Toast) {
+                    window.Components.Toast.success('Đã sao chép liên kết vào bộ nhớ tạm!');
+                } else {
+                    alert('Đã sao chép liên kết: ' + url);
+                }
+            } catch (err) {
+                prompt('Copy liên kết này:', url);
+            }
         }
     });
 }
