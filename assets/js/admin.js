@@ -93,49 +93,97 @@ function setupTabs() {
     });
 }
 
+// ------ UI HELPERS ------
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const id = 'toast-' + Date.now();
+    const colorClass = type === 'success' ? 'text-bg-success' : 'text-bg-danger';
+
+    const html = `
+        <div id="${id}" class="toast align-items-center ${colorClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+    const el = document.getElementById(id);
+    const toast = new bootstrap.Toast(el);
+    toast.show();
+
+    // Auto remove from DOM
+    el.addEventListener('hidden.bs.toast', () => el.remove());
+}
+
+function showConfirmModal(message, onConfirm) {
+    const modalEl = document.getElementById('confirmModal');
+    const msgEl = document.getElementById('confirmMessage');
+    const btn = document.getElementById('confirmBtn');
+
+    if (!modalEl || !msgEl || !btn) return;
+
+    msgEl.innerHTML = message;
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    // Clean up old listeners
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+
+    newBtn.addEventListener('click', () => {
+        modal.hide();
+        onConfirm();
+    });
+}
+
 // ------ MIGRATION LOGIC ------
 function setupMigration() {
     const btn = document.getElementById('seedBlogsBtn');
     if (!btn) return;
 
-    btn.addEventListener('click', async () => {
-        if (!confirm('Bạn có chắc muốn chép dữ liệu từ blogs.json vào Firestore? Hành động này sẽ ghi đè lên các ID trùng.')) return;
+    btn.addEventListener('click', () => {
+        showConfirmModal(
+            'Bạn có chắc muốn chép dữ liệu từ blogs.json vào Firestore?<br>Hành động này sẽ ghi đè lên các ID trùng.',
+            async () => {
+                btn.disabled = true;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                try {
+                    // 1. Fetch JSON
+                    const res = await fetch('assets/data/blogs.json');
+                    const data = await res.json();
+                    const blogs = data.blogs || [];
 
-        try {
-            // 1. Fetch JSON
-            const res = await fetch('assets/data/blogs.json');
-            const data = await res.json();
-            const blogs = data.blogs || [];
+                    // 2. Write to Firestore
+                    let count = 0;
+                    const batchPromises = blogs.map(async (blog) => {
+                        const docId = blog.slug || 'blog_' + Date.now() + Math.random();
+                        await setDoc(doc(db, "blogs", docId), {
+                            ...blog,
+                            createdAt: new Date().toISOString()
+                        });
+                        count++;
+                    });
 
-            // 2. Write to Firestore
-            let count = 0;
-            const batchPromises = blogs.map(async (blog) => {
-                // Use Key as Doc ID if possible, else Slug, else Auto-ID
-                // Assuming 'slug' is unique
-                const docId = blog.slug || 'blog_' + Date.now() + Math.random();
+                    await Promise.all(batchPromises);
 
-                await setDoc(doc(db, "blogs", docId), {
-                    ...blog,
-                    createdAt: new Date().toISOString()
-                });
-                count++;
-            });
+                    showToast(`Thành công! Đã chép ${count} bài viết.`);
+                    loadStats(); // Refresh stats
 
-            await Promise.all(batchPromises);
-
-            alert(`Thành công! Đã chép ${count} bài viết.`);
-            loadStats(); // Refresh stats
-
-        } catch (error) {
-            console.error(error);
-            alert('Lỗi: ' + error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-database me-2"></i>Migrate Blogs (JSON -> DB)';
-        }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Lỗi: ' + error.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        );
     });
 }
 
@@ -183,10 +231,17 @@ async function loadBlogsList() {
 }
 
 // Global Actions
-window.deleteBlog = async function (id) {
-    if (!confirm('Xóa bài viết này?')) return;
-    try {
-        await deleteDoc(doc(db, "blogs", id));
-        loadBlogsList(); // Reload
-    } catch (e) { alert(e.message); }
+window.deleteBlog = function (id) {
+    showConfirmModal(
+        'Bạn có chắc chắn muốn xóa bài viết này không?',
+        async () => {
+            try {
+                await deleteDoc(doc(db, "blogs", id));
+                showToast('Đã xóa bài viết thành công.');
+                loadBlogsList(); // Reload
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+    );
 };

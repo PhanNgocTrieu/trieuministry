@@ -17,6 +17,9 @@ function initUserNav() {
         navList.appendChild(userContainer);
     }
 
+    // Set initial loading state to avoid flash of "Login" button if checking
+    userContainer.innerHTML = '<li><span class="spinner-border spinner-border-sm text-primary m-2" role="status"></span></li>';
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
             // User is Logged In
