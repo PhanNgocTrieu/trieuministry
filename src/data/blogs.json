@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "title": "Walking in Faith: A Journey of Trust",
+    "slug": "walking-in-faith",
+    "category": "Faith",
+    "author": "Phan Ngoc Trieu",
+    "date": "2024-12-20",
+    "excerpt": "Faith is not seeing with our eyes, but trusting with our hearts. Explore how walking in faith can transform your daily life.",
+    "content": "<p>Faith is the assurance of things hoped for, the conviction of things not seen. In our daily walk with God, we are often called to step out into the unknown, trusting that He will guide our steps.</p><h3>The Challenge of Trust</h3><p>It is not always easy to trust when we cannot see the outcome. However, biblical history is filled with examples of men and women who trusted God against all odds.</p>",
+    "image": "/images/blog/faith-walk.jpg", 
+    "tags": ["faith", "trust", "christian-living"]
+  },
+  {
+    "id": "2",
+    "title": "The Power of Prayer in Community",
+    "slug": "power-of-prayer",
+    "category": "Ministry",
+    "author": "Phan Ngoc Trieu",
+    "date": "2024-12-18",
+    "excerpt": "When we come together to pray, incredible things happen. Discover the biblical foundation for corporate prayer.",
+    "content": "<p>Prayer is our lifeline to God. But there is a unique power when believers gather together in unity to seek God's face.</p><blockquote>For where two or three are gathered in my name, there am I among them. (Matthew 18:20)</blockquote>",
+    "image": "/images/blog/prayer-group.jpg",
+    "tags": ["prayer", "community", "church"]
+  },
+  {
+    "id": "3",
+    "title": "Understanding Grace",
+    "slug": "understanding-grace",
+    "category": "Theology",
+    "author": "Phan Ngoc Trieu",
+    "date": "2024-12-15",
+    "excerpt": "Grace is more than just a theological concept; it is the very heart of the Gospel. Let's dive deep into what grace really means.",
+    "content": "<p>Grace is unmerited favor. It is getting what we do not deserve. God's grace is sufficient for us, and His power is made perfect in our weakness.</p>",
+    "image": "/images/blog/grace.jpg",
+    "tags": ["grace", "theology", "gospel"]
+  }
+]
