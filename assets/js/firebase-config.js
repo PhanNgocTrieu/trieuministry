@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 import { getAuth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -25,4 +25,9 @@ window.logEvent = logEvent;
 window.db = db;
 window.auth = auth;
 
-export { app, db, analytics, logEvent, auth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut };
+export {
+    app, db, analytics, logEvent, auth,
+    onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signOut,
+    collection, getDocs, doc, setDoc, deleteDoc, addDoc, updateDoc,
+    query, where
+};

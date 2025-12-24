@@ -73,8 +73,11 @@
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
                                 <h6 class="text-muted text-uppercase small">Công cụ Dữ liệu</h6>
-                                <button class="btn btn-warning w-100 mt-2" id="seedBlogsBtn">
-                                    <i class="fas fa-database me-2"></i>Migrate Blogs (JSON -> DB)
+                                <button class="btn btn-primary w-100 mt-2" onclick="window.openAddBlogModal()">
+                                    <i class="fas fa-plus me-2"></i>Viết bài mới
+                                </button>
+                                <button class="btn btn-outline-warning w-100 mt-2" id="seedBlogsBtn">
+                                    <i class="fas fa-database me-2"></i>Migrate (JSON -> DB)
                                 </button>
                             </div>
                         </div>
@@ -86,7 +89,7 @@
             <div id="tab-blogs" class="tab-pane fade-in d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="mb-0">Quản lý Bài viết</h4>
-                    <button class="btn btn-primary" onclick="window.location.href='blog-editor.html'">
+                    <button class="btn btn-primary rounded-pill shadow-sm" onclick="window.openAddBlogModal()">
                         <i class="fas fa-plus me-2"></i>Viết bài mới
                     </button>
                 </div>
@@ -130,6 +133,63 @@
                 <div class="modal-footer border-0 justify-content-center pb-4">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-primary rounded-pill px-4" id="confirmBtn">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Blog Modal -->
+    <div class="modal fade" id="blogModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="blogModalTitle">Viết bài mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="blogForm">
+                        <input type="hidden" id="blogId">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label small text-muted fw-bold">TIÊU ĐỀ</label>
+                                <input type="text" class="form-control" id="blogTitle" required
+                                    placeholder="Nhập tiêu đề bài viết...">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label small text-muted fw-bold">DANH MỤC</label>
+                                <select class="form-select" id="blogCategory">
+                                    <option value="General">General</option>
+                                    <option value="Faith">Faith</option>
+                                    <option value="Community">Community</option>
+                                    <option value="Events">Events</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">NGÀY ĐĂNG</label>
+                            <input type="date" class="form-control" id="blogDate" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">MÔ TẢ NGẮN (EXCERPT)</label>
+                            <textarea class="form-control" id="blogExcerpt" rows="2"
+                                placeholder="Tóm tắt nội dung bài viết..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">NỘI DUNG CHI TIẾT</label>
+                            <textarea class="form-control" id="blogContent" rows="8"
+                                placeholder="Nội dung bài viết (Hỗ trợ HTML cơ bản)..."></textarea>
+                            <div class="form-text">Bạn có thể dùng thẻ HTML như &lt;b&gt;, &lt;p&gt;, &lt;br&gt;</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0 pe-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="window.saveBlog()">
+                        <i class="fas fa-save me-2"></i>Lưu bài viết
+                    </button>
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import { auth, db, signOut, onAuthStateChanged } from './firebase-config.js';
-import { collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Admins List
 const ADMIN_EMAILS = ['phantrieu580@gmail.com', 'admin@trieuministry.com'];
@@ -231,6 +231,7 @@ async function loadBlogsList() {
 }
 
 // Global Actions
+// Global Actions
 window.deleteBlog = function (id) {
     showConfirmModal(
         'Bạn có chắc chắn muốn xóa bài viết này không?',
@@ -244,4 +245,87 @@ window.deleteBlog = function (id) {
             }
         }
     );
+};
+
+window.openAddBlogModal = function () {
+    // Reset Form
+    document.getElementById('blogForm').reset();
+    document.getElementById('blogId').value = '';
+    document.getElementById('blogModalTitle').innerText = 'Viết bài mới';
+
+    // Set default date to today
+    document.getElementById('blogDate').valueAsDate = new Date();
+
+    const modal = new bootstrap.Modal(document.getElementById('blogModal'));
+    modal.show();
+};
+
+window.saveBlog = async function () {
+    const btn = document.querySelector('#blogModal .btn-primary');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    const blogId = document.getElementById('blogId').value;
+    const title = document.getElementById('blogTitle').value;
+    const category = document.getElementById('blogCategory').value;
+    const date = document.getElementById('blogDate').value;
+    const excerpt = document.getElementById('blogExcerpt').value;
+    const content = document.getElementById('blogContent').value; // In real app, use Rich Text Editor
+
+    if (!title || !date) {
+        showToast('Vui lòng nhập tiêu đề và ngày đăng.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        return;
+    }
+
+    try {
+        const slug = title.toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-');
+
+        const docData = {
+            title,
+            slug,
+            category,
+            date,
+            excerpt,
+            content,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (blogId) {
+            // Update
+            await updateDoc(doc(db, "blogs", blogId), docData);
+            showToast('Cập nhật bài viết thành công!');
+        } else {
+            // Create New
+            // Check if slug exists? For simplicity, we append timestamp if needed, but here we just overwrite or use timestamp ID if we prefer.
+            // Let's use specific ID format or Auto ID. 
+            // Better to use Slug as ID for URL consistency, but catch errors if exists.
+            // For now, let's use a unique ID based on timestamp + slug to be safe.
+            const newId = slug + '-' + Date.now().toString().slice(-4);
+            await setDoc(doc(db, "blogs", newId), {
+                ...docData,
+                createdAt: new Date().toISOString()
+            });
+            showToast('Đăng bài viết mới thành công!');
+        }
+
+        // Hide Modal
+        const modalEl = document.getElementById('blogModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+
+        loadBlogsList();
+        loadStats();
+
+    } catch (error) {
+        console.error(error);
+        showToast('Lỗi: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
 };
