@@ -34,16 +34,18 @@
             );
 
             // Fetch with timeout
-            const response = await Promise.race([
-                fetch('assets/data/blogs.json'),
-                timeout
-            ]);
+            // Fetch from Firestore
+            const { db, collection, getDocs } = await import('./firebase-config.js');
+            const snap = await getDocs(collection(db, 'blogs'));
 
-            if (!response.ok) throw new Error('Failed to load blogs');
-            const data = await response.json();
+            const blogs = [];
+            snap.forEach(doc => blogs.push(doc.data()));
 
-            // Ensure array
-            allBlogs = Array.isArray(data.blogs) ? data.blogs : [];
+            // Simulate response object to match old structure if needed, or just assign
+            allBlogs = blogs;
+
+            // allBlogs is already assigned above
+            // allBlogs = Array.isArray(data.blogs) ? data.blogs : [];
 
             if (allBlogs.length === 0) {
                 renderEmptyState();

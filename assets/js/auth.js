@@ -44,3 +44,26 @@ export function monitorAuthState(callback) {
         callback(user);
     });
 }
+
+// Register with Email
+export async function registerWithEmail(email, password, fullName) {
+    try {
+        const { createUserWithEmailAndPassword, updateProfile } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Update Profile with Name
+        if (fullName) {
+            await updateProfile(user, {
+                displayName: fullName
+            });
+            // Reload user to update local state
+            await user.reload();
+        }
+
+        return user;
+    } catch (error) {
+        console.error("Registration Error:", error);
+        throw error;
+    }
+}

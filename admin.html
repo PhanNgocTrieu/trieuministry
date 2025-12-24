@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TrieuMinistry</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-custom container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fas fa-church me-2"></i>TrieuMinistry Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-tab="dashboard"><i
+                                class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-tab="blogs"><i class="fas fa-newspaper me-1"></i> Blogs</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-white-50 small" id="adminEmail">Checking...</span>
+                    <button class="btn btn-sm btn-outline-danger" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-custom container py-4">
+
+        <!-- Auth View -->
+        <div id="authCheck" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Verifying permissions...</p>
+        </div>
+
+        <!-- Main Content -->
+        <main id="adminContent" style="display: none;">
+
+            <!-- Tab: Dashboard -->
+            <div id="tab-dashboard" class="tab-pane fade-in">
+                <h4 class="mb-4">Tổng quan</h4>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase small">Tổng bài viết</h6>
+                                <h2 class="display-6 fw-bold mb-0" id="statBlogsCount">-</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase small">Công cụ Dữ liệu</h6>
+                                <button class="btn btn-warning w-100 mt-2" id="seedBlogsBtn">
+                                    <i class="fas fa-database me-2"></i>Migrate Blogs (JSON -> DB)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Blogs -->
+            <div id="tab-blogs" class="tab-pane fade-in d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">Quản lý Bài viết</h4>
+                    <button class="btn btn-primary" onclick="window.location.href='blog-editor.html'">
+                        <i class="fas fa-plus me-2"></i>Viết bài mới
+                    </button>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Tiêu đề</th>
+                                    <th>Danh mục</th>
+                                    <th>Ngày đăng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blogsTableBody">
+                                <!-- JS will populate -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="assets/js/admin.js"></script>
+</body>
+
+</html>

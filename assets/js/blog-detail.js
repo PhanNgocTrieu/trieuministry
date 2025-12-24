@@ -18,19 +18,37 @@ async function initBlogDetail() {
     spinner.show('Đang tải bài viết...');
 
     try {
-        const res = await fetch('assets/data/blogs.json');
-        if (!res.ok) throw new Error('Failed to load blogs');
-        const data = await res.json();
-        const blogs = data.blogs || [];
+        const { db, collection, getDocs, query, where } = await import('./firebase-config.js');
+
+        // Query by slug
+        const q = query(collection(db, 'blogs'), where('slug', '==', slug));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            renderError('Bài viết không tồn tại.');
+            return;
+        }
+
+        // Get the blog data
+        const blog = querySnapshot.docs[0].data();
+
+        // We also need ALL blogs for Next/Prev logic (Optimization: store this in session or minimal fetch)
+        // For now, let's just fetch all like before (simple but expensive if many blogs)
+        // Better: Just fetch current. Prev/Next is optional or can be handled differently.
+        // Let's keep it simple: Fetch all for now to preserve functionality without backend logic.
+        const allSnap = await getDocs(collection(db, 'blogs'));
+        const blogs = [];
+        allSnap.forEach(d => blogs.push(d.data()));
+
         const index = blogs.findIndex(b => b.slug === slug);
         if (index === -1) {
             renderError('Bài viết không tồn tại.');
             return;
         }
 
-        const blog = blogs[index];
+        // const blog = blogs[index]; // REMOVED: Already defined above from Firestore query
         renderBlog(blog);
-        renderPrevNext(blogs, index);
+        renderPrevNext(blogs, index); // PrevNext might need logic adjustment if index is -1
         setupShare(blog);
         setupPrint();
         setupProgress();
