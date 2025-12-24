@@ -1,94 +1,36 @@
-# TrieuMinistry - Personal Ministry Profile
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Một website tĩnh hiện đại, tích hợp công nghệ PWA và Firebase, phục vụ cho mục vụ cá nhân, chia sẻ bài viết, tài liệu và cầu nguyện.
+## Getting Started
 
-## 🌟 Tính Năng Chính
+First, run the development server:
 
-*   **Profile Cá Nhân:** Giới thiệu bản thân, chức vụ, niềm tin và kỹ năng.
-*   **Blog/Journal:** Hệ thống bài viết động loading từ JSON, hỗ trợ tìm kiếm và lọc theo chủ đề.
-*   **Thư Viện Tài Liệu (Docs):** Xem và tải xuống tài liệu PDF trực tiếp trên web với trình xem PDF tích hợp.
-*   **Cầu Nguyện (Prayers):** Gửi lời cầu nguyện, đánh dấu đã trả lời, và xóa (dành cho Admin). Tích hợp Firebase Realtime.
-*   **Dâng Hiến (Donate):** Trang thông tin tài khoản và QR Code tiện lợi.
-*   **PWA (Progressive Web App):** Hỗ trợ cài đặt như app trên điện thoại, hoạt động ngoại tuyến cơ bản.
-*   **Dark Mode & Animations:** Giao diện hiện đại, mượt mà.
-
-## 🛠️ Công Nghệ Sử Dụng
-
-*   **Frontend:** HTML5, CSS3, JavaScript (Vanilla ES6+).
-*   **UI Frameworks:** Bootstrap 5, FontAwesome 6.
-*   **Backend (BaaS):** Firebase Firestore (Lưu trữ lời cầu nguyện), Firebase Analytics.
-*   **Hosting:** GitHub Pages.
-*   **Tools:** PDF.js (Preview tài liệu).
-
-## � Hướng Dẫn Cài Đặt (Local)
-
-1.  **Clone repository:**
-    ```bash
-    git clone https://github.com/PhanNgocTrieu/trieuministry.git
-    cd trieuministry
-    ```
-
-2.  **Chạy server ảo:**
-    Vì dự án sử dụng Modules (`type="module"`) và Service Worker, bạn cần chạy qua HTTP Server chứ không mở trực tiếp file HTML.
-    
-    *   **Cách 1 (VS Code):** Cài extension "Live Server" và bấm "Go Live".
-    *   **Cách 2 (Python):** `python3 -m http.server 5500`
-    *   **Cách 3 (Node):** `npx http-server .`
-
-3.  **Truy cập:** Mở trình duyệt tại `http://127.0.0.1:5500`.
-
-## 📝 Hướng Dẫn Quản Lý Nội Dung
-
-### 1. Thêm Bài Viết Mới (Blog)
-Mở file `assets/data/blogs.json`:
-```json
-{
-  "id": "new-post-id",
-  "title": "Tiêu đề bài viết",
-  "slug": "tieu-de-khong-dau",
-  "excerpt": "Mô tả ngắn hiển thị bên ngoài...",
-  "content": "<p>Nội dung bài viết dùng thẻ HTML...</p>",
-  "author": "Phan Ngọc Triệu",
-  "date": "2025-12-25",
-  "category": "Chủ đề",
-  "image": "assets/images/blogs/ten-anh.jpg",
-  "readingTime": 5
-}
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-### 2. Thêm Tài Liệu Mới (Docs)
-1.  Upload file PDF vào thư mục `assets/pdfs/`.
-2.  Mở file `assets/data/docs.json` và thêm:
-```json
-{
-  "id": 10,
-  "title": "Tên tài liệu",
-  "category": "Danh mục",
-  "size": "2.5 MB",
-  "date": "2025-12-20",
-  "file": "assets/pdfs/ten-file.pdf",
-  "image": "assets/images/docs/bg-doc-1.jpg"
-}
-```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🌐 Hướng Dẫn Deploy (GitHub Pages)
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Dự án này được cấu hình để chạy tự động trên GitHub Pages.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-1.  Push code lên nhánh `main` trên GitHub.
-2.  Vào **Settings** > **Pages**.
-3.  Tại mục **Branch**, chọn `main` và folder `/ (root)`.
-4.  Bấm **Save**.
-5.  Web sẽ chạy tại: `https://phanngoctrieu.github.io/trieuministry/`
+## Learn More
 
-**Lưu ý:**
-*   Hệ thống Router đã được tối ưu cho GitHub Pages (tự động nhận diện thư mục con).
-*   Nếu thấy lỗi 404, hãy đợi 1-2 phút và thử reload lại trang (đôi khi cache chưa cập nhật).
+To learn more about Next.js, take a look at the following resources:
 
-## 📞 Liên Hệ
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-*   **Email:** phantrieu580@gmail.com
-*   **Facebook:** [Phan Ngọc Triều](https://facebook.com)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
-© 2025 TrieuMinistry. Designed for God's Glory.
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
