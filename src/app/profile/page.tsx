@@ -70,15 +70,10 @@ export default function ProfilePage() {
                           {t('profile.founder.quote')}
                       </blockquote>
                       
-                      {/* Bio Content - Placeholder for now as it needs dynamic content from profile.js/json in legacy */}
+                      {/* Bio Content */}
                       <div className="text-gray-600 space-y-4 mb-8 text-justify leading-relaxed">
                           <p>
-                              Sinh ra và lớn lên trong một gia đình Cơ Đốc, tôi đã sớm cảm nhận được tình yêu thương của Chúa. 
-                              Tuy nhiên, hành trình đức tin thực sự bắt đầu khi tôi đối diện với những thử thách lớn trong cuộc sống.
-                          </p>
-                          <p>
-                              Qua những năm tháng tôi luyện, Chúa đã đặt vào lòng tôi một khải tượng rõ ràng về việc xây dựng 
-                              một cộng đồng nơi mọi người được khích lệ, trang bị và cùng nhau tăng trưởng trong ân điển.
+                             {t('profile.founder.bio').replace('{{age}}', (new Date().getFullYear() - 1999).toString())}
                           </p>
                       </div>
 
