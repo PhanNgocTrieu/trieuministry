@@ -123,6 +123,35 @@ export default function Home() {
             </div>
          </div>
       </section>
+
+      {/* Newsletter Section */}
+      <section className="py-20 bg-blue-600 text-white">
+        <div className="container container-custom fade-in-up">
+           <div className="flex flex-col items-center text-center">
+              <h3 className="text-3xl font-bold mb-4 flex items-center justify-center">
+                 <i className="fas fa-envelope-open-text mr-3"></i>
+                 Sign up for Newsletter
+              </h3>
+              <p className="mb-8 text-xl text-blue-100 max-w-2xl">
+                 Receive the latest articles, testimonies, and updates from TrieuMinistry every week.
+              </p>
+              <form className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
+                 <input 
+                    type="email" 
+                    placeholder="Your email" 
+                    className="flex-1 px-6 py-3 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-blue-400/50"
+                    required
+                 />
+                 <button 
+                    type="submit" 
+                    className="px-8 py-3 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg"
+                 >
+                    Subscribe
+                 </button>
+              </form>
+           </div>
+        </div>
+      </section>
     </main>
   );
 }
