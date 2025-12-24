@@ -65,7 +65,7 @@ export default function ProfilePage() {
                       <span className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-2 block">
                           {t('profile.founder.label')}
                       </span>
-                      <h2 className="text-4xl font-bold text-gray-900 mb-6">Phan Ngọc Triệu</h2>
+                      <h2 className="text-4xl font-bold text-gray-900 mb-6">Phan Ngọc Triều</h2>
                       <blockquote className="text-xl text-gray-600 italic border-l-4 border-blue-200 pl-6 py-2 mb-6">
                           {t('profile.founder.quote')}
                       </blockquote>
@@ -109,16 +109,15 @@ export default function ProfilePage() {
                   <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
               </div>
 
-              <div className={`bg-white p-8 md:p-12 rounded-2xl shadow-sm relative transition-all duration-500 fade-in-up ${isExpanded ? '' : 'max-h-[400px] overflow-hidden'}`}>
-                  <div className="font-serif text-lg leading-loose text-gray-700 space-y-6 text-justify">
-                      <p>{t('profile.calling.content_1')}</p>
-                      <p>{t('profile.calling.content_2')}</p>
+              <div className="fade-in-up">
+                  <div className={`bg-white p-8 md:p-12 rounded-2xl shadow-sm relative transition-[max-height] duration-700 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[3000px]' : 'max-h-[400px]'}`}>
+                      <div className="font-serif text-lg leading-loose text-gray-700 space-y-6 text-justify">
+                          <p>{t('profile.calling.content_1')}</p>
+                          <p>{t('profile.calling.content_2')}</p>
+                      </div>
+                      
+                      <div className={`absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-white/80 to-transparent transition-opacity duration-500 ${isExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}></div>
                   </div>
-                  
-                  {!isExpanded && (
-                     <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-white/80 to-transparent flex items-end justify-center pb-6">
-                     </div>
-                  )}
               </div>
               
               <div className="text-center mt-8">
