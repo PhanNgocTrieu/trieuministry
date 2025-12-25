@@ -23,6 +23,8 @@ export default function EditBlogPage() {
         status: "approved"
     });
 
+    const [showSuccess, setShowSuccess] = useState(false);
+
     useEffect(() => {
         const fetchBlog = async () => {
             try {
@@ -71,8 +73,8 @@ export default function EditBlogPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Blog post updated successfully!");
-            router.push("/admin/blogs");
+            setShowSuccess(true);
+            // Router push is handled in modal close
         } catch (error) {
             console.error("Error updating blog:", error);
             alert("Failed to update blog post");
@@ -82,6 +84,34 @@ export default function EditBlogPage() {
     };
 
     if (loading) return <div className="p-10 text-center">Loading blog details...</div>;
+
+    if (showSuccess) {
+         return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 text-center animate-in zoom-in-95 duration-200">
+                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i className="fas fa-check text-4xl text-green-600"></i>
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Changes Saved!</h2>
+                    <p className="text-gray-500 mb-8 text-lg">
+                        The blog post has been successfully updated.
+                    </p>
+                    <button 
+                        onClick={() => router.push("/admin/blogs")}
+                        className="w-full py-3.5 rounded-xl bg-gray-900 text-white font-bold text-lg hover:bg-gray-800 hover:scale-[0.98] transition-all"
+                    >
+                        Back to Dashboard
+                    </button>
+                    <button 
+                        onClick={() => setShowSuccess(false)}
+                        className="mt-3 text-gray-400 hover:text-gray-600 font-medium text-sm"
+                    >
+                        Stay on this page
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto">

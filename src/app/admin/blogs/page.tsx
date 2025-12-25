@@ -109,14 +109,20 @@ export default function AdminBlogsPage() {
         );
     };
 
-    const handleToggleStatus = async (id: string, currentStatus: string) => {
-        const newStatus = currentStatus === 'pending' ? 'approved' : 'pending';
-        try {
-            await updateDoc(doc(db, "blogs", id), { status: newStatus });
-            setPosts(posts.map(p => p.id === id ? { ...p, status: newStatus } : p));
-        } catch (error) {
-            console.error("Error updating status:", error);
-        }
+    const handleApprove = async (id: string) => {
+        openModal(
+            "Approve Blog Post",
+            "Are you sure you want to approve this blog post? It will become visible to all users.",
+            async () => {
+                try {
+                    await updateDoc(doc(db, "blogs", id), { status: 'approved' });
+                    setPosts(posts.map(p => p.id === id ? { ...p, status: 'approved' } : p));
+                } catch (error) {
+                    console.error("Error approving post:", error);
+                    alert("Failed to approve post");
+                }
+            }
+        );
     };
 
     if (loading) return <div className="p-8 text-center">Loading blogs...</div>;
@@ -161,7 +167,7 @@ export default function AdminBlogsPage() {
                     </thead>
                     <tbody>
                         {posts.map((post) => (
-                            <tr key={post.id} className="bg-white border-b hover:bg-gray-50">
+                            <tr key={post.id} className={`border-b hover:bg-gray-50 ${post.status === 'pending' ? 'bg-yellow-50/50' : 'bg-white'}`}>
                                 <td className="px-6 py-4 font-medium text-gray-900">
                                     {post.title}
                                     <div className="text-xs text-gray-400 font-normal">{post.slug}</div>
@@ -169,23 +175,31 @@ export default function AdminBlogsPage() {
                                 <td className="px-6 py-4">{post.author}</td>
                                 <td className="px-6 py-4">{post.date}</td>
                                 <td className="px-6 py-4">
-                                    <button 
-                                        onClick={() => handleToggleStatus(post.id, post.status)}
-                                        className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-                                            post.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                        }`}
-                                    >
+                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
+                                        post.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                    }`}>
                                         {post.status}
-                                    </button>
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 flex gap-3">
-                                    <Link href={`/blogs/${post.slug}`} target="_blank" className="text-gray-400 hover:text-blue-600" title="View">
+                                    {/* Action: Approve (Only for Pending) */}
+                                    {post.status === 'pending' && (
+                                        <button 
+                                            onClick={() => handleApprove(post.id)}
+                                            className="text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 p-2 rounded-lg transition-colors" 
+                                            title="Approve"
+                                        >
+                                            <i className="fas fa-check"></i>
+                                        </button>
+                                    )}
+
+                                    <Link href={`/blogs/${post.slug || post.id}`} target="_blank" className="text-gray-400 hover:text-blue-600 p-2 transition-colors" title="View">
                                         <i className="fas fa-external-link-alt"></i>
                                     </Link>
-                                    <Link href={`/admin/blogs/${post.id}/edit`} className="text-blue-500 hover:text-blue-700" title="Edit">
+                                    <Link href={`/admin/blogs/${post.id}/edit`} className="text-blue-500 hover:text-blue-700 p-2 transition-colors" title="Edit">
                                         <i className="fas fa-edit"></i>
                                     </Link>
-                                    <button onClick={() => handleDelete(post.id)} className="text-red-500 hover:text-red-700" title="Delete">
+                                    <button onClick={() => handleDelete(post.id)} className="text-red-500 hover:text-red-700 p-2 transition-colors" title="Delete/Reject">
                                         <i className="fas fa-trash"></i>
                                     </button>
                                 </td>
