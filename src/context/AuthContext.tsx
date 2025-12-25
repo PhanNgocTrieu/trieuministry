@@ -108,8 +108,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     console.error("Error listening to user role:", error);
                     setLoading(false);
                 });
-            } else {
-                setLoading(false);
             }
         };
 
