@@ -2,56 +2,68 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 // Types
 type Prayer = {
   id: string;
   author: string;
+  userId?: string; // Optional for migration/guest
   content: string;
   date: string;
   status: 'not_prayed' | 'prayed' | 'answered';
   prayerCount: number;
   category?: string;
   action?: string;
+  createdAt?: any;
 };
 
 export default function PrayersPage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Real Data State
+  const [prayers, setPrayers] = useState<Prayer[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock Data State
-  const [prayers, setPrayers] = useState<Prayer[]>([
-    {
-      id: '1',
-      author: 'John Doe',
-      content: 'Please pray for my mother\'s health recovery.',
-      date: '2024-12-24',
-      status: 'not_prayed',
-      prayerCount: 5,
-      category: 'Health'
-    },
-    {
-      id: '2',
-      author: 'Anonymous',
-      content: 'Praying for guidance in my new career path.',
-      date: '2024-12-23',
-      status: 'prayed',
-      prayerCount: 12,
-      category: 'Work'
-    },
-    {
-       id: '3',
-       author: 'Sarah M.',
-       content: 'Praise God! My financial situation has improved.',
-       date: '2024-12-20',
-       status: 'answered',
-       prayerCount: 20,
-       category: 'Finance',
-       action: 'God provided a new job opportunity just in time.'
-    }
-  ]);
+  // Form State
+  const [newContent, setNewContent] = useState('');
+  const [newCategory, setNewCategory] = useState('General');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // Subscribe to real-time updates
+    const q = query(collection(db, 'prayers'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list: Prayer[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push({
+          id: doc.id,
+          author: data.userName || 'Unknown',
+          userId: data.userId,
+          content: data.content,
+          date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'N/A',
+          status: data.status || 'not_prayed',
+          prayerCount: data.prayerCount || 0,
+          category: data.category || 'General',
+          action: data.action
+        } as Prayer);
+      });
+      setPrayers(list);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
 
   // Derived Statistics
   const stats = {
@@ -68,27 +80,58 @@ export default function PrayersPage() {
      return matchesFilter && matchesSearch;
   });
 
-  const handleAddPrayer = (e: React.FormEvent) => {
-     e.preventDefault();
-     // Mock Add Logic
-     const newPrayer: Prayer = {
-        id: Date.now().toString(),
-        author: 'Guest User',
-        content: 'This is a new prayer request.',
-        date: new Date().toISOString().split('T')[0],
-        status: 'not_prayed',
-        prayerCount: 0,
-        category: 'General'
-     };
-     setPrayers([newPrayer, ...prayers]);
-     setShowModal(false);
-     alert("Prayer request added successfully (Mock)!");
+  const handleAddClick = () => {
+      if (!user) {
+          if (confirm("You need to login to add a prayer request. Go to login page?")) {
+              router.push('/login');
+          }
+          return;
+      }
+      setShowModal(true);
   };
 
-  const handlePrayClick = (id: string) => {
-     setPrayers(prayers.map(p => 
-        p.id === id ? { ...p, prayerCount: p.prayerCount + 1, status: p.status === 'not_prayed' ? 'prayed' : p.status } : p
-     ));
+  const handleAddPrayer = async (e: React.FormEvent) => {
+     e.preventDefault();
+     if (!user || !newContent.trim()) return;
+
+     setIsSubmitting(true);
+     try {
+        await addDoc(collection(db, 'prayers'), {
+            userId: user.uid,
+            userName: user.displayName || 'Anonymous',
+            userAvatar: user.photoURL || '',
+            content: newContent,
+            category: newCategory,
+            status: 'not_prayed',
+            prayerCount: 0,
+            createdAt: serverTimestamp()
+        });
+        
+        setNewContent('');
+        setShowModal(false);
+        // Alert handled by UI, list auto updates via onSnapshot
+     } catch (error) {
+         console.error("Error adding prayer", error);
+         alert("Failed to submit prayer. Please try again.");
+     } finally {
+         setIsSubmitting(false);
+     }
+  };
+
+  const handlePrayClick = async (id: string, currentStatus: string) => {
+     // Optimistic update could go here, but let's rely on fast Firestore
+     try {
+         const prayerRef = doc(db, 'prayers', id);
+         const updates: any = {
+             prayerCount: increment(1)
+         };
+         if (currentStatus === 'not_prayed') {
+             updates.status = 'prayed';
+         }
+         await updateDoc(prayerRef, updates);
+     } catch (error) {
+         console.error("Error praying", error);
+     }
   };
 
   return (
@@ -108,7 +151,7 @@ export default function PrayersPage() {
                </div>
                <div className="lg:w-auto">
                    <button 
-                      onClick={() => setShowModal(true)}
+                      onClick={handleAddClick}
                       className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all flex items-center gap-3"
                    >
                       <i className="fas fa-plus"></i>
@@ -191,64 +234,72 @@ export default function PrayersPage() {
             </div>
 
             {/* List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {filteredPrayers.map((prayer) => (
-                  <div 
-                     key={prayer.id} 
-                     className={`bg-white rounded-2xl shadow-sm p-6 border-l-4 hover:-translate-y-1 transition-all duration-300 relative group
-                        ${prayer.status === 'answered' ? 'border-green-500' : 
-                          prayer.status === 'prayed' ? 'border-yellow-400' : 'border-gray-300'}
-                     `}
-                  >
-                     {/* Badge */}
-                     <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
-                        ${prayer.status === 'answered' ? 'bg-green-100 text-green-700' : 
-                          prayer.status === 'prayed' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}
-                     `}>
-                        {t(`prayers.status.${prayer.status}`)}
-                     </span>
-
-                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold">
-                           <i className="fas fa-user"></i>
-                        </div>
-                        <div>
-                           <h5 className="font-bold text-gray-800 text-sm">{prayer.author}</h5>
-                           <span className="text-xs text-gray-400 flex items-center gap-1">
-                              <i className="far fa-calendar-alt"></i> {prayer.date}
-                           </span>
-                        </div>
-                     </div>
-
-                     <p className="text-gray-600 mb-6 min-h-[80px] leading-relaxed">
-                        {prayer.content}
-                     </p>
-                     
-                     {prayer.action && (
-                        <div className="mb-4 bg-green-50 border border-green-100 p-3 rounded-lg text-sm text-green-800">
-                           <strong className="block mb-1 text-green-700"><i className="fas fa-bolt mr-1"></i> God's Action:</strong>
-                           {prayer.action}
-                        </div>
-                     )}
-
-                     <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
-                        <span className="text-gray-400 text-sm font-semibold flex items-center gap-1">
-                           <i className="fas fa-bookmark text-gray-300"></i> {prayer.category || 'General'}
+            {loading ? (
+                <div className="text-center py-20 text-gray-500">Loading prayers...</div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredPrayers.map((prayer) => (
+                    <div 
+                        key={prayer.id} 
+                        className={`bg-white rounded-2xl shadow-sm p-6 border-l-4 hover:-translate-y-1 transition-all duration-300 relative group
+                            ${prayer.status === 'answered' ? 'border-green-500' : 
+                            prayer.status === 'prayed' ? 'border-yellow-400' : 'border-gray-300'}
+                        `}
+                    >
+                        {/* Badge */}
+                        <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                            ${prayer.status === 'answered' ? 'bg-green-100 text-green-700' : 
+                            prayer.status === 'prayed' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}
+                        `}>
+                            {t(`prayers.status.${prayer.status}`)}
                         </span>
-                        
-                        <button 
-                           onClick={() => handlePrayClick(prayer.id)}
-                           className="group/btn flex items-center gap-2 text-blue-600 font-bold text-sm bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
-                        >
-                           <i className="fas fa-praying-hands group-hover/btn:animate-pulse"></i>
-                           Pray ({prayer.prayerCount})
-                        </button>
-                     </div>
-                  </div>
-               ))}
-            </div>
 
-            {filteredPrayers.length === 0 && (
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold overflow-hidden">
+                                {prayer.author === 'Anonymous' ? (
+                                    <i className="fas fa-user"></i>
+                                ) : (
+                                    <span className="text-xs uppercase">{prayer.author.charAt(0)}</span>
+                                )}
+                            </div>
+                            <div>
+                                <h5 className="font-bold text-gray-800 text-sm">{prayer.author}</h5>
+                                <span className="text-xs text-gray-400 flex items-center gap-1">
+                                    <i className="far fa-calendar-alt"></i> {prayer.date}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p className="text-gray-600 mb-6 min-h-[80px] leading-relaxed">
+                            {prayer.content}
+                        </p>
+                        
+                        {prayer.action && (
+                            <div className="mb-4 bg-green-50 border border-green-100 p-3 rounded-lg text-sm text-green-800">
+                                <strong className="block mb-1 text-green-700"><i className="fas fa-bolt mr-1"></i> God's Action:</strong>
+                                {prayer.action}
+                            </div>
+                        )}
+
+                        <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
+                            <span className="text-gray-400 text-sm font-semibold flex items-center gap-1">
+                                <i className="fas fa-bookmark text-gray-300"></i> {prayer.category || 'General'}
+                            </span>
+                            
+                            <button 
+                                onClick={() => handlePrayClick(prayer.id, prayer.status)}
+                                className="group/btn flex items-center gap-2 text-blue-600 font-bold text-sm bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
+                            >
+                                <i className="fas fa-praying-hands group-hover/btn:animate-pulse"></i>
+                                Pray ({prayer.prayerCount})
+                            </button>
+                        </div>
+                    </div>
+                ))}
+                </div>
+            )}
+
+            {!loading && filteredPrayers.length === 0 && (
                <div className="text-center py-20">
                   <div className="text-gray-300 text-5xl mb-4"><i className="fas fa-clock"></i></div>
                   <p className="text-gray-500">No prayer requests found matching your filters.</p>
@@ -272,18 +323,53 @@ export default function PrayersPage() {
                </div>
                
                <form onSubmit={handleAddPrayer} className="p-6">
+                  {/* Note: Author is taken from logged in user automatically */}
                   <div className="mb-4">
-                     <label className="block text-sm font-bold text-gray-700 mb-1">{t('prayers.form.name_label')}</label>
-                     <input type="text" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder={t('prayers.form.name_placeholder')} />
+                     <label className="block text-sm font-bold text-gray-700 mb-1">Your Name</label>
+                     <input 
+                        type="text" 
+                        className="w-full border border-gray-300 bg-gray-100 text-gray-500 rounded-lg px-4 py-2" 
+                        value={user?.displayName || 'Anonymous'} 
+                        disabled 
+                     />
+                     <p className="text-xs text-gray-500 mt-1">Taken from your account profile.</p>
+                  </div>
+                   <div className="mb-4">
+                     <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                     <select 
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                     >
+                        <option value="General">General</option>
+                        <option value="Health">Health</option>
+                        <option value="Family">Family</option>
+                        <option value="Work">Work</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Spiritual">Spiritual</option>
+                     </select>
                   </div>
                   <div className="mb-6">
                      <label className="block text-sm font-bold text-gray-700 mb-1">{t('prayers.form.content_label')}</label>
-                     <textarea rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder={t('prayers.form.content_placeholder')} required></textarea>
+                     <textarea 
+                        rows={4} 
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                        placeholder={t('prayers.form.content_placeholder')} 
+                        required
+                        value={newContent}
+                        onChange={(e) => setNewContent(e.target.value)}
+                     ></textarea>
                   </div>
                   
                   <div className="flex justify-end gap-3">
                      <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
-                     <button type="submit" className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md">Submit Prayer</button>
+                     <button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className={`px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                     >
+                        {isSubmitting ? 'Submitting...' : 'Submit Prayer'}
+                     </button>
                   </div>
                </form>
             </div>
