@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { collection, getDocs, deleteDoc, doc, query, orderBy, Timestamp } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
 import Image from "next/image";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 
 interface UserData {
     uid: string;
@@ -11,32 +13,85 @@ interface UserData {
     displayName: string;
     photoURL: string;
     lastLogin: any;
+    role?: string;
 }
 
 export default function UsersManagementPage() {
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                // Note: 'users' collection is created by syncUserToFirestore in AuthContext
-                const q = query(collection(db, "users"), orderBy("lastLogin", "desc"));
-                const querySnapshot = await getDocs(q);
-                const usersList: UserData[] = [];
-                querySnapshot.forEach((doc) => {
-                    usersList.push(doc.data() as UserData);
-                });
-                setUsers(usersList);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(db, "users"), orderBy("lastLogin", "desc"));
+            const querySnapshot = await getDocs(q);
+            const usersList: UserData[] = [];
+            querySnapshot.forEach((doc) => {
+                usersList.push({ uid: doc.id, ...doc.data() } as UserData);
+            });
+            setUsers(usersList);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
+
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        isDangerous?: boolean;
+    }>({
+        isOpen: false,
+        title: "",
+        message: "",
+        onConfirm: () => {},
+    });
+
+    const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
+        setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
+    };
+
+    const handleDeleteUser = async (uid: string) => {
+        openModal(
+            "Delete User Profile",
+            "WARNING: This only deletes the user 'profile' from database.\nThe login account (Firebase Auth) CANNOT be deleted from here without a backend.\n\nProceed to delete profile?",
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "users", uid));
+                    setUsers(users.filter(u => u.uid !== uid));
+                    alert("User profile deleted from Database.");
+                } catch (error) {
+                    console.error("Error deleting user:", error);
+                    alert("Failed to delete user profile.");
+                }
+            },
+            true
+        );
+    };
+
+    const handleResetPassword = async (email: string) => {
+        if (!email) return alert("User has no email?");
+        openModal(
+            "Send Password Reset?",
+            `Send a password reset email to ${email}?`,
+            async () => {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert(`Password reset email sent to ${email}`);
+                } catch (error: any) {
+                    console.error("Error sending reset email:", error);
+                    alert(`Failed to send email: ${error.message}`);
+                }
+            }
+        );
+    };
 
     if (loading) {
         return <div className="p-8 text-center">Loading users...</div>;
@@ -44,6 +99,15 @@ export default function UsersManagementPage() {
 
     return (
         <div>
+            <ConfirmModal 
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                isDangerous={modalConfig.isDangerous}
+            />
+
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
                 <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
@@ -59,7 +123,6 @@ export default function UsersManagementPage() {
                                 <th scope="col" className="px-6 py-3">User</th>
                                 <th scope="col" className="px-6 py-3">Role</th>
                                 <th scope="col" className="px-6 py-3">Last Login</th>
-                                <th scope="col" className="px-6 py-3">Status</th>
                                 <th scope="col" className="px-6 py-3">Actions</th>
                             </tr>
                         </thead>
@@ -87,7 +150,7 @@ export default function UsersManagementPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL ? (
+                                        {user.email === 'pntrieu200799@gmail.com' || user.email === 'phantrieu580@gmail.com' ? (
                                             <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded">Admin</span>
                                         ) : (
                                             <span className="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-1 rounded">User</span>
@@ -96,13 +159,21 @@ export default function UsersManagementPage() {
                                     <td className="px-6 py-4">
                                         {user.lastLogin?.seconds ? new Date(user.lastLogin.seconds * 1000).toLocaleDateString() : 'N/A'}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className="flex items-center gap-1 text-green-600 font-medium">
-                                            <i className="fas fa-circle text-[8px]"></i> Active
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                       <button className="text-blue-600 hover:underline font-medium">Edit</button>
+                                    <td className="px-6 py-4 flex gap-3">
+                                        <button 
+                                            onClick={() => handleResetPassword(user.email)}
+                                            className="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                                            title="Send Password Reset Email"
+                                        >
+                                            <i className="fas fa-key margin-right-1"></i> Reset Pass
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteUser(user.uid)}
+                                            className="text-red-500 hover:text-red-700 ml-2"
+                                            title="Delete User Data"
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

@@ -2,15 +2,71 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // Assuming Next/Image will be used
+import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
-import blogsData from '@/data/blogs.json';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+
+interface BlogPost {
+    id: string;
+    title: string;
+    slug: string;
+    author: string;
+    date: string;
+    status: 'approved' | 'pending';
+    category: string;
+    excerpt: string;
+    content: string;
+    tags: string[];
+}
 
 export default function BlogsPage() {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('');
-  const [filteredBlogs, setFilteredBlogs] = useState(blogsData);
+  const [allBlogs, setAllBlogs] = useState<BlogPost[]>([]);
+  const [filteredBlogs, setFilteredBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+        setLoading(true);
+        try {
+            // Fetch only approved blogs
+            const q = query(
+                collection(db, "blogs"), 
+                where("status", "==", "approved"),
+                orderBy("date", "desc")
+            );
+            const querySnapshot = await getDocs(q);
+            const list: BlogPost[] = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                // Ensure all required fields exist
+                list.push({ 
+                    id: doc.id, 
+                    title: data.title,
+                    slug: data.slug,
+                    author: data.author,
+                    date: data.date,
+                    status: data.status,
+                    category: data.category,
+                    excerpt: data.excerpt,
+                    content: data.content,
+                    tags: data.tags || []
+                } as BlogPost);
+            });
+            setAllBlogs(list);
+            setFilteredBlogs(list);
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchBlogs();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -27,10 +83,10 @@ export default function BlogsPage() {
     return () => {
       hiddenElements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
+  }, [loading]); // Add loading dependence to re-trigger on content load
 
   useEffect(() => {
-    let results = blogsData;
+    let results = allBlogs;
 
     if (searchTerm) {
       results = results.filter(blog => 
@@ -44,10 +100,10 @@ export default function BlogsPage() {
     }
 
     setFilteredBlogs(results);
-  }, [searchTerm, category]);
+  }, [searchTerm, category, allBlogs]);
 
   // Extract unique categories for filter
-  const categories = Array.from(new Set(blogsData.map(blog => blog.category)));
+  const categories = Array.from(new Set(allBlogs.map(blog => blog.category)));
 
   return (
     <main className="bg-gray-50 min-h-screen">
@@ -114,7 +170,12 @@ export default function BlogsPage() {
       <section className="py-16">
          <div className="container container-custom">
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+                <div className="flex justify-center py-20">
+                    <div className="loading-spinner"></div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {filteredBlogs.map((blog) => (
                   <article key={blog.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full group border border-gray-100">
                      <Link href={`/blogs/${blog.id}`} className="block relative h-60 w-full overflow-hidden bg-gray-200">
@@ -162,6 +223,7 @@ export default function BlogsPage() {
                   </article>
                ))}
             </div>
+            )}
 
             {filteredBlogs.length === 0 && (
                <div className="text-center py-24 bg-white rounded-2xl border border-dashed border-gray-200">

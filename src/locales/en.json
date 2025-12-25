@@ -87,7 +87,8 @@
             "empty": "No data available.",
             "empty_filtered": "No matching posts found.",
             "error_load": "Failed to load blogs",
-            "min_read": "min read"
+            "min_read": "min read",
+            "empty_title": "No posts found"
         }
     },
     "docs": {

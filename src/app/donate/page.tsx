@@ -3,14 +3,62 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function DonatePage() {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    target: '',
+    title: '',
+    content: '',
+    bankName: '',
+    bankAccount: '',
+    bankOwner: ''
+  });
 
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
-    alert(message); // Simple alert for now, can be improved with a toast
+    alert(message); 
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+        await addDoc(collection(db, "appeals"), {
+            ...formData,
+            status: "pending", // Default status
+            currentAmount: 0,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        alert("Your appeal request has been submitted successfully! We will review it shortly.");
+        setShowModal(false);
+        setFormData({
+            name: '',
+            phone: '',
+            target: '',
+            title: '',
+            content: '',
+            bankName: '',
+            bankAccount: '',
+            bankOwner: ''
+        });
+    } catch (error) {
+        console.error("Error submitting appeal:", error);
+        alert("Failed to submit appeal. Please try again.");
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -200,29 +248,64 @@ export default function DonatePage() {
                  </button>
               </div>
               
-              <div className="p-6 md:p-8">
-                 <div className="bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-lg text-sm mb-8 flex items-center gap-2">
+              <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-4">
+                 <div className="bg-blue-50 border border-blue-100 text-blue-700 px-4 py-3 rounded-lg text-sm mb-6 flex items-center gap-2">
                      <i className="fas fa-info-circle"></i>
                      {t('donate.form.warning')}
                  </div>
 
-                 {/* Form Fields would go here - Static for Phase 3 */}
-                 <p className="text-center text-gray-500 italic py-8">
-                    Form functionality will be implemented in Phase 4/5. 
-                 </p>
-              </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">{t('donate.form.name')}</label>
+                        <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">{t('donate.form.phone')}</label>
+                        <input type="text" name="phone" required value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                 </div>
 
-              <div className="p-6 bg-gray-50 rounded-b-2xl border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 z-10">
-                 <button 
-                  onClick={() => setShowModal(false)}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
-                 >
-                    {t('donate.form.cancel')}
-                 </button>
-                 <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-sm">
-                    {t('donate.form.send')}
-                 </button>
-              </div>
+                 <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">{t('donate.form.appeal_title')}</label>
+                    <input type="text" name="title" required value={formData.title} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                 </div>
+
+                 <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">{t('donate.form.target')}</label>
+                    <input type="number" name="target" required value={formData.target} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                 </div>
+
+                 <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">{t('donate.form.content')}</label>
+                    <textarea name="content" required rows={4} value={formData.content} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                 </div>
+
+                 <div className="pt-4 border-t border-gray-100">
+                    <h6 className="font-bold text-gray-700 mb-3">{t('donate.form.bank_info')}</h6>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" name="bankName" placeholder={t('donate.form.bank_name')} value={formData.bankName} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input type="text" name="bankAccount" placeholder={t('donate.form.bank_account')} value={formData.bankAccount} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input type="text" name="bankOwner" placeholder={t('donate.form.bank_owner')} value={formData.bankOwner} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                 </div>
+
+                 <div className="pt-4 flex justify-end gap-3">
+                    <button 
+                        type="button"
+                        onClick={() => setShowModal(false)}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                    >
+                        {t('donate.form.cancel')}
+                    </button>
+                    <button 
+                        type="submit"
+                        disabled={loading}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-sm disabled:bg-gray-400"
+                    >
+                        {loading ? 'Sending...' : t('donate.form.send')}
+                    </button>
+                 </div>
+              </form>
            </div>
         </div>
       )}

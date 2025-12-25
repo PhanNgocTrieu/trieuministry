@@ -1,0 +1,198 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp } from "firebase/firestore";
+import Link from "next/link";
+import ConfirmModal from "@/components/admin/ConfirmModal";
+import initialBlogs from "@/data/blogs.json"; // Import static data for migration
+
+interface BlogPost {
+    id: string;
+    title: string;
+    slug: string;
+    author: string;
+    date: string;
+    status: 'approved' | 'pending';
+    category: string;
+}
+
+export default function AdminBlogsPage() {
+    const [posts, setPosts] = useState<BlogPost[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [migrating, setMigrating] = useState(false);
+
+    const fetchPosts = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(db, "blogs"), orderBy("date", "desc"));
+            const querySnapshot = await getDocs(q);
+            const list: BlogPost[] = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                list.push({ id: doc.id, ...data } as BlogPost);
+            });
+            setPosts(list);
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
+
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        isDangerous?: boolean;
+    }>({
+        isOpen: false,
+        title: "",
+        message: "",
+        onConfirm: () => {},
+    });
+
+    const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
+        setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
+    };
+
+    const handleMigrate = async () => {
+        openModal(
+            "Migrate Data",
+            "This will upload static JSON blogs to Firestore. Continue?",
+            async () => {
+                setMigrating(true);
+                try {
+                    const batch = writeBatch(db);
+                    initialBlogs.forEach(blog => {
+                        const docRef = doc(db, "blogs", blog.slug); 
+                        batch.set(docRef, {
+                            ...blog,
+                            status: 'approved',
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        });
+                    });
+                    await batch.commit();
+                    alert("Migration successful!");
+                    fetchPosts();
+                } catch (error) {
+                    console.error("Migration failed:", error);
+                    alert("Migration failed. Check console.");
+                } finally {
+                    setMigrating(false);
+                }
+            }
+        );
+    };
+
+    const handleDelete = async (id: string) => {
+        openModal(
+            "Delete Post",
+            "Are you sure you want to delete this post? This action cannot be undone.",
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "blogs", id));
+                    setPosts(posts.filter(p => p.id !== id));
+                } catch (error) {
+                    console.error("Error deleting post:", error);
+                    alert("Failed to delete post");
+                }
+            },
+            true
+        );
+    };
+
+    const handleToggleStatus = async (id: string, currentStatus: string) => {
+        const newStatus = currentStatus === 'pending' ? 'approved' : 'pending';
+        try {
+            await updateDoc(doc(db, "blogs", id), { status: newStatus });
+            setPosts(posts.map(p => p.id === id ? { ...p, status: newStatus } : p));
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center">Loading blogs...</div>;
+
+    return (
+        <div>
+            <ConfirmModal 
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                isDangerous={modalConfig.isDangerous}
+            />
+
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">Blog Management</h1>
+                <div className="flex gap-3">
+                    <button 
+                        onClick={handleMigrate}
+                        disabled={migrating}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
+                    >
+                         {migrating ? 'Migrating...' : <><i className="fas fa-database"></i> Migrate Data</>}
+                    </button>
+                    <Link href="/admin/blogs/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+                        <i className="fas fa-plus"></i> New Post
+                    </Link>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <table className="w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">Title</th>
+                            <th scope="col" className="px-6 py-3">Author</th>
+                            <th scope="col" className="px-6 py-3">Date</th>
+                            <th scope="col" className="px-6 py-3">Status</th>
+                            <th scope="col" className="px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {posts.map((post) => (
+                            <tr key={post.id} className="bg-white border-b hover:bg-gray-50">
+                                <td className="px-6 py-4 font-medium text-gray-900">
+                                    {post.title}
+                                    <div className="text-xs text-gray-400 font-normal">{post.slug}</div>
+                                </td>
+                                <td className="px-6 py-4">{post.author}</td>
+                                <td className="px-6 py-4">{post.date}</td>
+                                <td className="px-6 py-4">
+                                    <button 
+                                        onClick={() => handleToggleStatus(post.id, post.status)}
+                                        className={`px-2 py-1 rounded text-xs font-bold uppercase ${
+                                            post.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                        }`}
+                                    >
+                                        {post.status}
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 flex gap-3">
+                                    <Link href={`/blogs/${post.slug}`} target="_blank" className="text-gray-400 hover:text-blue-600" title="View">
+                                        <i className="fas fa-external-link-alt"></i>
+                                    </Link>
+                                    <Link href={`/admin/blogs/${post.id}/edit`} className="text-blue-500 hover:text-blue-700" title="Edit">
+                                        <i className="fas fa-edit"></i>
+                                    </Link>
+                                    <button onClick={() => handleDelete(post.id)} className="text-red-500 hover:text-red-700" title="Delete">
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}

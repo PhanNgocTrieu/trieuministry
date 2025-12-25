@@ -52,7 +52,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
             if (currentUser) {
-                if (currentUser.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+                // Check against env var OR hardcoded allowed emails
+                const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+                const allowedAdmins = ['phantrieu580@gmail.com', 'pntrieu200799@gmail.com'];
+                
+                if ((adminEmail && currentUser.email === adminEmail) || (currentUser.email && allowedAdmins.includes(currentUser.email))) {
                     setIsAdmin(true);
                 } else {
                     setIsAdmin(false);

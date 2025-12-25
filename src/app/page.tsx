@@ -97,7 +97,7 @@ export default function Home() {
       </section>
 
       {/* Daily Verse Section */}
-      <section className="py-20 relative text-white text-center flex items-center justify-center min-h-[400px] bg-fixed bg-center bg-cover" style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/hero_bg.png')" }}>
+      <section className="py-20 relative text-white text-center flex items-center justify-center min-h-[400px] bg-fixed bg-center bg-cover" style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/hero_bg.png')" }}>
          <div className="container container-custom fade-in-up">
             <i className="fas fa-quote-left text-5xl mb-6 opacity-50 block mx-auto"></i>
             <blockquote className="text-2xl md:text-3xl font-light italic font-serif mb-6 block mx-auto max-w-4xl">

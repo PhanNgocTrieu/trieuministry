@@ -1,0 +1,207 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import Link from "next/link";
+
+export default function EditBlogPage() {
+    const router = useRouter();
+    const params = useParams();
+    const id = params.id as string;
+    
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [formData, setFormData] = useState({
+        title: "",
+        slug: "",
+        category: "Faith",
+        excerpt: "",
+        content: "",
+        tags: "",
+        status: "approved"
+    });
+
+    useEffect(() => {
+        const fetchBlog = async () => {
+            try {
+                const docRef = doc(db, "blogs", id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setFormData({
+                        title: data.title || "",
+                        slug: data.slug || "",
+                        category: data.category || "Faith",
+                        excerpt: data.excerpt || "",
+                        content: data.content || "",
+                        tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ""),
+                        status: data.status || "pending"
+                    });
+                } else {
+                    alert("Blog post not found");
+                    router.push("/admin/blogs");
+                }
+            } catch (error) {
+                console.error("Error fetching blog:", error);
+                alert("Error loading blog details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) fetchBlog();
+    }, [id, router]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+
+        try {
+            const docRef = doc(db, "blogs", id);
+            await updateDoc(docRef, {
+                ...formData,
+                tags: formData.tags.split(',').map(tag => tag.trim()).filter(t => t),
+                updatedAt: serverTimestamp()
+            });
+
+            alert("Blog post updated successfully!");
+            router.push("/admin/blogs");
+        } catch (error) {
+            console.error("Error updating blog:", error);
+            alert("Failed to update blog post");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) return <div className="p-10 text-center">Loading blog details...</div>;
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-4 mb-6">
+                <Link href="/admin/blogs" className="text-gray-500 hover:text-gray-700">
+                    <i className="fas fa-arrow-left"></i> Back
+                </Link>
+                <div className="flex-1">
+                     <h1 className="text-2xl font-bold text-gray-900">Edit Blog Post</h1>
+                     <p className="text-xs text-gray-500">ID: {id}</p>
+                </div>
+                
+            </div>
+
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Title</label>
+                        <input 
+                            type="text" 
+                            name="title" 
+                            required
+                            value={formData.title} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Slug (URL)</label>
+                        <input 
+                            type="text" 
+                            name="slug" 
+                            required
+                            value={formData.slug} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Category</label>
+                        <select 
+                            name="category" 
+                            value={formData.category} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="Faith">Faith</option>
+                            <option value="Ministry">Ministry</option>
+                            <option value="Theology">Theology</option>
+                            <option value="Life">Life</option>
+                            <option value="Testimony">Testimony</option>
+                        </select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Status</label>
+                        <select 
+                            name="status" 
+                            value={formData.status} 
+                            onChange={handleChange}
+                            className={`w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold ${formData.status === 'approved' ? 'text-green-600' : 'text-yellow-600'}`}
+                        >
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+
+                     <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Tags</label>
+                        <input 
+                            type="text" 
+                            name="tags" 
+                            value={formData.tags} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Short Excerpt</label>
+                    <textarea 
+                        name="excerpt" 
+                        required
+                        rows={3}
+                        value={formData.excerpt} 
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    ></textarea>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Content (HTML allowed)</label>
+                    <textarea 
+                        name="content" 
+                        required
+                        rows={15}
+                        value={formData.content} 
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm"
+                    ></textarea>
+                </div>
+
+                <div className="pt-4 border-t border-gray-50 flex justify-end gap-3">
+                    <Link href="/admin/blogs" className="px-6 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </Link>
+                    <button 
+                        type="submit" 
+                        disabled={loading}
+                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:bg-gray-400"
+                    >
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}

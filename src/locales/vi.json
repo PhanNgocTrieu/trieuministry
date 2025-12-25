@@ -87,7 +87,8 @@
             "empty": "Hiện không có dữ liệu.",
             "empty_filtered": "Chưa có bài viết nào phù hợp.",
             "error_load": "Không tải được danh sách bài viết",
-            "min_read": "phút đọc"
+            "min_read": "phút đọc",
+             "empty_title": "Không tìm thấy bài viết nào"
         }
     },
     "docs": {
