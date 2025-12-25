@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, collection, query, orderBy, getDocs, where } from 'firebase/firestore';
+import { doc, getDoc, collection, query, orderBy, getDocs, where, addDoc, serverTimestamp, onSnapshot, Timestamp } from 'firebase/firestore';
 
 interface BlogPost {
     id: string;
@@ -20,16 +20,83 @@ interface BlogPost {
     coverImage?: string; // Added field
 }
 
+interface Comment {
+    id: string;
+    text: string;
+    userId: string;
+    userName: string;
+    userAvatar: string;
+    createdAt: any; // Timestamp
+}
+
   // ... imports
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BlogDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { t } = useLanguage(); 
+  const { user } = useAuth();
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [adjacentPosts, setAdjacentPosts] = useState<{ prev: BlogPost | null, next: BlogPost | null }>({ prev: null, next: null });
+  
+  // Comment State
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
+
+  // Fetch Comments
+  useEffect(() => {
+    if (!id) return;
+
+    // Use a subcollection: blogs/{blogId}/comments
+    // Or a top-level collection with blogId field. Plan said subcollection: blogs/{id}/comments
+    // Actually, for simplicity and scalability, subcollection is good.
+    // Let's check the plan again: "blogs/{id}/comments"
+    
+    // BUT: The ID might be a slug or a doc ID. 
+    // The fetching logic determines the *actual* document ID in `currentBlog.id`.
+    // We should only start listening when `blog` is set.
+    
+    if(!blog?.id) return;
+
+    const commentsRef = collection(db, 'blogs', blog.id, 'comments');
+    const q = query(commentsRef, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetchedComments: Comment[] = [];
+        snapshot.forEach((doc) => {
+            fetchedComments.push({ id: doc.id, ...doc.data() } as Comment);
+        });
+        setComments(fetchedComments);
+    });
+
+    return () => unsubscribe();
+  }, [blog?.id]);
+
+  const handlePostComment = async () => {
+      if (!user || !commentText.trim() || !blog?.id) return;
+      
+      setSubmittingComment(true);
+      try {
+          const commentsRef = collection(db, 'blogs', blog.id, 'comments');
+          await addDoc(commentsRef, {
+              text: commentText.trim(),
+              userId: user.uid,
+              userName: user.displayName || 'Anonymous',
+              userAvatar: user.photoURL || '',
+              createdAt: serverTimestamp()
+          });
+          setCommentText('');
+      } catch (error) {
+          console.error("Error posting comment:", error);
+          alert(t('common.error'));
+      } finally {
+          setSubmittingComment(false);
+      }
+  };
 
   // ... fetch logic (unchanged) ...
   useEffect(() => {
@@ -304,35 +371,97 @@ export default function BlogDetailPage() {
                       {t('blogs.detail.discussion')}
                   </h3>
                   <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-500 border border-gray-200 uppercase tracking-wide">
-                      {t('blogs.detail.comments_count').replace('{{count}}', '0')}
+                      {t('blogs.detail.comments_count').replace('{{count}}', comments.length.toString())}
                   </span>
               </div>
               
               <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-2 md:p-3 mb-10">
-                  <div className="bg-gray-50 rounded-2xl p-4 md:p-6 mb-2">
+                  <div className="relative">
                       <textarea 
-                        className="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-lg resize-none min-h-[120px]"
-                        placeholder={t('blogs.detail.placeholder_comment')}
-                        disabled
+                        className={`w-full bg-gray-50 rounded-2xl p-4 md:p-6 pb-12 text-gray-700 placeholder-gray-400 text-lg resize-none min-h-[140px] focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-200 transition-all duration-200 border border-transparent ${
+                            !user ? 'opacity-60 cursor-not-allowed' : ''
+                        }`}
+                        placeholder={user ? t('blogs.detail.placeholder_comment') : t('blogs.detail.sign_in_comment')}
+                        disabled={!user || submittingComment}
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
                       ></textarea>
-                  </div>
-                  <div className="flex items-center justify-between px-2 md:px-4 pb-2">
-                       <span className="text-xs text-gray-400 font-medium">
-                           <i className="fas fa-info-circle mr-1"></i> {t('blogs.detail.sign_in_comment')}
-                       </span>
-                       <button disabled className="bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold shadow-md opacity-50 cursor-not-allowed hover:bg-blue-700 transition-all">
-                           {t('blogs.detail.post_comment')}
-                       </button>
+                      
+                      {/* Bottom Action Bar (Inside relative container to overlap if needed, or just below) */}
+                      <div className="absolute bottom-3 right-3 flex items-center gap-3">
+                           {user ? (
+                               <>
+                                   <div className="hidden md:flex items-center gap-2 mr-2">
+                                       {user.photoURL ? (
+                                           <img src={user.photoURL} alt={user.displayName || "User"} className="w-6 h-6 rounded-full border border-gray-200" />
+                                       ) : (
+                                           <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold">
+                                               {user.displayName?.charAt(0) || "U"}
+                                           </div>
+                                       )}
+                                       <span className="text-xs font-semibold text-gray-500">{user.displayName}</span>
+                                   </div>
+                                   <button 
+                                    onClick={handlePostComment}
+                                    disabled={!user || !commentText.trim() || submittingComment}
+                                    className={`px-6 py-2 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-2 ${
+                                        !user || !commentText.trim() || submittingComment
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5'
+                                    }`}
+                                   >
+                                       {submittingComment ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-paper-plane text-xs"></i> {t('blogs.detail.post_comment')}</>}
+                                   </button>
+                               </>
+                           ) : (
+                               <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-3 border border-gray-100 shadow-sm">
+                                   <span className="text-xs text-gray-500 font-medium">
+                                       <i className="fas fa-lock mr-1 text-gray-400"></i> {t('blogs.detail.sign_in_comment')}
+                                   </span>
+                                   <Link href="/login" className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                       {t('nav.login')}
+                                   </Link>
+                               </div>
+                           )}
+                      </div>
                   </div>
               </div>
 
-              {/* Empty State */}
-              <div className="text-center py-12">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 text-gray-300 text-4xl mb-4">
-                      <i className="far fa-comment-dots"></i>
-                  </div>
-                  <p className="text-gray-500 text-lg font-medium">{t('blogs.detail.no_comments')}</p>
-                  <p className="text-gray-400 text-sm">{t('blogs.detail.be_first')}</p>
+              {/* Comments List */}
+              <div className="space-y-6">
+                  {comments.length > 0 ? (
+                      comments.map((comment) => (
+                          <div key={comment.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+                              <div className="flex-shrink-0">
+                                  {comment.userAvatar ? (
+                                      <img src={comment.userAvatar} alt={comment.userName} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                                  ) : (
+                                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 text-blue-600 flex items-center justify-center text-lg font-bold shadow-inner">
+                                          {comment.userName.charAt(0)}
+                                      </div>
+                                  )}
+                              </div>
+                              <div className="flex-grow">
+                                  <div className="flex items-center justify-between mb-2">
+                                      <h4 className="font-bold text-gray-900">{comment.userName}</h4>
+                                      <span className="text-xs text-gray-400 font-medium">
+                                          {/* Format timestamp if available, otherwise just say 'Just now' or allow the UI to update */}
+                                          {comment.createdAt?.seconds ? new Date(comment.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}
+                                      </span>
+                                  </div>
+                                  <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{comment.text}</p>
+                              </div>
+                          </div>
+                      ))
+                  ) : (
+                      <div className="text-center py-12">
+                          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 text-gray-300 text-4xl mb-4">
+                              <i className="far fa-comment-dots"></i>
+                          </div>
+                          <p className="text-gray-500 text-lg font-medium">{t('blogs.detail.no_comments')}</p>
+                          <p className="text-gray-400 text-sm">{t('blogs.detail.be_first')}</p>
+                      </div>
+                  )}
               </div>
           </div>
       </section>
