@@ -29,8 +29,8 @@ export default function AdminBlogsPage() {
             const querySnapshot = await getDocs(q);
             const list: BlogPost[] = [];
             querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                list.push({ id: doc.id, ...data } as BlogPost);
+                const data = doc.data() as Omit<BlogPost, 'id'>;
+                list.push({ ...data, id: doc.id });
             });
             setPosts(list);
         } catch (error) {
@@ -96,12 +96,13 @@ export default function AdminBlogsPage() {
             "Delete Post",
             "Are you sure you want to delete this post? This action cannot be undone.",
             async () => {
+                console.log("Attempting to delete blog with ID:", id);
                 try {
                     await deleteDoc(doc(db, "blogs", id));
                     setPosts(posts.filter(p => p.id !== id));
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Error deleting post:", error);
-                    alert("Failed to delete post");
+                    alert(`Failed to delete post: ${error.message}`);
                 }
             },
             true

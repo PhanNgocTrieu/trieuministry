@@ -44,7 +44,6 @@ export default function BlogsPage() {
                 const data = doc.data();
                 // Ensure all required fields exist
                 list.push({ 
-                    id: doc.id, 
                     title: data.title,
                     slug: data.slug,
                     author: data.author,
@@ -53,7 +52,8 @@ export default function BlogsPage() {
                     category: data.category,
                     excerpt: data.excerpt,
                     content: data.content,
-                    tags: data.tags || []
+                    tags: data.tags || [],
+                    id: doc.id // ID must overwrite any data.id
                 } as BlogPost);
             });
             setAllBlogs(list);

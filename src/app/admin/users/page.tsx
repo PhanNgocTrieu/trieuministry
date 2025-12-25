@@ -66,7 +66,6 @@ export default function UsersManagementPage() {
                 try {
                     await deleteDoc(doc(db, "users", uid));
                     setUsers(users.filter(u => u.uid !== uid));
-                    alert("User profile deleted from Database.");
                 } catch (error) {
                     console.error("Error deleting user:", error);
                     alert("Failed to delete user profile.");

@@ -42,10 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <i className="fas fa-hand-holding-heart w-5 text-center"></i>
                             Appeals
                         </Link>
-                        <Link href="/admin/users" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
-                            <i className="fas fa-users w-5 text-center"></i>
-                            Users
-                        </Link>
+
                         <Link href="/admin/settings" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/settings')}`}>
                             <i className="fas fa-cogs w-5 text-center"></i>
                             Settings
