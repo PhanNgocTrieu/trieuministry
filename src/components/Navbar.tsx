@@ -49,8 +49,7 @@ const Navbar = () => {
    const navLinks = [
      { href: '/', label: t('nav.home') },
      { href: '/profile', label: t('nav.about') },
-     { href: '/blogs', label: t('nav.blogs') },
-     { href: '/docs', label: t('nav.docs') },
+     { href: '/resources', label: "Resources" }, // Unified Hub
      { href: '/ministry', label: t('nav.ministry') },
      { href: '/prayers', label: t('nav.prayers') },
    ];

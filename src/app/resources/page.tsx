@@ -1,0 +1,233 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { ResourceItem, mockDocuments, mockSongs } from '@/data/mockResources';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  author: string;
+  date: string;
+  status: 'approved' | 'pending';
+  category: string;
+  excerpt: string;
+  content: string;
+  tags: string[];
+}
+
+// --- Components ---
+
+const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
+    const menuItems = [
+        { id: 'all', label: 'All Resources', icon: 'fas fa-th-large' },
+        { id: 'blogs', label: 'Blogs', icon: 'fas fa-pen-nib' },
+        { id: 'documents', label: 'Documents', icon: 'fas fa-file-pdf' },
+        { id: 'songs', label: 'Translated Songs', icon: 'fas fa-music' },
+    ];
+
+    return (
+        <aside className="w-64 bg-white border-r border-gray-100 flex-shrink-0 fixed h-full pt-20 hidden lg:block z-20">
+            <div className="p-6">
+                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Library</h2>
+                <nav className="space-y-2">
+                    {menuItems.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                                activeTab === item.id 
+                                ? 'bg-blue-50 text-blue-600 shadow-sm' 
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                        >
+                            <i className={`${item.icon} w-5 text-center`}></i>
+                            {item.label}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+        </aside>
+    );
+};
+
+const ResourceCard = ({ item }: { item: ResourceItem }) => {
+    // Determine Link based on type
+    const href = item.type === 'blog' ? `/blogs/${item.slug || item.id}` : `/resources/${item.slug}`;
+    const icon = item.type === 'blog' ? 'fa-pen' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
+    
+    return (
+        <Link href={href} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 flex flex-col h-full">
+            <div className="relative h-48 bg-gray-100 overflow-hidden">
+                {item.coverImage && !item.coverImage.includes('placehold') ? (
+                    <Image 
+                        src={item.coverImage} 
+                        alt={item.title} 
+                        fill 
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-200 text-4xl">
+                        <i className={`fas ${icon}`}></i>
+                    </div>
+                )}
+                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-700 shadow-sm flex items-center gap-1">
+                    <i className={`fas ${icon} text-[10px]`}></i> {item.category}
+                </div>
+            </div>
+            <div className="p-5 flex flex-col flex-grow">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {item.title}
+                </h3>
+                <p className="text-gray-500 text-xs line-clamp-3 mb-4 flex-grow">
+                    {item.description}
+                </p>
+                <div className="pt-4 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                    <span>{item.date}</span>
+                    <span className="font-semibold text-gray-900">{item.author}</span>
+                </div>
+            </div>
+        </Link>
+    );
+};
+
+const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string, onSeeAll?: () => void }) => (
+    <div className="flex items-center justify-between mb-6 mt-2">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <i className={`fas ${icon} text-blue-500`}></i> {title}
+        </h2>
+        {onSeeAll && (
+            <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                View All
+            </button>
+        )}
+    </div>
+);
+
+export default function ResourcesDashboard() {
+    const [activeTab, setActiveTab] = useState('all');
+    const [blogs, setBlogs] = useState<ResourceItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch Blogs from Firestore
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const q = query(
+                    collection(db, "blogs"), 
+                    where("status", "==", "approved"),
+                    orderBy("date", "desc")
+                );
+                const snapshot = await getDocs(q);
+                const blogList: ResourceItem[] = snapshot.docs.map(doc => {
+                    const data = doc.data() as BlogPost;
+                    return {
+                        id: doc.id,
+                        slug: data.slug,
+                        title: data.title,
+                        category: data.category,
+                        description: data.excerpt, // Use excerpt as description
+                        coverImage: '', // Blogs might not have cover image yet, handle placeholder
+                        date: data.date,
+                        author: data.author,
+                        type: 'blog'
+                    };
+                });
+                setBlogs(blogList);
+            } catch (err) {
+                console.error("Failed to fetch blogs", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBlogs();
+    }, []);
+
+    const renderContent = () => {
+        if (loading) return <div className="p-12 text-center text-gray-400">Loading library...</div>;
+
+        if (activeTab === 'all') {
+            return (
+                <div className="space-y-12">
+                    {/* Blogs Section */}
+                    <section>
+                        <SectionHeader title="Latest Blogs" icon="fa-pen-nib" onSeeAll={() => setActiveTab('blogs')} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {blogs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                        </div>
+                    </section>
+
+                    {/* Documents Section */}
+                    <section>
+                        <SectionHeader title="Documents" icon="fa-file-pdf" onSeeAll={() => setActiveTab('documents')} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {mockDocuments.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                        </div>
+                    </section>
+
+                    {/* Songs Section */}
+                    <section>
+                        <SectionHeader title="Translated Songs" icon="fa-music" onSeeAll={() => setActiveTab('songs')} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {mockSongs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        // Specific Tab Views
+        let items: ResourceItem[] = [];
+        let title = '';
+        if (activeTab === 'blogs') { items = blogs; title = 'Blogs'; }
+        if (activeTab === 'documents') { items = mockDocuments; title = 'Documents'; }
+        if (activeTab === 'songs') { items = mockSongs; title = 'Translated Songs'; }
+
+        return (
+            <div>
+                 <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+                    <p className="text-gray-500 mt-1">Found {items.length} items.</p>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {items.map(item => <ResourceCard key={item.id} item={item} />)}
+                 </div>
+            </div>
+        );
+    };
+
+    return (
+        <main className="min-h-screen bg-gray-50 flex flex-col">
+            {/* Mobile Tab Select (Visible only on mobile) */}
+            <div className="lg:hidden bg-white border-b border-gray-200 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-sm">
+                {['all', 'blogs', 'documents', 'songs'].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`inline-block px-4 py-2 rounded-full text-sm font-bold mr-2 ${
+                            activeTab === tab 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                    >
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex flex-1">
+                {/* Sidebar (Desktop) */}
+                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+                {/* Main Content */}
+                <div className="flex-1 lg:ml-64 p-6 md:p-12 pt-28 lg:pt-32">
+                     {renderContent()}
+                </div>
+            </div>
+        </main>
+    );
+}
