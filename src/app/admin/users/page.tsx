@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { db, auth } from "@/lib/firebase";
-import { collection, getDocs, deleteDoc, doc, query, orderBy, Timestamp } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, query, orderBy, Timestamp, updateDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import Image from "next/image";
 import ConfirmModal from "@/components/admin/ConfirmModal";
+import TableSkeleton from "@/components/admin/TableSkeleton";
 
 interface UserData {
     uid: string;
@@ -52,10 +53,46 @@ export default function UsersManagementPage() {
         title: "",
         message: "",
         onConfirm: () => {},
+        isDangerous: false,
     });
+
+    const [pendingChanges, setPendingChanges] = useState<Record<string, string>>({});
+    const [saving, setSaving] = useState<string | null>(null);
 
     const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
         setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
+    };
+
+    const handleRoleSelect = (uid: string, newRole: string) => {
+        setPendingChanges(prev => ({ ...prev, [uid]: newRole }));
+    };
+
+    const saveRoleChange = async (uid: string) => {
+        const newRole = pendingChanges[uid];
+        if (!newRole) return;
+        
+        setSaving(uid);
+        try {
+            await updateDoc(doc(db, "users", uid), {
+                role: newRole
+            });
+            setUsers(users.map(user => 
+                user.uid === uid ? { ...user, role: newRole } : user
+            ));
+            
+            // Clear pending change
+            setPendingChanges(prev => {
+                const next = { ...prev };
+                delete next[uid];
+                return next;
+            });
+             alert("User role updated successfully!");
+        } catch (error) {
+            console.error("Error updating role:", error);
+            alert("Failed to update role");
+        } finally {
+            setSaving(null);
+        }
     };
 
     const handleDeleteUser = async (uid: string) => {
@@ -93,8 +130,16 @@ export default function UsersManagementPage() {
     };
 
     if (loading) {
-        return <div className="p-8 text-center">Loading users...</div>;
+        return (
+            <div>
+                 <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+                </div>
+                <TableSkeleton cols={4} />
+            </div>
+        );
     }
+
 
     return (
         <div>
@@ -150,10 +195,43 @@ export default function UsersManagementPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {user.email === 'pntrieu200799@gmail.com' || user.email === 'phantrieu580@gmail.com' ? (
-                                            <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded">Admin</span>
+                                        {(user.email === 'pntrieu200799@gmail.com' || user.email === 'phantrieu580@gmail.com') ? (
+                                            <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded border border-purple-200">
+                                                <i className="fas fa-lock mr-1"></i> Root Admin
+                                            </span>
                                         ) : (
-                                            <span className="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-1 rounded">User</span>
+                                            <div className="flex items-center gap-2">
+                                                <select 
+                                                    value={pendingChanges[user.uid] || user.role || 'user'}
+                                                    onChange={(e) => handleRoleSelect(user.uid, e.target.value)}
+                                                    disabled={saving === user.uid}
+                                                    className={`text-xs font-bold px-2 py-1 rounded border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                        (pendingChanges[user.uid] || user.role) === 'admin' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                                        (pendingChanges[user.uid] || user.role) === 'volunteer' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                        'bg-gray-50 text-gray-700 border-gray-200'
+                                                    }`}
+                                                >
+                                                    <option value="user">User</option>
+                                                    <option value="volunteer">Volunteer</option>
+                                                    <option value="admin">Admin</option>
+                                                </select>
+                                                
+                                                {/* Show Save Button if there's a pending change */}
+                                                {pendingChanges[user.uid] && pendingChanges[user.uid] !== user.role && (
+                                                    <button
+                                                        onClick={() => saveRoleChange(user.uid)}
+                                                        disabled={saving === user.uid}
+                                                        className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700 transition-colors shadow-sm"
+                                                        title="Save Role Change"
+                                                    >
+                                                        {saving === user.uid ? (
+                                                            <i className="fas fa-spinner fa-spin text-xs"></i>
+                                                        ) : (
+                                                            <i className="fas fa-save text-xs"></i>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
                                         )}
                                     </td>
                                     <td className="px-6 py-4">

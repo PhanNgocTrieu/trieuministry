@@ -13,7 +13,7 @@ import {
     updateProfile
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc, onSnapshot } from "firebase/firestore";
 
 interface AuthContextType {
     user: User | null;
@@ -24,6 +24,8 @@ interface AuthContextType {
     signIn: (email: string, pass: string) => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
     isAdmin: boolean;
+    isVolunteer: boolean;
+    role: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,6 +34,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isVolunteer, setIsVolunteer] = useState(false);
+    const [role, setRole] = useState<string | null>(null);
 
     const syncUserToFirestore = async (user: User) => {
         try {
@@ -49,28 +53,72 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            if (currentUser) {
-                // Check against env var OR hardcoded allowed emails
-                const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-                const allowedAdmins = ['phantrieu580@gmail.com', 'pntrieu200799@gmail.com'];
-                
-                if ((adminEmail && currentUser.email === adminEmail) || (currentUser.email && allowedAdmins.includes(currentUser.email))) {
-                    setIsAdmin(true);
-                } else {
-                    setIsAdmin(false);
-                }
-                // Sync user to Firestore
-                await syncUserToFirestore(currentUser);
-            } else {
+            if (!currentUser) {
+                setLoading(false);
                 setIsAdmin(false);
+                setIsVolunteer(false);
+                setRole(null);
             }
-            setLoading(false);
         });
-
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        let unsubscribeSnapshot: (() => void) | undefined;
+
+        const setupUserListener = async () => {
+            if (user) {
+                // 1. Sync user basic info (fire and forget)
+                syncUserToFirestore(user);
+
+                // 2. Real-time Role Listener
+                const userRef = doc(db, "users", user.uid);
+                unsubscribeSnapshot = onSnapshot(userRef, (docSnap) => {
+                    let userRole = 'user';
+                    
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        userRole = userData.role || 'user';
+                    }
+                    
+                    setRole(userRole);
+
+                    // 3. Determine Permissions
+                    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+                    const allowedAdmins = ['phantrieu580@gmail.com', 'pntrieu200799@gmail.com'];
+                    
+                    const userEmail = user.email || '';
+                    const isHardcodedAdmin = (adminEmail && userEmail === adminEmail) || allowedAdmins.includes(userEmail);
+                    const isDbAdmin = userRole === 'admin';
+
+                    if (isHardcodedAdmin || isDbAdmin) {
+                        setIsAdmin(true);
+                        setIsVolunteer(false);
+                    } else if (userRole === 'volunteer') {
+                        setIsAdmin(false);
+                        setIsVolunteer(true);
+                    } else {
+                        setIsAdmin(false);
+                        setIsVolunteer(false);
+                    }
+                    setLoading(false);
+                }, (error) => {
+                    console.error("Error listening to user role:", error);
+                    setLoading(false);
+                });
+            } else {
+                setLoading(false);
+            }
+        };
+
+        setupUserListener();
+
+        return () => {
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+        };
+    }, [user]);
 
     const signInWithGoogle = async () => {
         const provider = new GoogleAuthProvider();
@@ -122,7 +170,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, signUp, signIn, resetPassword, isAdmin }}>
+        <AuthContext.Provider value={{
+        user,
+        loading,
+        signInWithGoogle,
+        logout,
+        signUp,
+        signIn,
+        resetPassword,
+        isAdmin,
+        isVolunteer,
+        role
+    }}>
             {children}
         </AuthContext.Provider>
     );

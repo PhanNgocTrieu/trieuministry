@@ -12,10 +12,17 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { t, language, setLanguage } = useLanguage();
-   const { user, logout, isAdmin } = useAuth(); // isAdmin added
+   const { 
+      user, 
+      loading, 
+      logout, 
+      isAdmin,
+      isVolunteer 
+   } = useAuth(); // isAdmin added
    
    const handleLogout = async () => {
      try {
@@ -32,9 +39,19 @@ const Navbar = () => {
      const handleScroll = () => {
        setScrolled(window.scrollY > 50);
      };
+
+     const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setUserDropdownOpen(false);
+        }
+      };
  
      window.addEventListener('scroll', handleScroll);
-     return () => window.removeEventListener('scroll', handleScroll);
+     document.addEventListener('mousedown', handleClickOutside);
+     return () => {
+        window.removeEventListener('scroll', handleScroll);
+        document.removeEventListener('mousedown', handleClickOutside);
+     };
    }, []);
  
    const toggle = () => setIsOpen(!isOpen);
@@ -78,7 +95,7 @@ const Navbar = () => {
            <div className="flex items-center gap-4 border-l border-gray-200 pl-6">
               {/* Action Buttons */}
              {user ? (
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                    <button 
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                       className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-50 transition-colors"
@@ -104,7 +121,10 @@ const Navbar = () => {
                       {isAdmin && (
                         <span className="hidden xl:inline-block px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded ml-1">{t('nav.admin_role')}</span>
                       )}
-                      <i className="fas fa-chevron-down text-xs text-gray-400"></i>
+                      {isVolunteer && (
+                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded ml-1">Volunteer</span>
+                      )}
+                       <i className="fas fa-chevron-down text-xs text-gray-400"></i>
                    </button>
 
                    {userDropdownOpen && (
@@ -112,18 +132,25 @@ const Navbar = () => {
                          <div className="px-4 py-3 border-b border-gray-50 mb-1">
                             <p className="text-sm font-bold text-gray-900 truncate">{user.displayName}</p>
                             <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                            <p className="text-[10px] text-gray-400 mt-1">Role: {isAdmin ? t('nav.admin_role') : t('nav.user_role')}</p>
+                            <div className="flex items-center gap-1 mt-1">
+                                <span className="text-[10px] text-gray-400">Role:</span>
+                                {isAdmin ? (
+                                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
+                                ) : isVolunteer ? (
+                                    <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded">Volunteer</span>
+                                ) : (
+                                    <span className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
+                                )}
+                            </div>
                          </div>
                          
-                         {isAdmin && (
-                            <Link 
-                               href="/admin" 
-                               className="block px-4 py-2 text-sm text-purple-700 font-bold hover:bg-purple-50"
-                               onClick={() => setUserDropdownOpen(false)}
-                            >
-                               <i className="fas fa-tachometer-alt me-2"></i> {t('nav.dashboard_admin')}
-                            </Link>
-                         )}
+                         <Link 
+                            href="/admin" 
+                            className="block px-4 py-2 text-sm text-purple-700 font-bold hover:bg-purple-50"
+                            onClick={() => setUserDropdownOpen(false)}
+                         >
+                            <i className="fas fa-tachometer-alt me-2"></i> {t('nav.dashboard_admin')}
+                         </Link>
 
                          <Link 
                             href="/account" 
@@ -217,23 +244,25 @@ const Navbar = () => {
                      <div>
                         <div className="flex items-center gap-2">
                             <p className="font-bold text-gray-900">{user.displayName || 'User'}</p>
-                             {isAdmin && (
+                             {isAdmin ? (
                                 <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
+                             ) : isVolunteer ? (
+                                <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded">Volunteer</span>
+                             ) : (
+                                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
                              )}
                         </div>
                         <p className="text-xs text-gray-500 truncate max-w-[200px]">{user.email}</p>
                      </div>
                   </div>
                   
-                  {isAdmin && (
-                     <Link 
-                        href="/admin"
-                        className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2 hover:bg-purple-700"
-                        onClick={() => setIsOpen(false)}
-                     >
-                        <i className="fas fa-tachometer-alt"></i> {t('nav.dashboard_admin')}
-                     </Link>
-                  )}
+                   <Link 
+                      href="/admin"
+                      className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2 hover:bg-purple-700"
+                      onClick={() => setIsOpen(false)}
+                   >
+                      <i className="fas fa-tachometer-alt"></i> {t('nav.dashboard_admin')}
+                   </Link>
 
                   <Link 
                      href="/account"

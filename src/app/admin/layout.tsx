@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const { logout } = useAuth();
+    const { logout, isVolunteer, isAdmin } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const isActive = (path: string) => pathname === path ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white';
@@ -55,27 +55,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <i className="fas fa-tachometer-alt w-5 text-center"></i>
                             Dashboard
                         </Link>
-                        <Link href="/admin/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
-                            <i className="fas fa-users w-5 text-center"></i>
-                            Users
-                        </Link>
+                        
+                        {(isAdmin) && (
+                            <Link href="/admin/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
+                                <i className="fas fa-users w-5 text-center"></i>
+                                Users
+                            </Link>
+                        )}
+
                          <Link href="/admin/prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/prayers')}`}>
                             <i className="fas fa-praying-hands w-5 text-center"></i>
-                            Prayers
+                            {(isAdmin || isVolunteer) ? 'Prayers' : 'My Prayers'}
                         </Link>
                         <Link href="/admin/blogs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/blogs')}`}>
                             <i className="fas fa-blog w-5 text-center"></i>
-                            Blogs
+                            {(isAdmin || isVolunteer) ? 'Blogs' : 'My Blogs'}
                         </Link>
                         <Link href="/admin/appeals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/appeals')}`}>
                             <i className="fas fa-hand-holding-heart w-5 text-center"></i>
-                            Appeals
+                            {(isAdmin || isVolunteer) ? 'Appeals' : 'My Appeals'}
                         </Link>
 
-                        <Link href="/admin/settings" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/settings')}`}>
-                            <i className="fas fa-cogs w-5 text-center"></i>
-                            Settings
-                        </Link>
+                        {(isAdmin) && (
+                            <Link href="/admin/settings" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/settings')}`}>
+                                <i className="fas fa-cogs w-5 text-center"></i>
+                                Settings
+                            </Link>
+                        )}
                     </nav>
 
                     <div className="p-4 border-t border-gray-800">

@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+import { useAuth } from "@/context/AuthContext";
 
 export default function AdminDashboardPage() {
+    const { user, isAdmin, isVolunteer } = useAuth();
     const [stats, setStats] = useState({
-        users: 0,
-        pendingBlogs: 0,
-        prayers: 0,
-        visits: 12450 // Placeholder for now
+        card1: 0,
+        card2: 0,
+        card3: 0,
+        visits: 12450
     });
     const [loading, setLoading] = useState(true);
 
@@ -18,77 +20,128 @@ export default function AdminDashboardPage() {
             try {
                 // Fetch User Count
                 const usersSnap = await getCountFromServer(collection(db, 'users'));
+                let card1Count = 0;
+                let card2Count = 0;
+                let card3Count = 0;
                 
-                // Fetch Pending Blogs Count
-                const pendingBlogsQuery = query(collection(db, 'blogs'), where('status', '==', 'pending'));
-                const pendingBlogsSnap = await getCountFromServer(pendingBlogsQuery);
+                // Card 1: Users (Admin/Vol) vs My Appeals (User)
+                // Assuming Appeals has userId. If not, maybe just show 0 or something else.
+                // Let's stick to Global Users count for Admin, and hide/change for User.
+                // Actually, let's make Card 1 "Community Members" for admins, and "My Appeals" for users.
+                if (isAdmin || isVolunteer) {
+                    const usersSnap = await getCountFromServer(collection(db, "users"));
+                    card1Count = usersSnap.data().count;
+                } else {
+                     try {
+                        const q = query(collection(db, "appeals"), where("userId", "==", user!.uid));
+                        const snap = await getCountFromServer(q);
+                        card1Count = snap.data().count;
+                     } catch (e) { console.error("Appeals count error", e); }
+                }
 
-                // Fetch Total Prayers Count
-                const prayersSnap = await getCountFromServer(collection(db, 'prayers'));
+                // Card 2: Prayers vs My Prayers
+                if (isAdmin || isVolunteer) {
+                    const prayersSnap = await getCountFromServer(collection(db, "prayers"));
+                    card2Count = prayersSnap.data().count;
+                } else {
+                    const q = query(collection(db, "prayers"), where("userId", "==", user!.uid));
+                    const snap = await getCountFromServer(q);
+                    card2Count = snap.data().count;
+                }
+
+                // Card 3: Pending Blogs (Admin) vs My Blogs (User)
+                if (isAdmin || isVolunteer) {
+                    const q = query(collection(db, "blogs"), where("status", "==", "pending"));
+                    const snap = await getCountFromServer(q);
+                    card3Count = snap.data().count;
+                } else {
+                    const q = query(collection(db, "blogs"), where("authorId", "==", user!.uid));
+                    const snap = await getCountFromServer(q);
+                    card3Count = snap.data().count;
+                }
 
                 setStats({
-                    users: usersSnap.data().count,
-                    pendingBlogs: pendingBlogsSnap.data().count,
-                    prayers: prayersSnap.data().count,
+                    card1: card1Count,
+                    card2: card2Count,
+                    card3: card3Count,
                     visits: 12450 // Keep placeholder
                 });
+
             } catch (error) {
-                console.error("Error fetching admin stats:", error);
+                console.error("Error fetching stats:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchStats();
-    }, []);
+        if (user) {
+            fetchStats();
+        }
+    }, [user, isAdmin, isVolunteer]);
+
+    const getCardTitle = (index: number) => {
+        if (isAdmin || isVolunteer) {
+            switch(index) {
+                case 1: return "Total Users";
+                case 2: return "Total Prayers";
+                case 3: return "Pending Blogs";
+                default: return "";
+            }
+        } else {
+            switch(index) {
+                case 1: return "My Appeals";
+                case 2: return "My Prayers";
+                case 3: return "My Blogs";
+                default: return "";
+            }
+        }
+    };
 
     return (
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* Stats Cards */}
+                {/* Card 1 */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Users</h3>
-                        <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                            <i className="fas fa-users"></i>
+                     <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i className={`fas ${isAdmin || isVolunteer ? 'fa-users' : 'fa-hand-holding-heart'}`}></i>
                         </div>
                     </div>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {loading ? '...' : stats.users}
-                    </p>
-                    <p className="text-green-500 text-sm mt-2 font-medium flex items-center gap-1">
-                        <i className="fas fa-arrow-up"></i> Active
-                    </p>
+                    <div className="text-3xl font-bold text-gray-900">
+                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card1}
+                    </div>
                 </div>
 
+                {/* Card 2 */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Prayers</h3>
-                        <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+                     <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
                             <i className="fas fa-praying-hands"></i>
                         </div>
                     </div>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {loading ? '...' : stats.prayers}
-                    </p>
-                    <p className="text-gray-400 text-sm mt-2 font-medium">Total Requests</p>
+                    <div className="text-3xl font-bold text-gray-900">
+                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card2}
+                    </div>
                 </div>
 
+                {/* Card 3 */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Pending Blogs</h3>
-                        <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+                     <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
                             <i className="fas fa-blog"></i>
                         </div>
                     </div>
-                     <p className="text-3xl font-bold text-gray-900">
-                        {loading ? '...' : stats.pendingBlogs}
-                     </p>
-                     <p className="text-yellow-600 text-sm mt-2 font-medium">Needs Review</p>
+                    <div className="text-3xl font-bold text-gray-900">
+                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card3}
+                    </div>
                 </div>
-                
+
+                {/* Card 4 - Visits (Static) */}
                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Visits</h3>
@@ -96,7 +149,13 @@ export default function AdminDashboardPage() {
                             <i className="fas fa-chart-line"></i>
                         </div>
                     </div>
-                     <p className="text-3xl font-bold text-gray-900">--</p>
+                     <div className="text-3xl font-bold text-gray-900">
+                        {loading ? (
+                            <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div>
+                        ) : ( 
+                            stats.visits 
+                        )}
+                     </div>
                      <p className="text-gray-400 text-sm mt-2 font-medium">Coming Soon</p>
                 </div>
             </div>

@@ -5,19 +5,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-    const { user, loading, isAdmin } = useAuth();
+    const { user, loading, isAdmin, isVolunteer } = useAuth();
     const router = useRouter();
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
         if (!loading) {
-            if (!user || !isAdmin) {
+            if (!user) {
                 router.push("/");
             } else {
                 setIsAuthorized(true);
             }
         }
-    }, [user, loading, isAdmin, router]);
+    }, [user, loading, isAdmin, isVolunteer, router]);
 
     if (loading) {
         return (

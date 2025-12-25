@@ -6,6 +6,7 @@ import { collection, getDocs, deleteDoc, doc, updateDoc, orderBy, query } from "
 import Link from "next/link";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import Image from "next/image";
+import TableSkeleton from "@/components/admin/TableSkeleton";
 
 interface Appeal {
     id: string;
@@ -86,7 +87,16 @@ export default function AdminAppealsPage() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center">Loading appeals...</div>;
+    if (loading) {
+       return (
+             <div>
+                 <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Appeal Management</h1>
+                </div>
+                <TableSkeleton cols={5} />
+            </div>
+        );
+    }
 
     return (
         <div>

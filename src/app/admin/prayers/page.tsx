@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where } from "firebase/firestore";
 import Image from "next/image";
+import TableSkeleton from "@/components/admin/TableSkeleton";
 
 interface PrayerData {
     id: string;
@@ -16,14 +17,32 @@ interface PrayerData {
     prayerCount: number;
 }
 
+import { useAuth } from "@/context/AuthContext";
+// ... imports
+
 export default function PrayersManagementPage() {
+    const { user, isAdmin, isVolunteer } = useAuth();
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchPrayers = async () => {
+        if (!user) return;
         setLoading(true);
         try {
-            const q = query(collection(db, "prayers"), orderBy("createdAt", "desc"));
+            let q;
+            if (isAdmin || isVolunteer) {
+                 q = query(collection(db, "prayers"), orderBy("createdAt", "desc"));
+            } else {
+                 // User: only see own prayers
+                 // Note: This composite query might require an index. 
+                 // If it fails, check console for index creation link.
+                 q = query(
+                    collection(db, "prayers"), 
+                    where("userId", "==", user.uid),
+                    orderBy("createdAt", "desc")
+                );
+            }
+
             const querySnapshot = await getDocs(q);
             const list: PrayerData[] = [];
             querySnapshot.forEach((doc) => {
@@ -38,8 +57,10 @@ export default function PrayersManagementPage() {
     };
 
     useEffect(() => {
-        fetchPrayers();
-    }, []);
+        if (user) {
+            fetchPrayers();
+        }
+    }, [user, isAdmin, isVolunteer]);
 
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this prayer request?")) {
@@ -64,8 +85,16 @@ export default function PrayersManagementPage() {
     };
 
     if (loading) {
-        return <div className="p-8 text-center">Loading prayers...</div>;
+        return (
+             <div>
+                 <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Prayer Management</h1>
+                </div>
+                <TableSkeleton cols={5} />
+            </div>
+        );
     }
+
 
     return (
         <div>

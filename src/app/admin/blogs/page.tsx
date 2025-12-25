@@ -2,30 +2,49 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp, where } from "firebase/firestore";
 import Link from "next/link";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import initialBlogs from "@/data/blogs.json"; // Import static data for migration
+import TableSkeleton from "@/components/admin/TableSkeleton";
+
+import { useAuth } from "@/context/AuthContext";
+// ...
 
 interface BlogPost {
     id: string;
     title: string;
     slug: string;
     author: string;
+    authorId?: string; // Add authorId
     date: string;
     status: 'approved' | 'pending';
     category: string;
 }
 
 export default function AdminBlogsPage() {
+    const { user, isAdmin, isVolunteer } = useAuth();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [migrating, setMigrating] = useState(false);
 
     const fetchPosts = async () => {
+        if (!user) return;
         setLoading(true);
         try {
-            const q = query(collection(db, "blogs"), orderBy("date", "desc"));
+            let q;
+            if (isAdmin || isVolunteer) {
+                 q = query(collection(db, "blogs"), orderBy("date", "desc"));
+            } else {
+                 // User: only see own blogs
+                 // Note: Requires authorId to be present
+                 q = query(
+                    collection(db, "blogs"), 
+                    where("authorId", "==", user.uid),
+                    orderBy("date", "desc")
+                );
+            }
+
             const querySnapshot = await getDocs(q);
             const list: BlogPost[] = [];
             querySnapshot.forEach((doc) => {
@@ -41,8 +60,10 @@ export default function AdminBlogsPage() {
     };
 
     useEffect(() => {
-        fetchPosts();
-    }, []);
+        if (user) {
+            fetchPosts();
+        }
+    }, [user, isAdmin, isVolunteer]);
 
     const [modalConfig, setModalConfig] = useState<{
         isOpen: boolean;
@@ -125,7 +146,17 @@ export default function AdminBlogsPage() {
         );
     };
 
-    if (loading) return <div className="p-8 text-center">Loading blogs...</div>;
+    if (loading) {
+        return (
+             <div>
+                 <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Blog Management</h1>
+                </div>
+                <TableSkeleton cols={5} />
+            </div>
+        );
+    }
+
 
     return (
         <div>
