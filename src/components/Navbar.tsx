@@ -90,6 +90,7 @@ const Navbar = () => {
                                src={user.photoURL} 
                                alt={user.displayName || 'User'} 
                                fill
+                               sizes="40px"
                                className="object-cover"
                             />
                          ) : (
