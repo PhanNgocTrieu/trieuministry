@@ -207,8 +207,14 @@
             "description": "Prayer requests for personal and ministry needs. Please remember us in your prayers."
         },
         "letters": {
-            "title": "Appeals Letters",
-            "description": "Letters of sharing and appeals for partnership from benefactors and God's children."
+            "title": "Ministries",
+            "description": "Ministry projects and initiatives that need your partnership.",
+            "btn_add": "Add Ministry"
+        },
+        "personal_prayers": {
+            "title": "Personal Prayers",
+            "description": "Personal prayer requests from the ministry team.",
+            "btn_add": "Add Personal Prayer"
         }
     },
     "prayers": {

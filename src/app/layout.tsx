@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Profile",
-  description: "Personal Profile Website - Blog, Documents, Prayers, and More",
+  title: "TrieuMinistry",
+  description: "TrieuMinistry - Sharing Faith, Documents, Prayers, and More",
 };
 
 export default function RootLayout({

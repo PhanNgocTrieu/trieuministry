@@ -71,9 +71,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <i className="fas fa-blog w-5 text-center"></i>
                             {(isAdmin || isVolunteer) ? 'Blogs' : 'My Blogs'}
                         </Link>
-                        <Link href="/admin/appeals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/appeals')}`}>
+                        <Link href="/admin/ministries" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/ministries')}`}>
                             <i className="fas fa-hand-holding-heart w-5 text-center"></i>
-                            {(isAdmin || isVolunteer) ? 'Appeals' : 'My Appeals'}
+                            {(isAdmin || isVolunteer) ? 'Ministry' : 'My Ministry'}
                         </Link>
 
                         {(isAdmin) && (

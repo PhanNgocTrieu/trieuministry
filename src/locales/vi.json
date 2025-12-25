@@ -207,8 +207,14 @@
             "description": "Những vấn đề cầu nguyện cho cá nhân và mục vụ. Xin hãy nhớ đến chúng tôi trong lời cầu nguyện của bạn."
         },
         "letters": {
-            "title": "Thư Kêu Gọi",
-            "description": "Những lá thư tâm tình và kêu gọi sự đồng hành từ quý ân nhân và con cái Chúa."
+            "title": "Mục vụ",
+            "description": "Các dự án mục vụ và công tác cần sự đồng hành của quý vị.",
+            "btn_add": "Thêm Mục vụ"
+        },
+        "personal_prayers": {
+            "title": "Cầu nguyện cá nhân",
+            "description": "Những lời cầu nguyện cá nhân từ đội ngũ mục vụ.",
+            "btn_add": "Thêm cầu nguyện cá nhân"
         }
     },
     "prayers": {
