@@ -7,7 +7,14 @@
         "docs": "Tài liệu",
         "ministry": "Mục vụ",
         "prayers": "Cầu nguyện",
-        "donate": "Dâng hiến"
+        "donate": "Dâng hiến",
+        "resources": "Tài nguyên",
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "my_account": "Tài khoản",
+        "dashboard_admin": "Bảng điều khiển",
+        "admin_role": "Quản trị viên",
+        "user_role": "Người dùng"
     },
     "home": {
         "hero": {
@@ -89,6 +96,48 @@
             "error_load": "Không tải được danh sách bài viết",
             "min_read": "phút đọc",
              "empty_title": "Không tìm thấy bài viết nào"
+        },
+        "create": {
+            "title": "Viết bài mới",
+            "success_title": "Đã gửi bài viết!",
+            "success_message": "Bài viết của bạn đã được gửi thành công và đang <strong>chờ duyệt</strong>. Bài viết sẽ xuất hiện sau khi được Admin phê duyệt.",
+            "btn_got_it": "Đã hiểu, cảm ơn!",
+            "label_title": "Tiêu đề",
+            "label_category": "Danh mục",
+            "label_cover": "Ảnh bìa",
+            "label_content": "Nội dung",
+            "label_excerpt": "Tóm tắt",
+            "placeholder_title": "Nhập tiêu đề...",
+            "placeholder_content": "Bắt đầu viết tại đây...",
+            "placeholder_excerpt": "(Tùy chọn tóm tắt ngắn)",
+            "btn_cancel": "Hủy",
+            "btn_submit": "Gửi bài",
+            "alert_required": "Vui lòng nhập tiêu đề và nội dung",
+            "alert_error": "Không thể tạo bài viết. Vui lòng thử lại."
+        },
+        "detail": {
+            "loading": "Đang tải bài viết...",
+            "not_found_title": "Không tìm thấy bài viết",
+            "not_found_desc": "Bài viết bạn đang tìm kiếm có thể không tồn tại hoặc đã bị xóa.",
+            "back_to_blogs": "Quay lại danh sách",
+            "tags": "Thẻ",
+            "share": "Chia sẻ bài viết",
+            "copied": "Đã sao chép!",
+            "keep_reading": "Đọc tiếp",
+            "explore_more": "Khám phá thêm bài viết",
+            "previous": "Bài trước",
+            "next": "Bài sau",
+            "read_now": "Đọc ngay",
+            "no_newer": "Không có bài mới hơn",
+            "no_older": "Không có bài cũ hơn",
+            "view_all": "Xem tất cả bài viết",
+            "discussion": "Thảo luận",
+            "comments_count": "{{count}} bình luận",
+            "placeholder_comment": "Bạn nghĩ gì về bài viết này?",
+            "sign_in_comment": "Đăng nhập để bình luận",
+            "post_comment": "Gửi bình luận",
+            "no_comments": "Chưa có bình luận nào.",
+            "be_first": "Hãy là người đầu tiên chia sẻ suy nghĩ!"
         }
     },
     "docs": {
@@ -119,6 +168,33 @@
             "error_id": "Không tìm thấy ID tài liệu.",
             "error_not_found": "Không tìm thấy tài liệu này.",
             "error_fetch": "Đã xảy ra lỗi khi tải thông tin tài liệu."
+        }
+    },
+    "resources": {
+        "sidebar_title": "Thư viện",
+        "tabs": {
+            "all": "Tất cả",
+            "blogs": "Bài viết",
+            "documents": "Tài liệu",
+            "songs": "Thánh ca"
+        },
+        "sections": {
+            "latest_blogs": "Bài viết mới nhất",
+            "documents": "Tài liệu",
+            "songs": "Thánh ca dịch",
+            "view_all": "Xem tất cả"
+        },
+        "found_items": "Tìm thấy {{count}} mục.",
+        "write_blog": "Viết bài mới",
+        "loading": "Đang tải thư viện...",
+        "detail": {
+            "breadcrumb": "Tài nguyên",
+            "author": "Tác giả:",
+            "format": "Định dạng:",
+            "size": "Dung lượng:",
+            "download": "Tải tài liệu",
+            "preview": "Xem trước",
+            "login_note": "Vui lòng đăng nhập nếu bạn gặp sự cố khi tải xuống."
         }
     },
     "ministry": {

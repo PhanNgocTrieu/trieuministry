@@ -5,10 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound, useParams } from 'next/navigation';
 import { allMockResources } from '@/data/mockResources';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ResourceDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const { t } = useLanguage();
   // Fallback find by slug
   const resource = allMockResources.find(r => r.slug === slug);
 
@@ -22,7 +24,7 @@ export default function ResourceDetailPage() {
         <section className="bg-white border-b border-gray-200 py-4 pt-24">
             <div className="container container-custom px-4">
                 <div className="text-sm text-gray-500 font-medium flex items-center gap-2">
-                    <Link href="/resources" className="hover:text-blue-600">Resources</Link>
+                    <Link href="/resources" className="hover:text-blue-600">{t('resources.detail.breadcrumb')}</Link>
                     <i className="fas fa-chevron-right text-xs text-gray-300"></i>
                     <span className="text-gray-900">{resource.title}</span>
                 </div>
@@ -73,17 +75,17 @@ export default function ResourceDetailPage() {
                     <div className="flex flex-wrap items-center gap-6 mb-10 text-sm text-gray-500 border-t border-b border-gray-100 py-6">
                         <div className="flex items-center gap-2">
                             <i className="fas fa-user-circle text-gray-400 text-lg"></i>
-                            <span>Author: <strong className="text-gray-900">{resource.author}</strong></span>
+                            <span>{t('resources.detail.author')} <strong className="text-gray-900">{resource.author}</strong></span>
                         </div>
                         <div className="w-px h-4 bg-gray-300 hidden sm:block"></div>
                         <div className="flex items-center gap-2">
                              <i className="fas fa-file-pdf text-red-400 text-lg"></i>
-                             <span>Format: <strong className="text-gray-900">PDF</strong></span>
+                             <span>{t('resources.detail.format')} <strong className="text-gray-900">PDF</strong></span>
                         </div>
                         <div className="w-px h-4 bg-gray-300 hidden sm:block"></div>
                         <div className="flex items-center gap-2">
                              <i className="fas fa-hdd text-gray-400 text-lg"></i>
-                             <span>Size: <strong className="text-gray-900">{resource.size || '300 KB'}</strong></span>
+                             <span>{t('resources.detail.size')} <strong className="text-gray-900">{resource.size || '300 KB'}</strong></span>
                         </div>
                     </div>
 
@@ -94,13 +96,13 @@ export default function ResourceDetailPage() {
                             rel="noopener noreferrer"
                             className="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-center hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-3"
                         >
-                            <i className="fas fa-download"></i> Download Resource
+                            <i className="fas fa-download"></i> {t('resources.detail.download')}
                         </a>
                         <button 
                             onClick={() => window.open(resource.fileUrl, '_blank')}
                             className="bg-white border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-xl font-bold text-center hover:bg-gray-50 hover:border-gray-300 transition-colors flex items-center justify-center gap-3"
                         >
-                            <i className="far fa-eye"></i> Preview
+                            <i className="far fa-eye"></i> {t('resources.detail.preview')}
                         </button>
                     </div>
                 </div>
@@ -110,7 +112,7 @@ export default function ResourceDetailPage() {
             <div className="mt-8 text-center bg-blue-50 rounded-xl p-4 border border-blue-100">
                 <p className="text-blue-800 text-sm">
                     <i className="fas fa-info-circle mr-2"></i>
-                    Please sign in if you encounter issues downloading this resource.
+                    {t('resources.detail.login_note')}
                 </p>
             </div>
         </section>

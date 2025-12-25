@@ -49,11 +49,11 @@ const Navbar = () => {
    const navLinks = [
      { href: '/', label: t('nav.home') },
      { href: '/profile', label: t('nav.about') },
-     { href: '/resources', label: "Resources" }, // Unified Hub
+     { href: '/resources', label: t('nav.resources') }, // Unified Hub
      { href: '/ministry', label: t('nav.ministry') },
      { href: '/prayers', label: t('nav.prayers') },
    ];
- 
+
    return (
      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-2' : 'bg-white shadow-sm py-4'}`}>
        <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center">
@@ -62,7 +62,7 @@ const Navbar = () => {
            <i className="fas fa-church"></i>
            <span>{t('nav.brand')}</span>
          </Link>
- 
+
          {/* Desktop Menu */}
          <div className="hidden lg:flex items-center gap-6">
            <ul className="flex items-center gap-6">
@@ -74,7 +74,7 @@ const Navbar = () => {
                </li>
              ))}
            </ul>
- 
+
            <div className="flex items-center gap-4 border-l border-gray-200 pl-6">
               {/* Action Buttons */}
              {user ? (
@@ -102,17 +102,17 @@ const Navbar = () => {
                          {user.displayName?.split(' ')[0] || 'User'}
                       </span>
                       {isAdmin && (
-                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded ml-1">Admin</span>
+                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded ml-1">{t('nav.admin_role')}</span>
                       )}
                       <i className="fas fa-chevron-down text-xs text-gray-400"></i>
                    </button>
- 
+
                    {userDropdownOpen && (
                       <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 animate-fade-in-up">
                          <div className="px-4 py-3 border-b border-gray-50 mb-1">
                             <p className="text-sm font-bold text-gray-900 truncate">{user.displayName}</p>
                             <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                            <p className="text-[10px] text-gray-400 mt-1">Role: {isAdmin ? 'Admin' : 'User'}</p>
+                            <p className="text-[10px] text-gray-400 mt-1">Role: {isAdmin ? t('nav.admin_role') : t('nav.user_role')}</p>
                          </div>
                          
                          {isAdmin && (
@@ -121,29 +121,29 @@ const Navbar = () => {
                                className="block px-4 py-2 text-sm text-purple-700 font-bold hover:bg-purple-50"
                                onClick={() => setUserDropdownOpen(false)}
                             >
-                               <i className="fas fa-tachometer-alt me-2"></i> Dashboard
+                               <i className="fas fa-tachometer-alt me-2"></i> {t('nav.dashboard_admin')}
                             </Link>
                          )}
- 
+
                          <Link 
                             href="/account" 
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                             onClick={() => setUserDropdownOpen(false)}
                          >
-                            <i className="fas fa-user-circle me-2"></i> My Account
+                            <i className="fas fa-user-circle me-2"></i> {t('nav.my_account')}
                          </Link>
                          <button 
                             onClick={handleLogout}
                             className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
                          >
-                            <i className="fas fa-sign-out-alt me-2"></i> Logout
+                            <i className="fas fa-sign-out-alt me-2"></i> {t('nav.logout')}
                          </button>
                       </div>
                    )}
                </div>
             ) : (
                <Link href="/login" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold shadow-sm transition-all text-sm flex items-center gap-2">
-                  <i className="fas fa-user"></i> Login
+                  <i className="fas fa-user"></i> {t('nav.login')}
                </Link>
             )}
 
@@ -215,22 +215,38 @@ const Navbar = () => {
                         )}
                      </div>
                      <div>
-                        <p className="font-bold text-gray-900">{user.displayName || 'User'}</p>
+                        <div className="flex items-center gap-2">
+                            <p className="font-bold text-gray-900">{user.displayName || 'User'}</p>
+                             {isAdmin && (
+                                <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
+                             )}
+                        </div>
                         <p className="text-xs text-gray-500 truncate max-w-[200px]">{user.email}</p>
                      </div>
                   </div>
+                  
+                  {isAdmin && (
+                     <Link 
+                        href="/admin"
+                        className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2 hover:bg-purple-700"
+                        onClick={() => setIsOpen(false)}
+                     >
+                        <i className="fas fa-tachometer-alt"></i> {t('nav.dashboard_admin')}
+                     </Link>
+                  )}
+
                   <Link 
                      href="/account"
-                     className="w-full block text-center px-5 py-2 bg-blue-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2"
+                     className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2"
                      onClick={() => setIsOpen(false)}
                   >
-                     My Account
+                     <i className="fas fa-user-circle"></i> {t('nav.my_account')}
                   </Link>
                   <button 
                      onClick={handleLogout}
                      className="w-full text-center px-5 py-2 bg-white border border-red-100 text-red-600 hover:bg-red-50 rounded-lg font-bold shadow-sm transition-all text-sm"
                   >
-                     Logout
+                     {t('nav.logout')}
                   </button>
                </div>
              ) : (
@@ -239,7 +255,7 @@ const Navbar = () => {
                   className="w-full text-center px-5 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-sm"
                   onClick={() => setIsOpen(false)}
                >
-                  Login
+                  {t('nav.login')}
                </Link>
              )}
             <Link href="/donate" className="w-full text-center px-5 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-bold">

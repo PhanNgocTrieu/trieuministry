@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { ResourceItem, mockDocuments, mockSongs } from '@/data/mockResources';
+import { useLanguage } from '@/context/LanguageContext'; // Added import
 
 interface BlogPost {
   id: string;
@@ -23,17 +24,18 @@ interface BlogPost {
 // --- Components ---
 
 const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
+    const { t } = useLanguage(); // Use hook
     const menuItems = [
-        { id: 'all', label: 'All Resources', icon: 'fas fa-th-large' },
-        { id: 'blogs', label: 'Blogs', icon: 'fas fa-pen-nib' },
-        { id: 'documents', label: 'Documents', icon: 'fas fa-file-pdf' },
-        { id: 'songs', label: 'Translated Songs', icon: 'fas fa-music' },
+        { id: 'all', label: t('resources.tabs.all'), icon: 'fas fa-th-large' },
+        { id: 'blogs', label: t('resources.tabs.blogs'), icon: 'fas fa-pen-nib' },
+        { id: 'documents', label: t('resources.tabs.documents'), icon: 'fas fa-file-pdf' },
+        { id: 'songs', label: t('resources.tabs.songs'), icon: 'fas fa-music' },
     ];
 
     return (
         <aside className="w-64 bg-white border-r border-gray-100 flex-shrink-0 fixed h-full pt-20 hidden lg:block z-20">
             <div className="p-6">
-                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Library</h2>
+                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">{t('resources.sidebar_title')}</h2>
                 <nav className="space-y-2">
                     {menuItems.map(item => (
                         <button
@@ -58,6 +60,7 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab:
 
 
 const ResourceCard = ({ item }: { item: ResourceItem }) => {
+    const { t } = useLanguage();
     // Determine Link based on type
     const href = item.type === 'blog' ? `/blogs/${item.slug || item.id}` : `/resources/${item.slug}`;
     const icon = item.type === 'blog' ? 'fa-pen' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
@@ -91,7 +94,7 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
                 {isBlog && (
                      <div className="mb-2">
                         <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
-                            <i className="fas fa-pen-nib text-[10px]"></i> Blog
+                            <i className="fas fa-pen-nib text-[10px]"></i> {t('resources.tabs.blogs')}
                         </span>
                      </div>
                 )}
@@ -111,18 +114,21 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
     );
 };
 
-const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string, onSeeAll?: () => void }) => (
-    <div className="flex items-center justify-between mb-6 mt-2">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <i className={`fas ${icon} text-blue-500`}></i> {title}
-        </h2>
-        {onSeeAll && (
-            <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">
-                View All
-            </button>
-        )}
-    </div>
-);
+const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string, onSeeAll?: () => void }) => {
+    const { t } = useLanguage();
+    return (
+        <div className="flex items-center justify-between mb-6 mt-2">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <i className={`fas ${icon} text-blue-500`}></i> {title}
+            </h2>
+            {onSeeAll && (
+                <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                    {t('resources.sections.view_all')}
+                </button>
+            )}
+        </div>
+    );
+};
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -137,6 +143,7 @@ import CreateBlogModal from '@/components/CreateBlogModal';
 export default function ResourcesDashboard() {
     const { user } = useAuth();
     const router = useRouter();
+    const { t } = useLanguage(); // Use hook
     const [activeTab, setActiveTab] = useState('all');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [blogs, setBlogs] = useState<ResourceItem[]>([]);
@@ -178,7 +185,7 @@ export default function ResourcesDashboard() {
     }, []);
 
     const renderContent = () => {
-        if (loading) return <div className="p-12 text-center text-gray-400">Loading library...</div>;
+        if (loading) return <div className="p-12 text-center text-gray-400">{t('resources.loading')}</div>;
 
         if (activeTab === 'all') {
             return (
@@ -186,7 +193,7 @@ export default function ResourcesDashboard() {
                      {/* ... (keep existing structure) ... */}
                     {/* Blogs Section */}
                     <section>
-                        <SectionHeader title="Latest Blogs" icon="fa-pen-nib" onSeeAll={() => setActiveTab('blogs')} />
+                        <SectionHeader title={t('resources.sections.latest_blogs')} icon="fa-pen-nib" onSeeAll={() => setActiveTab('blogs')} />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {blogs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
                         </div>
@@ -194,7 +201,7 @@ export default function ResourcesDashboard() {
 
                     {/* Documents Section */}
                     <section>
-                        <SectionHeader title="Documents" icon="fa-file-pdf" onSeeAll={() => setActiveTab('documents')} />
+                        <SectionHeader title={t('resources.sections.documents')} icon="fa-file-pdf" onSeeAll={() => setActiveTab('documents')} />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {mockDocuments.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
                         </div>
@@ -202,7 +209,7 @@ export default function ResourcesDashboard() {
 
                     {/* Songs Section */}
                     <section>
-                        <SectionHeader title="Translated Songs" icon="fa-music" onSeeAll={() => setActiveTab('songs')} />
+                        <SectionHeader title={t('resources.sections.songs')} icon="fa-music" onSeeAll={() => setActiveTab('songs')} />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {mockSongs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
                         </div>
@@ -214,16 +221,16 @@ export default function ResourcesDashboard() {
         // Specific Tab Views
         let items: ResourceItem[] = [];
         let title = '';
-        if (activeTab === 'blogs') { items = blogs; title = 'Blogs'; }
-        if (activeTab === 'documents') { items = mockDocuments; title = 'Documents'; }
-        if (activeTab === 'songs') { items = mockSongs; title = 'Translated Songs'; }
+        if (activeTab === 'blogs') { items = blogs; title = t('resources.tabs.blogs'); }
+        if (activeTab === 'documents') { items = mockDocuments; title = t('resources.tabs.documents'); }
+        if (activeTab === 'songs') { items = mockSongs; title = t('resources.tabs.songs'); }
 
         return (
             <div>
                  <div className="mb-8 flex items-end justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-                        <p className="text-gray-500 mt-1">Found {items.length} items.</p>
+                        <p className="text-gray-500 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
                     </div>
                     
                      {/* Write Button (Only visible for 'blogs' tab if logged in) */}
@@ -232,7 +239,7 @@ export default function ResourcesDashboard() {
                             onClick={() => setShowCreateModal(true)}
                             className="hidden md:flex bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-600 transition-all shadow-lg items-center gap-2"
                         >
-                            <i className="fas fa-pen-nib"></i> Write Blog
+                            <i className="fas fa-pen-nib"></i> {t('resources.write_blog')}
                         </button>
                     )}
                  </div>
@@ -257,7 +264,7 @@ export default function ResourcesDashboard() {
                             : 'bg-gray-100 text-gray-600'
                         }`}
                     >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        {t(`resources.tabs.${tab}`)}
                     </button>
                 ))}
             </div>

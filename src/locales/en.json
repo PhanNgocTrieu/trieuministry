@@ -7,7 +7,14 @@
         "docs": "Documents",
         "ministry": "Ministry",
         "prayers": "Prayers",
-        "donate": "Donate"
+        "donate": "Donate",
+        "resources": "Resources",
+        "login": "Login",
+        "logout": "Logout",
+        "my_account": "My Account",
+        "dashboard_admin": "Dashboard",
+        "admin_role": "Admin",
+        "user_role": "User"
     },
     "home": {
         "hero": {
@@ -89,6 +96,48 @@
             "error_load": "Failed to load blogs",
             "min_read": "min read",
             "empty_title": "No posts found"
+        },
+        "create": {
+            "title": "Write New Blog",
+            "success_title": "Blog Submitted!",
+            "success_message": "Your article has been successfully submitted and is now <strong>pending review</strong>. It will be published once approved by an admin.",
+            "btn_got_it": "Got it, thanks!",
+            "label_title": "Title",
+            "label_category": "Category",
+            "label_cover": "Cover Image",
+            "label_content": "Content",
+            "label_excerpt": "Excerpt",
+            "placeholder_title": "Enter title...",
+            "placeholder_content": "Start writing here...",
+            "placeholder_excerpt": "(Optional short summary)",
+            "btn_cancel": "Cancel",
+            "btn_submit": "Submit Blog",
+            "alert_required": "Please fill in title and content",
+            "alert_error": "Failed to create blog. Please try again."
+        },
+        "detail": {
+            "loading": "Loading article...",
+            "not_found_title": "Article Not Found",
+            "not_found_desc": "The article you are looking for usually doesn't exist or has been removed.",
+            "back_to_blogs": "Back to Blogs",
+            "tags": "Tags",
+            "share": "Share this article",
+            "copied": "Copied!",
+            "keep_reading": "Keep Reading",
+            "explore_more": "Explore More Articles",
+            "previous": "Previous",
+            "next": "Next",
+            "read_now": "Read Now",
+            "no_newer": "No newer articles",
+            "no_older": "No older articles",
+            "view_all": "View All Articles",
+            "discussion": "Discussion",
+            "comments_count": "{{count}} Comments",
+            "placeholder_comment": "What are your thoughts on this article?",
+            "sign_in_comment": "Sign in to comment",
+            "post_comment": "Post Comment",
+            "no_comments": "No comments yet.",
+            "be_first": "Be the first to share your thoughts!"
         }
     },
     "docs": {
@@ -119,6 +168,33 @@
             "error_id": "Document ID not found.",
             "error_not_found": "Document not found.",
             "error_fetch": "Error loading document details."
+        }
+    },
+    "resources": {
+        "sidebar_title": "Library",
+        "tabs": {
+            "all": "All Resources",
+            "blogs": "Blogs",
+            "documents": "Documents",
+            "songs": "Translated Songs"
+        },
+        "sections": {
+            "latest_blogs": "Latest Blogs",
+            "documents": "Documents",
+            "songs": "Translated Songs",
+            "view_all": "View All"
+        },
+        "found_items": "Found {{count}} items.",
+        "write_blog": "Write Blog",
+        "loading": "Loading library...",
+        "detail": {
+            "breadcrumb": "Resources",
+            "author": "Author:",
+            "format": "Format:",
+            "size": "Size:",
+            "download": "Download Resource",
+            "preview": "Preview",
+            "login_note": "Please sign in if you encounter issues downloading this resource."
         }
     },
     "ministry": {
