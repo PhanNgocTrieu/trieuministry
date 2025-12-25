@@ -1,4 +1,47 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+
 export default function AdminDashboardPage() {
+    const [stats, setStats] = useState({
+        users: 0,
+        pendingBlogs: 0,
+        prayers: 0,
+        visits: 12450 // Placeholder for now
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                // Fetch User Count
+                const usersSnap = await getCountFromServer(collection(db, 'users'));
+                
+                // Fetch Pending Blogs Count
+                const pendingBlogsQuery = query(collection(db, 'blogs'), where('status', '==', 'pending'));
+                const pendingBlogsSnap = await getCountFromServer(pendingBlogsQuery);
+
+                // Fetch Total Prayers Count
+                const prayersSnap = await getCountFromServer(collection(db, 'prayers'));
+
+                setStats({
+                    users: usersSnap.data().count,
+                    pendingBlogs: pendingBlogsSnap.data().count,
+                    prayers: prayersSnap.data().count,
+                    visits: 12450 // Keep placeholder
+                });
+            } catch (error) {
+                console.error("Error fetching admin stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
     return (
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
@@ -12,9 +55,11 @@ export default function AdminDashboardPage() {
                             <i className="fas fa-users"></i>
                         </div>
                     </div>
-                    <p className="text-3xl font-bold text-gray-900">--</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                        {loading ? '...' : stats.users}
+                    </p>
                     <p className="text-green-500 text-sm mt-2 font-medium flex items-center gap-1">
-                        <i className="fas fa-arrow-up"></i> 12% increase
+                        <i className="fas fa-arrow-up"></i> Active
                     </p>
                 </div>
 
@@ -25,18 +70,23 @@ export default function AdminDashboardPage() {
                             <i className="fas fa-praying-hands"></i>
                         </div>
                     </div>
-                    <p className="text-3xl font-bold text-gray-900">--</p>
-                    <p className="text-gray-400 text-sm mt-2 font-medium">pending Review</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                        {loading ? '...' : stats.prayers}
+                    </p>
+                    <p className="text-gray-400 text-sm mt-2 font-medium">Total Requests</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Blogs</h3>
+                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Pending Blogs</h3>
                         <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
                             <i className="fas fa-blog"></i>
                         </div>
                     </div>
-                     <p className="text-3xl font-bold text-gray-900">--</p>
+                     <p className="text-3xl font-bold text-gray-900">
+                        {loading ? '...' : stats.pendingBlogs}
+                     </p>
+                     <p className="text-yellow-600 text-sm mt-2 font-medium">Needs Review</p>
                 </div>
                 
                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -47,6 +97,7 @@ export default function AdminDashboardPage() {
                         </div>
                     </div>
                      <p className="text-3xl font-bold text-gray-900">--</p>
+                     <p className="text-gray-400 text-sm mt-2 font-medium">Coming Soon</p>
                 </div>
             </div>
 
