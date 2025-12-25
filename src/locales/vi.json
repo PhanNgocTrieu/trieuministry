@@ -6,6 +6,7 @@
         "blogs": "Bài viết",
         "docs": "Tài liệu",
         "ministry": "Mục vụ",
+        "appeals": "Thư Kêu Gọi",
         "prayers": "Cầu nguyện",
         "donate": "Dâng hiến",
         "resources": "Tài nguyên",
@@ -196,6 +197,11 @@
             "preview": "Xem trước",
             "login_note": "Vui lòng đăng nhập nếu bạn gặp sự cố khi tải xuống."
         }
+    },
+    "appeals": {
+        "page_title": "Thư Kêu Gọi",
+        "page_subtitle": "Cập nhật và kêu gọi sự ủng hộ cho mục vụ.",
+        "previous": "Các Thư Trước Đây"
     },
     "ministry": {
         "hero": {

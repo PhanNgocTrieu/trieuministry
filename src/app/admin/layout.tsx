@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <aside className={`
                     fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col
                     transform transition-transform duration-300 ease-in-out
-                    lg:static lg:translate-x-0 
+                    lg:static lg:translate-x-0 lg:z-0
                     ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
                 `}>
                     <div className="p-6 border-b border-gray-800 flex items-center justify-between gap-2">

@@ -161,6 +161,24 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     {(isAdmin || isVolunteer) && (
+                        <a href="/admin/appeals" className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-100 transition-colors group">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i className="fas fa-envelope-open-text"></i>
+                                </div>
+                                <span className="font-bold text-blue-800">Appeal Letters</span>
+                            </div>
+                            <p className="text-sm text-blue-600">Manage support appeals</p>
+                        </a>
+                     )}
+                     {/* Add more quick actions later */}
+                </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
                 <div className="text-center text-gray-500 py-8">
                     Activity log coming soon...

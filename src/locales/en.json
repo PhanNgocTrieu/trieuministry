@@ -6,6 +6,7 @@
         "blogs": "Blogs",
         "docs": "Documents",
         "ministry": "Ministry",
+        "appeals": "Appeal Letters",
         "prayers": "Prayers",
         "donate": "Donate",
         "resources": "Resources",
@@ -196,6 +197,11 @@
             "preview": "Preview",
             "login_note": "Please sign in if you encounter issues downloading this resource."
         }
+    },
+    "appeals": {
+        "page_title": "Appeal Letters",
+        "page_subtitle": "Updates and calls for support from our ministry.",
+        "previous": "Previous Letters"
     },
     "ministry": {
         "hero": {

@@ -66,6 +66,7 @@ const Navbar = () => {
    const navLinks = [
      { href: '/', label: t('nav.home') },
      { href: '/profile', label: t('nav.about') },
+     // Appeals is hidden from public nav, accessible via Admin or direct link
      { href: '/resources', label: t('nav.resources') }, // Unified Hub
      { href: '/ministry', label: t('nav.ministry') },
      { href: '/prayers', label: t('nav.prayers') },
