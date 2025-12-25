@@ -17,6 +17,7 @@ interface BlogPost {
     excerpt: string;
     content: string;
     tags: string[];
+    coverImage?: string; // Added field
 }
 
 export default function BlogDetailPage() {
@@ -122,11 +123,24 @@ export default function BlogDetailPage() {
     <main className="bg-[#f8fafc] min-h-screen">
       {/* 1. Immersive Hero Section */}
       <header className="relative py-32 lg:py-48 bg-gray-900 text-white overflow-hidden">
-         {/* Abstract Background Pattern */}
+         {/* Abstract Background Pattern or Cover Image */}
          <div className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 opacity-90"></div>
-             <div className="absolute -top-[50%] -left-[20%] w-[100%] h-[200%] bg-gradient-to-tr from-blue-500/20 to-transparent rotate-12 blur-3xl"></div>
-             <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+             {blog.coverImage ? (
+                <>
+                    <img 
+                        src={blog.coverImage} 
+                        alt="Background" 
+                        className="w-full h-full object-cover opacity-40 blur-sm scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent"></div>
+                </>
+             ) : (
+                <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 opacity-90"></div>
+                    <div className="absolute -top-[50%] -left-[20%] w-[100%] h-[200%] bg-gradient-to-tr from-blue-500/20 to-transparent rotate-12 blur-3xl"></div>
+                    <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                </>
+             )}
          </div>
 
          <div className="container container-custom relative z-10 text-center max-w-4xl mx-auto px-4">
@@ -204,10 +218,7 @@ export default function BlogDetailPage() {
                             <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Copied!"); }} className="w-12 h-12 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-all hover:-translate-y-1 shadow-sm hover:shadow-md" title="Copy Link">
                                 <i className="fas fa-link text-lg"></i>
                             </button>
-                            <div className="w-px h-8 bg-gray-200 mx-1"></div>
-                            <button onClick={() => window.print()} className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-red-50 text-red-600 hover:bg-red-50 font-bold text-sm transition-all hover:shadow-md">
-                                <i className="fas fa-file-pdf"></i> PDF
-                            </button>
+
                         </div>
                      </div>
                  </div>
@@ -224,7 +235,7 @@ export default function BlogDetailPage() {
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Previous (Older) */}
+                 {/* Previous (Older) */}
                  {adjacentPosts.prev ? (
                     <Link href={`/blogs/${adjacentPosts.prev.slug || adjacentPosts.prev.id}`} className="group relative block bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
                         <div className="absolute top-8 right-8 text-gray-200 group-hover:text-blue-100 transition-colors text-6xl opacity-20">
@@ -237,7 +248,7 @@ export default function BlogDetailPage() {
                             {adjacentPosts.prev.title}
                         </h4>
                         <span className="text-gray-500 text-sm font-medium flex items-center gap-2">
-                            Read Now <i className="fas fa-long-arrow-alt-right transform group-hover:translate-x-1 transition-transform"></i>
+                            <i className="fas fa-long-arrow-alt-left transform group-hover:-translate-x-1 transition-transform"></i> Read Now
                         </span>
                     </Link>
                  ) : (

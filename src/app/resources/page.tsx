@@ -55,32 +55,48 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab:
     );
 };
 
+
+
 const ResourceCard = ({ item }: { item: ResourceItem }) => {
     // Determine Link based on type
     const href = item.type === 'blog' ? `/blogs/${item.slug || item.id}` : `/resources/${item.slug}`;
     const icon = item.type === 'blog' ? 'fa-pen' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
+    const isBlog = item.type === 'blog';
     
     return (
         <Link href={href} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 flex flex-col h-full">
-            <div className="relative h-48 bg-gray-100 overflow-hidden">
-                {item.coverImage && !item.coverImage.includes('placehold') ? (
-                    <Image 
-                        src={item.coverImage} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-200 text-4xl">
-                        <i className={`fas ${icon}`}></i>
+            {/* Show cover image only if NOT a blog */}
+            {!isBlog && (
+                <div className="relative h-48 bg-gray-100 overflow-hidden">
+                    {item.coverImage && !item.coverImage.includes('placehold') ? (
+                        <Image 
+                            src={item.coverImage} 
+                            alt={item.title} 
+                            fill 
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-200 text-4xl">
+                            <i className={`fas ${icon}`}></i>
+                        </div>
+                    )}
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-700 shadow-sm flex items-center gap-1">
+                        <i className={`fas ${icon} text-[10px]`}></i> {item.category}
                     </div>
-                )}
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-700 shadow-sm flex items-center gap-1">
-                    <i className={`fas ${icon} text-[10px]`}></i> {item.category}
                 </div>
-            </div>
+            )}
+            
             <div className="p-5 flex flex-col flex-grow">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {/* For blogs, we might want a small category badge since image is gone */}
+                {isBlog && (
+                     <div className="mb-2">
+                        <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                            <i className="fas fa-pen-nib text-[10px]"></i> Blog
+                        </span>
+                     </div>
+                )}
+
+                <h3 className={`text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors ${isBlog ? 'text-xl' : ''}`}>
                     {item.title}
                 </h3>
                 <p className="text-gray-500 text-xs line-clamp-3 mb-4 flex-grow">
@@ -108,42 +124,56 @@ const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string,
     </div>
 );
 
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import CreateBlogModal from '@/components/CreateBlogModal';
+
+// ... (keep imports)
+
+
+
+// ... (keep SectionHeader)
+
 export default function ResourcesDashboard() {
+    const { user } = useAuth();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState('all');
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [blogs, setBlogs] = useState<ResourceItem[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const fetchBlogs = async () => {
+        try {
+            const q = query(
+                collection(db, "blogs"), 
+                where("status", "==", "approved"),
+                orderBy("date", "desc")
+            );
+            const snapshot = await getDocs(q);
+            const blogList: ResourceItem[] = snapshot.docs.map(doc => {
+                const data = doc.data() as BlogPost;
+                return {
+                    id: doc.id,
+                    slug: data.slug,
+                    title: data.title,
+                    category: data.category,
+                    description: data.excerpt, 
+                    coverImage: '', 
+                    date: data.date,
+                    author: data.author,
+                    type: 'blog'
+                };
+            });
+            setBlogs(blogList);
+        } catch (err) {
+            console.error("Failed to fetch blogs", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Fetch Blogs from Firestore
     useEffect(() => {
-        const fetchBlogs = async () => {
-            try {
-                const q = query(
-                    collection(db, "blogs"), 
-                    where("status", "==", "approved"),
-                    orderBy("date", "desc")
-                );
-                const snapshot = await getDocs(q);
-                const blogList: ResourceItem[] = snapshot.docs.map(doc => {
-                    const data = doc.data() as BlogPost;
-                    return {
-                        id: doc.id,
-                        slug: data.slug,
-                        title: data.title,
-                        category: data.category,
-                        description: data.excerpt, // Use excerpt as description
-                        coverImage: '', // Blogs might not have cover image yet, handle placeholder
-                        date: data.date,
-                        author: data.author,
-                        type: 'blog'
-                    };
-                });
-                setBlogs(blogList);
-            } catch (err) {
-                console.error("Failed to fetch blogs", err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchBlogs();
     }, []);
 
@@ -153,6 +183,7 @@ export default function ResourcesDashboard() {
         if (activeTab === 'all') {
             return (
                 <div className="space-y-12">
+                     {/* ... (keep existing structure) ... */}
                     {/* Blogs Section */}
                     <section>
                         <SectionHeader title="Latest Blogs" icon="fa-pen-nib" onSeeAll={() => setActiveTab('blogs')} />
@@ -189,9 +220,21 @@ export default function ResourcesDashboard() {
 
         return (
             <div>
-                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-                    <p className="text-gray-500 mt-1">Found {items.length} items.</p>
+                 <div className="mb-8 flex items-end justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+                        <p className="text-gray-500 mt-1">Found {items.length} items.</p>
+                    </div>
+                    
+                     {/* Write Button (Only visible for 'blogs' tab if logged in) */}
+                    {(activeTab === 'blogs') && user && (
+                        <button 
+                            onClick={() => setShowCreateModal(true)}
+                            className="hidden md:flex bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-600 transition-all shadow-lg items-center gap-2"
+                        >
+                            <i className="fas fa-pen-nib"></i> Write Blog
+                        </button>
+                    )}
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {items.map(item => <ResourceCard key={item.id} item={item} />)}
@@ -202,7 +245,7 @@ export default function ResourcesDashboard() {
 
     return (
         <main className="min-h-screen bg-gray-50 flex flex-col">
-            {/* Mobile Tab Select (Visible only on mobile) */}
+            {/* Mobile Tab Select */}
             <div className="lg:hidden bg-white border-b border-gray-200 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-sm">
                 {['all', 'blogs', 'documents', 'songs'].map(tab => (
                     <button
@@ -228,6 +271,27 @@ export default function ResourcesDashboard() {
                      {renderContent()}
                 </div>
             </div>
+
+            {/* FAB for Mobile (Only visible if logged in) */}
+            {user && (
+                 <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 text-xl hover:bg-blue-700 transition-colors"
+                 >
+                     <i className="fas fa-pen"></i>
+                 </button>
+             )}
+
+             {/* Create Blog Modal */}
+             <CreateBlogModal 
+                isOpen={showCreateModal} 
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    fetchBlogs(); // Refresh list
+                    // Optionally switch to 'blogs' tab if not already
+                    if (activeTab === 'all') setActiveTab('blogs');
+                }}
+             />
         </main>
     );
 }
