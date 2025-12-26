@@ -24,20 +24,30 @@ export default function PrayersManagementPage() {
     const { user, isAdmin, isVolunteer } = useAuth();
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'community' | 'personal'>('community');
 
     const fetchPrayers = async () => {
         if (!user) return;
         setLoading(true);
         try {
             let q;
+            // Base collection reference
+            const prayersRef = collection(db, "prayers");
+
             if (isAdmin || isVolunteer) {
-                 q = query(collection(db, "prayers"), orderBy("createdAt", "desc"));
+                 if (activeTab === 'personal') {
+                     // Get only personal prayers (ministry owners)
+                     q = query(prayersRef, where('type', '==', 'personal'), orderBy("createdAt", "desc"));
+                 } else {
+                     // Get community prayers (exclude personal if possible, or filter client side)
+                     // For simplicity and index avoidance, let's fetch all sorted and filter client-side for now
+                     // unless 'community' type is strictly set.
+                     q = query(prayersRef, orderBy("createdAt", "desc"));
+                 }
             } else {
                  // User: only see own prayers
-                 // Note: This composite query might require an index. 
-                 // If it fails, check console for index creation link.
                  q = query(
-                    collection(db, "prayers"), 
+                    prayersRef, 
                     where("userId", "==", user.uid),
                     orderBy("createdAt", "desc")
                 );
@@ -46,6 +56,10 @@ export default function PrayersManagementPage() {
             const querySnapshot = await getDocs(q);
             const list: PrayerData[] = [];
             querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                // Client-side filtering for 'community' tab to ensure mixed data (legacy) works
+                if (activeTab === 'community' && data.type === 'personal') return;
+                
                 list.push({ id: doc.id, ...doc.data() } as PrayerData);
             });
             setPrayers(list);
@@ -60,7 +74,7 @@ export default function PrayersManagementPage() {
         if (user) {
             fetchPrayers();
         }
-    }, [user, isAdmin, isVolunteer]);
+    }, [user, isAdmin, isVolunteer, activeTab]);
 
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this prayer request?")) {
@@ -84,7 +98,7 @@ export default function PrayersManagementPage() {
         }
     };
 
-    if (loading) {
+    if (loading && !prayers.length) { // Only show skeleton on initial load or empty
         return (
              <div>
                  <div className="flex justify-between items-center mb-6">
@@ -98,11 +112,29 @@ export default function PrayersManagementPage() {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Prayer Management</h1>
-                <span className="bg-orange-100 text-orange-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                    Total: {prayers.length}
-                </span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Prayer Management</h1>
+                    <p className="text-sm text-gray-500 mt-1">Manage community requests and personal ministry prayers.</p>
+                </div>
+                <div className="bg-gray-100 p-1 rounded-lg flex items-center">
+                    <button
+                        onClick={() => setActiveTab('community')}
+                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                            activeTab === 'community' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                        }`}
+                    >
+                        Community Prayers
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('personal')}
+                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
+                            activeTab === 'personal' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                        }`}
+                    >
+                        Personal Prayers
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -122,11 +154,19 @@ export default function PrayersManagementPage() {
                                 <tr key={prayer.id} className="bg-white border-b hover:bg-gray-50">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            {prayer.userName}
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${activeTab === 'personal' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                {prayer.userName ? prayer.userName.charAt(0).toUpperCase() : '?'}
+                                            </div>
+                                            <span className="font-medium text-gray-900">{prayer.userName || 'Anonymous'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <p className="line-clamp-2 text-gray-900">{prayer.content}</p>
+                                        {prayer.prayerCount > 0 && (
+                                            <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium mt-1">
+                                                <i className="fas fa-praying-hands"></i> {prayer.prayerCount} prayers
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
@@ -148,7 +188,8 @@ export default function PrayersManagementPage() {
                                     <td className="px-6 py-4">
                                        <button 
                                             onClick={() => handleDelete(prayer.id)}
-                                            className="text-red-600 hover:text-red-800 font-medium"
+                                            className="text-red-600 hover:text-red-800 font-medium p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete"
                                         >
                                             <i className="fas fa-trash"></i>
                                        </button>
@@ -157,8 +198,11 @@ export default function PrayersManagementPage() {
                             ))}
                             {prayers.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                        No prayers found.
+                                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                        <div className="flex flex-col items-center justify-center gap-3">
+                                            <i className="fas fa-inbox text-2xl text-gray-300"></i>
+                                            <p>No prayers found in {activeTab === 'personal' ? 'Personal' : 'Community'} list.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}

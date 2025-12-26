@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
 import AddPrayerModal from '@/components/AddPrayerModal';
 
 interface Ministry {
@@ -28,7 +28,12 @@ interface Prayer {
   date?: string;
   createdAt: any;
   type?: 'personal' | 'community';
+  prayerCount?: number;
+  status?: string;
 }
+
+// Interfaces defined correctly above
+
 
 interface Appeal {
     id: string;
@@ -57,6 +62,18 @@ export default function MinistryPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('ministries');
   const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
+
+  const handlePrayClick = async (id: string) => {
+     try {
+         const prayerRef = doc(db, 'prayers', id);
+         await updateDoc(prayerRef, {
+             prayerCount: increment(1),
+             status: 'prayed' // Auto update status to prayed if not already
+         });
+     } catch (error) {
+         console.error("Error praying", error);
+     }
+  };
 
   useEffect(() => {
     // 1. Fetch Ministries
@@ -270,13 +287,15 @@ export default function MinistryPage() {
                                           <p className="text-sm text-gray-600">Share your prayer requests with us.</p>
                                       </div>
                                   </div>
-                                  <button 
-                                      onClick={() => setIsPrayerModalOpen(true)}
-                                      className="px-5 py-2.5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 shadow-md transition-all active:scale-95"
-                                  >
-                                      <i className="fas fa-plus mr-2"></i>
-                                      {t('ministry.personal_prayers.btn_add') || 'Add Request'}
-                                  </button>
+                                  {isAdmin && (
+                                      <button 
+                                          onClick={() => setIsPrayerModalOpen(true)}
+                                          className="px-5 py-2.5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 shadow-md transition-all active:scale-95"
+                                      >
+                                          <i className="fas fa-plus mr-2"></i>
+                                          {t('ministry.personal_prayers.btn_add') || 'Add Request'}
+                                      </button>
+                                  )}
                               </div>
                           </div>
 
@@ -304,8 +323,12 @@ export default function MinistryPage() {
                                           </p>
 
                                           <div className="flex justify-end pt-2 border-t border-gray-50">
-                                              <button className="text-xs font-bold text-orange-600 flex items-center gap-1 hover:underline">
-                                                  <i className="fas fa-praying-hands"></i> Pray
+                                              <button 
+                                                  onClick={() => handlePrayClick(prayer.id)}
+                                                  className="text-xs font-bold text-orange-600 flex items-center gap-1 hover:underline transition-all active:scale-95"
+                                              >
+                                                  <i className="fas fa-praying-hands"></i> 
+                                                  Pray {prayer.prayerCount ? `(${prayer.prayerCount})` : ''}
                                               </button>
                                           </div>
                                       </div>

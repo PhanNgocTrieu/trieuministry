@@ -19,6 +19,7 @@ type Prayer = {
   category?: string;
   action?: string;
   createdAt?: any;
+  type?: string; // 'personal' | 'community'
 };
 
 export default function PrayersPage() {
@@ -54,7 +55,8 @@ export default function PrayersPage() {
           status: data.status || 'not_prayed',
           prayerCount: data.prayerCount || 0,
           category: data.category || 'General',
-          action: data.action
+          action: data.action,
+          type: data.type
         } as Prayer);
       });
       setPrayers(list);
@@ -66,14 +68,17 @@ export default function PrayersPage() {
 
 
   // Derived Statistics
+  // Filter out personal prayers first for statistics and listing
+  const communityPrayers = prayers.filter(p => p.type !== 'personal');
+
   const stats = {
-    total: prayers.length,
-    answered: prayers.filter(p => p.status === 'answered').length,
-    pending: prayers.filter(p => p.status === 'not_prayed' || p.status === 'prayed').length
+    total: communityPrayers.length,
+    answered: communityPrayers.filter(p => p.status === 'answered').length,
+    pending: communityPrayers.filter(p => p.status === 'not_prayed' || p.status === 'prayed').length
   };
 
   // Filtering Logic
-  const filteredPrayers = prayers.filter(prayer => {
+  const filteredPrayers = communityPrayers.filter(prayer => {
      const matchesFilter = filter === 'all' || prayer.status === filter;
      const matchesSearch = prayer.content.toLowerCase().includes(searchTerm.toLowerCase()) || 
                            prayer.author.toLowerCase().includes(searchTerm.toLowerCase());
