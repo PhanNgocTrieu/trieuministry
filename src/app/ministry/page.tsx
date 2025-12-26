@@ -192,13 +192,18 @@ export default function MinistryPage() {
                   {/* Tab: Ministries */}
                   {activeTab === 'ministries' && (
                       <div className="space-y-8 animate-fade-in">
-                          <div className="flex justify-between items-center mb-6">
-                              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                                  <i className="fas fa-church text-blue-500"></i>
-                                  {t('ministry.letters.title') || 'Ministries'}
-                              </h2>
+                          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 w-full flex items-center justify-between mb-6">
+                              <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                                      <i className="fas fa-church"></i>
+                                  </div>
+                                  <div>
+                                       <h2 className="text-xl font-bold text-gray-900">{t('ministry.letters.title') || 'Ministries'}</h2>
+                                       <p className="text-sm text-gray-600">Explore our ministry outreach.</p>
+                                  </div>
+                              </div>
                               {isAdmin && (
-                                  <Link href="/admin/ministries/create" className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
+                                  <Link href="/admin/ministries/create?returnUrl=/ministry" className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md transition-all active:scale-95 flex items-center gap-2">
                                       <i className="fas fa-plus"></i>
                                       <span>Add Ministry</span>
                                   </Link>
@@ -284,7 +289,7 @@ export default function MinistryPage() {
                                       </div>
                                       <div>
                                           <h2 className="text-xl font-bold text-gray-900">{t('ministry.personal_prayers.title') || 'Personal Prayers'}</h2>
-                                          <p className="text-sm text-gray-600">Share your prayer requests with us.</p>
+                                          <p className="text-sm text-gray-600">prayer requests in ministries</p>
                                       </div>
                                   </div>
                                   {isAdmin && (
@@ -348,18 +353,23 @@ export default function MinistryPage() {
                   {/* Tab: Appeal Letters (Call for Support) */}
                   {activeTab === 'appeals' && (
                       <div className="space-y-8 animate-fade-in">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                                    <i className="fas fa-hand-holding-heart text-red-500"></i>
-                                    {t('nav.appeals') || 'Call for Support'}
-                                </h2>
-                                {isAdmin && (
-                                    <Link href="/admin/appeals/create" className="px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-lg hover:bg-black transition-colors shadow-sm flex items-center gap-2">
-                                        <i className="fas fa-plus"></i>
-                                        <span>New Appeal</span>
-                                    </Link>
-                                )}
-                            </div>
+                          <div className="bg-red-50 p-4 rounded-xl border border-red-100 w-full flex items-center justify-between mb-6">
+                              <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xl">
+                                      <i className="fas fa-hand-holding-heart"></i>
+                                  </div>
+                                  <div>
+                                      <h2 className="text-xl font-bold text-gray-900">{t('nav.appeals') || 'Call for Support'}</h2>
+                                       <p className="text-sm text-gray-600">Support our mission and projects.</p>
+                                  </div>
+                              </div>
+                              {isAdmin && (
+                                  <Link href="/admin/appeals/create" className="px-5 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-all active:scale-95 shadow-md flex items-center gap-2">
+                                      <i className="fas fa-plus"></i>
+                                      <span>New Appeal</span>
+                                  </Link>
+                              )}
+                          </div>
 
                             <div className="space-y-6">
                                 {appeals.length > 0 ? (

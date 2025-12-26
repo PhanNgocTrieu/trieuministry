@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
@@ -15,6 +15,8 @@ interface MinistryImage {
 
 export default function CreateMinistryPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const returnUrl = searchParams.get('returnUrl') || '/admin/ministries'; // Default fallback
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -69,7 +71,7 @@ export default function CreateMinistryPage() {
             });
 
             alert("Ministry added successfully!");
-            router.push("/admin/ministries");
+            router.push(returnUrl);
         } catch (error) {
             console.error("Error creating ministry:", error);
             alert("Failed to create ministry");
@@ -81,7 +83,7 @@ export default function CreateMinistryPage() {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-4 mb-6">
-                <Link href="/admin/ministries" className="text-gray-500 hover:text-gray-700">
+                <Link href={returnUrl} className="text-gray-500 hover:text-gray-700">
                     <i className="fas fa-arrow-left"></i> Back
                 </Link>
                 <h1 className="text-2xl font-bold text-gray-900">Add New Ministry</h1>
@@ -200,7 +202,7 @@ export default function CreateMinistryPage() {
                 </div>
 
                 <div className="pt-4 border-t border-gray-50 flex justify-end gap-3">
-                    <Link href="/admin/ministries" className="px-6 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                    <Link href={returnUrl} className="px-6 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors">
                         Cancel
                     </Link>
                     <button 

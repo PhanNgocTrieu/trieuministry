@@ -110,7 +110,7 @@ export default function AdminMinistriesPage() {
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">Ministry Management</h1>
-                <Link href="/admin/ministries/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+                <Link href="/admin/ministries/create?returnUrl=/admin/ministries" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
                     <i className="fas fa-plus"></i> Add Ministry
                 </Link>
             </div>
