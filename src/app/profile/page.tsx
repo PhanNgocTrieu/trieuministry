@@ -98,8 +98,8 @@ export default function ProfilePage() {
          </div>
       </section>
 
-      <div className="container container-custom py-12 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      <div className="container container-custom py-24 lg:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
               
               {/* LEFT COLUMN - Main Content */}
               <div className="lg:col-span-5 space-y-12">
