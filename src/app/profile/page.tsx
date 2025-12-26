@@ -100,6 +100,7 @@ export default function ProfilePage() {
                                           src="/profile/profile.jpg" 
                                           alt="Phan Ngoc Trieu" 
                                           fill
+                                          sizes="(max-width: 768px) 100vw, 224px"
                                           className="object-cover"
                                       />
                                   </div>
@@ -189,6 +190,6 @@ export default function ProfilePage() {
               </div>
           </div>
       </div>
-    </div>
+    </div> /* End of Profile Page Container */
   );
 }
