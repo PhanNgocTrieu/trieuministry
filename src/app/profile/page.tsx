@@ -88,7 +88,8 @@ export default function ProfilePage() {
   return (
     <main className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-gray-900 to-blue-900 text-white py-20 lg:py-24 text-center relative overflow-hidden">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-gray-900 to-blue-900 text-white py-20 lg:py-24 text-center relative overflow-hidden mt-12 mb-16">
          <div className="absolute inset-0 bg-[url('/hero_bg.png')] bg-cover opacity-20 bg-center"></div>
          <div className="container container-custom relative z-10 fade-in-up">
              <h1 className="text-4xl md:text-5xl font-bold mb-4">{t('profile.hero.title')}</h1>
@@ -98,7 +99,7 @@ export default function ProfilePage() {
          </div>
       </section>
 
-      <div className="container container-custom py-24 lg:py-32">
+      <div className="container container-custom pb-24 lg:pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
               
               {/* LEFT COLUMN - Main Content */}
