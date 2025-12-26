@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 
+type TabType = 'vision' | 'mission' | 'values';
+
 export default function ProfilePage() {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('vision');
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -25,6 +28,49 @@ export default function ProfilePage() {
     };
   }, []);
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'vision':
+        return (
+          <div className="bg-white p-8 rounded-b-2xl rounded-tr-2xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-left-4 duration-300">
+             <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                  <i className="fas fa-eye"></i>
+              </div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-4">{t('profile.vision.title')}</h4>
+              <p className="text-gray-600 leading-relaxed text-lg">
+                  {t('profile.vision.content')}
+              </p>
+          </div>
+        );
+      case 'mission':
+        return (
+          <div className="bg-white p-8 rounded-b-2xl rounded-tr-2xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-left-4 duration-300">
+              <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                  <i className="fas fa-bullseye"></i>
+              </div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-4">{t('profile.mission.title')}</h4>
+              <p className="text-gray-600 leading-relaxed text-lg">
+                  {t('profile.mission.content')}
+              </p>
+          </div>
+        );
+      case 'values':
+        return (
+          <div className="bg-white p-8 rounded-b-2xl rounded-tr-2xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-left-4 duration-300">
+              <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                  <i className="fas fa-heart"></i>
+              </div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-4">{t('profile.values.title')}</h4>
+              <p className="text-gray-600 leading-relaxed text-lg">
+                  {t('profile.values.content')}
+              </p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <main className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
@@ -42,7 +88,7 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
               
               {/* LEFT COLUMN - Main Content */}
-              <div className="lg:col-span-8 space-y-12">
+              <div className="lg:col-span-7 space-y-12">
                   
                   {/* About Founder */}
                   <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10 fade-in-up">
@@ -113,43 +159,39 @@ export default function ProfilePage() {
                   </section>
               </div>
 
-              {/* RIGHT COLUMN - Sidebar */}
-              <div className="lg:col-span-4">
-                  <div className="sticky top-24 space-y-6">
-                      
-                      {/* Vision */}
-                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 fade-in-up hover:-translate-y-1 transition-transform duration-300">
-                          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4">
+              {/* RIGHT COLUMN - Tabbed Sidebar */}
+              <div className="lg:col-span-5">
+                  <div className="sticky top-24">
+                      {/* Tab Headers */}
+                      <div className="flex bg-white rounded-t-2xl p-1 shadow-sm border-b border-gray-100 overflow-x-auto">
+                          <button 
+                              onClick={() => setActiveTab('vision')}
+                              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
+                                  ${activeTab === 'vision' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                          >
                               <i className="fas fa-eye"></i>
-                          </div>
-                          <h4 className="text-xl font-bold text-gray-900 mb-3">{t('profile.vision.title')}</h4>
-                          <p className="text-gray-500 text-sm leading-relaxed">
-                              {t('profile.vision.content')}
-                          </p>
-                      </div>
-
-                      {/* Mission */}
-                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 fade-in-up hover:-translate-y-1 transition-transform duration-300" style={{ animationDelay: '0.1s' }}>
-                          <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                              {t('profile.vision.title')}
+                          </button>
+                          <button 
+                              onClick={() => setActiveTab('mission')}
+                              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
+                                  ${activeTab === 'mission' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                          >
                               <i className="fas fa-bullseye"></i>
-                          </div>
-                          <h4 className="text-xl font-bold text-gray-900 mb-3">{t('profile.mission.title')}</h4>
-                          <p className="text-gray-500 text-sm leading-relaxed">
-                              {t('profile.mission.content')}
-                          </p>
-                      </div>
-
-                      {/* Values */}
-                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 fade-in-up hover:-translate-y-1 transition-transform duration-300" style={{ animationDelay: '0.2s' }}>
-                          <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                              {t('profile.mission.title')}
+                          </button>
+                          <button 
+                              onClick={() => setActiveTab('values')}
+                              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
+                                  ${activeTab === 'values' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                          >
                               <i className="fas fa-heart"></i>
-                          </div>
-                          <h4 className="text-xl font-bold text-gray-900 mb-3">{t('profile.values.title')}</h4>
-                          <p className="text-gray-500 text-sm leading-relaxed">
-                              {t('profile.values.content')}
-                          </p>
+                              {t('profile.values.title')}
+                          </button>
                       </div>
 
+                      {/* Tab Content */}
+                      {renderTabContent()}
                   </div>
               </div>
 
