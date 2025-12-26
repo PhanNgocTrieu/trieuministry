@@ -4,15 +4,18 @@ import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, writeBatch } from "firebase/firestore";
 
+import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+
 export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState("");
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
 
-    const handleResetDatabase = async () => {
-        const confirmMessage = "DANGER: This will PERMANENTLY DELETE all Users, Prayers, and Blogs data from Firestore.\n\nAre you sure you want to proceed?";
-        if (!confirm(confirmMessage)) return;
-        if (!confirm("Are you really sure? This action cannot be undone.")) return;
-        
+    const handleResetClick = () => {
+        setShowResetConfirm(true);
+    };
+
+    const confirmResetDatabase = async () => {
         setLoading(true);
         setStatus("Starting database reset...");
         
@@ -48,6 +51,7 @@ export default function AdminSettingsPage() {
             alert("An error occurred. Check the log.");
         } finally {
             setLoading(false);
+            setShowResetConfirm(false);
         }
     };
 
@@ -75,7 +79,7 @@ export default function AdminSettingsPage() {
                             </p>
                         </div>
                         <button 
-                            onClick={handleResetDatabase}
+                            onClick={handleResetClick}
                             disabled={loading}
                             className={`px-5 py-2.5 rounded-lg font-bold text-white shadow-sm transition-all
                                 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 hover:shadow-md'}
@@ -94,6 +98,7 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                 {/* ... existing app info ... */}
                  <h2 className="text-lg font-bold text-gray-900 mb-4">Application Information</h2>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="p-3 bg-gray-50 rounded-lg">
@@ -106,6 +111,17 @@ export default function AdminSettingsPage() {
                      </div>
                  </div>
             </div>
+
+            <ConfirmModal 
+                isOpen={showResetConfirm}
+                onClose={() => setShowResetConfirm(false)}
+                onConfirm={confirmResetDatabase}
+                title="DANGER: Reset Database?"
+                message={`This will PERMANENTLY DELETE ALL DATA from 'users', 'prayers', and 'blogs' collections.\n\nThis action cannot be undone. Are you absolutely sure?`}
+                confirmText="YES, DELETE EVERYTHING"
+                cancelText="Cancel"
+                isDangerous={true}
+            />
         </div>
     );
 }

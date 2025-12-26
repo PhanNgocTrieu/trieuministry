@@ -15,10 +15,15 @@ interface Appeal {
     type?: string; // 'official' vs 'user_request'
 }
 
+import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+
 export default function AdminAppealsPage() {
     const [appeals, setAppeals] = useState<Appeal[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, published, pending
+    
+    // Modal State
+    const [deleteId, setDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         const q = query(collection(db, "appeals"), where("type", "==", "official"), orderBy("createdAt", "desc"));
@@ -38,14 +43,19 @@ export default function AdminAppealsPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this appeal? This action cannot be undone.")) {
-            try {
-                await deleteDoc(doc(db, "appeals", id));
-            } catch (error) {
-                console.error("Error deleting appeal:", error);
-                alert("Failed to delete appeal");
-            }
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        try {
+            await deleteDoc(doc(db, "appeals", deleteId));
+        } catch (error) {
+            console.error("Error deleting appeal:", error);
+            alert("Failed to delete appeal");
+        } finally {
+            setDeleteId(null);
         }
     };
 
@@ -63,11 +73,12 @@ export default function AdminAppealsPage() {
         <AdminGuard>
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    {/* ... existing header ... */}
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Manage Appeals</h1>
                         <p className="text-gray-500">Create, edit, and manage appeal letters and requests.</p>
                     </div>
-                    <div className="flex gap-3">
+                     <div className="flex gap-3">
                         <Link 
                             href="/appeals"
                             target="_blank"
@@ -87,6 +98,7 @@ export default function AdminAppealsPage() {
                 </div>
 
                 {/* Filter Tabs */}
+                {/* ... existing filter tabs ... */}
                 <div className="flex border-b border-gray-200">
                     {['all', 'published', 'draft', 'pending'].map((status) => (
                         <button
@@ -105,6 +117,7 @@ export default function AdminAppealsPage() {
 
                 {loading ? (
                     <div className="text-center py-20">
+                         {/* ... existing loading ... */}
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
                         <p className="mt-2 text-gray-500">Loading appeals...</p>
                     </div>
@@ -112,6 +125,7 @@ export default function AdminAppealsPage() {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
+                                {/* ... existing table header ... */}
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500 sticky top-0">
                                         <th className="px-6 py-4 font-bold">Title</th>
@@ -157,7 +171,7 @@ export default function AdminAppealsPage() {
                                                             <i className="fas fa-edit"></i>
                                                         </Link>
                                                         <button 
-                                                            onClick={() => handleDelete(appeal.id)}
+                                                            onClick={() => handleDeleteClick(appeal.id)}
                                                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                             title="Delete"
                                                         >
@@ -180,6 +194,16 @@ export default function AdminAppealsPage() {
                         </div>
                     </div>
                 )}
+
+                <ConfirmModal 
+                    isOpen={!!deleteId}
+                    onClose={() => setDeleteId(null)}
+                    onConfirm={confirmDelete}
+                    title="Delete Appeal"
+                    message="Are you sure you want to delete this appeal? This action cannot be undone."
+                    confirmText="Delete"
+                    isDangerous={true}
+                />
             </div>
         </AdminGuard>
     );

@@ -22,6 +22,8 @@ type Prayer = {
   type?: string; // 'personal' | 'community'
 };
 
+import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+
 export default function PrayersPage() {
   const { t } = useLanguage();
   const { user } = useAuth();
@@ -38,6 +40,9 @@ export default function PrayersPage() {
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState('General');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Modal State
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     // Subscribe to real-time updates
@@ -87,12 +92,15 @@ export default function PrayersPage() {
 
   const handleAddClick = () => {
       if (!user) {
-          if (confirm("You need to login to add a prayer request. Go to login page?")) {
-              router.push('/login');
-          }
+          setShowLoginModal(true);
           return;
       }
       setShowModal(true);
+  };
+
+  const confirmLoginRedirect = () => {
+      router.push('/login');
+      setShowLoginModal(false);
   };
 
   const handleAddPrayer = async (e: React.FormEvent) => {
@@ -425,6 +433,16 @@ export default function PrayersPage() {
             </div>
          </div>
       )}
+
+      <ConfirmModal 
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onConfirm={async () => confirmLoginRedirect()}
+          title="Login Required"
+          message="You need to be logged in to share a prayer request with the community."
+          confirmText="Go to Login"
+          cancelText="Not Now"
+      />
     </main>
   );
 }

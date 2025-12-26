@@ -10,7 +10,10 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import ImageUploader from '@/components/ImageUploader';
 
+import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+
 export default function AccountPage() {
+  // ... existing hook calls
   const { user, loading, logout, resetPassword } = useAuth();
   const router = useRouter();
 
@@ -19,7 +22,10 @@ export default function AccountPage() {
   const [newName, setNewName] = useState('');
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true); // Dummy state for now
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  
+  // Modal State
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -63,16 +69,20 @@ export default function AccountPage() {
       }
   };
 
-  const handlePasswordReset = async () => {
+  const handlePasswordResetClick = () => {
+      setShowResetConfirm(true);
+  };
+
+  const confirmPasswordReset = async () => {
       if (!user?.email) return;
-      if (confirm(`Send a password reset email to ${user.email}?`)) {
-          try {
-              await resetPassword(user.email);
-              alert("Password reset email sent! Please check your inbox.");
-          } catch (error) {
-              console.error("Error sending reset email:", error);
-              alert("Failed to send reset email.");
-          }
+      try {
+          await resetPassword(user.email);
+          alert("Password reset email sent! Please check your inbox.");
+      } catch (error) {
+          console.error("Error sending reset email:", error);
+          alert("Failed to send reset email.");
+      } finally {
+          setShowResetConfirm(false);
       }
   };
 
@@ -93,9 +103,9 @@ export default function AccountPage() {
   return (
     <main className="min-h-screen pt-24 bg-gray-50 pb-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8">My Account</h1>
-        
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8">
+         {/* ... (existing content) ... */}
+         <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8">
+            {/* ... user profile header ... */}
             <div className="flex-shrink-0">
                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 relative group">
                   {user.photoURL ? (
@@ -177,7 +187,7 @@ export default function AccountPage() {
                   </li>
                   <li>
                      <button 
-                        onClick={handlePasswordReset}
+                        onClick={handlePasswordResetClick} // Updated handler
                         className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                      >
                         <span className="font-medium text-gray-700">Change Password</span>
@@ -261,6 +271,16 @@ export default function AccountPage() {
             </div>
         </div>
       )}
+
+      {/* NEW Confirm Modal for Password Reset */}
+      <ConfirmModal
+          isOpen={showResetConfirm}
+          onClose={() => setShowResetConfirm(false)}
+          onConfirm={confirmPasswordReset}
+          title="Reset Password"
+          message={`Are you sure you want to send a password reset email to ${user?.email}?`}
+          confirmText="Send Email"
+      />
     </main>
   );
 }

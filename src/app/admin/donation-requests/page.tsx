@@ -17,19 +17,30 @@ interface DonationRequest {
     type?: string; 
 }
 
+import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+
+interface ModalConfig {
+    isOpen: boolean;
+    title: string;
+    message: string;
+    action: () => Promise<void>;
+    isDangerous: boolean;
+    confirmText?: string;
+}
+
 export default function DonationRequestsPage() {
     const [requests, setRequests] = useState<DonationRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [modalConfig, setModalConfig] = useState<ModalConfig>({
+        isOpen: false,
+        title: '',
+        message: '',
+        action: async () => {},
+        isDangerous: false
+    });
 
     useEffect(() => {
-        // Query for appeals that are NOT 'official' (i.e. user requests)
-        // Since Firestore inequality filters are limited, we'll fetch all and filter client-side or fetch by status if needed.
-        // But better: Fetch "pending" or just all that don't have type='official' if possible.
-        // Simpler approach for now: Fetch all appeals, filter in memory for type != 'official'
-        // OR better yet, if we want to be scalable, we should have tagged them 'user_request' in the Donate page.
-        // The Donate page sets status='pending' but didn't set 'type'.
-        // So we filter for type != 'official' (including undefined).
-        
+        // ... (keep existing useEffect logic)
         const q = query(collection(db, "appeals"), orderBy("createdAt", "desc"));
         
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -50,29 +61,47 @@ export default function DonationRequestsPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleApprove = async (id: string) => {
-        if (confirm("Approve this request? It will be published to the website.")) {
-            try {
-                await updateDoc(doc(db, "appeals", id), {
-                    status: 'published',
-                    type: 'user_request' // Ensure type is set
-                });
-            } catch (error) {
-                console.error("Error approving:", error);
-                alert("Failed to approve request");
-            }
+    const performApprove = async (id: string) => {
+        try {
+            await updateDoc(doc(db, "appeals", id), {
+                status: 'published',
+                type: 'user_request'
+            });
+        } catch (error) {
+            console.error("Error approving:", error);
+            alert("Failed to approve request"); // Fallback alert for error
         }
     };
 
-    const handleReject = async (id: string) => {
-        if (confirm("Reject (Delete) this request?")) {
-            try {
-                await deleteDoc(doc(db, "appeals", id));
-            } catch (error) {
-                console.error("Error deleting:", error);
-                alert("Failed to delete request");
-            }
+    const performReject = async (id: string) => {
+        try {
+            await deleteDoc(doc(db, "appeals", id));
+        } catch (error) {
+            console.error("Error deleting:", error);
+            alert("Failed to delete request"); // Fallback alert for error
         }
+    };
+
+    const handleApproveClick = (id: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: "Approve Request",
+            message: "Approve this request? It will be published to the website.",
+            action: () => performApprove(id),
+            isDangerous: false,
+            confirmText: "Approve"
+        });
+    };
+
+    const handleRejectClick = (id: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: "Reject Request",
+            message: "Reject (Delete) this request? This action cannot be undone.",
+            action: () => performReject(id),
+            isDangerous: true,
+            confirmText: "Reject & Delete"
+        });
     };
 
     const formatDate = (timestamp: any) => {
@@ -83,9 +112,12 @@ export default function DonationRequestsPage() {
     return (
         <AdminGuard>
             <div className="space-y-6">
+                {/* ... existing header and loading ... */}
+                
+                {/* ... (keep header) ... */}
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Ministry Appeals (Donation Requests)</h1>
-                    <p className="text-gray-500">Manage fundraising requests submitted by users.</p>
+                     <h1 className="text-2xl font-bold text-gray-900">Ministry Appeals (Donation Requests)</h1>
+                     <p className="text-gray-500">Manage fundraising requests submitted by users.</p>
                 </div>
 
                 {loading ? (
@@ -96,6 +128,7 @@ export default function DonationRequestsPage() {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
+                                {/* ... thead ... */}
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500">
                                         <th className="px-6 py-4 font-bold">Request Details</th>
@@ -133,14 +166,14 @@ export default function DonationRequestsPage() {
                                                     <div className="flex items-center justify-end gap-2">
                                                         {req.status === 'pending' && (
                                                             <button 
-                                                                onClick={() => handleApprove(req.id)}
+                                                                onClick={() => handleApproveClick(req.id)}
                                                                 className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors"
                                                             >
                                                                 Approve
                                                             </button>
                                                         )}
                                                         <button 
-                                                            onClick={() => handleReject(req.id)}
+                                                            onClick={() => handleRejectClick(req.id)}
                                                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                             title="Delete / Reject"
                                                         >
@@ -163,6 +196,16 @@ export default function DonationRequestsPage() {
                         </div>
                     </div>
                 )}
+
+                <ConfirmModal
+                    isOpen={modalConfig.isOpen}
+                    onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                    onConfirm={modalConfig.action}
+                    title={modalConfig.title}
+                    message={modalConfig.message}
+                    isDangerous={modalConfig.isDangerous}
+                    confirmText={modalConfig.confirmText}
+                />
             </div>
         </AdminGuard>
     );

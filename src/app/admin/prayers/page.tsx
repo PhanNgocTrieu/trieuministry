@@ -20,11 +20,14 @@ interface PrayerData {
 import { useAuth } from "@/context/AuthContext";
 // ... imports
 
+import ConfirmModal from "@/components/admin/ConfirmModal"; // Added import
+
 export default function PrayersManagementPage() {
     const { user, isAdmin, isVolunteer } = useAuth();
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'community' | 'personal'>('community');
+    const [deleteId, setDeleteId] = useState<string | null>(null); // Added state
 
     const fetchPrayers = async () => {
         if (!user) return;
@@ -40,8 +43,6 @@ export default function PrayersManagementPage() {
                      q = query(prayersRef, where('type', '==', 'personal'), orderBy("createdAt", "desc"));
                  } else {
                      // Get community prayers (exclude personal if possible, or filter client side)
-                     // For simplicity and index avoidance, let's fetch all sorted and filter client-side for now
-                     // unless 'community' type is strictly set.
                      q = query(prayersRef, orderBy("createdAt", "desc"));
                  }
             } else {
@@ -60,7 +61,7 @@ export default function PrayersManagementPage() {
                 // Client-side filtering for 'community' tab to ensure mixed data (legacy) works
                 if (activeTab === 'community' && data.type === 'personal') return;
                 
-                list.push({ id: doc.id, ...doc.data() } as PrayerData);
+                list.push({ id: doc.id, ...data } as PrayerData);
             });
             setPrayers(list);
         } catch (error) {
@@ -76,15 +77,20 @@ export default function PrayersManagementPage() {
         }
     }, [user, isAdmin, isVolunteer, activeTab]);
 
-    const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this prayer request?")) {
-            try {
-                await deleteDoc(doc(db, "prayers", id));
-                setPrayers(prayers.filter(p => p.id !== id));
-            } catch (error) {
-                console.error("Error deleting prayer:", error);
-                alert("Failed to delete prayer");
-            }
+    const handleDelete = (id: string) => {
+        setDeleteId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        try {
+            await deleteDoc(doc(db, "prayers", deleteId));
+            setPrayers(prayers.filter(p => p.id !== deleteId));
+        } catch (error) {
+            console.error("Error deleting prayer:", error);
+            alert("Failed to delete prayer");
+        } finally {
+            setDeleteId(null);
         }
     };
 
@@ -115,31 +121,38 @@ export default function PrayersManagementPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Prayer Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage community requests and personal ministry prayers.</p>
+                    <p className="text-gray-500 text-sm">Manage community requests and personal prayer needs.</p>
                 </div>
-                <div className="bg-gray-100 p-1 rounded-lg flex items-center">
-                    <button
+                
+                <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                    <button 
                         onClick={() => setActiveTab('community')}
                         className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                            activeTab === 'community' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                            activeTab === 'community' 
+                            ? 'bg-white text-blue-600 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
                         }`}
                     >
-                        Community Prayers
+                        Community
                     </button>
-                    <button
+                    <button 
                         onClick={() => setActiveTab('personal')}
                         className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                            activeTab === 'personal' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                            activeTab === 'personal' 
+                            ? 'bg-white text-orange-600 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
                         }`}
                     >
-                        Personal Prayers
+                        Personal
                     </button>
                 </div>
             </div>
 
+            {/* ... table ... */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left text-gray-500">
+                        {/* ... existing table content ... */}
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" className="px-6 py-3">User</th>
@@ -210,6 +223,17 @@ export default function PrayersManagementPage() {
                     </table>
                 </div>
             </div>
+
+            <ConfirmModal 
+                isOpen={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={confirmDelete}
+                title="Delete Prayer Request"
+                message="Are you sure you want to delete this prayer request? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                isDangerous={true}
+            />
         </div>
     );
 }
