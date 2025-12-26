@@ -167,6 +167,51 @@ export default function PrayersPage() {
          </div>
       </section>
 
+      {/* Call for Donation for Ministries */}
+      <section className="bg-blue-600 text-white py-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/bg-pattern.png')] opacity-10"></div>
+        <div className="container container-custom relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+             <div className="lg:w-2/3">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 flex items-center gap-3">
+                    <i className="fas fa-hand-holding-heart text-yellow-300"></i>
+                    Support Our Ministries
+                </h2>
+                <p className="text-blue-100 text-lg leading-relaxed mb-6">
+                    Join us in spreading God's love. Your generous donations help us maintain our ministries, support those in need, and continue our mission. Every contribution makes a difference.
+                </p>
+                <div className="bg-blue-700/50 rounded-xl p-4 border border-blue-500/50 backdrop-blur-sm inline-block">
+                    <p className="text-sm text-blue-200 font-bold uppercase tracking-wider mb-2">Direct Bank Transfer</p>
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div>
+                            <span className="block text-xs text-blue-300">Bank Name</span>
+                            <span className="font-bold text-white text-lg">MB Bank</span>
+                        </div>
+                        <div>
+                            <span className="block text-xs text-blue-300">Account Number</span>
+                            <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-white text-xl">0974210249</span>
+                                <button onClick={() => {navigator.clipboard.writeText('0974210249'); alert('Copied!');}} className="text-blue-200 hover:text-white transition-colors">
+                                    <i className="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <span className="block text-xs text-blue-300">Account Name</span>
+                            <span className="font-bold text-white text-lg">PHAN NGOC TRIEU</span>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div className="lg:w-1/3 text-center">
+                 <button onClick={() => router.push('/donate')} className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full shadow-lg hover:bg-yellow-300 hover:text-blue-800 transition-all hover:-translate-y-1">
+                     View Donation Details <i className="fas fa-arrow-right ml-2"></i>
+                 </button>
+             </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-12 bg-gray-50">
           <div className="container container-custom">

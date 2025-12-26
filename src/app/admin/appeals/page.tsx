@@ -21,7 +21,7 @@ export default function AdminAppealsPage() {
     const [filter, setFilter] = useState('all'); // all, published, pending
 
     useEffect(() => {
-        const q = query(collection(db, "appeals"), orderBy("createdAt", "desc"));
+        const q = query(collection(db, "appeals"), where("type", "==", "official"), orderBy("createdAt", "desc"));
         
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({

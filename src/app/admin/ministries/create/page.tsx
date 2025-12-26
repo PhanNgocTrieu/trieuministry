@@ -7,6 +7,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploader from "@/components/ImageUploader";
+import AdminGuard from "@/components/admin/AdminGuard";
 
 interface MinistryImage {
   url: string;
@@ -81,7 +82,8 @@ export default function CreateMinistryPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <AdminGuard>
+            <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-4 mb-6">
                 <Link href={returnUrl} className="text-gray-500 hover:text-gray-700">
                     <i className="fas fa-arrow-left"></i> Back
@@ -214,6 +216,7 @@ export default function CreateMinistryPage() {
                     </button>
                 </div>
             </form>
-        </div>
+            </div>
+        </AdminGuard>
     );
 }
