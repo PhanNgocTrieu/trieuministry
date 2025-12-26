@@ -137,15 +137,15 @@ export default function ProfilePage() {
                   )}
 
                   {activeTab === 'calling' && (
-                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto">
+                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center text-center">
                           <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-8 shadow-sm">
-                              <i className="fas fa-bullhorn"></i>
+                              <i className="fas fa-envelope-open-text"></i>
                           </div>
                           <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.calling.title')}</h4>
-                          <div className="text-gray-600 leading-loose text-xl space-y-8 text-justify">
+                          <div className="text-gray-600 leading-loose text-xl space-y-8">
                               <p>{t('profile.calling.content_1')}</p>
                               <p>{t('profile.calling.content_2')}</p>
-                              <div className="text-center py-12">
+                              <div className="text-center py-8">
                                   <p className="font-serif italic text-3xl text-blue-600">"Here I am, Lord. Send me!"</p>
                               </div>
                           </div>
