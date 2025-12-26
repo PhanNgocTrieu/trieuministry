@@ -30,9 +30,13 @@ export default function RegisterPage() {
     
     try {
       await signUp(email, password, name);
-      router.push('/');
+      router.push('/verify-email');
     } catch (err: any) {
-      setError(err.message.replace('Firebase: ', ''));
+      if (err.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please log in instead.');
+      } else {
+        setError(err.message.replace('Firebase: ', ''));
+      }
     } finally {
       setLoading(false);
     }

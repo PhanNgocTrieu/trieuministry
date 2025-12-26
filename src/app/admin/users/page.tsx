@@ -15,6 +15,8 @@ interface UserData {
     photoURL: string;
     lastLogin: any;
     role?: string;
+    emailVerified?: boolean;
+    adminVerified?: boolean;
 }
 
 export default function UsersManagementPage() {
@@ -97,18 +99,59 @@ export default function UsersManagementPage() {
 
     const handleDeleteUser = async (uid: string) => {
         openModal(
-            "Delete User Profile",
-            "WARNING: This only deletes the user 'profile' from database.\nThe login account (Firebase Auth) CANNOT be deleted from here without a backend.\n\nProceed to delete profile?",
+            "Delete User Account",
+            "WARNING: This will delete the user's login account (Firebase Auth) AND their profile data.\nThis action cannot be undone.\n\nProceed to delete?",
             async () => {
                 try {
+                    // 1. Delete from Authentication (Server-side)
+                    if (auth.currentUser) {
+                        const token = await auth.currentUser.getIdToken();
+                        const response = await fetch('/api/admin/users/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ uid })
+                        });
+
+                        if (!response.ok) {
+                            const data = await response.json();
+                            throw new Error(data.error || 'Failed to delete from Auth');
+                        }
+                    }
+
+                    // 2. Delete from Firestore (Client-side)
                     await deleteDoc(doc(db, "users", uid));
                     setUsers(users.filter(u => u.uid !== uid));
-                } catch (error) {
+                    alert("User account deleted successfully.");
+                } catch (error: any) {
                     console.error("Error deleting user:", error);
-                    alert("Failed to delete user profile.");
+                    alert(`Failed to delete user: ${error.message}`);
                 }
             },
             true
+        );
+    };
+
+    const handleVerifyToggle = async (uid: string, currentStatus: boolean) => {
+        openModal(
+            currentStatus ? "Revoke Verification?" : "Manually Verify User?",
+            currentStatus 
+                ? "This will revoke the manual verification status. If the user verified their email, they will still be verified." 
+                : "This will manually verify the user, checking the 'isVerified' flag regardless of email status.",
+            async () => {
+                try {
+                    await updateDoc(doc(db, "users", uid), {
+                        adminVerified: !currentStatus
+                    });
+                    setUsers(users.map(u => u.uid === uid ? { ...u, adminVerified: !currentStatus } : u));
+                } catch (error) {
+                    console.error("Error toggling verification:", error);
+                    alert("Failed to update verification status.");
+                }
+            },
+            currentStatus // Dangerous if revoking? Maybe not strictly.
         );
     };
 
@@ -166,6 +209,7 @@ export default function UsersManagementPage() {
                             <tr>
                                 <th scope="col" className="px-6 py-3">User</th>
                                 <th scope="col" className="px-6 py-3">Role</th>
+                                <th scope="col" className="px-6 py-3">Status</th>
                                 <th scope="col" className="px-6 py-3">Last Login</th>
                                 <th scope="col" className="px-6 py-3">Actions</th>
                             </tr>
@@ -233,6 +277,39 @@ export default function UsersManagementPage() {
                                                 )}
                                             </div>
                                         )}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-1 items-start">
+                                            {user.emailVerified ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" title="Verified via Email Link">
+                                                    <i className="fas fa-envelope mr-1"></i> Email Verified
+                                                </span>
+                                            ) : user.adminVerified ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Manually Verified by Admin">
+                                                        <i className="fas fa-user-check mr-1"></i> Admin Verified
+                                                    </span>
+                                                    <button 
+                                                        onClick={() => handleVerifyToggle(user.uid, true)}
+                                                        className="text-red-500 hover:text-red-700 text-xs underline"
+                                                    >
+                                                        Revoke
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        <i className="fas fa-hourglass-half mr-1"></i> Pending
+                                                    </span>
+                                                    <button 
+                                                        onClick={() => handleVerifyToggle(user.uid, false)}
+                                                        className="text-blue-600 hover:text-blue-800 text-xs underline"
+                                                    >
+                                                        Verify
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         {user.lastLogin?.seconds ? new Date(user.lastLogin.seconds * 1000).toLocaleDateString() : 'N/A'}

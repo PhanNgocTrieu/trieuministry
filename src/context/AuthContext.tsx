@@ -10,7 +10,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
-    updateProfile
+    updateProfile,
+    sendEmailVerification
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp, getDoc, onSnapshot } from "firebase/firestore";
@@ -23,8 +24,10 @@ interface AuthContextType {
     signUp: (email: string, pass: string, name: string) => Promise<void>;
     signIn: (email: string, pass: string) => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
+    sendVerificationEmail: () => Promise<void>;
     isAdmin: boolean;
     isVolunteer: boolean;
+    isVerified: boolean;
     role: string | null;
 }
 
@@ -35,6 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isVolunteer, setIsVolunteer] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
     const [role, setRole] = useState<string | null>(null);
 
     const syncUserToFirestore = async (user: User) => {
@@ -45,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 email: user.email,
                 displayName: user.displayName,
                 photoURL: user.photoURL,
+                emailVerified: user.emailVerified,
                 lastLogin: serverTimestamp(),
             }, { merge: true });
         } catch (error) {
@@ -59,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setLoading(false);
                 setIsAdmin(false);
                 setIsVolunteer(false);
+                setIsVerified(false);
                 setRole(null);
             }
         });
@@ -103,6 +109,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         setIsAdmin(false);
                         setIsVolunteer(false);
                     }
+                    
+                    // Determine if verified (either by email or admin override)
+                    const isEmailVerified = user.emailVerified;
+                    const userDataForVerify = docSnap.exists() ? docSnap.data() : null;
+                    const isAdminVerified = userDataForVerify?.emailVerified === true; // Wait, I need to use a different field or reuse emailVerified?
+                    // If I use emailVerified from Firestore, syncUserToFirestore overwrites it with user.emailVerified.
+                    // So I should use 'adminVerified' field.
+                    const isAdminOverride = userDataForVerify?.adminVerified === true;
+
+                    setIsVerified(isEmailVerified || isAdminOverride);
+
                     setLoading(false);
                 }, (error) => {
                     console.error("Error listening to user role:", error);
@@ -132,6 +149,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
             await updateProfile(userCredential.user, { displayName: name });
+            
+            // Send verification email
+            await sendEmailVerification(userCredential.user);
+
             // Sync new user immediately
             await syncUserToFirestore({ ...userCredential.user, displayName: name } as User);
         } catch (error) {
@@ -158,6 +179,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const sendVerificationEmail = async () => {
+        if (auth.currentUser) {
+            await sendEmailVerification(auth.currentUser);
+        }
+    }
+
     const logout = async () => {
         try {
             await firebaseSignOut(auth);
@@ -176,8 +203,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signUp,
         signIn,
         resetPassword,
+        sendVerificationEmail,
         isAdmin,
         isVolunteer,
+        isVerified,
         role
     }}>
             {children}
