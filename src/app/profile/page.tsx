@@ -29,7 +29,7 @@ export default function ProfilePage() {
 
 
   return (
-    <main className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pb-40">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-gray-900 to-blue-900 text-white py-20 lg:py-24 text-center relative overflow-hidden mt-12 mb-16">
          <div className="absolute inset-0 bg-[url('/hero_bg.png')] bg-cover opacity-20 bg-center"></div>
@@ -41,7 +41,7 @@ export default function ProfilePage() {
          </div>
       </section>
 
-      <div className="container container-custom pb-32 lg:pb-40 mb-20">
+      <div className="container container-custom">
           
           <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-2 border border-gray-200/50 max-w-5xl mx-auto">
               {/* Tab Headers */}
@@ -189,6 +189,6 @@ export default function ProfilePage() {
               </div>
           </div>
       </div>
-    </main>
+    </div>
   );
 }
