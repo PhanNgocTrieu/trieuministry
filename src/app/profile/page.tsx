@@ -59,7 +59,7 @@ export default function ProfilePage() {
                       className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
                           ${activeTab === 'calling' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'}`}
                   >
-                      <i className="fas fa-bullhorn"></i>
+                      <i className="fas fa-envelope-open-text"></i>
                       {t('profile.calling.title')}
                   </button>
                   <button 
@@ -153,36 +153,36 @@ export default function ProfilePage() {
                   )}
 
                   {activeTab === 'vision' && (
-                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto">
+                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center text-center">
                           <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center text-3xl mb-8 shadow-sm">
                               <i className="fas fa-eye"></i>
                           </div>
                           <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.vision.title')}</h4>
-                          <p className="text-gray-600 leading-loose text-xl text-justify">
+                          <p className="text-gray-600 leading-loose text-xl">
                               {t('profile.vision.content')}
                           </p>
                       </div>
                   )}
 
                   {activeTab === 'mission' && (
-                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto">
+                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center text-center">
                           <div className="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center text-3xl mb-8 shadow-sm">
                               <i className="fas fa-bullseye"></i>
                           </div>
                           <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.mission.title')}</h4>
-                          <p className="text-gray-600 leading-loose text-xl text-justify">
+                          <p className="text-gray-600 leading-loose text-xl">
                               {t('profile.mission.content')}
                           </p>
                       </div>
                   )}
 
                   {activeTab === 'values' && (
-                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto">
+                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center text-center">
                           <div className="w-20 h-20 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-sm">
                               <i className="fas fa-heart"></i>
                           </div>
                           <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.values.title')}</h4>
-                          <p className="text-gray-600 leading-loose text-xl text-justify">
+                          <p className="text-gray-600 leading-loose text-xl">
                               {t('profile.values.content')}
                           </p>
                       </div>
