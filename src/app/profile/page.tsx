@@ -41,7 +41,7 @@ export default function ProfilePage() {
          </div>
       </section>
 
-      <div className="container container-custom pb-24 lg:pb-32">
+      <div className="container container-custom pb-32 lg:pb-40 mb-20">
           
           <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-2 border border-gray-200/50 max-w-5xl mx-auto">
               {/* Tab Headers */}
