@@ -23,8 +23,8 @@ interface BlogPost {
 
 // --- Components ---
 
-const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
-    const { t } = useLanguage(); // Use hook
+    const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
+    const { t } = useLanguage(); 
     const menuItems = [
         { id: 'all', label: t('resources.tabs.all'), icon: 'fas fa-th-large' },
         { id: 'blogs', label: t('resources.tabs.blogs'), icon: 'fas fa-pen-nib' },
@@ -33,27 +33,26 @@ const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab:
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-100 flex-shrink-0 fixed h-full pt-20 hidden lg:block z-20">
-            <div className="p-6">
-                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">{t('resources.sidebar_title')}</h2>
-                <nav className="space-y-2">
-                    {menuItems.map(item => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                                activeTab === item.id 
-                                ? 'bg-blue-50 text-blue-600 shadow-sm' 
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                        >
-                            <i className={`${item.icon} w-5 text-center`}></i>
-                            {item.label}
-                        </button>
-                    ))}
-                </nav>
-            </div>
-        </aside>
+        <nav className="space-y-4">
+            {menuItems.map(item => (
+                <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-sm ${
+                        activeTab === item.id
+                            ? 'bg-blue-600 text-white shadow-blue-200 shadow-lg scale-105'
+                            : 'bg-white text-gray-500 hover:bg-white hover:text-blue-600 hover:shadow-md'
+                    }`}
+                >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        activeTab === item.id ? 'bg-white/20' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50'
+                    }`}>
+                        <i className={`${item.icon} text-lg`}></i>
+                    </div>
+                    <span className="text-base tracking-wide">{item.label}</span>
+                </button>
+            ))}
+        </nav>
     );
 };
 
@@ -252,8 +251,8 @@ export default function ResourcesDashboard() {
     };
 
     return (
-        <main className="min-h-screen bg-gray-50 flex flex-col">
-            {/* Mobile Tab Select */}
+        <main className="bg-gray-50 min-h-screen pb-20 font-sans">
+             {/* Mobile Tab Select */}
             <div className="lg:hidden bg-white border-b border-gray-200 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-sm">
                 {['all', 'blogs', 'documents', 'songs'].map(tab => (
                     <button
@@ -270,13 +269,30 @@ export default function ResourcesDashboard() {
                 ))}
             </div>
 
-            <div className="flex flex-1">
-                {/* Sidebar (Desktop) */}
-                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="container container-custom pb-20" style={{ paddingTop: '40px' }}>
+                {/* Header Section */}
+                <div className="max-w-4xl mb-12 md:mb-16">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                        {t('resources.title') || 'Resources'}
+                    </h1>
+                     <p className="text-xl text-gray-500 leading-relaxed max-w-3xl">
+                        {t('resources.subtitle') || 'Explore our collection of spiritual resources including blogs, documents, and songs.'}
+                    </p>
+                    <div className="mt-8 h-1 w-20 bg-blue-600 rounded-full"></div>
+                </div>
 
-                {/* Main Content */}
-                <div className="flex-1 lg:ml-64 p-6 md:p-12 pt-28 lg:pt-32">
-                     {renderContent()}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                     {/* Left Sidebar */}
+                    <div className="lg:col-span-3 hidden lg:block">
+                        <div>
+                            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                        </div>
+                    </div>
+
+                    {/* Right Content */}
+                    <div className="lg:col-span-9">
+                        {renderContent()}
+                    </div>
                 </div>
             </div>
 

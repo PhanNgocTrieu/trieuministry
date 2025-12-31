@@ -172,6 +172,8 @@
         }
     },
     "resources": {
+        "title": "Resources",
+        "subtitle": "Explore our collection of spiritual resources including blogs, documents, and songs.",
         "sidebar_title": "Library",
         "tabs": {
             "all": "All Resources",

@@ -172,6 +172,8 @@
         }
     },
     "resources": {
+        "title": "Tài Nguyên",
+        "subtitle": "Khám phá bộ sưu tập tài nguyên thuộc linh bao gồm bài viết, tài liệu và thánh ca.",
         "sidebar_title": "Thư viện",
         "tabs": {
             "all": "Tất cả",
