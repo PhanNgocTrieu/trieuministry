@@ -29,6 +29,9 @@ export default function AppealsPage() {
 
     // const isAdmin = userData?.role === 'admin'; // Removed incorrect line
 
+    const [financialReports, setFinancialReports] = useState<any[]>([]);
+    const [selectedReport, setSelectedReport] = useState<any>(null);
+
     useEffect(() => {
         // Fetch only Published and Official appeals
         const q = query(
@@ -52,6 +55,26 @@ export default function AppealsPage() {
 
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            const q = query(
+                collection(db, "financial_reports"),
+                where("status", "==", "published")
+            );
+
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const reports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort by Year DESC, then Month DESC
+                reports.sort((a: any, b: any) => {
+                    if (b.year !== a.year) return b.year - a.year;
+                    return b.month - a.month;
+                });
+                setFinancialReports(reports);
+            });
+            return () => unsubscribe();
+        }
+    }, [user]);
 
     const formatDate = (timestamp: any) => {
         if (!timestamp) return '';
@@ -101,6 +124,139 @@ export default function AppealsPage() {
                     )}
                 </div>
 
+                {/* Financial Reports Section (Logged in only) */}
+                {user && financialReports.length > 0 && (
+                    <div className="mb-16">
+                        <div className="flex items-center gap-4 mb-8">
+                             <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <span className="w-1.5 h-6 bg-green-600 rounded-full"></span>
+                                Financial Reports
+                            </h3>
+                            <div className="h-px bg-gray-200 flex-1"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {financialReports.map(report => (
+                                <button
+                                    key={report.id}
+                                    onClick={() => setSelectedReport(report)}
+                                    className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all text-left flex items-start gap-4 group"
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                                        <i className="fas fa-file-invoice-dollar text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            Financial Report - {new Date(report.year, report.month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                        </h4>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            Income: {report.totalIncome.toLocaleString('vi-VN')} ₫
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-2">
+                                            Published: {report.publishedAt?.toDate().toLocaleDateString('vi-VN')}
+                                        </p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Report Detail Modal */}
+                {selectedReport && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedReport(null)}>
+                        <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in-up" onClick={e => e.stopPropagation()}>
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                     <i className="fas fa-file-invoice-dollar text-green-500"></i>
+                                     Financial Report - {new Date(selectedReport.year, selectedReport.month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                </h3>
+                                <button onClick={() => setSelectedReport(null)} className="text-gray-400 hover:text-gray-900 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                                    <i className="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="p-8">
+                                {/* Summary Cards */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    <div className="bg-green-50/50 p-4 rounded-xl border border-green-100">
+                                        <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Total Income</p>
+                                        <p className="text-2xl font-extrabold text-gray-900">{selectedReport.totalIncome.toLocaleString('vi-VN')} ₫</p>
+                                    </div>
+                                    <div className="bg-red-50/50 p-4 rounded-xl border border-red-100">
+                                        <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Total Expense</p>
+                                        <p className="text-2xl font-extrabold text-gray-900">{selectedReport.totalExpense.toLocaleString('vi-VN')} ₫</p>
+                                    </div>
+                                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                        <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Net Balance</p>
+                                        <p className={`text-2xl font-extrabold ${selectedReport.netBalance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                                            {selectedReport.netBalance.toLocaleString('vi-VN')} ₫
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {/* Income Table */}
+                                    <div>
+                                        <h3 className="font-bold text-green-700 mb-4 border-b border-green-100 pb-2">Income Analysis</h3>
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-green-50 text-green-800">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left rounded-l-md">Category</th>
+                                                    <th className="px-3 py-2 text-right">Amount</th>
+                                                    <th className="px-3 py-2 text-right rounded-r-md">%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-50">
+                                                {selectedReport.incomeBreakdown.map((item: any) => (
+                                                    <tr key={item.name}>
+                                                        <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
+                                                        <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                        <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                    </tr>
+                                                ))}
+                                                <tr className="font-bold bg-green-50/30">
+                                                    <td className="px-3 py-2 text-green-800">Total Income</td>
+                                                    <td className="px-3 py-2 text-right text-green-700">{selectedReport.totalIncome.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right">100%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* Expense Table */}
+                                    <div>
+                                        <h3 className="font-bold text-red-700 mb-4 border-b border-red-100 pb-2">Expense Analysis</h3>
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-red-50 text-red-800">
+                                                <tr>
+                                                    <th className="px-3 py-2 text-left rounded-l-md">Category</th>
+                                                    <th className="px-3 py-2 text-right">Amount</th>
+                                                    <th className="px-3 py-2 text-right rounded-r-md">%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-50">
+                                                {selectedReport.expenseBreakdown.map((item: any) => (
+                                                    <tr key={item.name}>
+                                                        <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
+                                                        <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                        <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                    </tr>
+                                                ))}
+                                                <tr className="font-bold bg-red-50/30">
+                                                    <td className="px-3 py-2 text-red-800">Total Expense</td>
+                                                    <td className="px-3 py-2 text-right text-red-700">{selectedReport.totalExpense.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right">100%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
                 {/* Content Area */}
                 <div className="space-y-12">
                     {latestAppeal ? (

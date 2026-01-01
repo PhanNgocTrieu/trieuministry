@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp, setDoc } from 'firebase/firestore'; // Added setDoc
 import { format } from 'date-fns';
 
 interface Transaction {
@@ -23,6 +23,7 @@ export default function ExpensesDashboard() {
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const [filterType, setFilterType] = useState<string>('all');
     const [showReport, setShowReport] = useState(false);
+    const [publishing, setPublishing] = useState(false);
 
     useEffect(() => {
         if (!selectedMonth) return;
@@ -104,6 +105,36 @@ export default function ExpensesDashboard() {
 
     const filteredTransactions = transactions.filter(t => filterType === 'all' || t.type === filterType);
 
+    const handlePublish = async () => {
+        if (!confirm('Are you sure you want to publish this month\'s report? This will be visible to logged-in users.')) return;
+        
+        setPublishing(true);
+        try {
+            const [year, month] = selectedMonth.split('-');
+            const reportId = `report_${year}_${month}`;
+            
+            const reportData = {
+                year: parseInt(year),
+                month: parseInt(month),
+                totalIncome,
+                totalExpense,
+                netBalance,
+                incomeBreakdown,
+                expenseBreakdown,
+                publishedAt: Timestamp.now(),
+                status: 'published'
+            };
+
+            await setDoc(doc(db, "financial_reports", reportId), reportData);
+            alert('Financial report published successfully!');
+        } catch (error) {
+            console.error("Error publishing report:", error);
+            alert('Failed to publish report.');
+        } finally {
+            setPublishing(false);
+        }
+    };
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto">
             {/* Header */}
@@ -113,6 +144,14 @@ export default function ExpensesDashboard() {
                     <p className="text-gray-500">Track income, expenses, and monthly balance.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={handlePublish}
+                        disabled={publishing}
+                        className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                    >
+                        {publishing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
+                        <span>Publish Report</span>
+                    </button>
                     <button
                         onClick={() => setShowReport(!showReport)}
                         className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl border font-bold text-sm transition-all ${
