@@ -1,0 +1,300 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp } from 'firebase/firestore';
+import { format } from 'date-fns';
+
+interface Transaction {
+    id: string;
+    type: 'income' | 'expense';
+    amount: number;
+    categoryId: string;
+    categoryName: string;
+    categoryColor: string;
+    date: Timestamp;
+    description: string;
+}
+
+export default function ExpensesDashboard() {
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+    const [filterType, setFilterType] = useState<string>('all');
+
+    useEffect(() => {
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59);
+
+        const startTimestamp = Timestamp.fromDate(startDate);
+        const endTimestamp = Timestamp.fromDate(endDate);
+
+        const q = query(
+            collection(db, "expenses"),
+            where("date", ">=", startTimestamp),
+            where("date", "<=", endTimestamp),
+            orderBy("date", "desc")
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const list: Transaction[] = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                list.push({ 
+                    id: doc.id, 
+                    ...data,
+                    type: data.type || 'expense' 
+                } as Transaction);
+            });
+            setTransactions(list);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [selectedMonth]);
+
+    const handleDelete = async (id: string, description: string) => {
+        if (confirm(`Are you sure you want to delete "${description}"?`)) {
+            await deleteDoc(doc(db, "expenses", id));
+        }
+    };
+
+    // Stats Calculations
+    const totalIncome = transactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalExpense = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const netBalance = totalIncome - totalExpense;
+
+    // Helper to get breakdown
+    const getBreakdown = (type: 'income' | 'expense') => {
+        const subset = transactions.filter(t => t.type === type);
+        const total = type === 'income' ? totalIncome : totalExpense;
+        
+        const stats = subset.reduce((acc, item) => {
+            if (!acc[item.categoryName]) {
+                acc[item.categoryName] = { amount: 0, color: item.categoryColor || '#ccc', count: 0 };
+            }
+            acc[item.categoryName].amount += item.amount;
+            acc[item.categoryName].count += 1;
+            return acc;
+        }, {} as Record<string, { amount: number, color: string, count: number }>);
+
+        return Object.entries(stats)
+            .sort(([, a], [, b]) => b.amount - a.amount)
+            .map(([name, stat]) => ({ name, ...stat, percentage: total > 0 ? (stat.amount / total * 100) : 0 }));
+    };
+
+    const incomeBreakdown = getBreakdown('income');
+    const expenseBreakdown = getBreakdown('expense');
+
+    const filteredTransactions = transactions.filter(t => filterType === 'all' || t.type === filterType);
+
+    return (
+        <div className="space-y-8 max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Financial Overview</h1>
+                    <p className="text-gray-500">Track income, expenses, and monthly balance.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Link 
+                        href="/admin/expenses/categories" 
+                        className="bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm font-bold text-sm transition-all"
+                    >
+                        <i className="fas fa-tags mr-2 text-gray-400"></i> Categories
+                    </Link>
+                    <Link 
+                        href="/admin/expenses/add" 
+                        className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-200 font-bold flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
+                    >
+                        <i className="fas fa-plus"></i> New Transaction
+                    </Link>
+                </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 max-w-fit">
+                <input 
+                    type="month" 
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700"
+                />
+            </div>
+
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white p-6 rounded-2xl border border-green-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-arrow-up text-6xl text-green-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Total Income</p>
+                    <p className="text-3xl font-extrabold text-gray-900">
+                        {totalIncome.toLocaleString('vi-VN')} ₫
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-arrow-down text-6xl text-red-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Total Expense</p>
+                    <p className="text-3xl font-extrabold text-gray-900">
+                        {totalExpense.toLocaleString('vi-VN')} ₫
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-wallet text-6xl text-blue-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Net Balance</p>
+                    <p className={`text-3xl font-extrabold ${netBalance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                        {netBalance.toLocaleString('vi-VN')} ₫
+                    </p>
+                </div>
+            </div>
+
+            {/* Breakdowns */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Income Chart */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <div className="w-2 h-6 bg-green-500 rounded-full"></div>
+                        Income Sources
+                    </h3>
+                    <div className="space-y-4 flex-1">
+                        {incomeBreakdown.length > 0 ? incomeBreakdown.map((stat) => (
+                            <div key={stat.name}>
+                                <div className="flex justify-between text-sm mb-1.5 font-medium">
+                                    <span className="text-gray-700">{stat.name}</span>
+                                    <span className="text-gray-900">{stat.amount.toLocaleString('vi-VN')} ₫</span>
+                                </div>
+                                <div className="w-full bg-gray-50 rounded-full h-2.5 overflow-hidden">
+                                    <div 
+                                        className="h-full rounded-full" 
+                                        style={{ width: `${stat.percentage}%`, backgroundColor: stat.color }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                                <i className="fas fa-chart-pie text-3xl mb-2 opacity-50"></i>
+                                <span className="text-sm">No income data</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Expense Chart */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <div className="w-2 h-6 bg-red-500 rounded-full"></div>
+                        Spending Breakdown
+                    </h3>
+                    <div className="space-y-4 flex-1">
+                        {expenseBreakdown.length > 0 ? expenseBreakdown.map((stat) => (
+                            <div key={stat.name}>
+                                <div className="flex justify-between text-sm mb-1.5 font-medium">
+                                    <span className="text-gray-700">{stat.name}</span>
+                                    <span className="text-gray-900">{stat.amount.toLocaleString('vi-VN')} ₫</span>
+                                </div>
+                                <div className="w-full bg-gray-50 rounded-full h-2.5 overflow-hidden">
+                                    <div 
+                                        className="h-full rounded-full" 
+                                        style={{ width: `${stat.percentage}%`, backgroundColor: stat.color }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                                <i className="fas fa-chart-pie text-3xl mb-2 opacity-50"></i>
+                                <span className="text-sm">No expense data</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Transactions List */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-900">Transaction History</h3>
+                    <div className="flex bg-gray-100 rounded-lg p-1">
+                        {['all', 'income', 'expense'].map(t => (
+                            <button
+                                key={t}
+                                onClick={() => setFilterType(t)}
+                                className={`px-3 py-1 text-xs font-bold rounded-md capitalize transition-all ${
+                                    filterType === t ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Details</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Amount</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {filteredTransactions.length > 0 ? filteredTransactions.map((t) => (
+                                <tr key={t.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
+                                        {format(t.date.toDate(), 'dd MMM, yyyy')}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center">
+                                            <div 
+                                                className="w-2 h-8 rounded-full mr-3" 
+                                                style={{ backgroundColor: t.categoryColor }}
+                                            ></div>
+                                            <div>
+                                                <div className="text-sm font-bold text-gray-900">{t.categoryName}</div>
+                                                <div className="text-xs text-gray-500">{t.description || "No description"}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-bold ${
+                                        t.type === 'income' ? 'text-green-600' : 'text-gray-900'
+                                    }`}>
+                                        {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString('vi-VN')} ₫
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                        <Link href={`/admin/expenses/add?id=${t.id}`} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors">
+                                            <i className="fas fa-pen"></i>
+                                        </Link>
+                                        <button onClick={() => handleDelete(t.id, t.description)} className="text-gray-400 hover:text-red-600 transition-colors">
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                                        No transactions found.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+}
