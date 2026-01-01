@@ -164,15 +164,27 @@ export default function AdminDashboardPage() {
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      {(isAdmin || isVolunteer) && (
-                        <a href="/admin/appeals" className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-100 transition-colors group">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <i className="fas fa-envelope-open-text"></i>
+                        <>
+                            <a href="/admin/appeals" className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-100 transition-colors group">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <i className="fas fa-envelope-open-text"></i>
+                                    </div>
+                                    <span className="font-bold text-blue-800">Appeal Letters</span>
                                 </div>
-                                <span className="font-bold text-blue-800">Appeal Letters</span>
-                            </div>
-                            <p className="text-sm text-blue-600">Manage support appeals</p>
-                        </a>
+                                <p className="text-sm text-blue-600">Manage support appeals</p>
+                            </a>
+                            
+                            <a href="/admin/sponsors" className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-100 transition-colors group">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <i className="fas fa-hand-holding-usd"></i>
+                                    </div>
+                                    <span className="font-bold text-purple-800">Sponsors</span>
+                                </div>
+                                <p className="text-sm text-purple-600">Manage commitments</p>
+                            </a>
+                        </>
                      )}
                      {/* Add more quick actions later */}
                 </div>
