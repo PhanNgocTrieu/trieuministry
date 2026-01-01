@@ -25,9 +25,16 @@ export default function ExpensesDashboard() {
     const [showReport, setShowReport] = useState(false);
 
     useEffect(() => {
+        if (!selectedMonth) return;
+        
         const [year, month] = selectedMonth.split('-').map(Number);
+        if (!year || !month) return;
+
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0, 23, 59, 59);
+
+        // Double check validity
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return;
 
         const startTimestamp = Timestamp.fromDate(startDate);
         const endTimestamp = Timestamp.fromDate(endDate);
@@ -133,16 +140,45 @@ export default function ExpensesDashboard() {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 max-w-fit">
-                <input 
-                    type="month" 
-                    value={selectedMonth}
-                    onChange={(e) => {
-                        setSelectedMonth(e.target.value);
-                        setShowReport(false);
-                    }}
-                    className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700"
-                />
+            <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 max-w-fit">
+                <div className="flex items-center gap-2">
+                    <label className="text-sm font-bold text-gray-500">Month:</label>
+                    <select
+                        value={parseInt(selectedMonth.split('-')[1])}
+                        onChange={(e) => {
+                            const newMonth = e.target.value.padStart(2, '0');
+                            const year = selectedMonth.split('-')[0];
+                            setSelectedMonth(`${year}-${newMonth}`);
+                            setShowReport(false);
+                        }}
+                        className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
+                    >
+                        {[
+                            "January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"
+                        ].map((month, i) => (
+                            <option key={i + 1} value={i + 1}>{month}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <label className="text-sm font-bold text-gray-500">Year:</label>
+                    <select
+                        value={parseInt(selectedMonth.split('-')[0])}
+                        onChange={(e) => {
+                            const newYear = e.target.value;
+                            const month = selectedMonth.split('-')[1];
+                            setSelectedMonth(`${newYear}-${month}`);
+                            setShowReport(false);
+                        }}
+                        className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
+                    >
+                        {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => (
+                            <option key={y} value={y}>{y}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* Summary Cards */}
