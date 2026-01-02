@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import GoalCard from '@/components/admin/GoalCard';
 import { useAuth } from '@/context/AuthContext';
 
@@ -16,11 +16,20 @@ interface Goal {
     priority: 'high' | 'medium' | 'low';
     status: 'planned' | 'in_progress' | 'completed' | 'on_hold';
     progress: number;
+    type: 'milestone' | 'target' | 'savings' | 'simple';
+    // Milestone
     milestones: {
         id: string;
         title: string;
         isCompleted: boolean;
     }[];
+    // Target / Savings
+    targetValue?: number;
+    currentValue?: number;
+    unit?: string;
+    // Simple
+    isCompleted?: boolean;
+    createdAt?: any;
 }
 
 interface GoalsManagerProps {
@@ -31,23 +40,30 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
     const { user } = useAuth();
     const [goals, setGoals] = useState<Goal[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedYear, setSelectedYear] = useState(0); // Default to All Years
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterPriority, setFilterPriority] = useState('all');
 
     useEffect(() => {
         if (!user) return;
 
+        // Removed orderBy("createdAt") to avoid composite index requirements
+        // We will sort client-side
         const q = query(
             collection(db, "goals"), 
-            where("userId", "==", user.uid),
-            orderBy("createdAt", "desc")
+            where("userId", "==", user.uid)
         );
         
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const list: Goal[] = [];
             snapshot.forEach((doc) => {
                 list.push({ id: doc.id, ...doc.data() } as Goal);
+            });
+            // Client-side sort desc by createdAt
+            list.sort((a, b) => {
+                const dateA = a.createdAt?.seconds || 0;
+                const dateB = b.createdAt?.seconds || 0;
+                return dateB - dateA;
             });
             setGoals(list);
             setLoading(false);
@@ -61,9 +77,18 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
         }
     };
 
+    const handleUpdateGoal = async (id: string, data: Partial<Goal>) => {
+        try {
+            await updateDoc(doc(db, "goals", id), data);
+        } catch (error) {
+            console.error("Error updating goal:", error);
+            alert("Failed to update goal progress");
+        }
+    };
+
     // Filters
     const filteredGoals = goals.filter(goal => {
-        if (goal.year !== selectedYear) return false;
+        if (selectedYear !== 0 && goal.year !== selectedYear) return false;
         if (filterStatus !== 'all' && goal.status !== filterStatus) return false;
         if (filterPriority !== 'all' && goal.priority !== filterPriority) return false;
         return true;
@@ -122,6 +147,7 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
                         className="border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
                     >
+                        <option value={0}>All Years</option>
                         {[2024, 2025, 2026, 2027].map(year => (
                             <option key={year} value={year}>{year}</option>
                         ))}
@@ -164,7 +190,13 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
             {filteredGoals.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredGoals.map(goal => (
-                        <GoalCard key={goal.id} goal={goal} onDelete={handleDelete} basePath={basePath} />
+                        <GoalCard 
+                            key={goal.id} 
+                            goal={goal} 
+                            onDelete={handleDelete} 
+                            onUpdate={handleUpdateGoal}
+                            basePath={basePath} 
+                        />
                     ))}
                 </div>
             ) : (

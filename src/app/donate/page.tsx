@@ -160,7 +160,7 @@ export default function DonatePage() {
                   <div>
                       <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">{t('donate.bank.content_label')}</label>
                       <div className="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm">
-                         <i className="fas fa-info-circle mr-2"></i> [Your Name] donate for Ngoc Trieu
+                         <i className="fas fa-info-circle mr-2"></i> [Your Name] donate for TrieuMinistry
                       </div>
                   </div>
                </div>
