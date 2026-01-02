@@ -204,7 +204,14 @@
         "page_title": "Appeal Letters",
         "page_subtitle": "Updates and calls for support from our ministry.",
         "previous": "Previous Letters",
-        "latest_title": "Latest Appeal Letter"
+        "latest_title": "Latest Appeal Letter",
+        "closing_thoughts": "Closing Thoughts",
+        "closing_content": "Thank you, dear partners, for taking the time to read this ministry update and for your faithful prayers.",
+        "confidentiality_note": "Confidentiality Note",
+        "confidentiality_content": "As this letter contains personal information and sensitive ministry details, I kindly ask that you keep its contents confidential.",
+        "blessing": "May the Lord Jesus bless you and pour His abundant grace upon you.",
+        "gratitude": "With sincere gratitude,",
+        "signature": "Trieu John"
     },
     "ministry": {
         "hero": {

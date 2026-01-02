@@ -204,7 +204,14 @@
         "page_title": "Thư Kêu Gọi",
         "page_subtitle": "Cập nhật và kêu gọi sự ủng hộ cho mục vụ.",
         "previous": "Các Thư Trước Đây",
-        "latest_title": "Thư Kêu Gọi Mới Nhất"
+        "latest_title": "Thư Kêu Gọi Mới Nhất",
+        "closing_thoughts": "Lời Kết",
+        "closing_content": "Cảm ơn quý ân nhân đã dành thời gian đọc thư kêu gọi mục vụ và cầu nguyện cho mục vụ của tôi.",
+        "confidentiality_note": "Lưu ý Bảo mật",
+        "confidentiality_content": "Bức thư này chứa nhiều thông tin cá nhân, xin quý ân nhân vui lòng giữ bí mật giúp tôi",
+        "blessing": "Nguyện Chúa Jesus ban phước và đầy ơn trên quý ân nhân",
+        "gratitude": "Xin chân thành cảm ơn",
+        "signature": "Phan Ngọc Triều"
     },
     "ministry": {
         "hero": {

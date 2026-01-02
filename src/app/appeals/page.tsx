@@ -9,10 +9,23 @@ import Navbar from '@/components/Navbar';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 
+interface MinistrySection {
+    title: string;
+    titleEn?: string;
+    description: string;
+    descriptionEn?: string;
+    images: string[];
+}
+
 interface Appeal {
     id: string;
     title: string;
-    content: string;
+    titleEn?: string;
+    content?: string;
+    ministrySections?: MinistrySection[];
+    fundraisingImages?: string[];
+    fundraisingDescription?: string;
+    fundraisingDescriptionEn?: string;
     coverImage?: string;
     createdAt: any;
     status: string;
@@ -22,7 +35,7 @@ interface Appeal {
 }
 
 export default function AppealsPage() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { user, isAdmin } = useAuth(); // Correctly get isAdmin from context
     const [appeals, setAppeals] = useState<Appeal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,6 +44,22 @@ export default function AppealsPage() {
 
     const [financialReports, setFinancialReports] = useState<any[]>([]);
     const [selectedReport, setSelectedReport] = useState<any>(null);
+
+    const getContent = (vi: string | undefined, en: string | undefined) => {
+        if (language === 'en' && en && en.trim().length > 0) return en;
+        return vi || '';
+    };
+
+    const getPreviewText = (appeal: Appeal) => {
+        if (appeal.content && appeal.content.trim().length > 0) {
+            return appeal.content;
+        }
+        if (appeal.ministrySections && appeal.ministrySections.length > 0) {
+            // Use localized description of the first section
+            return getContent(appeal.ministrySections[0].description, appeal.ministrySections[0].descriptionEn);
+        }
+        return '';
+    };
 
     useEffect(() => {
         // Fetch only Published and Official appeals
@@ -78,7 +107,7 @@ export default function AppealsPage() {
 
     const formatDate = (timestamp: any) => {
         if (!timestamp) return '';
-        return new Date(timestamp.seconds * 1000).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' });
+        return new Date(timestamp.seconds * 1000).toLocaleDateString(language === 'vi' ? 'vi-VN' : undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
     if (loading) {
@@ -351,13 +380,13 @@ export default function AppealsPage() {
 
                                     <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
                                         <Link href={`/appeals/${latestAppeal.id}`} className="hover:text-blue-600 transition-colors">
-                                            {latestAppeal.title}
+                                            {getContent(latestAppeal.title, latestAppeal.titleEn)}
                                         </Link>
                                     </h2>
 
                                     <div 
-                                        className="prose prose-lg text-gray-600 mb-8 max-w-none line-clamp-3 leading-relaxed"
-                                        dangerouslySetInnerHTML={{ __html: latestAppeal.content }}
+                                        className="prose prose-lg text-gray-600 mb-8 max-w-none line-clamp-3 leading-relaxed [&_*]:!text-lg"
+                                        dangerouslySetInnerHTML={{ __html: getPreviewText(latestAppeal) }}
                                     />
 
                                     <div>
@@ -408,13 +437,13 @@ export default function AppealsPage() {
                                                 
                                                 <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                                                     <Link href={`/appeals/${appeal.id}`}>
-                                                        {appeal.title}
+                                                        {getContent(appeal.title, appeal.titleEn)}
                                                     </Link>
                                                 </h4>
                                                 
                                                 <div 
                                                     className="text-gray-500 text-sm line-clamp-2 leading-relaxed max-w-2xl"
-                                                    dangerouslySetInnerHTML={{ __html: appeal.content.replace(/<[^>]+>/g, '') }}
+                                                    dangerouslySetInnerHTML={{ __html: getPreviewText(appeal).replace(/<[^>]+>/g, '') }}
                                                 />
                                             </div>
                                             
