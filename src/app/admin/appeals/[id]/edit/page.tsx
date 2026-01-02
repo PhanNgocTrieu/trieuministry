@@ -25,6 +25,7 @@ interface AppealFormData {
     status: string;
     coverImage: string;
     pdfUrl: string;
+    pdfUrlEn: string; // New field
     letterContent: string; // New field
     letterContentEn: string; // New field
     ministrySections: MinistrySection[];
@@ -48,6 +49,7 @@ export default function EditAppealPage() {
         status: 'published',
         coverImage: '',
         pdfUrl: '',
+        pdfUrlEn: '',
         letterContent: '', // New field
         letterContentEn: '', // New field
         ministrySections: [],
@@ -70,6 +72,7 @@ export default function EditAppealPage() {
                         status: data.status || "published",
                         coverImage: data.coverImage || "",
                         pdfUrl: data.pdfUrl || "",
+                        pdfUrlEn: data.pdfUrlEn || "",
                         letterContent: data.letterContent || data.content || "", // Fallback to content
                         letterContentEn: data.letterContentEn || "",
                         ministrySections: data.ministrySections || [],
@@ -376,23 +379,36 @@ export default function EditAppealPage() {
                         </div>
                     </div>
 
-                    {/* 5. PDF Attachment */}
+                    {/* 5. PDF Attachments */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <span className="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm">5</span>
-                            PDF Attachment
+                            PDF Attachments (Downloadable Files)
                         </h2>
                         
-                        <div>
-                             <label className="block text-sm font-bold text-gray-700 mb-2">Upload Appeal Letter (PDF)</label>
-                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <FileUploader 
-                                    onFileUploaded={(url) => setFormData({...formData, pdfUrl: url})} 
-                                    folder="appeals_pdfs" 
-                                    label="Click to upload PDF"
-                                    currentFile={formData.pdfUrl}
-                                />
-                             </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                 <label className="block text-sm font-bold text-gray-700 mb-2">Vietnamese PDF</label>
+                                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <FileUploader 
+                                        onFileUploaded={(url) => setFormData({...formData, pdfUrl: url})} 
+                                        folder="appeals_pdfs" 
+                                        label="Click to upload Vietnamese PDF"
+                                        currentFile={formData.pdfUrl}
+                                    />
+                                 </div>
+                            </div>
+                            <div>
+                                 <label className="block text-sm font-bold text-gray-700 mb-2">English PDF</label>
+                                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <FileUploader 
+                                        onFileUploaded={(url) => setFormData({...formData, pdfUrlEn: url})} 
+                                        folder="appeals_pdfs" 
+                                        label="Click to upload English PDF"
+                                        currentFile={formData.pdfUrlEn}
+                                    />
+                                 </div>
+                            </div>
                         </div>
                     </div>
 

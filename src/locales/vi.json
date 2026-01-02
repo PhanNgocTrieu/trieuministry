@@ -211,7 +211,11 @@
         "confidentiality_content": "Bức thư này chứa nhiều thông tin cá nhân, xin quý ân nhân vui lòng giữ bí mật giúp tôi",
         "blessing": "Nguyện Chúa Jesus ban phước và đầy ơn trên quý ân nhân",
         "gratitude": "Xin chân thành cảm ơn",
-        "signature": "Phan Ngọc Triều"
+        "signature": "Phan Ngọc Triều",
+        "download_title": "Tải Thư Gốc",
+        "download_desc": "Tải xuống phiên bản PDF đầy đủ của thư mục vụ này để xem ngoại tuyến hoặc in ấn.",
+        "download_vi": "Bản Tiếng Việt (PDF)",
+        "download_en": "Bản Tiếng Anh (PDF)"
     },
     "ministry": {
         "hero": {

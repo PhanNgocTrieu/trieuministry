@@ -211,7 +211,11 @@
         "confidentiality_content": "As this letter contains personal information and sensitive ministry details, I kindly ask that you keep its contents confidential.",
         "blessing": "May the Lord Jesus bless you and pour His abundant grace upon you.",
         "gratitude": "With sincere gratitude,",
-        "signature": "Trieu John"
+        "signature": "Trieu John",
+        "download_title": "Download Original Letter",
+        "download_desc": "Get the full PDF version of this appeal layout to read offline or print.",
+        "download_vi": "Vietnamese PDF",
+        "download_en": "English PDF"
     },
     "ministry": {
         "hero": {

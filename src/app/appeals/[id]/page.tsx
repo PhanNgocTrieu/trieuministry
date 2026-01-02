@@ -31,6 +31,7 @@ interface Appeal {
     fundraisingDescriptionEn?: string;
     coverImage?: string;
     pdfUrl?: string;
+    pdfUrlEn?: string; // New field
     createdAt: any;
     authorName?: string;
 }
@@ -225,25 +226,43 @@ export default function AppealDetailPage() {
                     </footer>
 
                      {/* PDF Download (Separate Card) */}
-                    {appeal.pdfUrl && (
-                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-5">
-                                <div className="w-16 h-16 bg-white text-red-500 rounded-2xl shadow-sm flex items-center justify-center text-3xl">
+                     {/* PDF Download (Separate Card) */}
+                    {(appeal.pdfUrl || appeal.pdfUrlEn) && (
+                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-8">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
+                                <div className="w-16 h-16 bg-white text-red-500 rounded-2xl shadow-sm flex items-center justify-center text-3xl flex-shrink-0">
                                     <i className="fas fa-file-pdf"></i>
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-bold text-gray-900">Download Original Letter</h4>
-                                    <p className="text-gray-600">Get the full PDF version of this appeal layout.</p>
+                                    <h4 className="text-xl font-bold text-gray-900">{t('appeals.download_title') || 'Download Appeal Letter'}</h4>
+                                    <p className="text-gray-600">{t('appeals.download_desc') || 'Get the full PDF version of this appeal layout to read offline or print.'}</p>
                                 </div>
                             </div>
-                            <a 
-                                href={appeal.pdfUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="px-8 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center gap-3 whitespace-nowrap transform hover:-translate-y-1"
-                            >
-                                <i className="fas fa-download"></i> Download PDF
-                            </a>
+
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                {appeal.pdfUrl && (
+                                    <a 
+                                        href={appeal.pdfUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex-1 px-6 py-4 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
+                                    >
+                                        <i className="fas fa-download group-hover:animate-bounce"></i> 
+                                        {t('appeals.download_vi') || 'Vietnamese PDF'}
+                                    </a>
+                                )}
+                                {appeal.pdfUrlEn && (
+                                    <a 
+                                        href={appeal.pdfUrlEn} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex-1 px-6 py-4 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
+                                    >
+                                        <i className="fas fa-download group-hover:animate-bounce"></i> 
+                                        {t('appeals.download_en') || 'English PDF'}
+                                    </a>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
