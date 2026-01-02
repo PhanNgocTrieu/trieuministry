@@ -43,7 +43,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     );
 };
 
-export default function GoalCard({ goal, onDelete }: { goal: Goal, onDelete: (id: string) => void }) {
+export default function GoalCard({ goal, onDelete, basePath }: { goal: Goal, onDelete: (id: string) => void, basePath: string }) {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
@@ -52,7 +52,7 @@ export default function GoalCard({ goal, onDelete }: { goal: Goal, onDelete: (id
                     <StatusBadge status={goal.status} />
                 </div>
                 <div className="flex gap-2">
-                    <Link href={`/admin/goals/create?id=${goal.id}`} className="text-gray-400 hover:text-blue-600">
+                    <Link href={`${basePath}/create?id=${goal.id}`} className="text-gray-400 hover:text-blue-600">
                         <i className="fas fa-edit"></i>
                     </Link>
                     <button onClick={() => onDelete(goal.id)} className="text-gray-400 hover:text-red-600">

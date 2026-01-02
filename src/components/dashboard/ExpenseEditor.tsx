@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, serverTimestamp, Timestamp, query, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '@/context/AuthContext';
 
 interface ExpenseCategory {
     id: string;
@@ -12,11 +13,18 @@ interface ExpenseCategory {
     type: 'income' | 'expense';
 }
 
-function AddTransactionForm() {
+interface ExpenseEditorProps {
+    basePath: string; // e.g. /dashboard/expenses
+    defaultScope?: 'personal' | 'ministry';
+}
+
+export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: ExpenseEditorProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const editId = searchParams.get('id');
+    const { user, isAdmin, isVolunteer } = useAuth();
 
+    const [scope, setScope] = useState<'personal' | 'ministry'>(defaultScope);
     const [type, setType] = useState<'expense' | 'income'>('expense');
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -28,22 +36,36 @@ function AddTransactionForm() {
 
     useEffect(() => {
         const fetchCategories = async () => {
+             // Ideally we create a composite index for accurate querying
+             // For now we fetch all and filter client side to avoid index missing errors during dev
+             // Or we just query by name
             const q = query(collection(db, "expense_categories"), orderBy("name"));
             const snapshot = await getDocs(q);
             const list: ExpenseCategory[] = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                list.push({ 
-                    id: doc.id, 
-                    ...data,
-                    type: data.type || 'expense'
-                } as ExpenseCategory);
+                
+                // Filter logic
+                const isPersonal = data.scope === 'personal';
+                const isMinistry = data.scope === 'ministry' || !data.scope;
+
+                if (scope === 'personal') {
+                    if (data.userId === user?.uid && isPersonal) {
+                        list.push({ id: doc.id, ...data, type: data.type || 'expense' } as ExpenseCategory);
+                    }
+                } else if (scope === 'ministry') {
+                    if (isMinistry) {
+                        list.push({ id: doc.id, ...data, type: data.type || 'expense' } as ExpenseCategory);
+                    }
+                }
             });
             setAllCategories(list);
             setFetchingCats(false);
         };
-        fetchCategories();
-    }, []);
+        if (user) {
+            fetchCategories();
+        }
+    }, [user, scope]);
 
     useEffect(() => {
         if (editId) {
@@ -52,6 +74,16 @@ function AddTransactionForm() {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    
+                    if (data.userId && user && data.userId !== user.uid && !isAdmin) { // Admin can edit any
+                        alert("You do not have permission to edit this transaction.");
+                        router.push(basePath);
+                        return;
+                    }
+
+                    setScope(data.scope || 'ministry'); // Default legacy to ministry if not set? Or personal? 
+                    // Wait, if I edit legacy, it should probably stay legacy (undefined) or prompt?
+                    // Let's default 'ministry' if missing for Admin.
                     setType(data.type || 'expense');
                     setAmount(data.amount.toString());
                     const d = data.date.toDate();
@@ -62,17 +94,20 @@ function AddTransactionForm() {
             };
             fetchTransaction();
         }
-    }, [editId]);
+    }, [editId, user, router, basePath]);
 
-    const filteredCategories = allCategories.filter(c => c.type === type);
+    const filteredCategories = allCategories; // Show all categories regardless of type
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) return;
         setLoading(true);
 
         const selectedCategory = allCategories.find(c => c.id === categoryId);
         
         const transactionData = {
+            userId: user.uid,
+            scope,
             type,
             amount: parseFloat(amount),
             date: Timestamp.fromDate(new Date(date)),
@@ -94,7 +129,7 @@ function AddTransactionForm() {
                     createdAt: serverTimestamp()
                 });
             }
-            router.back(); // Go back to preserve previous page state (e.g. selected month)
+            router.back(); 
         } catch (error) {
             console.error(error);
             alert("Error saving transaction");
@@ -112,6 +147,30 @@ function AddTransactionForm() {
             </h1>
 
             <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl space-y-8">
+                
+                {/* Scope Selection (Admin/Volunteer only) */}
+                {(isAdmin || isVolunteer) && (
+                    <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
+                        <button
+                            type="button"
+                            onClick={() => setScope('personal')}
+                            className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
+                                scope === 'personal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'
+                            }`}
+                        >
+                            Personal
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setScope('ministry')}
+                            className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
+                                scope === 'ministry' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500'
+                            }`}
+                        >
+                            Ministry
+                        </button>
+                    </div>
+                )}
                 
                 {/* Type Toggle */}
                 <div className="flex p-1.5 bg-gray-100 rounded-xl">
@@ -180,7 +239,7 @@ function AddTransactionForm() {
                                 required
                             >
                                 <option value="" disabled>Select Category</option>
-                                {allCategories.map(cat => (
+                                {filteredCategories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>
@@ -188,10 +247,18 @@ function AddTransactionForm() {
                                 <i className="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
-                         {allCategories.length === 0 && (
-                            <p className="text-xs text-red-500 mt-2 font-medium">
+                        <div className="mt-2 text-right">
+                             <a 
+                                href={`${basePath}/categories`}
+                                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center justify-end gap-1"
+                            >
+                                <i className="fas fa-plus"></i> New Category
+                            </a>
+                        </div>
+                         {filteredCategories.length === 0 && (
+                            <p className="text-xs text-red-500 mt-1 font-medium">
                                 <i className="fas fa-exclamation-triangle mr-1"></i>
-                                No categories found.
+                                No categories found. Please add one.
                             </p>
                         )}
                     </div>
@@ -220,7 +287,7 @@ function AddTransactionForm() {
                     </button>
                     <button 
                         type="submit"
-                        disabled={loading || allCategories.length === 0}
+                        disabled={loading || filteredCategories.length === 0}
                         className={`px-8 py-3 rounded-xl text-white font-bold shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 ${
                             type === 'expense'
                             ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-red-200'
@@ -233,13 +300,5 @@ function AddTransactionForm() {
 
             </form>
         </div>
-    );
-}
-
-export default function AddTransactionPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <AddTransactionForm />
-        </Suspense>
     );
 }

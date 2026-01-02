@@ -18,47 +18,22 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Fetch User Count
-                const usersSnap = await getCountFromServer(collection(db, 'users'));
                 let card1Count = 0;
                 let card2Count = 0;
                 let card3Count = 0;
                 
-                // Card 1: Users (Admin/Vol) vs My Appeals (User)
-                // Assuming Appeals has userId. If not, maybe just show 0 or something else.
-                // Let's stick to Global Users count for Admin, and hide/change for User.
-                // Actually, let's make Card 1 "Community Members" for admins, and "My Appeals" for users.
-                if (isAdmin || isVolunteer) {
-                    const usersSnap = await getCountFromServer(collection(db, "users"));
-                    card1Count = usersSnap.data().count;
-                } else {
-                     try {
-                        const q = query(collection(db, "appeals"), where("userId", "==", user!.uid));
-                        const snap = await getCountFromServer(q);
-                        card1Count = snap.data().count;
-                     } catch (e) { console.error("Appeals count error", e); }
-                }
+                // Card 1: Total Users
+                const usersSnap = await getCountFromServer(collection(db, "users"));
+                card1Count = usersSnap.data().count;
 
-                // Card 2: Prayers vs My Prayers
-                if (isAdmin || isVolunteer) {
-                    const prayersSnap = await getCountFromServer(collection(db, "prayers"));
-                    card2Count = prayersSnap.data().count;
-                } else {
-                    const q = query(collection(db, "prayers"), where("userId", "==", user!.uid));
-                    const snap = await getCountFromServer(q);
-                    card2Count = snap.data().count;
-                }
+                // Card 2: Total Prayers
+                const prayersSnap = await getCountFromServer(collection(db, "prayers"));
+                card2Count = prayersSnap.data().count;
 
-                // Card 3: Pending Blogs (Admin) vs My Blogs (User)
-                if (isAdmin || isVolunteer) {
-                    const q = query(collection(db, "blogs"), where("status", "==", "pending"));
-                    const snap = await getCountFromServer(q);
-                    card3Count = snap.data().count;
-                } else {
-                    const q = query(collection(db, "blogs"), where("authorId", "==", user!.uid));
-                    const snap = await getCountFromServer(q);
-                    card3Count = snap.data().count;
-                }
+                // Card 3: Pending Blogs
+                const q = query(collection(db, "blogs"), where("status", "==", "pending"));
+                const snap = await getCountFromServer(q);
+                card3Count = snap.data().count;
 
                 setStats({
                     card1: card1Count,
@@ -80,20 +55,11 @@ export default function AdminDashboardPage() {
     }, [user, isAdmin, isVolunteer]);
 
     const getCardTitle = (index: number) => {
-        if (isAdmin || isVolunteer) {
-            switch(index) {
-                case 1: return "Total Users";
-                case 2: return "Total Prayers";
-                case 3: return "Pending Blogs";
-                default: return "";
-            }
-        } else {
-            switch(index) {
-                case 1: return "My Appeals";
-                case 2: return "My Prayers";
-                case 3: return "My Blogs";
-                default: return "";
-            }
+        switch(index) {
+            case 1: return "Total Users";
+            case 2: return "Total Prayers";
+            case 3: return "Pending Blogs";
+            default: return "";
         }
     };
 

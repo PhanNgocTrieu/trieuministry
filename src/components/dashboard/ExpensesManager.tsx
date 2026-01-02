@@ -7,9 +7,11 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp, setDoc } from 'firebase/firestore'; 
 import ConfirmModal from '@/components/admin/ConfirmModal';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/AuthContext';
 
 interface Transaction {
     id: string;
+    userId: string;
     type: 'income' | 'expense';
     amount: number;
     categoryId: string;
@@ -19,7 +21,14 @@ interface Transaction {
     description: string;
 }
 
-export default function ExpensesDashboard() {
+interface ExpensesManagerProps {
+    basePath: string;
+    hideCategories?: boolean;
+    scope?: 'personal' | 'ministry';
+}
+
+export default function ExpensesManager({ basePath, hideCategories = false, scope = 'personal' }: ExpensesManagerProps) {
+    const { user, isAdmin } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -52,11 +61,11 @@ export default function ExpensesDashboard() {
     const handleMonthChange = (newMonth: string) => {
         setSelectedMonth(newMonth);
         setShowReport(false);
-        router.replace(`/admin/expenses?date=${newMonth}`, { scroll: false });
+        router.replace(`${basePath}?date=${newMonth}`, { scroll: false });
     };
 
     useEffect(() => {
-        if (!selectedMonth) return;
+        if (!selectedMonth || !user) return;
         
         const [year, month] = selectedMonth.split('-').map(Number);
         if (!year || !month) return;
@@ -64,12 +73,13 @@ export default function ExpensesDashboard() {
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0, 23, 59, 59);
 
-        // Double check validity
         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return;
 
         const startTimestamp = Timestamp.fromDate(startDate);
         const endTimestamp = Timestamp.fromDate(endDate);
 
+        // Fetch ALL expenses for the month period, then filter clientside to handle mixed legacy data
+        // Ideally we index 'date' and maybe 'scope' later
         const q = query(
             collection(db, "expenses"),
             where("date", ">=", startTimestamp),
@@ -81,6 +91,22 @@ export default function ExpensesDashboard() {
             const list: Transaction[] = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                
+                // Filter Logic
+                const isPersonal = data.scope === 'personal';
+                const isMinistry = data.scope === 'ministry' || !data.scope; // Treat legacy as ministry
+
+                // If managing Personal, must match User ID AND be Personal scope
+                if (scope === 'personal') {
+                    if (data.userId !== user.uid) return;
+                    if (!isPersonal) return; 
+                }
+
+                // If managing Ministry, show Ministry scope.
+                if (scope === 'ministry') {
+                    if (!isMinistry) return;
+                }
+
                 list.push({ 
                     id: doc.id, 
                     ...data,
@@ -92,7 +118,7 @@ export default function ExpensesDashboard() {
         });
 
         return () => unsubscribe();
-    }, [selectedMonth]);
+    }, [selectedMonth, user, scope]);
 
     const handleDelete = async (id: string, description: string) => {
         setDeleteModal({ isOpen: true, id, name: description });
@@ -156,15 +182,16 @@ export default function ExpensesDashboard() {
         setPublishing(true);
         try {
             const [year, month] = selectedMonth.split('-');
-            const reportId = `report_${year}_${month}`;
+            const reportId = `report_${year}_${month}_${user?.uid}`; // Unique per user
             
             const reportData = {
+                userId: user?.uid, // Bind to user
                 year: parseInt(year),
                 month: parseInt(month),
                 totalIncome,
                 totalExpense,
                 netBalance,
-                incomeBreakdown, // Keep original for backward compatibility if needed, or remove? Keeping it is safer.
+                incomeBreakdown,
                 realIncomeBreakdown,
                 circulatingIncomeBreakdown,
                 realIncomeTotal,
@@ -203,14 +230,16 @@ export default function ExpensesDashboard() {
                     <p className="text-gray-500">Track income, expenses, and monthly balance.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={handlePublishClick}
-                        disabled={publishing}
-                        className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
-                    >
-                        {publishing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
-                        <span>Publish Report</span>
-                    </button>
+                    {isAdmin && (
+                        <button
+                            onClick={handlePublishClick}
+                            disabled={publishing}
+                            className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                        >
+                            {publishing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
+                            <span>Publish Report</span>
+                        </button>
+                    )}
                     <button
                         onClick={() => setShowReport(!showReport)}
                         className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl border font-bold text-sm transition-all ${
@@ -222,14 +251,15 @@ export default function ExpensesDashboard() {
                         <i className={`fas ${showReport ? 'fa-times' : 'fa-file-export'}`}></i>
                         <span>{showReport ? 'Close' : 'Export Stats'}</span>
                     </button>
+
                     <Link 
-                        href="/admin/expenses/categories" 
+                        href={`${basePath}/categories`}
                         className="bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm font-bold text-sm transition-all"
                     >
                         <i className="fas fa-tags mr-2 text-gray-400"></i> Categories
                     </Link>
                     <Link 
-                        href="/admin/expenses/add" 
+                        href={`${basePath}/add`}
                         className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-200 font-bold flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
                     >
                         <i className="fas fa-plus"></i> New Transaction
@@ -536,7 +566,7 @@ export default function ExpensesDashboard() {
                                         {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString('vi-VN')} ₫
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                        <Link href={`/admin/expenses/add?id=${t.id}`} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors">
+                                        <Link href={`${basePath}/add?id=${t.id}`} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors">
                                             <i className="fas fa-pen"></i>
                                         </Link>
                                         <button onClick={() => handleDelete(t.id, t.description)} className="text-gray-400 hover:text-red-600 transition-colors">

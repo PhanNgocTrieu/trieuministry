@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import RoleGuard from "@/components/RoleGuard";
 
-export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+export default function VolunteerDashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const { logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -16,7 +16,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     const handleLinkClick = () => setIsSidebarOpen(false);
 
     return (
-        <RoleGuard requireRole="admin">
+        <RoleGuard requireRole="volunteer">
             <div className="min-h-screen bg-gray-100 flex">
                 {/* Mobile Overlay */}
                 {isSidebarOpen && (
@@ -35,8 +35,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 `}>
                     <div className="p-6 border-b border-gray-800 flex items-center justify-between gap-2">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-xl text-blue-500"></i>
-                             <span className="text-xl font-bold">Admin Panel</span>
+                             <i className="fas fa-hands-helping text-xl text-blue-500"></i>
+                             <span className="text-xl font-bold">Volunteer</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(false)}
@@ -47,48 +47,29 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                     </div>
                     
                     <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                        <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Personal</div>
                         
-                        <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">My Personal</div>
-
-                        <Link href="/admin/goals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/goals')}`}>
+                        <Link href="/volunteer/goals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/goals')}`}>
                             <i className="fas fa-bullseye w-5 text-center"></i>
                             Goals
                         </Link>
 
-                        <Link href="/admin/my-expenses" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/my-expenses')}`}>
+                        <Link href="/volunteer/expenses" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/expenses')}`}>
                             <i className="fas fa-wallet w-5 text-center"></i>
-                            My Expenses
+                            Expenses
                         </Link>
 
-                        <Link href="/admin/my-prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/my-prayers')}`}>
+                        <Link href="/volunteer/prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/prayers')}`}>
                             <i className="fas fa-praying-hands w-5 text-center"></i>
                             My Prayers
                         </Link>
 
-                        <div className="px-4 py-2 mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Ministry Management</div>
+                        <div className="px-4 py-2 mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Management</div>
 
-                        <Link href="/admin/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
-                            <i className="fas fa-users w-5 text-center"></i>
-                            Users
-                        </Link>
-
-                        {/* Financials moved to My Expenses */}
-
-                        <Link href="/admin/prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/prayers')}`}>
-                            <i className="fas fa-hands-holding-heart w-5 text-center"></i>
-                            Community Prayers
-                        </Link>
-
-                        <Link href="/admin/blogs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/blogs')}`}>
+                        <Link href="/volunteer/blogs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/blogs')}`}>
                             <i className="fas fa-blog w-5 text-center"></i>
-                            Blogs
+                            Approve Blogs
                         </Link>
-
-                        <Link href="/admin/sponsors" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/sponsors')}`}>
-                            <i className="fas fa-hand-holding-usd w-5 text-center"></i>
-                            Sponsors
-                        </Link>
-
                     </nav>
 
                     <div className="p-4 border-t border-gray-800">
@@ -106,8 +87,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     <header className="lg:hidden bg-gray-900 text-white p-4 flex justify-between items-center shadow-md z-30 sticky top-0">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-blue-500"></i>
-                             <span className="font-bold">Admin Panel</span>
+                             <i className="fas fa-hands-helping text-blue-500"></i>
+                             <span className="font-bold">Volunteer Panel</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(true)}
