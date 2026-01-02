@@ -192,6 +192,21 @@ export default function AppealDetailPage() {
                                 />
                             )}
 
+                            {/* Fundraising Images Gallery */}
+                            {appeal.fundraisingImages && appeal.fundraisingImages.length > 0 && (
+                                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {appeal.fundraisingImages.map((img, idx) => (
+                                        <div key={idx} className="rounded-xl overflow-hidden shadow-sm border border-green-100 bg-white">
+                                            <img 
+                                                src={img} 
+                                                alt={`Fundraising Report ${idx + 1}`} 
+                                                className="w-full h-auto block"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                         </section>
                     )}
 

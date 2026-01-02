@@ -193,42 +193,11 @@ export default function CreateAppealPage() {
                         </div>
                     </div>
 
-                    {/* 2. Ministry Letter Content (NEW) */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-sm">2</span>
-                            Ministry Letter (Thư Mục Vụ)
-                        </h2>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Letter Content (Vietnamese)</label>
-                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                    <RichTextEditor 
-                                        value={formData.letterContent || ''} 
-                                        onChange={(html) => setFormData({...formData, letterContent: html})} 
-                                        placeholder="Nội dung thư mục vụ (Tiếng Việt)..."
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Letter Content (English)</label>
-                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                    <RichTextEditor 
-                                        value={formData.letterContentEn || ''} 
-                                        onChange={(html) => setFormData({...formData, letterContentEn: html})} 
-                                        placeholder="Ministry Letter Content (English)..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 3. Ministry Sections (Simplified - No Images) */}
+                    {/* 2. Ministry Sections (Simplified - No Images) */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-sm">3</span>
+                                <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-sm">2</span>
                                 Ministry Highlights / Details
                             </h2>
                             <button 
@@ -306,10 +275,10 @@ export default function CreateAppealPage() {
                         </div>
                     </div>
 
-                    {/* 4. Fundraising Section (No Images) */}
+                    {/* 3. Fundraising Section (Images) */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-sm">4</span>
+                            <span className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-sm">3</span>
                             Fundraising & Financial Reports (Gây quỹ)
                         </h2>
                         
@@ -336,13 +305,54 @@ export default function CreateAppealPage() {
                                     </div>
                                 </div>
                             </div>
+                            </div>
+                            
+                            {/* NEW: Financial Reports Gallery */}
+                            <div className="border-t border-gray-100 pt-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-4">Financial Reports Gallery (Báo cáo tài chính)</label>
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                    {formData.fundraisingImages.map((img, idx) => (
+                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                                            <img src={img} alt={`Report ${idx + 1}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    fundraisingImages: prev.fundraisingImages.filter((_, i) => i !== idx)
+                                                }))}
+                                                className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-sm"
+                                            >
+                                                <i className="fas fa-trash-alt text-xs"></i>
+                                            </button>
+                                        </div>
+                                    ))}
+                                    
+                                    {/* Upload Trigger */}
+                                    <div className="aspect-square">
+                                        <ImageUploader 
+                                            key={formData.fundraisingImages.length}
+                                            folder="appeals_reports"
+                                            onImageUploaded={(url) => {
+                                                if (url) {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        fundraisingImages: [...prev.fundraisingImages, url]
+                                                    }));
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-400">Upload multiple images for monthly expense reports.</p>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* 5. PDF Attachments */}
+
+                    {/* 4. PDF Attachments */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm">5</span>
+                            <span className="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm">4</span>
                             PDF Attachments (Downloadable Files)
                         </h2>
                         
