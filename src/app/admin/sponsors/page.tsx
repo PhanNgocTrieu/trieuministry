@@ -207,6 +207,39 @@ export default function SponsorsPage() {
             return b.createdAt?.seconds - a.createdAt?.seconds;
         });
 
+    // ... existing filters logic
+    
+    // Stats Calculations
+    const getIncomeForMonth = (monthKey: string) => {
+        return sponsors.reduce((total, sponsor) => {
+            if (sponsor.completedMilestones?.includes(monthKey)) {
+                return total + sponsor.amount;
+            }
+            return total;
+        }, 0);
+    };
+
+    const currentDate = new Date();
+    const currentMonthKey = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    const lastDate = new Date();
+    lastDate.setMonth(lastDate.getMonth() - 1);
+    const lastMonthKey = `${lastDate.getFullYear()}-${(lastDate.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    const thisMonthIncome = getIncomeForMonth(currentMonthKey);
+    const lastMonthIncome = getIncomeForMonth(lastMonthKey);
+
+    const currentYear = currentDate.getFullYear().toString();
+    const yearlyIncome = sponsors.reduce((total, sponsor) => {
+        // Count all milestones starting with current year
+        const yearMilestones = sponsor.completedMilestones?.filter(m => m.startsWith(currentYear)) || [];
+        return total + (yearMilestones.length * sponsor.amount);
+    }, 0);
+
+    const expectedMonthly = sponsors
+        .filter(s => s.commitmentType === 'monthly' && !s.isCompleted)
+        .reduce((sum, s) => sum + s.amount, 0);
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto pb-20">
             {/* Header */}
@@ -224,6 +257,58 @@ export default function SponsorsPage() {
                 >
                     <i className="fas fa-plus"></i> New Commitment
                 </button>
+            </div>
+
+            {/* Financial Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white p-6 rounded-2xl border border-green-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-calendar-check text-5xl text-green-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Received This Month</p>
+                    <p className="text-2xl font-extrabold text-gray-900">
+                        {thisMonthIncome.toLocaleString('vi-VN')} ₫
+                    </p>
+                    <p className="text-xs text-green-600 mt-1 font-medium bg-green-50 w-fit px-1.5 py-0.5 rounded">
+                        {currentMonthKey}
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-history text-5xl text-blue-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Received Last Month</p>
+                    <p className="text-2xl font-extrabold text-gray-900">
+                        {lastMonthIncome.toLocaleString('vi-VN')} ₫
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1 font-medium bg-blue-50 w-fit px-1.5 py-0.5 rounded">
+                        {lastMonthKey}
+                    </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-purple-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-piggy-bank text-5xl text-purple-500"></i>
+                    </div>
+                    <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Total Year {currentYear}</p>
+                    <p className="text-2xl font-extrabold text-gray-900">
+                        {yearlyIncome.toLocaleString('vi-VN')} ₫
+                    </p>
+                </div>
+
+                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i className="fas fa-sync-alt text-5xl text-gray-400"></i>
+                    </div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Expected Monthly</p>
+                    <p className="text-2xl font-extrabold text-gray-900">
+                        {expectedMonthly.toLocaleString('vi-VN')} ₫
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1 font-medium">
+                        From active recurring
+                    </p>
+                </div>
             </div>
 
             {/* Filters */}
