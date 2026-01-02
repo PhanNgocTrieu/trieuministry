@@ -196,6 +196,30 @@ export default function CreateAppealPage() {
                                     )}
                                 </div>
                             </div>
+                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Target Amount (VND)</label>
+                                    <input 
+                                        type="number" 
+                                        name="target" 
+                                        value={(formData as any).target || ''} 
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g. 10000000"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Current Amount (VND)</label>
+                                    <input 
+                                        type="number" 
+                                        name="currentAmount" 
+                                        value={(formData as any).currentAmount || ''} 
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g. 0"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -372,5 +372,8 @@
         "share": "Chia sẻ",
         "anonymous": "Ẩn danh",
         "close": "Đóng"
+    },
+    "app": {
+        "back_to_donate": "Quay lại trang donate"
     }
 }

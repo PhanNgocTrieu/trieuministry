@@ -63,6 +63,11 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                             <i className="fas fa-praying-hands w-5 text-center"></i>
                             My Prayers
                         </Link>
+
+                        <Link href="/dashboard/appeals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/dashboard/appeals')}`}>
+                            <i className="fas fa-hand-holding-heart w-5 text-center"></i>
+                            My Appeals
+                        </Link>
                     </nav>
 
                     <div className="p-4 border-t border-gray-800">

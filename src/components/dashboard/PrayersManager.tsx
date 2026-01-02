@@ -143,10 +143,16 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
         <div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        {mode === 'personal' ? 'My Prayers' : mode === 'admin' ? 'Manage All Prayers' : 'Community Prayers'}
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        {mode === 'personal' ? (
+                            <><i className="fas fa-praying-hands text-blue-600"></i> My Prayers</>
+                        ) : mode === 'admin' ? (
+                            <><i className="fas fa-tasks text-blue-600"></i> Manage All Prayers</>
+                        ) : (
+                            <><i className="fas fa-users text-blue-600"></i> Community Prayers</>
+                        )}
                     </h1>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-sm mt-1">
                         {mode === 'personal' ? 'Track your personal prayer requests.' : 'View and manage prayer requests.'}
                     </p>
                 </div>

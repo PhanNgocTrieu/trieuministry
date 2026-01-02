@@ -7,6 +7,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import ImageUploader from '@/components/ImageUploader';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 interface Appeal {
     id: string;
@@ -23,6 +24,7 @@ import { useModal } from '@/context/ModalContext';
 
 export default function DonatePage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appeals, setAppeals] = useState<Appeal[]>([]);
@@ -80,6 +82,8 @@ export default function DonatePage() {
             status: "pending", 
             type: "user_request", 
             currentAmount: 0,
+            authorId: user?.uid || null,
+            authorName: user?.displayName || user?.email || formData.name,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         });
@@ -297,6 +301,19 @@ export default function DonatePage() {
                              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                                  <div className="flex justify-between items-end mb-2">
                                      <div>
+                                         <div className="flex justify-between items-end mb-2">
+                                            <span className="text-xs text-gray-500 uppercase font-bold block mb-1">Raised</span>
+                                            <span className="text-sm font-bold text-blue-600">
+                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.currentAmount || 0)}
+                                            </span>
+                                         </div>
+                                         <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                            <div 
+                                                className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+                                                style={{ width: `${Math.min(100, ((appeal.currentAmount || 0) / appeal.target) * 100)}%` }}
+                                            ></div>
+                                         </div>
+
                                          <span className="text-xs text-gray-500 uppercase font-bold block mb-1">Target Goal</span>
                                          <span className="text-lg font-bold text-gray-900">
                                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.target)}

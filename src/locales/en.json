@@ -372,5 +372,8 @@
         "share": "Share",
         "anonymous": "Anonymous",
         "close": "Close"
+    },
+    "app": {
+        "back_to_donate": "Back to Donate"
     }
 }
