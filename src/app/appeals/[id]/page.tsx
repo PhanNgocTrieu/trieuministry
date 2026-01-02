@@ -183,7 +183,8 @@ export default function AppealDetailPage() {
                             
                             {getContent(appeal.fundraisingDescription, appeal.fundraisingDescriptionEn) && (
                                 <div 
-                                    className="prose prose-xl md:prose-2xl prose-green max-w-none text-gray-800 [&_*]:!text-[16pt] [&_*]:!leading-relaxed"
+                                    className="prose prose-xl md:prose-2xl prose-green max-w-none text-gray-800 [&_*]:!text-[16pt] [&_*]:!leading-relaxed text-[16pt]"
+                                    style={{ fontSize: '16pt' }}
                                     dangerouslySetInnerHTML={{ __html: getContent(appeal.fundraisingDescription, appeal.fundraisingDescriptionEn) }}
                                 />
                             )}
@@ -192,11 +193,11 @@ export default function AppealDetailPage() {
                     )}
 
                     {/* 4. Footer & Signature (Card) */}
-                    <footer className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 text-center md:text-left">
+                    <footer className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12 text-center md:text-left [&_*]:!text-[16pt] [&_*]:!leading-relaxed">
                         <div className="max-w-3xl mx-auto space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wide text-gray-400">{t('appeals.closing_thoughts')}</h3>
-                                <p className="text-xl text-gray-800 italic leading-relaxed">
+                                <h3 className="font-bold text-gray-900 uppercase tracking-wide text-gray-400">{t('appeals.closing_thoughts')}</h3>
+                                <p className="text-gray-800 italic">
                                     "{t('appeals.closing_content')}"
                                 </p>
                             </div>
@@ -204,20 +205,20 @@ export default function AppealDetailPage() {
                             <div className="w-20 h-1 bg-gray-100 mx-auto md:mx-0"></div>
 
                             <div className="space-y-4">
-                                <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wide text-gray-400">{t('appeals.confidentiality_note')}</h3>
-                                <p className="text-lg text-gray-600">
+                                <h3 className="font-bold text-gray-900 uppercase tracking-wide text-gray-400">{t('appeals.confidentiality_note')}</h3>
+                                <p className="text-gray-600">
                                     {t('appeals.confidentiality_content')}
                                 </p>
                             </div>
 
                             <div className="pt-8 border-t border-gray-100 mt-8">
-                                <p className="text-lg text-gray-800 mb-6 font-medium">
+                                <p className="text-gray-800 mb-6 font-medium">
                                     {t('appeals.blessing')}
                                 </p>
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                                     <div>
                                         <p className="text-gray-500 mb-1">{t('appeals.gratitude')}</p>
-                                        <p className="text-2xl font-bold font-serif text-blue-900">{t('appeals.signature')}</p>
+                                        <p className="font-bold font-serif text-blue-900">{t('appeals.signature')}</p>
                                     </div>
                                     {/* Optional Signature Image or Stamp could go here */}
                                 </div>
