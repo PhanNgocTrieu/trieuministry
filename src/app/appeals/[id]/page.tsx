@@ -137,7 +137,8 @@ export default function AppealDetailPage() {
                             {/* NEW: Ministry Letter Content */}
                             {getContent(appeal.letterContent, appeal.letterContentEn) && (
                                 <div 
-                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 mt-8 [&_*]:!text-[16pt] [&_*]:!leading-relaxed"
+                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 mt-8 [&_*]:!text-[16pt] [&_*]:!leading-relaxed text-[16pt]"
+                                    style={{ fontSize: '16pt' }}
                                     dangerouslySetInnerHTML={{ __html: getContent(appeal.letterContent, appeal.letterContentEn) || '' }}
                                 />
                             )}
@@ -145,7 +146,8 @@ export default function AppealDetailPage() {
                             {/* Legacy Content (fallback if new letter content is empty) */}
                             {!getContent(appeal.letterContent, appeal.letterContentEn) && (
                                 <div 
-                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 mt-8 [&_*]:!text-[16pt] [&_*]:!leading-relaxed"
+                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 mt-8 [&_*]:!text-[16pt] [&_*]:!leading-relaxed text-[16pt]"
+                                    style={{ fontSize: '16pt' }}
                                     dangerouslySetInnerHTML={{ __html: appeal.content || '' }}
                                 />
                             )}
@@ -164,7 +166,8 @@ export default function AppealDetailPage() {
                                 )}
                                 
                                 <div 
-                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 [&_*]:!text-[16pt] [&_*]:!leading-relaxed"
+                                    className="prose prose-xl md:prose-2xl max-w-none text-gray-800 [&_*]:!text-[16pt] [&_*]:!leading-relaxed text-[16pt]"
+                                    style={{ fontSize: '16pt' }}
                                     dangerouslySetInnerHTML={{ __html: sectionDesc }}
                                 />
                             </section>
