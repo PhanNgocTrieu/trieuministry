@@ -322,6 +322,7 @@
         "ministry": {
             "title": "Ministry Appeals",
             "badge": "Ministry",
+            "appeal": "Appeal Update",
             "request_btn": "Submit Appeal Request"
         },
         "form": {

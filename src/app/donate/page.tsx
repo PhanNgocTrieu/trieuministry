@@ -18,6 +18,7 @@ interface Appeal {
     name: string;
     createdAt: any;
     bankQR?: string;
+    currency?: string;
 }
 
 import { useModal } from '@/context/ModalContext';
@@ -39,7 +40,9 @@ export default function DonatePage() {
     bankName: '',
     bankAccount: '',
     bankOwner: '',
-    bankQR: ''
+    bankQR: '',
+    currency: 'VND',
+    currentAmount: ''
   });
 
   useEffect(() => {
@@ -81,7 +84,8 @@ export default function DonatePage() {
             ...formData,
             status: "pending", 
             type: "user_request", 
-            currentAmount: 0,
+            currentAmount: Number(formData.currentAmount) || 0,
+            target: Number(formData.target),
             authorId: user?.uid || null,
             authorName: user?.displayName || user?.email || formData.name,
             createdAt: serverTimestamp(),
@@ -98,7 +102,9 @@ export default function DonatePage() {
             bankName: '',
             bankAccount: '',
             bankOwner: '',
-            bankQR: ''
+            bankQR: '',
+            currency: 'VND',
+            currentAmount: ''
         });
     } catch (error) {
         console.error("Error submitting appeal:", error);
@@ -138,6 +144,7 @@ export default function DonatePage() {
                     src="/hero_donate.png" 
                     alt="Giving" 
                     fill
+                    sizes="(max-width: 1024px) 100vw, 40vw"
                     className="object-cover rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-500"
                   />
                </div>
@@ -223,6 +230,7 @@ export default function DonatePage() {
                            src="/donate/personal_qr.jpg" 
                            alt="QR Code" 
                            fill
+                           sizes="192px"
                            className="object-contain rounded-lg"
                         />
                      </div>
@@ -299,25 +307,27 @@ export default function DonatePage() {
                          {/* Funding Progress (Optional - simplified for now) */}
                          <div className="px-6 pb-6">
                              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                 <div className="flex justify-between items-end mb-2">
-                                     <div>
-                                         <div className="flex justify-between items-end mb-2">
-                                            <span className="text-xs text-gray-500 uppercase font-bold block mb-1">Raised</span>
-                                            <span className="text-sm font-bold text-blue-600">
-                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.currentAmount || 0)}
+                                 <div className="flex justify-between items-end">
+                                     <div className="flex-1 mr-4">
+                                         <div className="mb-3">
+                                            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest block mb-1">Raised</span>
+                                            <span className="text-lg font-extrabold text-blue-600 block leading-none">
+                                                {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.currentAmount || 0)}
                                             </span>
                                          </div>
-                                         <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                         <div className="w-full bg-gray-200 rounded-full h-1.5 mb-3">
                                             <div 
-                                                className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+                                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-500" 
                                                 style={{ width: `${Math.min(100, ((appeal.currentAmount || 0) / appeal.target) * 100)}%` }}
                                             ></div>
                                          </div>
 
-                                         <span className="text-xs text-gray-500 uppercase font-bold block mb-1">Target Goal</span>
-                                         <span className="text-lg font-bold text-gray-900">
-                                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.target)}
-                                         </span>
+                                         <div>
+                                             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest block mb-1">Target Goal</span>
+                                             <span className="text-sm font-bold text-gray-900 block leading-none">
+                                                 {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.target)}
+                                             </span>
+                                         </div>
                                      </div>
                                      <Link 
                                          href={`/ministry/appeals/${appeal.id}`} 

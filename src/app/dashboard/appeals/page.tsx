@@ -15,6 +15,7 @@ interface MyAppeal {
     status: string;
     createdAt: any;
     type: string;
+    currency?: string;
 }
 
 export default function MyAppealsPage() {
@@ -94,7 +95,7 @@ export default function MyAppealsPage() {
                                                 <div className="flex justify-between text-xs">
                                                     <span className="text-gray-500">Raised:</span>
                                                     <span className="font-bold text-gray-900">
-                                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.currentAmount || 0)}
+                                                        {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.currentAmount || 0)}
                                                     </span>
                                                 </div>
                                                 <div className="w-full bg-gray-100 rounded-full h-1.5">
@@ -106,7 +107,7 @@ export default function MyAppealsPage() {
                                                 <div className="flex justify-between text-xs">
                                                     <span className="text-gray-500">Target:</span>
                                                     <span className="font-mono text-gray-600">
-                                                        {appeal.target ? parseInt(appeal.target).toLocaleString() : 'N/A'}
+                                                        {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(Number(appeal.target) || 0)}
                                                     </span>
                                                 </div>
                                             </div>

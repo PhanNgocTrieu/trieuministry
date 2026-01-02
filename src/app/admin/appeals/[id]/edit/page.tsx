@@ -35,6 +35,9 @@ interface AppealFormData {
     fundraisingImages: string[];
     fundraisingDescription: string;
     fundraisingDescriptionEn: string;
+    target?: number;
+    currentAmount?: number;
+    currency?: string;
 }
 
 export default function EditAppealPage() {
@@ -59,6 +62,9 @@ export default function EditAppealPage() {
         fundraisingImages: [], 
         fundraisingDescription: '',
         fundraisingDescriptionEn: '',
+        target: 0,
+        currentAmount: 0,
+        currency: 'VND'
     });
 
     const { showAlert } = useModal(); // Added hook
@@ -84,6 +90,9 @@ export default function EditAppealPage() {
                         fundraisingImages: data.fundraisingImages || [],
                         fundraisingDescription: data.fundraisingDescription || "",
                         fundraisingDescriptionEn: data.fundraisingDescriptionEn || "",
+                        target: data.target || 0,
+                        currentAmount: data.currentAmount || 0,
+                        currency: data.currency || 'VND'
                     });
                 } else {
                     showAlert("Error", "Appeal not found");
@@ -352,6 +361,43 @@ export default function EditAppealPage() {
                                     </div>
                                 </div>
                             </div>
+                            </div>
+                            
+                            
+                            {/* NEW: Fundraising Goal & Currency */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Currency</label>
+                                    <select 
+                                        name="currency" 
+                                        value={formData.currency} 
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                                    >
+                                        <option value="VND">VND (Vietnamese Dong)</option>
+                                        <option value="USD">USD (US Dollar)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Target Goal</label>
+                                    <input 
+                                        type="number" 
+                                        name="target" 
+                                        value={formData.target} 
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Amount Raised (So Far)</label>
+                                    <input 
+                                        type="number" 
+                                        name="currentAmount" 
+                                        value={formData.currentAmount} 
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
                             </div>
                             
                             {/* NEW: Financial Reports Gallery */}

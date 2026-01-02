@@ -18,6 +18,8 @@ interface Appeal {
     name?: string;
     target?: string;
     content?: string;
+    currentAmount?: number;
+    currency?: string;
 }
 
 export default function AdminUserAppealsPage() {
@@ -41,7 +43,9 @@ export default function AdminUserAppealsPage() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
+                currentAmount: doc.data().currentAmount || 0,
+                currency: doc.data().currency || 'VND'
             } as Appeal));
             setAppeals(data);
             setLoading(false);
@@ -129,7 +133,7 @@ export default function AdminUserAppealsPage() {
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500">
                                         <th className="px-6 py-4 font-bold">User / Title</th>
-                                        <th className="px-6 py-4 font-bold">Target</th>
+                                        <th className="px-6 py-4 font-bold">Progress (Raised / Target)</th>
                                         <th className="px-6 py-4 font-bold">Status</th>
                                         <th className="px-6 py-4 font-bold">Date</th>
                                         <th className="px-6 py-4 font-bold text-right">Actions</th>
@@ -143,8 +147,23 @@ export default function AdminUserAppealsPage() {
                                                     <div className="font-bold text-gray-900">{appeal.title || 'No Title'}</div>
                                                     <div className="text-xs text-gray-400">by {appeal.name || 'Anonymous'}</div>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm font-medium">
-                                                    {appeal.target}
+                                                <td className="px-6 py-4">
+                                                    <div className="space-y-1 min-w-[200px]">
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span className="font-bold text-blue-600">
+                                                                {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.currentAmount || 0)}
+                                                            </span>
+                                                            <span className="text-gray-500">
+                                                                / {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(Number(appeal.target) || 0)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                                            <div 
+                                                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-500" 
+                                                                style={{ width: `${Math.min(100, ((appeal.currentAmount || 0) / (Number(appeal.target) || 1)) * 100)}%` }}
+                                                            ></div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <select

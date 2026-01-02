@@ -28,7 +28,9 @@ export default function EditUserAppealPage() {
         bankName: '',
         bankAccount: '',
         bankOwner: '',
-        bankQR: ''
+        bankQR: '',
+        currency: 'VND',
+        currentAmount: 0
     });
 
     const { showAlert } = useModal();
@@ -50,7 +52,9 @@ export default function EditUserAppealPage() {
                         bankName: data.bankName || '',
                         bankAccount: data.bankAccount || '',
                         bankOwner: data.bankOwner || '',
-                        bankQR: data.bankQR || ''
+                        bankQR: data.bankQR || '',
+                        currency: data.currency || 'VND',
+                        currentAmount: data.currentAmount || 0
                     });
                 } else {
                     showAlert("Error", "Appeal not found");
@@ -79,6 +83,7 @@ export default function EditUserAppealPage() {
             await updateDoc(doc(db, "appeals", id), {
                 ...formData,
                 target: Number(formData.target),
+                currentAmount: Number(formData.currentAmount),
                 updatedAt: serverTimestamp()
             });
 
@@ -143,6 +148,28 @@ export default function EditUserAppealPage() {
                                     name="target" 
                                     required
                                     value={formData.target} 
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Currency</label>
+                                <select 
+                                    name="currency" 
+                                    value={formData.currency} 
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                                >
+                                    <option value="VND">VND (Vietnamese Dong)</option>
+                                    <option value="USD">USD (US Dollar)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Current Amount (Raised)</label>
+                                <input 
+                                    type="number" 
+                                    name="currentAmount" 
+                                    value={formData.currentAmount} 
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                                 />
