@@ -118,8 +118,8 @@ export default function ExpensesDashboard() {
 
     // Split Income Analysis
     const realIncomeCategories = ['salary', 'balance', 'sponsors']; // Lowercase for comparison
-    const realIncomeBreakdown = incomeBreakdown.filter(item => realIncomeCategories.includes(item.name.toLowerCase()));
-    const circulatingIncomeBreakdown = incomeBreakdown.filter(item => !realIncomeCategories.includes(item.name.toLowerCase()));
+    const realIncomeBreakdown = incomeBreakdown.filter(item => realIncomeCategories.includes(item.name.toLowerCase().trim()));
+    const circulatingIncomeBreakdown = incomeBreakdown.filter(item => !realIncomeCategories.includes(item.name.toLowerCase().trim()));
 
     const realIncomeTotal = realIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
     const circulatingIncomeTotal = circulatingIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
