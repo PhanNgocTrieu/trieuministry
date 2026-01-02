@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp, setDoc } from 'firebase/firestore'; // Added setDoc
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import { format } from 'date-fns';
 
 interface Transaction {
@@ -24,6 +25,13 @@ export default function ExpensesDashboard() {
     const [filterType, setFilterType] = useState<string>('all');
     const [showReport, setShowReport] = useState(false);
     const [publishing, setPublishing] = useState(false);
+
+    // Modals state
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; name: string }>({ isOpen: false, id: '', name: '' });
+    const [publishModal, setPublishModal] = useState(false);
+    const [alertModal, setAlertModal] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ 
+        isOpen: false, title: '', message: '', type: 'info' 
+    });
 
     useEffect(() => {
         if (!selectedMonth) return;
@@ -65,8 +73,13 @@ export default function ExpensesDashboard() {
     }, [selectedMonth]);
 
     const handleDelete = async (id: string, description: string) => {
-        if (confirm(`Are you sure you want to delete "${description}"?`)) {
-            await deleteDoc(doc(db, "expenses", id));
+        setDeleteModal({ isOpen: true, id, name: description });
+    };
+
+    const confirmDelete = async () => {
+        if (deleteModal.id) {
+            await deleteDoc(doc(db, "expenses", deleteModal.id));
+            setDeleteModal({ isOpen: false, id: '', name: '' });
         }
     };
 
@@ -103,11 +116,21 @@ export default function ExpensesDashboard() {
     const incomeBreakdown = getBreakdown('income');
     const expenseBreakdown = getBreakdown('expense');
 
+    // Split Income Analysis
+    const realIncomeCategories = ['salary', 'balance', 'sponsors']; // Lowercase for comparison
+    const realIncomeBreakdown = incomeBreakdown.filter(item => realIncomeCategories.includes(item.name.toLowerCase()));
+    const circulatingIncomeBreakdown = incomeBreakdown.filter(item => !realIncomeCategories.includes(item.name.toLowerCase()));
+
+    const realIncomeTotal = realIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
+    const circulatingIncomeTotal = circulatingIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
+
     const filteredTransactions = transactions.filter(t => filterType === 'all' || t.type === filterType);
 
-    const handlePublish = async () => {
-        if (!confirm('Are you sure you want to publish this month\'s report? This will be visible to logged-in users.')) return;
-        
+    const handlePublishClick = () => {
+        setPublishModal(true);
+    };
+
+    const handlePublishConfirm = async () => {
         setPublishing(true);
         try {
             const [year, month] = selectedMonth.split('-');
@@ -119,17 +142,31 @@ export default function ExpensesDashboard() {
                 totalIncome,
                 totalExpense,
                 netBalance,
-                incomeBreakdown,
+                incomeBreakdown, // Keep original for backward compatibility if needed, or remove? Keeping it is safer.
+                realIncomeBreakdown,
+                circulatingIncomeBreakdown,
+                realIncomeTotal,
+                circulatingIncomeTotal,
                 expenseBreakdown,
                 publishedAt: Timestamp.now(),
                 status: 'published'
             };
 
             await setDoc(doc(db, "financial_reports", reportId), reportData);
-            alert('Financial report published successfully!');
+            setAlertModal({
+                isOpen: true,
+                title: 'Success',
+                message: 'Financial report published successfully!',
+                type: 'success'
+            });
         } catch (error) {
             console.error("Error publishing report:", error);
-            alert('Failed to publish report.');
+            setAlertModal({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to publish report. Please try again.',
+                type: 'error'
+            });
         } finally {
             setPublishing(false);
         }
@@ -145,7 +182,7 @@ export default function ExpensesDashboard() {
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={handlePublish}
+                        onClick={handlePublishClick}
                         disabled={publishing}
                         className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
                     >
@@ -279,17 +316,57 @@ export default function ExpensesDashboard() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {incomeBreakdown.map(item => (
-                                        <tr key={item.name}>
-                                            <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
-                                            <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
-                                            <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
-                                        </tr>
-                                    ))}
-                                    <tr className="font-bold bg-green-50/30">
-                                        <td className="px-3 py-2 text-green-800">Total Income</td>
-                                        <td className="px-3 py-2 text-right text-green-700">{totalIncome.toLocaleString('vi-VN')} ₫</td>
-                                        <td className="px-3 py-2 text-right">100%</td>
+                                    {/* Real Income Section */}
+                                    {realIncomeBreakdown.length > 0 && (
+                                        <>
+                                            <tr className="bg-green-50/50">
+                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-green-600 uppercase tracking-wide">
+                                                    Real Income (Salary & Balance)
+                                                </td>
+                                            </tr>
+                                            {realIncomeBreakdown.map(item => (
+                                                <tr key={item.name}>
+                                                    <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
+                                                    <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                </tr>
+                                            ))}
+                                            <tr className="font-bold bg-green-50/20 text-xs">
+                                                <td className="px-3 py-2 text-green-700 pl-6">Subtotal Real Income</td>
+                                                <td className="px-3 py-2 text-right text-green-700">{realIncomeTotal.toLocaleString('vi-VN')} ₫</td>
+                                                <td className="px-3 py-2 text-right"></td>
+                                            </tr>
+                                        </>
+                                    )}
+
+                                    {/* Circulating Income Section */}
+                                    {circulatingIncomeBreakdown.length > 0 && (
+                                        <>
+                                            <tr className="bg-blue-50/50">
+                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-blue-600 uppercase tracking-wide mt-2">
+                                                    Circulating Income (Others)
+                                                </td>
+                                            </tr>
+                                            {circulatingIncomeBreakdown.map(item => (
+                                                <tr key={item.name}>
+                                                    <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
+                                                    <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                </tr>
+                                            ))}
+                                            <tr className="font-bold bg-blue-50/20 text-xs">
+                                                <td className="px-3 py-2 text-blue-700 pl-6">Subtotal Circulating</td>
+                                                <td className="px-3 py-2 text-right text-blue-700">{circulatingIncomeTotal.toLocaleString('vi-VN')} ₫</td>
+                                                <td className="px-3 py-2 text-right"></td>
+                                            </tr>
+                                        </>
+                                    )}
+
+                                    {/* Grand Total */}
+                                    <tr className="font-bold bg-green-100/50 border-t-2 border-green-100">
+                                        <td className="px-3 py-3 text-green-900">Grand Total Income</td>
+                                        <td className="px-3 py-3 text-right text-green-900">{totalIncome.toLocaleString('vi-VN')} ₫</td>
+                                        <td className="px-3 py-3 text-right">100%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -458,6 +535,38 @@ export default function ExpensesDashboard() {
                     </table>
                 </div>
             </div>
+            {/* Modals */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
+                onConfirm={confirmDelete}
+                title="Delete Transaction"
+                message={`Are you sure you want to delete "${deleteModal.name}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isDangerous={true}
+            />
+
+            <ConfirmModal
+                isOpen={publishModal}
+                onClose={() => setPublishModal(false)}
+                onConfirm={handlePublishConfirm}
+                title="Publish Report"
+                message="Are you sure you want to publish this month's report? This will be visible to logged-in users."
+                confirmText="Publish"
+                cancelText="Cancel"
+                isDangerous={false}
+            />
+
+            <ConfirmModal
+                isOpen={alertModal.isOpen}
+                onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+                onConfirm={() => setAlertModal({ ...alertModal, isOpen: false })}
+                title={alertModal.title}
+                message={alertModal.message}
+                confirmText="Close"
+                isDangerous={alertModal.type === 'error'}
+            />
         </div>
     );
 }

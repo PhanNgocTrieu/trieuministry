@@ -18,7 +18,7 @@ export default function ConfirmModal({
     title,
     message,
     confirmText = "Confirm",
-    cancelText = "Cancel",
+    cancelText,
     isDangerous = false,
 }: ConfirmModalProps) {
     if (!isOpen) return null;
@@ -39,12 +39,14 @@ export default function ConfirmModal({
                     </p>
 
                     <div className="flex gap-3 justify-end">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                            {cancelText}
-                        </button>
+                            {cancelText && (
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                >
+                                    {cancelText}
+                                </button>
+                            )}
                         <button
                             onClick={() => {
                                 onConfirm();
