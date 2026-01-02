@@ -203,7 +203,8 @@
     "appeals": {
         "page_title": "Thư Kêu Gọi",
         "page_subtitle": "Cập nhật và kêu gọi sự ủng hộ cho mục vụ.",
-        "previous": "Các Thư Trước Đây"
+        "previous": "Các Thư Trước Đây",
+        "latest_title": "Thư Kêu Gọi Mới Nhất"
     },
     "ministry": {
         "hero": {

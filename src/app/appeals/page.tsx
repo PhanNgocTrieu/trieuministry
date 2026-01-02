@@ -208,18 +208,83 @@ export default function AppealsPage() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
-                                                {selectedReport.incomeBreakdown.map((item: any) => (
-                                                    <tr key={item.name}>
-                                                        <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
-                                                        <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
-                                                        <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
-                                                    </tr>
-                                                ))}
-                                                <tr className="font-bold bg-green-50/30">
-                                                    <td className="px-3 py-2 text-green-800">Total Income</td>
-                                                    <td className="px-3 py-2 text-right text-green-700">{selectedReport.totalIncome.toLocaleString('vi-VN')} ₫</td>
-                                                    <td className="px-3 py-2 text-right">100%</td>
-                                                </tr>
+                                                {/* Check if we have the new split data */}
+                                                {(selectedReport.realIncomeBreakdown || selectedReport.circulatingIncomeBreakdown) ? (
+                                                    <>
+                                                        {/* Real Income Section */}
+                                                        {selectedReport.realIncomeBreakdown?.length > 0 && (
+                                                            <>
+                                                                <tr className="bg-green-50/50">
+                                                                    <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-green-600 uppercase tracking-wide">
+                                                                        Real Income (Salary/Sponsors)
+                                                                    </td>
+                                                                </tr>
+                                                                {selectedReport.realIncomeBreakdown.map((item: any) => (
+                                                                    <tr key={item.name}>
+                                                                        <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
+                                                                        <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                                        <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                                    </tr>
+                                                                ))}
+                                                                <tr className="font-bold bg-green-50/20 text-xs">
+                                                                    <td className="px-3 py-2 text-green-700 pl-6">Subtotal Real</td>
+                                                                    <td className="px-3 py-2 text-right text-green-700">
+                                                                        {(selectedReport.realIncomeTotal || 0).toLocaleString('vi-VN')} ₫
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-right"></td>
+                                                                </tr>
+                                                            </>
+                                                        )}
+
+                                                        {/* Circulating Income Section */}
+                                                        {selectedReport.circulatingIncomeBreakdown?.length > 0 && (
+                                                            <>
+                                                                <tr className="bg-blue-50/50">
+                                                                    <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-blue-600 uppercase tracking-wide mt-2">
+                                                                        Circulating Income (Others)
+                                                                    </td>
+                                                                </tr>
+                                                                {selectedReport.circulatingIncomeBreakdown.map((item: any) => (
+                                                                    <tr key={item.name}>
+                                                                        <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
+                                                                        <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                                        <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                                    </tr>
+                                                                ))}
+                                                                <tr className="font-bold bg-blue-50/20 text-xs">
+                                                                    <td className="px-3 py-2 text-blue-700 pl-6">Subtotal Circulating</td>
+                                                                    <td className="px-3 py-2 text-right text-blue-700">
+                                                                        {(selectedReport.circulatingIncomeTotal || 0).toLocaleString('vi-VN')} ₫
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-right"></td>
+                                                                </tr>
+                                                            </>
+                                                        )}
+
+                                                        {/* Grand Total */}
+                                                        <tr className="font-bold bg-green-100/50 border-t-2 border-green-100">
+                                                            <td className="px-3 py-3 text-green-900">Grand Total Income</td>
+                                                            <td className="px-3 py-3 text-right text-green-900">{selectedReport.totalIncome.toLocaleString('vi-VN')} ₫</td>
+                                                            <td className="px-3 py-3 text-right">100%</td>
+                                                        </tr>
+                                                    </>
+                                                ) : (
+                                                    /* Fallback for old reports */
+                                                    <>
+                                                        {selectedReport.incomeBreakdown.map((item: any) => (
+                                                            <tr key={item.name}>
+                                                                <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
+                                                                <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                                <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                            </tr>
+                                                        ))}
+                                                        <tr className="font-bold bg-green-50/30">
+                                                            <td className="px-3 py-2 text-green-800">Total Income</td>
+                                                            <td className="px-3 py-2 text-right text-green-700">{selectedReport.totalIncome.toLocaleString('vi-VN')} ₫</td>
+                                                            <td className="px-3 py-2 text-right">100%</td>
+                                                        </tr>
+                                                    </>
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -261,6 +326,13 @@ export default function AppealsPage() {
                 <div className="space-y-12">
                     {latestAppeal ? (
                         <section className="max-w-4xl mx-auto">
+                            <div className="flex items-center gap-4 mb-8">
+                                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                    <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                                    {t('appeals.latest_title') || 'Latest Appeal Letter'}
+                                </h3>
+                                <div className="h-px bg-gray-200 flex-1"></div>
+                            </div>
                             <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl p-8 lg:p-10 border border-blue-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
                                 <div className="absolute top-0 right-0 p-6 opacity-5">
                                     <i className="fas fa-feather-alt text-9xl text-blue-900 transform rotate-45"></i>

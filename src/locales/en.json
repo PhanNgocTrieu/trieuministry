@@ -203,7 +203,8 @@
     "appeals": {
         "page_title": "Appeal Letters",
         "page_subtitle": "Updates and calls for support from our ministry.",
-        "previous": "Previous Letters"
+        "previous": "Previous Letters",
+        "latest_title": "Latest Appeal Letter"
     },
     "ministry": {
         "hero": {
