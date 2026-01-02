@@ -102,8 +102,13 @@ export default function MinistryPage() {
         console.error("Error fetching prayers:", error);
     });
     
-    // 3. Fetch Appeals
-    const qAppeals = query(collection(db, "appeals"), where("status", "==", "published"), orderBy("createdAt", "desc"));
+    // 3. Fetch Appeals (Ministry Appeals - User Submitted)
+    const qAppeals = query(
+        collection(db, "appeals"), 
+        where("type", "==", "user_request"),
+        where("status", "==", "published"), 
+        orderBy("createdAt", "desc")
+    );
     const unsubscribeAppeals = onSnapshot(qAppeals, (snapshot) => {
         const list: Appeal[] = [];
         snapshot.forEach((doc) => {
@@ -401,7 +406,7 @@ export default function MinistryPage() {
                                                 
                                                 <div 
                                                     className="prose prose-sm text-gray-500 mb-4 line-clamp-2"
-                                                    dangerouslySetInnerHTML={{ __html: appeal.content.replace(/<[^>]+>/g, '') }}
+                                                    dangerouslySetInnerHTML={{ __html: (appeal.content || '').replace(/<[^>]+>/g, '') }}
                                                 />
                                                 
                                                 <div className="mt-auto">

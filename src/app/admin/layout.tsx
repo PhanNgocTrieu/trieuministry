@@ -89,6 +89,26 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                             Sponsors
                         </Link>
 
+                        <Link href="/admin/ministries" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/ministries')}`}>
+                            <i className="fas fa-church w-5 text-center"></i>
+                            Ministry Boards
+                        </Link>
+
+                        <Link href="/admin/appeals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/appeals')}`}>
+                            <i className="fas fa-envelope-open-text w-5 text-center"></i>
+                            Pastoral Letters
+                        </Link>
+
+                        <Link href="/admin/user-appeals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/user-appeals')}`}>
+                            <i className="fas fa-hand-holding-heart w-5 text-center"></i>
+                            Ministry Appeals
+                        </Link>
+
+                        <Link href="/admin/settings" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/settings')}`}>
+                            <i className="fas fa-cog w-5 text-center"></i>
+                            Settings
+                        </Link>
+
                     </nav>
 
                     <div className="p-4 border-t border-gray-800">

@@ -36,7 +36,8 @@ export default function DonatePage() {
     try {
         await addDoc(collection(db, "appeals"), {
             ...formData,
-            status: "pending", // Default status
+            status: "pending", 
+            type: "user_request", // Explicitly mark as user request
             currentAmount: 0,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
