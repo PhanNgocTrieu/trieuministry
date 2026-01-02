@@ -239,16 +239,19 @@ export default function AppealDetailPage() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {appeal.pdfUrl && (
                                     <a 
                                         href={appeal.pdfUrl} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className="flex-1 px-6 py-4 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
+                                        className="flex-1 px-6 py-4 bg-red-50 border border-red-100 text-red-700 hover:bg-red-600 hover:text-white hover:border-red-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
                                     >
-                                        <i className="fas fa-download group-hover:animate-bounce"></i> 
-                                        {t('appeals.download_vi') || 'Vietnamese PDF'}
+                                        <span className="text-2xl">🇻🇳</span>
+                                        <span className="flex items-center gap-2">
+                                            {t('appeals.download_vi') || 'Vietnamese PDF'}
+                                            <i className="fas fa-download opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                        </span>
                                     </a>
                                 )}
                                 {appeal.pdfUrlEn && (
@@ -256,10 +259,13 @@ export default function AppealDetailPage() {
                                         href={appeal.pdfUrlEn} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className="flex-1 px-6 py-4 bg-white border border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
+                                        className="flex-1 px-6 py-4 bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-3 group"
                                     >
-                                        <i className="fas fa-download group-hover:animate-bounce"></i> 
-                                        {t('appeals.download_en') || 'English PDF'}
+                                        <span className="text-2xl">🇺🇸</span>
+                                        <span className="flex items-center gap-2">
+                                            {t('appeals.download_en') || 'English PDF'}
+                                            <i className="fas fa-download opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                        </span>
                                     </a>
                                 )}
                             </div>

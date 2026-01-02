@@ -81,7 +81,6 @@ export default function AdminAppealsPage() {
                      <div className="flex gap-3">
                         <Link 
                             href="/appeals"
-                            target="_blank"
                             className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg font-bold shadow-sm flex items-center gap-2 transition-all"
                         >
                             <i className="fas fa-external-link-alt"></i>
