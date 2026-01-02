@@ -94,7 +94,7 @@ function AddTransactionForm() {
                     createdAt: serverTimestamp()
                 });
             }
-            router.push('/admin/expenses');
+            router.back(); // Go back to preserve previous page state (e.g. selected month)
         } catch (error) {
             console.error(error);
             alert("Error saving transaction");

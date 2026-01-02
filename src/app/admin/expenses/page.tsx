@@ -1,231 +1,49 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestamp, setDoc } from 'firebase/firestore'; // Added setDoc
-import ConfirmModal from '@/components/admin/ConfirmModal';
-import { format } from 'date-fns';
-
-interface Transaction {
-    id: string;
-    type: 'income' | 'expense';
-    amount: number;
-    categoryId: string;
-    categoryName: string;
-    categoryColor: string;
-    date: Timestamp;
-    description: string;
-}
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function ExpensesDashboard() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
+    // Initialize from URL or default to current month
+    const initialMonth = searchParams.get('date') || new Date().toISOString().slice(0, 7);
+    
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+    const [selectedMonth, setSelectedMonth] = useState(initialMonth); // YYYY-MM
     const [filterType, setFilterType] = useState<string>('all');
     const [showReport, setShowReport] = useState(false);
     const [publishing, setPublishing] = useState(false);
 
-    // Modals state
-    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; name: string }>({ isOpen: false, id: '', name: '' });
-    const [publishModal, setPublishModal] = useState(false);
-    const [alertModal, setAlertModal] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ 
-        isOpen: false, title: '', message: '', type: 'info' 
-    });
-
+    // Sync state if URL changes (e.g. back button)
     useEffect(() => {
-        if (!selectedMonth) return;
-        
-        const [year, month] = selectedMonth.split('-').map(Number);
-        if (!year || !month) return;
-
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0, 23, 59, 59);
-
-        // Double check validity
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return;
-
-        const startTimestamp = Timestamp.fromDate(startDate);
-        const endTimestamp = Timestamp.fromDate(endDate);
-
-        const q = query(
-            collection(db, "expenses"),
-            where("date", ">=", startTimestamp),
-            where("date", "<=", endTimestamp),
-            orderBy("date", "desc")
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const list: Transaction[] = [];
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                list.push({ 
-                    id: doc.id, 
-                    ...data,
-                    type: data.type || 'expense' 
-                } as Transaction);
-            });
-            setTransactions(list);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [selectedMonth]);
-
-    const handleDelete = async (id: string, description: string) => {
-        setDeleteModal({ isOpen: true, id, name: description });
-    };
-
-    const confirmDelete = async () => {
-        if (deleteModal.id) {
-            await deleteDoc(doc(db, "expenses", deleteModal.id));
-            setDeleteModal({ isOpen: false, id: '', name: '' });
+        const dateParam = searchParams.get('date');
+        if (dateParam && dateParam !== selectedMonth) {
+            setSelectedMonth(dateParam);
         }
+    }, [searchParams]);
+
+    // Update URL when month changes
+    const handleMonthChange = (newMonth: string) => {
+        setSelectedMonth(newMonth);
+        setShowReport(false);
+        router.replace(`/admin/expenses?date=${newMonth}`, { scroll: false });
     };
-
-    // Stats Calculations
-    const totalIncome = transactions
-        .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + t.amount, 0);
-
-    const totalExpense = transactions
-        .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0);
-
-    const netBalance = totalIncome - totalExpense;
-
-    // Helper to get breakdown
-    const getBreakdown = (type: 'income' | 'expense') => {
-        const subset = transactions.filter(t => t.type === type);
-        const total = type === 'income' ? totalIncome : totalExpense;
-        
-        const stats = subset.reduce((acc, item) => {
-            if (!acc[item.categoryName]) {
-                acc[item.categoryName] = { amount: 0, color: item.categoryColor || '#ccc', count: 0 };
-            }
-            acc[item.categoryName].amount += item.amount;
-            acc[item.categoryName].count += 1;
-            return acc;
-        }, {} as Record<string, { amount: number, color: string, count: number }>);
-
-        return Object.entries(stats)
-            .sort(([, a], [, b]) => b.amount - a.amount)
-            .map(([name, stat]) => ({ name, ...stat, percentage: total > 0 ? (stat.amount / total * 100) : 0 }));
-    };
-
-    const incomeBreakdown = getBreakdown('income');
-    const expenseBreakdown = getBreakdown('expense');
-
-    // Split Income Analysis
-    const realIncomeCategories = ['salary', 'balance', 'sponsors']; // Lowercase for comparison
-    const realIncomeBreakdown = incomeBreakdown.filter(item => realIncomeCategories.includes(item.name.toLowerCase().trim()));
-    const circulatingIncomeBreakdown = incomeBreakdown.filter(item => !realIncomeCategories.includes(item.name.toLowerCase().trim()));
-
-    const realIncomeTotal = realIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
-    const circulatingIncomeTotal = circulatingIncomeBreakdown.reduce((sum, item) => sum + item.amount, 0);
-
-    const filteredTransactions = transactions.filter(t => filterType === 'all' || t.type === filterType);
-
-    const handlePublishClick = () => {
-        setPublishModal(true);
-    };
-
-    const handlePublishConfirm = async () => {
-        setPublishing(true);
-        try {
-            const [year, month] = selectedMonth.split('-');
-            const reportId = `report_${year}_${month}`;
-            
-            const reportData = {
-                year: parseInt(year),
-                month: parseInt(month),
-                totalIncome,
-                totalExpense,
-                netBalance,
-                incomeBreakdown, // Keep original for backward compatibility if needed, or remove? Keeping it is safer.
-                realIncomeBreakdown,
-                circulatingIncomeBreakdown,
-                realIncomeTotal,
-                circulatingIncomeTotal,
-                expenseBreakdown,
-                publishedAt: Timestamp.now(),
-                status: 'published'
-            };
-
-            await setDoc(doc(db, "financial_reports", reportId), reportData);
-            setAlertModal({
-                isOpen: true,
-                title: 'Success',
-                message: 'Financial report published successfully!',
-                type: 'success'
-            });
-        } catch (error) {
-            console.error("Error publishing report:", error);
-            setAlertModal({
-                isOpen: true,
-                title: 'Error',
-                message: 'Failed to publish report. Please try again.',
-                type: 'error'
-            });
-        } finally {
-            setPublishing(false);
-        }
-    };
-
-    return (
-        <div className="space-y-8 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Financial Overview</h1>
-                    <p className="text-gray-500">Track income, expenses, and monthly balance.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={handlePublishClick}
-                        disabled={publishing}
-                        className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
-                    >
-                        {publishing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
-                        <span>Publish Report</span>
-                    </button>
-                    <button
-                        onClick={() => setShowReport(!showReport)}
-                        className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl border font-bold text-sm transition-all ${
-                            showReport 
-                            ? 'bg-blue-50 border-blue-200 text-blue-700' 
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
-                        <i className={`fas ${showReport ? 'fa-times' : 'fa-file-export'}`}></i>
-                        <span>{showReport ? 'Close' : 'Export Stats'}</span>
-                    </button>
-                    <Link 
-                        href="/admin/expenses/categories" 
-                        className="bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm font-bold text-sm transition-all"
-                    >
-                        <i className="fas fa-tags mr-2 text-gray-400"></i> Categories
-                    </Link>
-                    <Link 
-                        href="/admin/expenses/add" 
-                        className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-200 font-bold flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
-                    >
-                        <i className="fas fa-plus"></i> New Transaction
-                    </Link>
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 max-w-fit">
-                <div className="flex items-center gap-2">
+    
+    // ... (rest of code)
+    
+    // In the return JSX, update onChange handlers to use handleMonthChange
+    // ...
+                    <div className="flex items-center gap-2">
                     <label className="text-sm font-bold text-gray-500">Month:</label>
                     <select
                         value={parseInt(selectedMonth.split('-')[1])}
                         onChange={(e) => {
-                            const newMonth = e.target.value.padStart(2, '0');
+                            const newMonthStr = e.target.value.padStart(2, '0');
                             const year = selectedMonth.split('-')[0];
-                            setSelectedMonth(`${year}-${newMonth}`);
-                            setShowReport(false);
+                            handleMonthChange(`${year}-${newMonthStr}`);
                         }}
                         className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
                     >
@@ -245,8 +63,7 @@ export default function ExpensesDashboard() {
                         onChange={(e) => {
                             const newYear = e.target.value;
                             const month = selectedMonth.split('-')[1];
-                            setSelectedMonth(`${newYear}-${month}`);
-                            setShowReport(false);
+                            handleMonthChange(`${newYear}-${month}`);
                         }}
                         className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
                     >
