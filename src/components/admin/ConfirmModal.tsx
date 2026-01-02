@@ -34,7 +34,7 @@ export default function ConfirmModal({
                         <h3 className="text-lg font-bold text-gray-900">{title}</h3>
                     </div>
                     
-                    <p className="text-gray-600 mb-6 leading-relaxed">
+                    <p className="text-gray-600 mb-6 leading-relaxed whitespace-pre-line">
                         {message}
                     </p>
 

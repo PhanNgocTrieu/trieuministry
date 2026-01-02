@@ -276,6 +276,7 @@
             "not_prayed": "Not Prayed",
             "prayed": "Prayed",
             "answered": "Answered",
+            "pending": "Pending",
             "update_header": "Update Status"
         },
         "modal": {

@@ -7,6 +7,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import RichTextEditor from '@/components/RichTextEditor';
 import ImageUploader from '@/components/ImageUploader';
 import { useLanguage } from '@/context/LanguageContext';
+import { useModal } from '@/context/ModalContext';
 
 const categories = ['Bible Study', 'Sharing', 'Music', 'Leadership', 'Testimony'];
 
@@ -19,6 +20,7 @@ interface CreateBlogModalProps {
 export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBlogModalProps) {
     const { user } = useAuth();
     const { t } = useLanguage();
+    const { showAlert } = useModal();
     
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -33,7 +35,7 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
-            alert(t('blogs.create.alert_required'));
+            showAlert("Error", t('blogs.create.alert_required'));
             return;
         }
 
@@ -70,7 +72,7 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
             setCoverImage('');
         } catch (error) {
             console.error("Error creating blog:", error);
-            alert(t('blogs.create.alert_error'));
+            showAlert("Error", t('blogs.create.alert_error'));
         } finally {
             setIsSubmitting(false);
         }

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where } from "firebase/firestore";
 import Link from "next/link";
-import ConfirmModal from "@/components/admin/ConfirmModal";
 import TableSkeleton from "@/components/admin/TableSkeleton";
 import { useAuth } from "@/context/AuthContext";
+import { useModal } from "@/context/ModalContext";
 
 interface BlogPost {
     id: string;
@@ -26,21 +26,9 @@ interface BlogsManagerProps {
 
 export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
     const { user, isAdmin } = useAuth();
+    const { showAlert, showConfirm } = useModal();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
-
-    const [modalConfig, setModalConfig] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-        isDangerous?: boolean;
-    }>({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => {},
-    });
 
     const fetchPosts = async () => {
         if (!user) return;
@@ -79,21 +67,20 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
         }
     }, [user, mode]);
 
-    const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
-        setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
-    };
+
 
     const handleDelete = async (id: string) => {
-        openModal(
+        showConfirm(
             "Delete Post",
             "Are you sure you want to delete this post? This action cannot be undone.",
             async () => {
                 try {
                     await deleteDoc(doc(db, "blogs", id));
-                    setPosts(posts.filter(p => p.id !== id));
+                     setPosts(prev => prev.filter(p => p.id !== id));
+                     showAlert("Success", "Post deleted successfully.");
                 } catch (error: any) {
                     console.error("Error deleting post:", error);
-                    alert(`Failed to delete post: ${error.message}`);
+                    showAlert("Error", `Failed to delete post: ${error.message}`);
                 }
             },
             true
@@ -101,7 +88,7 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
     };
 
     const handleApprove = async (id: string) => {
-        openModal(
+        showConfirm(
             "Approve Blog Post",
             "Are you sure you want to approve this blog post?",
             async () => {
@@ -110,13 +97,14 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
                     // Refresh or update local state
                     if (mode === 'approve') {
                          // Remove from list if we only show pending
-                         setPosts(posts.filter(p => p.id !== id));
+                         setPosts(prev => prev.filter(p => p.id !== id));
                     } else {
-                         setPosts(posts.map(p => p.id === id ? { ...p, status: 'approved' } : p));
+                         setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'approved' } : p));
                     }
+                    showAlert("Success", "Post approved successfully.");
                 } catch (error) {
                     console.error("Error approving post:", error);
-                    alert("Failed to approve post");
+                    showAlert("Error", "Failed to approve post");
                 }
             }
         );
@@ -132,14 +120,7 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
 
     return (
         <div>
-            <ConfirmModal 
-                isOpen={modalConfig.isOpen}
-                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={modalConfig.onConfirm}
-                title={modalConfig.title}
-                message={modalConfig.message}
-                isDangerous={modalConfig.isDangerous}
-            />
+
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">

@@ -6,10 +6,12 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useModal } from "@/context/ModalContext";
 
 export default function CreateBlogPage() {
     const router = useRouter();
     const { user } = useAuth();
+    const { showAlert } = useModal();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
@@ -48,11 +50,11 @@ export default function CreateBlogPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Blog post created successfully!");
+            showAlert("Success", "Blog post created successfully!");
             router.push("/admin/blogs");
         } catch (error) {
             console.error("Error creating blog:", error);
-            alert("Failed to create blog post");
+            showAlert("Error", "Failed to create blog post");
         } finally {
             setLoading(false);
         }

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploader from "@/components/ImageUploader";
 import AdminGuard from "@/components/admin/AdminGuard";
+import { useModal } from "@/context/ModalContext";
 
 interface MinistryImage {
   url: string;
@@ -51,6 +52,10 @@ export default function CreateMinistryPage() {
         setImages(newImages);
     };
 
+    const { showAlert } = useModal(); // Added hook
+
+    // ... existing state ...
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -71,11 +76,11 @@ export default function CreateMinistryPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Ministry added successfully!");
+            showAlert("Success", "Ministry added successfully!");
             router.push(returnUrl);
         } catch (error) {
             console.error("Error creating ministry:", error);
-            alert("Failed to create ministry");
+            showAlert("Error", "Failed to create ministry");
         } finally {
             setLoading(false);
         }

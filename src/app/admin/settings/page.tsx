@@ -4,15 +4,22 @@ import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, writeBatch } from "firebase/firestore";
 
-import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+import { useModal } from '@/context/ModalContext';
 
 export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState("");
-    const [showResetConfirm, setShowResetConfirm] = useState(false);
+    const { showConfirm, showAlert } = useModal();
 
     const handleResetClick = () => {
-        setShowResetConfirm(true);
+        showConfirm(
+            "DANGER: Reset Database?",
+            "This will PERMANENTLY DELETE ALL DATA from 'users', 'prayers', and 'blogs' collections.\n\nThis action cannot be undone. Are you absolutely sure?",
+            confirmResetDatabase,
+            true,
+            "YES, DELETE EVERYTHING",
+            "Cancel"
+        );
     };
 
     const confirmResetDatabase = async () => {
@@ -44,14 +51,13 @@ export default function AdminSettingsPage() {
             }
 
             setStatus(prev => prev + `\n\n✅ Reset Complete! Total ${totalDeleted} documents deleted.`);
-            alert("Database has been reset successfully.");
+            showAlert("Success", "Database has been reset successfully.");
         } catch (error: any) {
             console.error(error);
             setStatus(prev => prev + `\n❌ Error: ${error.message}`);
-            alert("An error occurred. Check the log.");
+            showAlert("Error", "An error occurred. Check the log.");
         } finally {
             setLoading(false);
-            setShowResetConfirm(false);
         }
     };
 
@@ -112,16 +118,7 @@ export default function AdminSettingsPage() {
                  </div>
             </div>
 
-            <ConfirmModal 
-                isOpen={showResetConfirm}
-                onClose={() => setShowResetConfirm(false)}
-                onConfirm={confirmResetDatabase}
-                title="DANGER: Reset Database?"
-                message={`This will PERMANENTLY DELETE ALL DATA from 'users', 'prayers', and 'blogs' collections.\n\nThis action cannot be undone. Are you absolutely sure?`}
-                confirmText="YES, DELETE EVERYTHING"
-                cancelText="Cancel"
-                isDangerous={true}
-            />
+
         </div>
     );
 }

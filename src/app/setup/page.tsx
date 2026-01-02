@@ -4,10 +4,13 @@ import { useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { collection, getDocs, deleteDoc, doc, writeBatch } from "firebase/firestore";
+import { useModal } from "@/context/ModalContext";
 
 export default function SetupPage() {
     const [loading, setLoading] = useState(false);
+
     const [status, setStatus] = useState("");
+    const { showAlert } = useModal();
 
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     // Assuming the user added this var. If not, they'll need to type it or add it.
@@ -18,7 +21,7 @@ export default function SetupPage() {
 
     const handleCreateAdmin = async () => {
         if (!adminEmail || !adminPassword) {
-            alert("Missing NEXT_PUBLIC_ADMIN_EMAIL or NEXT_PUBLIC_ADMIN_PASSWORD in .env.local");
+            showAlert("Error", "Missing NEXT_PUBLIC_ADMIN_EMAIL or NEXT_PUBLIC_ADMIN_PASSWORD in .env.local");
             return;
         }
 

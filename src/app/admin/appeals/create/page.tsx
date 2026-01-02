@@ -10,6 +10,7 @@ import AdminGuard from '@/components/admin/AdminGuard';
 import RichTextEditor from '@/components/RichTextEditor';
 import ImageUploader from '@/components/ImageUploader';
 import FileUploader from '@/components/FileUploader';
+import { useModal } from '@/context/ModalContext';
 
 interface MinistrySection {
     id: string;
@@ -92,6 +93,10 @@ export default function CreateAppealPage() {
 
     // --- Submit ---
 
+    const { showAlert } = useModal();
+
+    // --- Submit ---
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -106,10 +111,11 @@ export default function CreateAppealPage() {
                 updatedAt: serverTimestamp()
             });
 
+            showAlert("Success", "Appeal created successfully!");
             router.push("/admin/appeals");
         } catch (error) {
             console.error("Error creating appeal:", error);
-            alert("Failed to create appeal");
+            showAlert("Error", "Failed to create appeal");
         } finally {
             setLoading(false);
         }

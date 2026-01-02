@@ -22,8 +22,9 @@ export default function ImageUploader({ onImageUploaded, currentImage, folder = 
         if (!file) return;
 
         // Basic validation
-        if (!file.type.startsWith('image/')) {
-            setError('Please upload an image file (JPG, PNG, GIF).');
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            setError('Please upload a valid image (JPG, PNG, GIF, WEBP). HEIC/HEIF is not supported.');
             return;
         }
         if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -66,7 +67,7 @@ export default function ImageUploader({ onImageUploaded, currentImage, folder = 
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleFileChange} 
-                accept="image/*" 
+                accept="image/png, image/jpeg, image/gif, image/webp" 
                 className="hidden" 
             />
             
@@ -78,8 +79,9 @@ export default function ImageUploader({ onImageUploaded, currentImage, folder = 
                     <div className="text-gray-400 mb-2 text-3xl">
                         <i className="fas fa-image"></i>
                     </div>
-                    <p className="font-bold text-gray-500">Click to upload cover image</p>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                    <p className="font-bold text-gray-500">Click to upload image</p>
+                    <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+                    <p className="text-[10px] text-red-400 mt-1">Note: HEIC (iPhone) files are not supported</p>
                 </div>
             ) : (
                 <div className="relative rounded-xl overflow-hidden group border border-gray-200 bg-gray-50">

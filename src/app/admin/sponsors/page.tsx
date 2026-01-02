@@ -18,10 +18,13 @@ interface Sponsor {
     createdAt: Timestamp;
 }
 
+import { useModal } from '@/context/ModalContext';
+
 export default function SponsorsPage() {
     const [sponsors, setSponsors] = useState<Sponsor[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'incomplete'>('all');
+    const { showAlert, showConfirm } = useModal();
     
     // Modal & Form State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,9 +93,10 @@ export default function SponsorsPage() {
             
             setIsModalOpen(false);
             resetForm();
+            showAlert("Success", "Sponsor information saved successfully.");
         } catch (error) {
             console.error("Error saving sponsor:", error);
-            alert("Failed to save sponsor information.");
+            showAlert("Error", "Failed to save sponsor information.");
         }
     };
 
@@ -112,9 +116,14 @@ export default function SponsorsPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this commitment?")) {
-            await deleteDoc(doc(db, "sponsors", id));
-        }
+        showConfirm(
+            "Delete Commitment",
+            "Are you sure you want to delete this commitment?",
+            async () => {
+                await deleteDoc(doc(db, "sponsors", id));
+            },
+            true
+        );
     };
 
     const handleQuickStatusUpdate = async (id: string, newStatus: boolean) => {

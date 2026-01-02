@@ -32,12 +32,14 @@ interface Comment {
   // ... imports
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
+import { useModal } from '@/context/ModalContext';
 
 export default function BlogDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { t } = useLanguage(); 
   const { user } = useAuth();
+  const { showAlert } = useModal();
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [adjacentPosts, setAdjacentPosts] = useState<{ prev: BlogPost | null, next: BlogPost | null }>({ prev: null, next: null });
@@ -92,7 +94,7 @@ export default function BlogDetailPage() {
           setCommentText('');
       } catch (error) {
           console.error("Error posting comment:", error);
-          alert(t('common.error'));
+          showAlert("Error", t('common.error'));
       } finally {
           setSubmittingComment(false);
       }
@@ -287,7 +289,7 @@ export default function BlogDetailPage() {
                             <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${window.location.href}&text=${blog.title}`, '_blank')} className="w-12 h-12 rounded-xl bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-all hover:-translate-y-1 shadow-md hover:shadow-lg" title="Share on X">
                                 <i className="fab fa-twitter text-lg"></i>
                             </button>
-                            <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert(t('blogs.detail.copied')); }} className="w-12 h-12 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-all hover:-translate-y-1 shadow-sm hover:shadow-md" title="Copy Link">
+                            <button onClick={() => { navigator.clipboard.writeText(window.location.href); showAlert('Info', t('blogs.detail.copied')); }} className="w-12 h-12 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-all hover:-translate-y-1 shadow-sm hover:shadow-md" title="Copy Link">
                                 <i className="fas fa-link text-lg"></i>
                             </button>
 

@@ -22,7 +22,7 @@ type Prayer = {
   type?: string; // 'personal' | 'community'
 };
 
-import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+import { useModal } from '@/context/ModalContext';
 
 export default function PrayersPage() {
   const { t } = useLanguage();
@@ -31,6 +31,7 @@ export default function PrayersPage() {
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const { showAlert, showConfirm } = useModal();
   
   // Real Data State
   const [prayers, setPrayers] = useState<Prayer[]>([]);
@@ -40,9 +41,6 @@ export default function PrayersPage() {
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState('General');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Modal State
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     // Subscribe to real-time updates
@@ -92,15 +90,17 @@ export default function PrayersPage() {
 
   const handleAddClick = () => {
       if (!user) {
-          setShowLoginModal(true);
+          showConfirm(
+              "Login Required",
+              "You need to be logged in to share a prayer request with the community.",
+              () => router.push('/login'),
+              false,
+              "Go to Login",
+              "Not Now"
+          );
           return;
       }
       setShowModal(true);
-  };
-
-  const confirmLoginRedirect = () => {
-      router.push('/login');
-      setShowLoginModal(false);
   };
 
   const handleAddPrayer = async (e: React.FormEvent) => {
@@ -123,9 +123,10 @@ export default function PrayersPage() {
         setNewContent('');
         setShowModal(false);
         // Alert handled by UI, list auto updates via onSnapshot
+        showAlert("Success", "Prayer request submitted successfully.");
      } catch (error) {
          console.error("Error adding prayer", error);
-         alert("Failed to submit prayer. Please try again.");
+         showAlert("Error", "Failed to submit prayer. Please try again.");
      } finally {
          setIsSubmitting(false);
      }
@@ -177,7 +178,7 @@ export default function PrayersPage() {
 
       {/* Call for Donation for Ministries */}
       <section className="bg-blue-600 text-white py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/bg-pattern.png')] opacity-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 opacity-50 mix-blend-multiply"></div>
         <div className="container container-custom relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
              <div className="lg:w-2/3">
@@ -199,7 +200,7 @@ export default function PrayersPage() {
                             <span className="block text-xs text-blue-300">Account Number</span>
                             <div className="flex items-center gap-2">
                                 <span className="font-mono font-bold text-white text-xl">0974210249</span>
-                                <button onClick={() => {navigator.clipboard.writeText('0974210249'); alert('Copied!');}} className="text-blue-200 hover:text-white transition-colors">
+                                <button onClick={() => {navigator.clipboard.writeText('0974210249'); showAlert('Info', 'Copied!');}} className="text-blue-200 hover:text-white transition-colors">
                                     <i className="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -433,16 +434,6 @@ export default function PrayersPage() {
             </div>
          </div>
       )}
-
-      <ConfirmModal 
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onConfirm={async () => confirmLoginRedirect()}
-          title="Login Required"
-          message="You need to be logged in to share a prayer request with the community."
-          confirmText="Go to Login"
-          cancelText="Not Now"
-      />
     </main>
   );
 }

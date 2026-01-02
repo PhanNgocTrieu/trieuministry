@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, addDoc, serverTimestamp } from "firebase/firestore";
 import TableSkeleton from "@/components/admin/TableSkeleton";
-import ConfirmModal from "@/components/admin/ConfirmModal";
 import { useAuth } from "@/context/AuthContext";
+import { useModal } from "@/context/ModalContext";
 
 interface PrayerData {
     id: string;
@@ -29,6 +29,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleteId, setDeleteId] = useState<string | null>(null);
+    const { showAlert, showConfirm } = useModal();
 
     // Create Modal State
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -102,27 +103,30 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
             fetchPrayers(); // Refresh
         } catch (error) {
             console.error(error);
-            alert("Error creating prayer request");
+            showAlert("Error", "Error creating prayer request");
         } finally {
             setCreating(false);
         }
     };
 
     const handleDelete = (id: string) => {
-        setDeleteId(id);
-    };
-
-    const confirmDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteDoc(doc(db, "prayers", deleteId));
-            setPrayers(prayers.filter(p => p.id !== deleteId));
-        } catch (error) {
-            console.error("Error deleting prayer:", error);
-            alert("Failed to delete prayer");
-        } finally {
-            setDeleteId(null);
-        }
+        showConfirm(
+            "Delete Prayer Request",
+            "Are you sure you want to delete this prayer request? This action cannot be undone.",
+            async () => {
+                 try {
+                    await deleteDoc(doc(db, "prayers", id));
+                    setPrayers(prev => prev.filter(p => p.id !== id));
+                    showAlert("Success", "Prayer request deleted.");
+                } catch (error) {
+                    console.error("Error deleting prayer:", error);
+                    showAlert("Error", "Failed to delete prayer");
+                }
+            },
+            true,
+            "Delete",
+            "Cancel"
+        );
     };
 
     const handleStatusChange = async (id: string, newStatus: 'pending' | 'prayed' | 'answered') => {
@@ -131,7 +135,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
             setPrayers(prayers.map(p => p.id === id ? { ...p, status: newStatus } : p));
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Failed to update status");
+            showAlert("Error", "Failed to update status");
         }
     };
 
@@ -304,16 +308,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                 </div>
             )}
 
-            <ConfirmModal 
-                isOpen={!!deleteId}
-                onClose={() => setDeleteId(null)}
-                onConfirm={confirmDelete}
-                title="Delete Prayer Request"
-                message="Are you sure you want to delete this prayer request? This action cannot be undone."
-                confirmText="Delete"
-                cancelText="Cancel"
-                isDangerous={true}
-            />
+
         </div>
     );
 }

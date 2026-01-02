@@ -5,6 +5,8 @@ import { storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import mammoth from 'mammoth';
 
+import { useModal } from '@/context/ModalContext';
+
 interface RichTextEditorProps {
     value: string;
     onChange: (html: string) => void;
@@ -16,7 +18,9 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     const fileInputRef = useRef<HTMLInputElement>(null);
     const docInputRef = useRef<HTMLInputElement>(null);
     const [isFocused, setIsFocused] = useState(false);
+
     const [isUploading, setIsUploading] = useState(false);
+    const { showAlert } = useModal();
 
     // Commands to execute
     const execCommand = (command: string, value: string | undefined = undefined) => {
@@ -50,7 +54,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
             });
         } catch (error) {
             console.error("Image upload failed", error);
-            alert("Failed to upload image.");
+            showAlert("Error", "Failed to upload image.");
             setIsUploading(false);
         }
     };
@@ -72,12 +76,12 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                     onChange(newContent);
                 } catch (err) {
                     console.error("Mammoth conversion error", err);
-                    alert("Failed to convert Word document.");
+                    showAlert("Error", "Failed to convert Word document.");
                 }
             };
             reader.readAsArrayBuffer(file);
         } else {
-            alert("Only .docx files are supported for rich import currently.");
+            showAlert("Info", "Only .docx files are supported for rich import currently.");
         }
     };
 

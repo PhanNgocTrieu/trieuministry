@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -9,6 +11,7 @@ import AdminGuard from '@/components/admin/AdminGuard';
 import RichTextEditor from '@/components/RichTextEditor';
 import ImageUploader from '@/components/ImageUploader';
 import FileUploader from '@/components/FileUploader';
+import { useModal } from '@/context/ModalContext';
 
 interface MinistrySection {
     id: string;
@@ -58,6 +61,8 @@ export default function EditAppealPage() {
         fundraisingDescriptionEn: '',
     });
 
+    const { showAlert } = useModal(); // Added hook
+
     useEffect(() => {
         const fetchAppeal = async () => {
             try {
@@ -81,19 +86,19 @@ export default function EditAppealPage() {
                         fundraisingDescriptionEn: data.fundraisingDescriptionEn || "",
                     });
                 } else {
-                    alert("Appeal not found");
+                    showAlert("Error", "Appeal not found");
                     router.push("/admin/appeals");
                 }
             } catch (error) {
                 console.error("Error fetching appeal:", error);
-                alert("Error loading appeal details");
+                showAlert("Error", "Error loading appeal details");
             } finally {
                 setLoading(false);
             }
         };
 
         if (id) fetchAppeal();
-    }, [id, router]);
+    }, [id, router, showAlert]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -140,11 +145,11 @@ export default function EditAppealPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Appeal updated successfully!");
+            showAlert("Success", "Appeal updated successfully!");
             router.push("/admin/appeals");
         } catch (error) {
             console.error("Error updating appeal:", error);
-            alert("Failed to update appeal");
+            showAlert("Error", "Failed to update appeal");
         } finally {
             setSaving(false);
         }

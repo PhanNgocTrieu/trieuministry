@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
+import { useModal } from '@/context/ModalContext';
 
 interface Milestone {
     id: string;
@@ -21,6 +22,7 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
     const searchParams = useSearchParams();
     const editId = searchParams.get('id');
     const { user } = useAuth();
+    const { showAlert } = useModal();
 
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState('');
@@ -51,7 +53,7 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.userId && user && data.userId !== user.uid) {
-                        alert("You do not have permission to edit this goal.");
+                        showAlert("Error", "You do not have permission to edit this goal.");
                         router.push(basePath);
                         return;
                     }
@@ -115,7 +117,7 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) {
-            alert("You must be logged in.");
+            showAlert("Error", "You must be logged in.");
             return;
         }
         setLoading(true);
@@ -156,7 +158,7 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
             router.push(basePath);
         } catch (error) {
             console.error(error);
-            alert("Error saving goal");
+            showAlert("Error", "Error saving goal");
         } finally {
             setLoading(false);
         }

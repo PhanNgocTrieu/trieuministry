@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useLanguage } from '@/context/LanguageContext';
+import { useModal } from '@/context/ModalContext';
 
 interface Appeal {
     id: string;
@@ -29,6 +30,7 @@ export default function MinistryAppealDetailPage() {
     const params = useParams();
     const router = useRouter();
     const id = params.id as string;
+    const { showAlert } = useModal();
 
     const [appeal, setAppeal] = useState<Appeal | null>(null);
     const [loading, setLoading] = useState(true);
@@ -61,7 +63,7 @@ export default function MinistryAppealDetailPage() {
 
     const copyToClipboard = (text: string, message: string) => {
         navigator.clipboard.writeText(text);
-        alert(message);
+        showAlert("Info", message);
     };
 
     if (loading) {

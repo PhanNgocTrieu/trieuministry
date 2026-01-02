@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { db, auth } from "@/lib/firebase";
 import { collection, getDocs, deleteDoc, doc, query, orderBy, Timestamp, updateDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
-import Image from "next/image";
-import ConfirmModal from "@/components/admin/ConfirmModal";
 import TableSkeleton from "@/components/admin/TableSkeleton";
+import { useModal } from "@/context/ModalContext";
 
 interface UserData {
     uid: string;
@@ -22,6 +22,7 @@ interface UserData {
 export default function UsersManagementPage() {
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
+    const { showAlert, showConfirm } = useModal();
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -44,26 +45,8 @@ export default function UsersManagementPage() {
         fetchUsers();
     }, []);
 
-    const [modalConfig, setModalConfig] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-        isDangerous?: boolean;
-    }>({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => {},
-        isDangerous: false,
-    });
-
     const [pendingChanges, setPendingChanges] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState<string | null>(null);
-
-    const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
-        setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
-    };
 
     const handleRoleSelect = (uid: string, newRole: string) => {
         setPendingChanges(prev => ({ ...prev, [uid]: newRole }));
@@ -88,17 +71,17 @@ export default function UsersManagementPage() {
                 delete next[uid];
                 return next;
             });
-             alert("User role updated successfully!");
+             showAlert("Success", "User role updated successfully!");
         } catch (error) {
             console.error("Error updating role:", error);
-            alert("Failed to update role");
+            showAlert("Error", "Failed to update role");
         } finally {
             setSaving(null);
         }
     };
 
     const handleDeleteUser = async (uid: string) => {
-        openModal(
+        showConfirm(
             "Delete User Account",
             "WARNING: This will delete the user's login account (Firebase Auth) AND their profile data.\nThis action cannot be undone.\n\nProceed to delete?",
             async () => {
@@ -124,10 +107,10 @@ export default function UsersManagementPage() {
                     // 2. Delete from Firestore (Client-side)
                     await deleteDoc(doc(db, "users", uid));
                     setUsers(users.filter(u => u.uid !== uid));
-                    alert("User account deleted successfully.");
+                    showAlert("Success", "User account deleted successfully.");
                 } catch (error: any) {
                     console.error("Error deleting user:", error);
-                    alert(`Failed to delete user: ${error.message}`);
+                    showAlert("Error", `Failed to delete user: ${error.message}`);
                 }
             },
             true
@@ -135,7 +118,7 @@ export default function UsersManagementPage() {
     };
 
     const handleVerifyToggle = async (uid: string, currentStatus: boolean) => {
-        openModal(
+        showConfirm(
             currentStatus ? "Revoke Verification?" : "Manually Verify User?",
             currentStatus 
                 ? "This will revoke the manual verification status. If the user verified their email, they will still be verified." 
@@ -148,25 +131,25 @@ export default function UsersManagementPage() {
                     setUsers(users.map(u => u.uid === uid ? { ...u, adminVerified: !currentStatus } : u));
                 } catch (error) {
                     console.error("Error toggling verification:", error);
-                    alert("Failed to update verification status.");
+                    showAlert("Error", "Failed to update verification status.");
                 }
             },
-            currentStatus // Dangerous if revoking? Maybe not strictly.
+            currentStatus // 'isDangerous' flag reused here logic-wise
         );
     };
 
     const handleResetPassword = async (email: string) => {
-        if (!email) return alert("User has no email?");
-        openModal(
+        if (!email) return showAlert("Error", "User has no email?");
+        showConfirm(
             "Send Password Reset?",
             `Send a password reset email to ${email}?`,
             async () => {
                 try {
                     await sendPasswordResetEmail(auth, email);
-                    alert(`Password reset email sent to ${email}`);
+                    showAlert("Success", `Password reset email sent to ${email}`);
                 } catch (error: any) {
                     console.error("Error sending reset email:", error);
-                    alert(`Failed to send email: ${error.message}`);
+                    showAlert("Error", `Failed to send email: ${error.message}`);
                 }
             }
         );
@@ -186,14 +169,6 @@ export default function UsersManagementPage() {
 
     return (
         <div>
-            <ConfirmModal 
-                isOpen={modalConfig.isOpen}
-                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={modalConfig.onConfirm}
-                title={modalConfig.title}
-                message={modalConfig.message}
-                isDangerous={modalConfig.isDangerous}
-            />
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">User Management</h1>

@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import GoalCard from '@/components/admin/GoalCard';
 import { useAuth } from '@/context/AuthContext';
+import { useModal } from '@/context/ModalContext';
 
 interface Goal {
     id: string;
@@ -38,6 +39,7 @@ interface GoalsManagerProps {
 
 export default function GoalsManager({ basePath }: GoalsManagerProps) {
     const { user } = useAuth();
+    const { showAlert, showConfirm } = useModal();
     const [goals, setGoals] = useState<Goal[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedYear, setSelectedYear] = useState(0); // Default to All Years
@@ -72,9 +74,15 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
     }, [user]);
 
     const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this goal?")) {
-            await deleteDoc(doc(db, "goals", id));
-        }
+        showConfirm(
+            "Delete Goal",
+            "Are you sure you want to delete this goal?",
+            async () => {
+                 await deleteDoc(doc(db, "goals", id));
+                 showAlert("Success", "Goal deleted successfully.");
+            },
+            true
+        );
     };
 
     const handleUpdateGoal = async (id: string, data: Partial<Goal>) => {
@@ -82,7 +90,7 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
             await updateDoc(doc(db, "goals", id), data);
         } catch (error) {
             console.error("Error updating goal:", error);
-            alert("Failed to update goal progress");
+            showAlert("Error", "Failed to update goal progress");
         }
     };
 

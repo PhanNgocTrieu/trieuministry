@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, serverTimestamp, Timestamp, query, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
+import { useModal } from '@/context/ModalContext';
 
 interface ExpenseCategory {
     id: string;
@@ -23,6 +24,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
     const searchParams = useSearchParams();
     const editId = searchParams.get('id');
     const { user, isAdmin, isVolunteer } = useAuth();
+    const { showAlert } = useModal();
 
     const [scope, setScope] = useState<'personal' | 'ministry'>(defaultScope);
     const [type, setType] = useState<'expense' | 'income'>('expense');
@@ -76,7 +78,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                     const data = docSnap.data();
                     
                     if (data.userId && user && data.userId !== user.uid && !isAdmin) { // Admin can edit any
-                        alert("You do not have permission to edit this transaction.");
+                        showAlert("Error", "You do not have permission to edit this transaction.");
                         router.push(basePath);
                         return;
                     }
@@ -132,7 +134,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
             router.back(); 
         } catch (error) {
             console.error(error);
-            alert("Error saving transaction");
+            showAlert("Error", "Error saving transaction");
         } finally {
             setLoading(false);
         }

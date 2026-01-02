@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, deleteDoc, doc, updateDoc, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
-import ConfirmModal from "@/components/admin/ConfirmModal";
 import TableSkeleton from "@/components/admin/TableSkeleton";
+import { useModal } from "@/context/ModalContext";
 
 interface Ministry {
     id: string;
@@ -20,22 +20,7 @@ interface Ministry {
 export default function AdminMinistriesPage() {
     const [ministries, setMinistries] = useState<Ministry[]>([]);
     const [loading, setLoading] = useState(true);
-    const [modalConfig, setModalConfig] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-        isDangerous?: boolean;
-    }>({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => {},
-    });
-
-    const openModal = (title: string, message: string, onConfirm: () => void, isDangerous = false) => {
-        setModalConfig({ isOpen: true, title, message, onConfirm, isDangerous });
-    };
+    const { showAlert, showConfirm } = useModal();
 
     const fetchMinistries = async () => {
         setLoading(true);
@@ -60,16 +45,17 @@ export default function AdminMinistriesPage() {
     }, []);
 
     const handleDelete = async (id: string) => {
-        openModal(
+        showConfirm(
             "Delete Ministry",
             "Are you sure you want to delete this ministry? This action cannot be undone.",
             async () => {
                 try {
                     await deleteDoc(doc(db, "ministries", id));
                     setMinistries(ministries.filter(p => p.id !== id));
+                    showAlert("Success", "Ministry deleted successfully.");
                 } catch (error) {
                     console.error("Error deleting ministry:", error);
-                    alert("Failed to delete ministry");
+                    showAlert("Error", "Failed to delete ministry");
                 }
             },
             true
@@ -82,7 +68,7 @@ export default function AdminMinistriesPage() {
             setMinistries(ministries.map(a => a.id === id ? { ...a, status: newStatus as any } : a));
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Failed to update status");
+            showAlert("Error", "Failed to update status");
         }
     };
 
@@ -99,14 +85,6 @@ export default function AdminMinistriesPage() {
 
     return (
         <div>
-            <ConfirmModal 
-                isOpen={modalConfig.isOpen}
-                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={modalConfig.onConfirm}
-                title={modalConfig.title}
-                message={modalConfig.message}
-                isDangerous={modalConfig.isDangerous}
-            />
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">Ministry Management</h1>

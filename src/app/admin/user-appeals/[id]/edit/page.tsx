@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import AdminGuard from '@/components/admin/AdminGuard';
 import ImageUploader from '@/components/ImageUploader';
+import { useModal } from '@/context/ModalContext';
 
 export default function EditUserAppealPage() {
     const router = useRouter();
@@ -30,6 +31,8 @@ export default function EditUserAppealPage() {
         bankQR: ''
     });
 
+    const { showAlert } = useModal();
+
     useEffect(() => {
         const fetchAppeal = async () => {
             try {
@@ -50,18 +53,19 @@ export default function EditUserAppealPage() {
                         bankQR: data.bankQR || ''
                     });
                 } else {
-                    alert("Appeal not found");
+                    showAlert("Error", "Appeal not found");
                     router.push("/admin/user-appeals");
                 }
             } catch (error) {
                 console.error("Error fetching appeal:", error);
+                showAlert("Error", "Error fetching appeal");
             } finally {
                 setFetching(false);
             }
         };
 
         if (id) fetchAppeal();
-    }, [id, router]);
+    }, [id, router, showAlert]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -78,11 +82,11 @@ export default function EditUserAppealPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Request updated successfully");
+            showAlert("Success", "Request updated successfully");
             router.push("/admin/user-appeals");
         } catch (error) {
             console.error("Error updating appeal:", error);
-            alert("Failed to update appeal");
+            showAlert("Error", "Failed to update appeal");
         } finally {
             setLoading(false);
         }

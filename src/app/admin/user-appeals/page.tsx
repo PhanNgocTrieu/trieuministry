@@ -5,7 +5,7 @@ import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where, updateDo
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AdminGuard from '@/components/admin/AdminGuard';
-import ConfirmModal from '@/components/admin/ConfirmModal';
+import { useModal } from '@/context/ModalContext';
 
 interface Appeal {
     id: string;
@@ -24,7 +24,7 @@ export default function AdminUserAppealsPage() {
     const [appeals, setAppeals] = useState<Appeal[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const { showAlert, showConfirm } = useModal();
 
     useEffect(() => {
         // Fetch appeals that are NOT 'official' (aka user requests)
@@ -58,20 +58,26 @@ export default function AdminUserAppealsPage() {
             await updateDoc(doc(db, "appeals", id), { status: newStatus });
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Failed to update status");
+            showAlert("Error", "Failed to update status");
         }
     };
 
-    const confirmDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteDoc(doc(db, "appeals", deleteId));
-        } catch (error) {
-            console.error("Error deleting appeal:", error);
-            alert("Failed to delete appeal");
-        } finally {
-            setDeleteId(null);
-        }
+    const handleDeleteClick = (id: string) => {
+        showConfirm(
+            "Delete Request",
+            "Are you sure you want to delete this request?",
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "appeals", id));
+                    showAlert("Success", "Request deleted successfully.");
+                } catch (error) {
+                    console.error("Error deleting appeal:", error);
+                    showAlert("Error", "Failed to delete appeal");
+                }
+            },
+            true,
+            "Delete"
+        );
     };
 
     const filteredAppeals = appeals.filter(appeal => {
@@ -169,7 +175,7 @@ export default function AdminUserAppealsPage() {
                                                             <i className="fas fa-edit"></i>
                                                         </Link>
                                                         <button 
-                                                            onClick={() => setDeleteId(appeal.id)}
+                                                            onClick={() => handleDeleteClick(appeal.id)}
                                                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                                                             title="Delete"
                                                         >
@@ -192,16 +198,6 @@ export default function AdminUserAppealsPage() {
                         </div>
                     </div>
                 )}
-
-                <ConfirmModal 
-                    isOpen={!!deleteId}
-                    onClose={() => setDeleteId(null)}
-                    onConfirm={confirmDelete}
-                    title="Delete Request"
-                    message="Are you sure you want to delete this request?"
-                    confirmText="Delete"
-                    isDangerous={true}
-                />
             </div>
         </AdminGuard>
     );

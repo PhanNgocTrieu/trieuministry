@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
-import ConfirmModal from '@/components/admin/ConfirmModal';
+import { useModal } from '@/context/ModalContext';
 
 interface ExpenseCategory {
     id: string;
@@ -23,6 +23,7 @@ interface CategoriesManagerProps {
 
 export default function CategoriesManager({ basePath, scope }: CategoriesManagerProps) {
     const { user, isAdmin } = useAuth();
+    const { showAlert, showConfirm } = useModal();
     const router = useRouter();
 
     const [categories, setCategories] = useState<ExpenseCategory[]>([]);
@@ -34,9 +35,6 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
     const [formName, setFormName] = useState('');
     const [formColor, setFormColor] = useState('#3B82F6');
     const [formType, setFormType] = useState<'income' | 'expense'>('expense');
-    
-    // Delete Modal
-    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; name: string }>({ isOpen: false, id: '', name: '' });
 
     useEffect(() => {
         if (!user) return;
@@ -123,26 +121,30 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
             }
             setIsModalOpen(false);
             fetchCategories();
+            showAlert("Success", "Category saved successfully.");
         } catch (error) {
             console.error("Error saving category:", error);
-            alert("Failed to save category");
+            showAlert("Error", "Failed to save category");
         }
     };
 
     const handleDelete = (id: string, name: string) => {
-        setDeleteModal({ isOpen: true, id, name });
-    };
-
-    const confirmDelete = async () => {
-        if (!deleteModal.id) return;
-        try {
-            await deleteDoc(doc(db, "expense_categories", deleteModal.id));
-            setDeleteModal({ isOpen: false, id: '', name: '' });
-            fetchCategories();
-        } catch (error) {
-            console.error("Error deleting category:", error);
-            alert("Failed to delete category");
-        }
+        showConfirm(
+            "Delete Category",
+            `Are you sure you want to delete "${name}"?`,
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "expense_categories", id));
+                    fetchCategories();
+                    showAlert("Success", "Category deleted successfully.");
+                } catch (error) {
+                    console.error("Error deleting category:", error);
+                    showAlert("Error", "Failed to delete category");
+                }
+            },
+            true,
+            "Delete"
+        );
     };
 
     const incomeCats = categories.filter(c => c.type === 'income');
@@ -273,15 +275,7 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
                 </div>
             )}
 
-            <ConfirmModal
-                isOpen={deleteModal.isOpen}
-                onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
-                onConfirm={confirmDelete}
-                title="Delete Category"
-                message={`Are you sure you want to delete "${deleteModal.name}"?`}
-                confirmText="Delete"
-                isDangerous={true}
-            />
+
         </div>
     );
 }

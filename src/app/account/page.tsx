@@ -4,18 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { updateProfile } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { useModal } from '@/context/ModalContext';
+import { updateProfile } from 'firebase/auth'; // Still need updateProfile import? Yes for type or explicit call if needed, but we use context now. Actually context handles it locally but let's keep it clean.
+import { auth, db } from '@/lib/firebase'; // Keep for other usages if any
 import ImageUploader from '@/components/ImageUploader';
 
-import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
-
 export default function AccountPage() {
-  // ... existing hook calls
-  const { user, loading, logout, resetPassword } = useAuth();
+  const { user, loading, logout, resetPassword, updateUser } = useAuth();
   const router = useRouter();
+  const { showAlert, showConfirm } = useModal();
 
   // Settings State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -24,9 +21,6 @@ export default function AccountPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   
-  // Modal State
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
@@ -43,47 +37,35 @@ export default function AccountPage() {
 
       setIsSaving(true);
       try {
-          // 1. Update Auth Profile
-          await updateProfile(auth.currentUser, {
-              displayName: newName,
-              photoURL: newPhotoUrl
-          });
-
-          // 2. Update Firestore User Doc
-          const userRef = doc(db, 'users', auth.currentUser.uid);
-          await updateDoc(userRef, {
-              displayName: newName,
-              photoURL: newPhotoUrl
-          });
-
-          // 3. User context auto-updates via onAuthStateChanged or we can force reload
-          // However, for immediate UI feedback, we rely on the auth state listener.
+          await updateUser(newName, newPhotoUrl);
           
           setIsEditingProfile(false);
-          alert("Profile updated successfully!");
+          showAlert("Success", "Profile updated successfully!");
       } catch (error) {
           console.error("Error updating profile:", error);
-          alert("Failed to update profile.");
+          showAlert("Error", "Failed to update profile.");
       } finally {
           setIsSaving(false);
       }
   };
 
   const handlePasswordResetClick = () => {
-      setShowResetConfirm(true);
-  };
-
-  const confirmPasswordReset = async () => {
       if (!user?.email) return;
-      try {
-          await resetPassword(user.email);
-          alert("Password reset email sent! Please check your inbox.");
-      } catch (error) {
-          console.error("Error sending reset email:", error);
-          alert("Failed to send reset email.");
-      } finally {
-          setShowResetConfirm(false);
-      }
+      showConfirm(
+          "Reset Password",
+          `Are you sure you want to send a password reset email to ${user.email}?`,
+          async () => {
+              try {
+                  await resetPassword(user.email!);
+                  showAlert("Success", "Password reset email sent! Please check your inbox.");
+              } catch (error) {
+                  console.error("Error sending reset email:", error);
+                  showAlert("Error", "Failed to send reset email.");
+              }
+          },
+          false,
+          "Send Email"
+      );
   };
 
   const handleImageUploaded = (url: string) => {
@@ -103,18 +85,15 @@ export default function AccountPage() {
   return (
     <main className="min-h-screen pt-24 bg-gray-50 pb-12">
       <div className="container mx-auto px-4 max-w-4xl">
-         {/* ... (existing content) ... */}
          <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* ... user profile header ... */}
             <div className="flex-shrink-0">
                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 relative group">
                   {user.photoURL ? (
-                    <Image 
-                       src={user.photoURL} 
-                       alt={user.displayName || 'User'} 
-                       fill
-                       className="object-cover"
-                    />
+                     <img 
+                        src={user.photoURL} 
+                        alt={user.displayName || 'User'} 
+                        className="w-full h-full object-cover"
+                     />
                   ) : (
                     <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-3xl font-bold">
                        {user.email?.charAt(0).toUpperCase()}
@@ -187,7 +166,7 @@ export default function AccountPage() {
                   </li>
                   <li>
                      <button 
-                        onClick={handlePasswordResetClick} // Updated handler
+                        onClick={handlePasswordResetClick} 
                         className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                      >
                         <span className="font-medium text-gray-700">Change Password</span>
@@ -225,17 +204,13 @@ export default function AccountPage() {
                 </div>
                 <form onSubmit={handleUpdateProfile} className="p-6 space-y-4">
                     <div className="flex flex-col items-center mb-4">
-                        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-3 relative">
-                            {newPhotoUrl ? (
-                                <img src={newPhotoUrl} alt="Preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
-                                    <i className="fas fa-user text-3xl"></i>
-                                </div>
-                            )}
-                        </div>
                         <div className="w-full">
-                            <ImageUploader onImageUploaded={handleImageUploaded} folder="users" />
+                            <label className="block text-sm font-bold text-gray-700 mb-2 text-center">Profile Photo</label>
+                            <ImageUploader 
+                                currentImage={newPhotoUrl}
+                                onImageUploaded={handleImageUploaded} 
+                                folder="users" 
+                            />
                         </div>
                     </div>
 
@@ -271,16 +246,6 @@ export default function AccountPage() {
             </div>
         </div>
       )}
-
-      {/* NEW Confirm Modal for Password Reset */}
-      <ConfirmModal
-          isOpen={showResetConfirm}
-          onClose={() => setShowResetConfirm(false)}
-          onConfirm={confirmPasswordReset}
-          title="Reset Password"
-          message={`Are you sure you want to send a password reset email to ${user?.email}?`}
-          confirmText="Send Email"
-      />
     </main>
   );
 }

@@ -276,6 +276,7 @@
             "not_prayed": "Chưa cầu nguyện",
             "prayed": "Đã cầu nguyện",
             "answered": "Đã được đáp",
+            "pending": "Đang chờ",
             "update_header": "Cập nhật trạng thái"
         },
         "modal": {

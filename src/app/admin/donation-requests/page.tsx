@@ -17,27 +17,24 @@ interface DonationRequest {
     type?: string; 
 }
 
-import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+import { useModal } from '@/context/ModalContext';
 
-interface ModalConfig {
-    isOpen: boolean;
+interface DonationRequest {
+    id: string;
     title: string;
-    message: string;
-    action: () => Promise<void>;
-    isDangerous: boolean;
-    confirmText?: string;
+    content: string;
+    name: string; // Submitter name
+    phone: string;
+    target: string; // Target amount
+    status: string; // 'published', 'pending', 'rejected'
+    createdAt: any;
+    type?: string; 
 }
 
 export default function DonationRequestsPage() {
     const [requests, setRequests] = useState<DonationRequest[]>([]);
     const [loading, setLoading] = useState(true);
-    const [modalConfig, setModalConfig] = useState<ModalConfig>({
-        isOpen: false,
-        title: '',
-        message: '',
-        action: async () => {},
-        isDangerous: false
-    });
+    const { showAlert, showConfirm } = useModal();
 
     useEffect(() => {
         // ... (keep existing useEffect logic)
@@ -67,41 +64,41 @@ export default function DonationRequestsPage() {
                 status: 'published',
                 type: 'user_request'
             });
+            showAlert("Success", "Request approved and published.");
         } catch (error) {
             console.error("Error approving:", error);
-            alert("Failed to approve request"); // Fallback alert for error
+            showAlert("Error", "Failed to approve request");
         }
     };
 
     const performReject = async (id: string) => {
         try {
             await deleteDoc(doc(db, "appeals", id));
+            showAlert("Success", "Request rejected and deleted.");
         } catch (error) {
             console.error("Error deleting:", error);
-            alert("Failed to delete request"); // Fallback alert for error
+            showAlert("Error", "Failed to delete request");
         }
     };
 
     const handleApproveClick = (id: string) => {
-        setModalConfig({
-            isOpen: true,
-            title: "Approve Request",
-            message: "Approve this request? It will be published to the website.",
-            action: () => performApprove(id),
-            isDangerous: false,
-            confirmText: "Approve"
-        });
+        showConfirm(
+            "Approve Request",
+            "Approve this request? It will be published to the website.",
+            () => performApprove(id),
+            false,
+            "Approve"
+        );
     };
 
     const handleRejectClick = (id: string) => {
-        setModalConfig({
-            isOpen: true,
-            title: "Reject Request",
-            message: "Reject (Delete) this request? This action cannot be undone.",
-            action: () => performReject(id),
-            isDangerous: true,
-            confirmText: "Reject & Delete"
-        });
+        showConfirm(
+            "Reject Request",
+            "Reject (Delete) this request? This action cannot be undone.",
+            () => performReject(id),
+            true,
+            "Reject & Delete"
+        );
     };
 
     const formatDate = (timestamp: any) => {
@@ -196,16 +193,6 @@ export default function DonationRequestsPage() {
                         </div>
                     </div>
                 )}
-
-                <ConfirmModal
-                    isOpen={modalConfig.isOpen}
-                    onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
-                    onConfirm={modalConfig.action}
-                    title={modalConfig.title}
-                    message={modalConfig.message}
-                    isDangerous={modalConfig.isDangerous}
-                    confirmText={modalConfig.confirmText}
-                />
             </div>
         </AdminGuard>
     );

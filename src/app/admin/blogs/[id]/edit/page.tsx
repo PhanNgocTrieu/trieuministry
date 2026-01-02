@@ -5,11 +5,13 @@ import { useRouter, useParams } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
+import { useModal } from '@/context/ModalContext';
 
 export default function EditBlogPage() {
     const router = useRouter();
     const params = useParams();
     const id = params.id as string;
+    const { showAlert } = useModal();
     
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -43,12 +45,12 @@ export default function EditBlogPage() {
                         status: data.status || "pending"
                     });
                 } else {
-                    alert("Blog post not found");
+                    showAlert("Error", "Blog post not found");
                     router.push("/admin/blogs");
                 }
             } catch (error) {
                 console.error("Error fetching blog:", error);
-                alert("Error loading blog details");
+                showAlert("Error", "Error loading blog details");
             } finally {
                 setLoading(false);
             }
@@ -77,7 +79,7 @@ export default function EditBlogPage() {
             // Router push is handled in modal close
         } catch (error) {
             console.error("Error updating blog:", error);
-            alert("Failed to update blog post");
+            showAlert("Error", "Failed to update blog post");
         } finally {
             setSaving(false);
         }

@@ -29,6 +29,7 @@ interface AuthContextType {
     isVolunteer: boolean;
     isVerified: boolean;
     role: string | null;
+    updateUser: (displayName: string, photoURL: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -207,7 +208,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAdmin,
         isVolunteer,
         isVerified,
-        role
+        role,
+        updateUser: async (displayName: string, photoURL: string) => {
+            if (auth.currentUser) {
+                await updateProfile(auth.currentUser, { displayName, photoURL });
+                await auth.currentUser.reload();
+                // Create a new object to force re-render
+                setUser({ ...auth.currentUser });
+                // Also sync to firestore
+                await syncUserToFirestore(auth.currentUser);
+            }
+        }
     }}>
             {children}
         </AuthContext.Provider>

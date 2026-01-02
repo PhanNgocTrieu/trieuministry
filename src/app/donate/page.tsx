@@ -19,11 +19,14 @@ interface Appeal {
     bankQR?: string;
 }
 
+import { useModal } from '@/context/ModalContext';
+
 export default function DonatePage() {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appeals, setAppeals] = useState<Appeal[]>([]);
+  const { showAlert } = useModal();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -61,7 +64,7 @@ export default function DonatePage() {
 
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
-    alert(message); 
+    showAlert("Info", message); 
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -80,7 +83,7 @@ export default function DonatePage() {
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         });
-        alert("Your appeal request has been submitted successfully! We will review it shortly.");
+        showAlert("Success", "Your appeal request has been submitted successfully! We will review it shortly.");
         setShowModal(false);
         setFormData({
             name: '',
@@ -95,7 +98,7 @@ export default function DonatePage() {
         });
     } catch (error) {
         console.error("Error submitting appeal:", error);
-        alert("Failed to submit appeal. Please try again.");
+        showAlert("Error", "Failed to submit appeal. Please try again.");
     } finally {
         setLoading(false);
     }

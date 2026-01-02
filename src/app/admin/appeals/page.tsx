@@ -15,15 +15,13 @@ interface Appeal {
     type?: string; // 'official' vs 'user_request'
 }
 
-import ConfirmModal from '@/components/admin/ConfirmModal'; // Added import
+import { useModal } from '@/context/ModalContext';
 
 export default function AdminAppealsPage() {
     const [appeals, setAppeals] = useState<Appeal[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, published, pending
-    
-    // Modal State
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const { showAlert, showConfirm } = useModal();
 
     useEffect(() => {
         const q = query(collection(db, "appeals"), where("type", "==", "official"), orderBy("createdAt", "desc"));
@@ -44,19 +42,21 @@ export default function AdminAppealsPage() {
     }, []);
 
     const handleDeleteClick = (id: string) => {
-        setDeleteId(id);
-    };
-
-    const confirmDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteDoc(doc(db, "appeals", deleteId));
-        } catch (error) {
-            console.error("Error deleting appeal:", error);
-            alert("Failed to delete appeal");
-        } finally {
-            setDeleteId(null);
-        }
+        showConfirm(
+            "Delete Appeal",
+            "Are you sure you want to delete this appeal? This action cannot be undone.",
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "appeals", id));
+                    showAlert("Success", "Appeal deleted successfully.");
+                } catch (error) {
+                    console.error("Error deleting appeal:", error);
+                    showAlert("Error", "Failed to delete appeal");
+                }
+            },
+            true, // isDangerous
+            "Delete" // confirmText
+        );
     };
 
     const filteredAppeals = appeals.filter(appeal => {
@@ -193,16 +193,6 @@ export default function AdminAppealsPage() {
                         </div>
                     </div>
                 )}
-
-                <ConfirmModal 
-                    isOpen={!!deleteId}
-                    onClose={() => setDeleteId(null)}
-                    onConfirm={confirmDelete}
-                    title="Delete Appeal"
-                    message="Are you sure you want to delete this appeal? This action cannot be undone."
-                    confirmText="Delete"
-                    isDangerous={true}
-                />
             </div>
         </AdminGuard>
     );

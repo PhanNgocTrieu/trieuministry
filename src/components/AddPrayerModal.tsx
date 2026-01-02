@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useModal } from "@/context/ModalContext";
 
 interface AddPrayerModalProps {
     isOpen: boolean;
@@ -12,6 +13,7 @@ interface AddPrayerModalProps {
 
 export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayerModalProps) {
     const [loading, setLoading] = useState(false);
+    const { showAlert } = useModal();
     const [formData, setFormData] = useState({
         name: "",
         content: ""
@@ -37,7 +39,7 @@ export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayer
             onClose();
         } catch (error) {
             console.error("Error adding prayer:", error);
-            alert("Failed to add prayer request.");
+            showAlert("Error", "Failed to add prayer request.");
         } finally {
             setLoading(false);
         }

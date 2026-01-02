@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
+import { useModal } from "@/context/ModalContext";
 
 interface MinistryImage {
   url: string;
@@ -16,6 +17,7 @@ export default function EditMinistryPage() {
     const router = useRouter();
     const params = useParams();
     const id = params.id as string;
+    const { showAlert } = useModal();
     
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -48,19 +50,19 @@ export default function EditMinistryPage() {
                         setImages(data.images);
                     }
                 } else {
-                    alert("Ministry not found");
+                    showAlert("Error", "Ministry not found");
                     router.push("/admin/ministries");
                 }
             } catch (error) {
                 console.error("Error fetching ministry:", error);
-                alert("Error loading ministry details");
+                showAlert("Error", "Error loading ministry details");
             } finally {
                 setLoading(false);
             }
         };
 
         if (id) fetchMinistry();
-    }, [id, router]);
+    }, [id, router, showAlert]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -101,11 +103,11 @@ export default function EditMinistryPage() {
                 updatedAt: serverTimestamp()
             });
 
-            alert("Ministry updated successfully!");
+            showAlert("Success", "Ministry updated successfully!");
             router.push("/admin/ministries");
         } catch (error) {
             console.error("Error updating ministry:", error);
-            alert("Failed to update ministry");
+            showAlert("Error", "Failed to update ministry");
         } finally {
             setSaving(false);
         }
