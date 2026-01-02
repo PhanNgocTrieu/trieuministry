@@ -226,7 +226,7 @@ export default function EditAppealPage() {
                                             </button>
                                         </div>
                                     ) : (
-                                        <ImageUploader onImageUploaded={(url) => setFormData({...formData, coverImage: url})} folder="appeals_covers" />
+                                        <ImageUploader onImageUploaded={(url) => setFormData(prev => ({...prev, coverImage: url}))} folder="appeals_covers" />
                                     )}
                                 </div>
                             </div>
@@ -391,7 +391,7 @@ export default function EditAppealPage() {
                                  <label className="block text-sm font-bold text-gray-700 mb-2">Vietnamese PDF</label>
                                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                                     <FileUploader 
-                                        onFileUploaded={(url) => setFormData({...formData, pdfUrl: url})} 
+                                        onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrl: url}))} 
                                         folder="appeals_pdfs" 
                                         label="Click to upload Vietnamese PDF"
                                         currentFile={formData.pdfUrl}
@@ -402,7 +402,7 @@ export default function EditAppealPage() {
                                  <label className="block text-sm font-bold text-gray-700 mb-2">English PDF</label>
                                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                                     <FileUploader 
-                                        onFileUploaded={(url) => setFormData({...formData, pdfUrlEn: url})} 
+                                        onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrlEn: url}))} 
                                         folder="appeals_pdfs" 
                                         label="Click to upload English PDF"
                                         currentFile={formData.pdfUrlEn}

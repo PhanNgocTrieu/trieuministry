@@ -26,6 +26,11 @@ export default function FileUploader({
     const [error, setError] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Sync fileUrl with currentFile prop
+    React.useEffect(() => {
+        setFileUrl(currentFile || '');
+    }, [currentFile]);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;

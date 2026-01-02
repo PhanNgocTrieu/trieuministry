@@ -132,7 +132,7 @@ export default function SponsorsPage() {
     const generateMilestones = (start: string, end: string, type: string) => {
         if (!start) return [];
         
-        const milestones = [];
+        const milestones: { key: string; label: string }[] = [];
         const startDate = new Date(start);
         const endDate = end ? new Date(end) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // Default 1 year if no end
 
