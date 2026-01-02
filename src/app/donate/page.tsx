@@ -1,15 +1,30 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import ImageUploader from '@/components/ImageUploader';
+import Link from 'next/link';
+
+interface Appeal {
+    id: string;
+    title: string;
+    content: string;
+    target: number;
+    currentAmount: number;
+    name: string;
+    createdAt: any;
+    bankQR?: string;
+}
 
 export default function DonatePage() {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [appeals, setAppeals] = useState<Appeal[]>([]);
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -18,8 +33,31 @@ export default function DonatePage() {
     content: '',
     bankName: '',
     bankAccount: '',
-    bankOwner: ''
+    bankOwner: '',
+    bankQR: ''
   });
+
+  useEffect(() => {
+    // Fetch Published User Appeals
+    const q = query(
+        collection(db, "appeals"), 
+        where("type", "==", "user_request"),
+        where("status", "==", "published"),
+        orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const list: Appeal[] = [];
+        snapshot.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() } as Appeal);
+        });
+        setAppeals(list);
+    }, (error) => {
+        console.error("Error fetching appeals:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
@@ -37,7 +75,7 @@ export default function DonatePage() {
         await addDoc(collection(db, "appeals"), {
             ...formData,
             status: "pending", 
-            type: "user_request", // Explicitly mark as user request
+            type: "user_request", 
             currentAmount: 0,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
@@ -52,7 +90,8 @@ export default function DonatePage() {
             content: '',
             bankName: '',
             bankAccount: '',
-            bankOwner: ''
+            bankOwner: '',
+            bankQR: ''
         });
     } catch (error) {
         console.error("Error submitting appeal:", error);
@@ -228,10 +267,56 @@ export default function DonatePage() {
                </button>
             </div>
             
-            <div className="text-center py-12 text-gray-400">
-               <p className="mb-4 text-6xl opacity-20"><i className="fas fa-inbox"></i></p>
-               <p>{t('donate.js_appeals.empty')}</p>
-            </div>
+            {appeals.length > 0 ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {appeals.map((appeal) => (
+                      <div key={appeal.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group">
+                         {/* Card Header */}
+                         <div className="p-6 pb-4">
+                            <div className="flex justify-between items-start mb-3">
+                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('donate.ministry.appeal')}</span>
+                                <span className="text-xs text-gray-400">
+                                    {appeal.createdAt?.seconds ? new Date(appeal.createdAt.seconds * 1000).toLocaleDateString() : ''}
+                                </span>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{appeal.title}</h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs">
+                                    <i className="fas fa-user"></i>
+                                </div>
+                                <span className="font-bold">{appeal.name}</span>
+                            </div>
+                            <p className="text-gray-600 text-sm line-clamp-3 mb-4">{appeal.content}</p>
+                         </div>
+
+                         {/* Funding Progress (Optional - simplified for now) */}
+                         <div className="px-6 pb-6">
+                             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                 <div className="flex justify-between items-end mb-2">
+                                     <div>
+                                         <span className="text-xs text-gray-500 uppercase font-bold block mb-1">Target Goal</span>
+                                         <span className="text-lg font-bold text-gray-900">
+                                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appeal.target)}
+                                         </span>
+                                     </div>
+                                     <Link 
+                                         href={`/ministry/appeals/${appeal.id}`} 
+                                         className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md group-hover:scale-110 duration-200"
+                                     >
+                                         <i className="fas fa-arrow-right"></i>
+                                     </Link>
+                                 </div>
+                             </div>
+                         </div>
+                      </div>
+                  ))}
+               </div>
+            ) : (
+                <div className="text-center py-12 text-gray-400">
+                    <p className="mb-4 text-6xl opacity-20"><i className="fas fa-inbox"></i></p>
+                    <p>{t('donate.js_appeals.empty')}</p>
+                </div>
+            )}
          </div>
       </section>
 
@@ -283,10 +368,22 @@ export default function DonatePage() {
 
                  <div className="pt-4 border-t border-gray-100">
                     <h6 className="font-bold text-gray-700 mb-3">{t('donate.form.bank_info')}</h6>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <input type="text" name="bankName" placeholder={t('donate.form.bank_name')} value={formData.bankName} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                         <input type="text" name="bankAccount" placeholder={t('donate.form.bank_account')} value={formData.bankAccount} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                         <input type="text" name="bankOwner" placeholder={t('donate.form.bank_owner')} value={formData.bankOwner} onChange={handleChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    
+                    {/* QR Code Upload */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">QR Code Image</label>
+                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 bg-gray-50">
+                             <ImageUploader 
+                                 onImageUploaded={(url) => setFormData({...formData, bankQR: url})} 
+                                 folder="appeals_qr"
+                                 currentImage={formData.bankQR}
+                             />
+                        </div>
                     </div>
                  </div>
 

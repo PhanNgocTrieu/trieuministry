@@ -162,7 +162,7 @@ export default function AdminUserAppealsPage() {
                                                 <td className="px-6 py-4 text-right">
                                                     <div className="flex justify-end gap-2">
                                                         <Link 
-                                                            href={`/admin/appeals/${appeal.id}/edit`}
+                                                            href={`/admin/user-appeals/${appeal.id}/edit`}
                                                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                                                             title="Edit Details"
                                                         >
