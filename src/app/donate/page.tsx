@@ -164,26 +164,24 @@ export default function DonatePage() {
             </div>
 
             {/* QR Code */}
-             <div className="flex items-center justify-center">
-               <div className="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full text-center">
-                  <h5 className="font-bold text-gray-500 mb-6 uppercase tracking-widest">{t('donate.qr.title')}</h5>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 inline-block mb-4">
-                     <div className="relative w-48 h-48">
-                        <Image 
-                           src="/donate/personal_qr.jpg" 
-                           alt="QR Code" 
-                           fill
-                           sizes="192px"
-                           className="object-contain rounded-lg"
-                        />
-                     </div>
+            <div className="bg-white p-8 rounded-2xl shadow-lg w-full h-full text-center flex flex-col justify-center items-center transform transition hover:-translate-y-1 hover:shadow-xl duration-300">
+               <h5 className="font-bold text-gray-500 mb-6 uppercase tracking-widest">{t('donate.qr.title')}</h5>
+               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 inline-block mb-4">
+                  <div className="relative w-64 h-64">
+                     <Image 
+                        src="/donate/personal_qr.jpg" 
+                        alt="QR Code" 
+                        fill
+                        sizes="256px"
+                        className="object-contain rounded-lg"
+                     />
                   </div>
-                  <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
-                     <i className="fas fa-camera"></i>
-                     {t('donate.qr.instruction')}
-                  </p>
                </div>
-             </div>
+               <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
+                  <i className="fas fa-camera"></i>
+                  {t('donate.qr.instruction')}
+               </p>
+            </div>
           </div>
           
            {/* Thank You Note */}
