@@ -289,7 +289,11 @@ const Navbar = () => {
                   {t('nav.login')}
                </Link>
              )}
-            <Link href="/donate" className="w-full text-center px-5 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-bold">
+            <Link 
+              href="/donate" 
+              className="w-full text-center px-5 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-bold"
+              onClick={() => setIsOpen(false)}
+            >
               {t('nav.donate')}
             </Link>
              <div className="flex justify-center gap-4 py-2">
