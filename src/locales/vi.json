@@ -331,6 +331,7 @@
             "name": "Họ và tên",
             "phone": "SĐT / Zalo",
             "target": "Mục tiêu (VNĐ)",
+            "current_amount": "Đã kêu gọi (VNĐ)",
             "appeal_title": "Tiêu đề kêu gọi",
             "content": "Nội dung chi tiết",
             "bank_info": "Thông tin nhận (Nếu có)",

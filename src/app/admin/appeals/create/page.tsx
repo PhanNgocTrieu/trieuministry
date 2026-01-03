@@ -34,6 +34,8 @@ interface AppealFormData {
     fundraisingImages: string[];
     fundraisingDescription: string;
     fundraisingDescriptionEn: string;
+    currentAmount: number;
+    target: number;
 }
 
 export default function CreateAppealPage() {
@@ -57,6 +59,8 @@ export default function CreateAppealPage() {
         fundraisingImages: [], 
         fundraisingDescription: '',
         fundraisingDescriptionEn: '',
+        currentAmount: 0,
+        target: 0
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -202,7 +206,7 @@ export default function CreateAppealPage() {
                                     <input 
                                         type="number" 
                                         name="target" 
-                                        value={(formData as any).target || ''} 
+                                        value={formData.target} 
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="e.g. 10000000"
@@ -213,7 +217,7 @@ export default function CreateAppealPage() {
                                     <input 
                                         type="number" 
                                         name="currentAmount" 
-                                        value={(formData as any).currentAmount || ''} 
+                                        value={formData.currentAmount} 
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="e.g. 0"

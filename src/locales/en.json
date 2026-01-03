@@ -331,6 +331,7 @@
             "name": "Full Name",
             "phone": "Phone / Zalo",
             "target": "Target Amount (VND)",
+            "current_amount": "Raised Amount (VND)",
             "appeal_title": "Appeal Title",
             "content": "Detailed Content",
             "bank_info": "Receiving Info (If any)",

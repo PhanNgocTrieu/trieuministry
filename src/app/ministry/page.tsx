@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
 import AddPrayerModal from '@/components/AddPrayerModal';
+import CreateAppealModal from '@/components/CreateAppealModal';
 
 interface Ministry {
   id: string;
@@ -62,6 +63,7 @@ export default function MinistryPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('ministries');
   const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
+  const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
 
   const handlePrayClick = async (id: string) => {
      try {
@@ -150,6 +152,10 @@ export default function MinistryPage() {
       <AddPrayerModal 
           isOpen={isPrayerModalOpen} 
           onClose={() => setIsPrayerModalOpen(false)} 
+      />
+      <CreateAppealModal
+          isOpen={isAppealModalOpen}
+          onClose={() => setIsAppealModalOpen(false)}
       />
 
       {/* Unified Container for Consistent Spacing - Adjusted for perfect balance */}
@@ -369,10 +375,10 @@ export default function MinistryPage() {
                                   </div>
                               </div>
                               {isAdmin && (
-                                  <Link href="/admin/appeals/create" className="px-5 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-all active:scale-95 shadow-md flex items-center gap-2">
+                                  <button onClick={() => setIsAppealModalOpen(true)} className="px-5 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-all active:scale-95 shadow-md flex items-center gap-2">
                                       <i className="fas fa-plus"></i>
                                       <span>New Appeal</span>
-                                  </Link>
+                                  </button>
                               )}
                           </div>
 

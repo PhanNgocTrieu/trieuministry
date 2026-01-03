@@ -130,14 +130,14 @@ export default function MinistryAppealDetailPage() {
                                 <span className="text-sm text-gray-500 font-medium block mb-1">Raised so far</span>
                                 <div className="flex items-baseline gap-1 mb-4">
                                     <span className="text-4xl font-extrabold text-gray-900 tracking-tight">
-                                        {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.currentAmount)}
+                                        {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(Number(appeal.currentAmount || 0))}
                                     </span>
                                 </div>
 
                                 <div className="w-full bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
                                     <div 
                                         className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_2px_10px_rgba(234,179,8,0.4)] relative"
-                                        style={{ width: `${Math.min(100, (appeal.currentAmount / appeal.target) * 100)}%` }}
+                                        style={{ width: `${Math.min(100, (Number(appeal.currentAmount || 0) / Number(appeal.target || 1)) * 100)}%` }}
                                     >
                                         <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
                                     </div>
@@ -147,12 +147,12 @@ export default function MinistryAppealDetailPage() {
                                     <div>
                                         <span className="text-xs text-gray-400 font-semibold uppercase block mb-0.5">Target Goal</span>
                                         <span className="font-bold text-gray-700">
-                                            {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.target)}
+                                            {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(Number(appeal.target || 0))}
                                         </span>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-2xl font-black text-yellow-600">
-                                            {Math.round((appeal.currentAmount / appeal.target) * 100)}
+                                            {Math.round((Number(appeal.currentAmount || 0) / Number(appeal.target || 1)) * 100)}
                                             <span className="text-sm align-top ml-0.5">%</span>
                                         </span>
                                     </div>
