@@ -150,29 +150,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
 
             <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl space-y-8">
                 
-                {/* Scope Selection (Admin/Volunteer only) */}
-                {(isAdmin || isVolunteer) && (
-                    <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
-                        <button
-                            type="button"
-                            onClick={() => setScope('personal')}
-                            className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
-                                scope === 'personal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'
-                            }`}
-                        >
-                            Personal
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setScope('ministry')}
-                            className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
-                                scope === 'ministry' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500'
-                            }`}
-                        >
-                            Ministry
-                        </button>
-                    </div>
-                )}
+                {/* Scope Selection Removed as per request - defaulting to personal/individual management */}
                 
                 {/* Type Toggle */}
                 <div className="flex p-1.5 bg-gray-100 rounded-xl">

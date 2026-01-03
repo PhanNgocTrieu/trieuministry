@@ -24,10 +24,11 @@ interface Transaction {
 interface ExpensesManagerProps {
     basePath: string;
     hideCategories?: boolean;
-    scope?: 'personal' | 'ministry';
+    scope?: 'personal' | 'ministry' | 'all';
+    targetUserId?: string;
 }
 
-export default function ExpensesManager({ basePath, hideCategories = false, scope = 'personal' }: ExpensesManagerProps) {
+export default function ExpensesManager({ basePath, hideCategories = false, scope = 'personal', targetUserId }: ExpensesManagerProps) {
     const { user, isAdmin } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -98,13 +99,19 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
 
                 // If managing Personal, must match User ID AND be Personal scope
                 if (scope === 'personal') {
-                    if (data.userId !== user.uid) return;
+                    const target = targetUserId || user.uid;
+                    if (data.userId !== target) return;
                     if (!isPersonal) return; 
                 }
 
                 // If managing Ministry, show Ministry scope.
                 if (scope === 'ministry') {
                     if (!isMinistry) return;
+                }
+                
+                // If scope is 'all', show everything (Admin view)
+                if (scope === 'all') {
+                    // No filtering needed
                 }
 
                 list.push({ 

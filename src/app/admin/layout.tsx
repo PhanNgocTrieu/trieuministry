@@ -83,6 +83,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                             <i className="fas fa-hands-holding-heart w-5 text-center"></i>
                             Community Prayers
                         </Link>
+                        
+                        <Link href="/admin/expenses" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/expenses')}`}>
+                            <i className="fas fa-file-invoice-dollar w-5 text-center"></i>
+                            Expenses Manage
+                        </Link>
 
                         <Link href="/admin/blogs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/blogs')}`}>
                             <i className="fas fa-blog w-5 text-center"></i>
