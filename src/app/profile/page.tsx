@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 
-type TabType = 'founder' | 'calling' | 'vision' | 'mission' | 'values';
+type TabType = 'founder' | 'calling' | 'vision' | 'mission' | 'values' | 'heart';
 
 export default function ProfilePage() {
   const { t } = useLanguage();
@@ -63,6 +63,14 @@ export default function ProfilePage() {
                       {t('profile.calling.title')}
                   </button>
                   <button 
+                      onClick={() => setActiveTab('heart')}
+                      className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
+                          ${activeTab === 'heart' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'}`}
+                  >
+                      <i className="fas fa-hand-holding-heart"></i>
+                      {t('profile.heart.title')}
+                  </button>
+                  <button 
                       onClick={() => setActiveTab('vision')}
                       className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
                           ${activeTab === 'vision' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'}`}
@@ -83,7 +91,7 @@ export default function ProfilePage() {
                       className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2
                           ${activeTab === 'values' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'}`}
                   >
-                      <i className="fas fa-heart"></i>
+                      <i className="fas fa-bible"></i>
                       {t('profile.values.title')}
                   </button>
               </div>
@@ -142,7 +150,7 @@ export default function ProfilePage() {
                               <i className="fas fa-envelope-open-text"></i>
                           </div>
                           <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.calling.title')}</h4>
-                          <div className="text-gray-600 leading-loose text-xl space-y-8">
+                          <div className="text-gray-600 leading-loose text-xl space-y-8 text-justify">
                               <p>{t('profile.calling.content_1')}</p>
                               <p>{t('profile.calling.content_2')}</p>
                               <div className="text-center py-8">
@@ -150,6 +158,27 @@ export default function ProfilePage() {
                               </div>
                           </div>
                       </div>
+                  )}
+
+                  {activeTab === 'heart' && (
+                       <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center">
+                           <div className="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center text-3xl mb-8 shadow-sm">
+                               <i className="fas fa-hand-holding-heart"></i>
+                           </div>
+                           <h4 className="text-4xl font-bold text-gray-900 mb-8 text-center">{t('profile.heart.title')}</h4>
+                           <div className="space-y-6 w-full">
+                               {(t('profile.heart.items') as any as string[]).map((item, index) => (
+                                   <div key={index} className="flex gap-4 items-start bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-md transition-all">
+                                       <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center shrink-0 font-bold text-lg">
+                                           {index + 1}
+                                       </div>
+                                       <p className="text-gray-700 text-lg leading-relaxed flex-1 pt-1">
+                                           {item}
+                                       </p>
+                                   </div>
+                               ))}
+                           </div>
+                       </div>
                   )}
 
                   {activeTab === 'vision' && (
@@ -177,14 +206,27 @@ export default function ProfilePage() {
                   )}
 
                   {activeTab === 'values' && (
-                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto flex flex-col items-center text-center">
-                          <div className="w-20 h-20 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-sm">
-                              <i className="fas fa-heart"></i>
+                      <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-4xl mx-auto">
+                          <div className="flex flex-col items-center text-center mb-12">
+                              <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm">
+                                  <i className="fas fa-bible"></i>
+                              </div>
+                              <h4 className="text-4xl font-bold text-gray-900">{t('profile.values.title')}</h4>
                           </div>
-                          <h4 className="text-4xl font-bold text-gray-900 mb-8">{t('profile.values.title')}</h4>
-                          <p className="text-gray-600 leading-loose text-xl">
-                              {t('profile.values.content')}
-                          </p>
+                          
+                          <div className="space-y-8">
+                               {(t('profile.values.items') as any as {title: string, content: string}[]).map((value, index) => (
+                                   <div key={index} className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition-all">
+                                        <h5 className="text-xl font-bold text-indigo-800 mb-3 flex items-center gap-3">
+                                            <span className="w-2 h-8 bg-indigo-500 rounded-full"></span>
+                                            {value.title}
+                                        </h5>
+                                        <p className="text-gray-700 leading-relaxed text-lg pl-5 text-justify">
+                                            {value.content}
+                                        </p>
+                                   </div>
+                               ))}
+                          </div>
                       </div>
                   )}
               </div>

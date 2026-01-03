@@ -68,15 +68,68 @@
         },
         "vision": {
             "title": "Khải Tượng",
-            "content": "Xây dựng một cộng đồng Cơ Đốc nhân vững mạnh, am hiểu Lời Chúa và sống đạo giữa đời thường."
+            "content": "TrieuMinistry ra đời để tôn vinh Đức Chúa Trời Ba Ngôi qua những lời chứng, những mục vụ cá nhân được chia sẻ, để phục vụ Hội Thánh và con dân Chúa bằng việc cung cấp những tài liệu Kinh Thánh để huấn luyện con dân Chúa, để cung cấp nền tảng để cầu thay và chia sẻ cũng như là kêu gọi ân nhân cho các quỹ mục vụ cần thiết với câu nói “Mỗi nơi đi đến, mỗi lời cầu nguyện, mỗi cuộc trò chuyện, mỗi bữa ăn, mỗi hoạt động trong đời sống danh Đức Chúa Trời Ba Ngôi cần phải được tôn cao”"
         },
         "mission": {
-            "title": "Sứ Mệnh",
-            "content": "Cung cấp tài liệu, bài giảng và kết nối cầu nguyện để trang bị cho con dân Chúa."
+            "title": "Sứ Mạng",
+            "content": "Sứ mạng của TrieuMinistry là mục vụ cá nhân nhằm cầu thay cho các con dân Chúa, cho các Hội Thánh và phục vụ Chúa trong việc đào tạo và huấn luyện những người trẻ trở nên giống Chúa Jesus mỗi ngày, là nền tảng phục vụ để có thể kết nối và cầu thay cho nhau, là nền tảng để con dân Chúa và Hội Thánh kêu gọi giúp đỡ cho các mục vụ."
+        },
+        "heart": {
+            "title": "Tấm Lòng",
+            "items": [
+                "Mỗi một bạn trẻ Cơ Đốc sẽ thật sự nhận biết phúc âm cứu rỗi của Chúa Jesus và chỉ tìm thấy sự cứu rỗi duy nhất nơi Ngài",
+                "Trong tình yêu của Chúa Cứu Thế Jesus, các bạn trẻ sẽ nhận biết giá trị của bản thân của cá nhân và của người khác trong Chúa Jesus mà không còn sự phân biệt, chia rẽ hay sự coi thường người khác",
+                "Các bạn trẻ Cơ Đốc thuộc anh em đồng bào bám chặt giá trị của bản thân từ sự cứu chuộc của Chúa Jesus mà tự tin sống bày tỏ Phúc Âm không bị ảnh hưởng bởi những sự nhìn nhận sai trật từ người khác"
+            ]
         },
         "values": {
-            "title": "Giá Trị Cốt Lõi",
-            "content": "Yêu Chúa - Yêu Người - Trung Tín - Phục Vụ."
+            "title": "Tuyên Ngôn Đức Tin",
+            "items": [
+                {
+                    "title": "Kinh Thánh",
+                    "content": "Kinh Thánh, trong sự trọn vẹn tuyệt đối, là Lời vô ngộ, không sai lạc và được Đức Chúa Trời soi dẫn; đó là sự mặc khải thiêng liêng mang thẩm quyền trọn vẹn của Đức Chúa Trời, mà chúng ta có bổn phận phải phục tùng."
+                },
+                {
+                    "title": "Đức Chúa Trời Ba Ngôi",
+                    "content": "Trong Bản Thể Đức Chúa Trời có sự hiệp nhất của ba thân vị biệt lập nhưng hoàn toàn là Thiên Chúa: Đức Chúa Cha, Đức Chúa Con và Đức Thánh Linh; ba thân vị này là một Đức Chúa Trời chân thật, đời đời, đồng bản thể, đồng quyền năng và vinh hiển."
+                },
+                {
+                    "title": "Đức Chúa Trời",
+                    "content": "Đức Chúa Trời là Thần, vô hạn, đời đời và bất biến trong bản thể, sự khôn ngoan, quyền năng, thánh khiết, công bình, nhân từ và chân thật của Ngài. Đức Chúa Trời toàn tri, toàn năng và toàn tại; Ngài không cần học hỏi thêm hay thay đổi (không theo thuyết 'thần học mở')."
+                },
+                {
+                    "title": "Chúa Giê-xu Christ",
+                    "content": "Chúa Giê-xu Christ thật là Đức Chúa Trời và thật là con người, có hai bản tánh liên hiệp không tách rời trong một thân vị thần linh mà không hề lẫn lộn, pha trộn, chia cắt hay phân rẽ. Mỗi bản tánh giữ nguyên các thuộc tính của mình. Trong sự nhập thể, Chúa Giê-xu được sinh bởi nữ đồng trinh Ma-ri, sống một đời sống trọn vẹn giữa chúng ta, chịu đóng đinh, chịu chết và được chôn, ngài sống lại vào ngày thứ ba, thăng thiên về trời, và sẽ trở lại trong vinh hiển để phán xét. Ngài là Đấng Trung Bảo duy nhất giữa Đức Chúa Trời và loài người."
+                },
+                {
+                    "title": "Đức Thánh Linh",
+                    "content": "Đức Thánh Linh đồng bản thể với Đức Chúa Cha và Đức Chúa Con. Ngài đời đời xuất phát từ Đức Chúa Cha và Đức Chúa Con, Ngài ngự trong lòng các tín hữu, tái sinh họ một cách đơn phương (monergistically) và vận hành trong sự nên thánh của họ một cách hợp lực (synergistically)."
+                },
+                {
+                    "title": "Sự Sáng Tạo",
+                    "content": "Đức Chúa Trời, bởi lời quyền năng của Ngài, đã sáng tạo từ hư không nên các tầng trời, trái đất và muôn vật trong đó. Ngài bảo tồn và cai trị mọi tạo vật cùng mọi hành động của chúng theo sự quan phòng thánh khiết, khôn ngoan và quyền năng nhất của Ngài."
+                },
+                {
+                    "title": "Con Người",
+                    "content": "Sau khi dựng nên các loài thọ tạo khác, Đức Chúa Trời đã dựng nên con người, cả nam và nữ, theo hình ảnh Ngài. Nhưng vì A-đam đã phạm tội và sa ngã thảm hại trong trách nhiệm của mình, nên ông và dòng dõi của ông đã rơi vào tình trạng băng hoại đạo đức và bất lực về thuộc linh, trở nên xa cách Đấng Tạo Hóa, do đó xứng đáng nhận sự chết là hình phạt cho tội lỗi."
+                },
+                {
+                    "title": "Sự Chuộc Tội",
+                    "content": "Vì mọi người đều đã phạm tội, nên cần phải có sự chuộc tội để con người được hòa giải với Đức Chúa Trời. Chúa Giê-xu Christ đã thực hiện sự chuộc tội trọn vẹn cho dân Ngài qua sự chết thay đền tội trên thập tự giá. Ngài kể sự công bình của Ngài cho mọi tín hữu, bảo đảm sự cứu chuộc trọn vẹn cho tất cả những ai ăn năn tội lỗi và tin cậy duy nơi Ngài để được cứu rỗi."
+                },
+                {
+                    "title": "Luật Pháp",
+                    "content": "Luật pháp đạo đức phản ánh trọn vẹn bản tánh bất biến của Đức Chúa Trời và ràng buộc mọi người mãi mãi, cả tín hữu lẫn người chưa tin."
+                },
+                {
+                    "title": "Hội Thánh",
+                    "content": "Đấng Christ đã thiết lập một Hội Thánh hữu hình, được gọi để sống trong quyền năng của Đức Thánh Linh, dưới sự quy định của thẩm quyền Kinh Thánh, rao giảng Tin Lành của Đấng Christ, cử hành các thánh lễ và thực thi kỷ luật."
+                },
+                {
+                    "title": "Cơ Đốc Giáo & Văn Hóa",
+                    "content": "Ủng hộ công việc của các tổ chức và định chế Cơ Đốc xưng nhận thẩm quyền tối hậu của Kinh Thánh và quyền chủ tể của Chúa Giê-xu Christ, cam kết thực hiện các ý nghĩa xã hội và văn hóa của các điều răn Đức Chúa Trời vì sự an vui của con người và môi trường sống. TrieuMinistry đặc biệt ủng hộ các tổ chức lên án việc sát hại những con người không có khả năng tự vệ ở những giai đoạn phát triển sớm nhất (phá thai) và bác bỏ những định nghĩa phi Kinh Thánh về giới tính, tình dục và hôn nhân."
+                }
+            ]
         }
     },
     "blogs": {

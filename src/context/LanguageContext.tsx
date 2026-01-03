@@ -11,7 +11,7 @@ type Translations = typeof en;
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -44,7 +44,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
         return key;
       }
     }
-    return typeof value === "string" ? value : key;
+    return value;
   };
 
   return (

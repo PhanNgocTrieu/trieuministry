@@ -68,15 +68,68 @@
         },
         "vision": {
             "title": "Vision",
-            "content": "Building a strong Christian community, understanding God's Word, and living out faith in daily life."
+            "content": "TrieuMinistry was born to glorify the Triune God through testimonies and shared personal ministries, to serve the Church and God's people by providing Biblical materials for training, to provide a platform for intercession and sharing, as well as to call for benefactors for necessary ministry funds with the motto: \"Every place we go, every prayer, every conversation, every meal, every activity in life, the name of the Triune God must be exalted.\""
         },
         "mission": {
             "title": "Mission",
-            "content": "Providing materials, sermons, and prayer connections to equip God's people."
+            "content": "TrieuMinistry's mission is a personal ministry to intercede for God's people, for Churches, and to serve God in training and equipping young people to become more like Jesus every day, serving as a foundation to connect and pray for one another, and a platform for God's children and the Church to call for support for ministries."
+        },
+        "heart": {
+            "title": "My Heart",
+            "items": [
+                "Every Christian youth will truly know the saving Gospel of Jesus and find salvation only in Him.",
+                "In the love of Christ Jesus, young people will recognize the value of themselves and others in Jesus without discrimination, division, or contempt.",
+                "Christian youth among ethnic minorities will hold fast to their self-worth from Christ's redemption and confidently live out the Gospel, unaffected by misconceptions from others."
+            ]
         },
         "values": {
-            "title": "Core Values",
-            "content": "Love God - Love People - Faithfulness - Service."
+            "title": "Statement of Faith",
+            "items": [
+                {
+                    "title": "The Bible",
+                    "content": "The Bible, in its entirety, is the infallible, inerrant, and inspired Word of God; it is divine revelation that carries the full weight of God’s authority and to which we are obliged to submit."
+                },
+                {
+                    "title": "The Trinity",
+                    "content": "Within the Godhead there is a unity of three distinct yet fully divine persons, the Father, the Son, and the Holy Spirit; these three are one true, eternal God, the same in substance, equal in power and glory."
+                },
+                {
+                    "title": "God",
+                    "content": "God is a Spirit, infinite, eternal, and unchangeable in His being, wisdom, power, holiness, justice, goodness, and truth. God is fully omniscient, omnipotent, and omnipresent, not given to learning or “openness.”"
+                },
+                {
+                    "title": "Jesus Christ",
+                    "content": "Jesus Christ is truly God and truly man, having two natures inseparably united in one divine person without confusion, mixture, separation, or division. Each nature retains its own attributes. In the incarnation, Jesus was born of the Virgin Mary, lived a perfect life among us, was crucified, dead, and buried, rose on the third day, ascended to heaven, and will come again in glory and judgment. He is the only Mediator between God and man."
+                },
+                {
+                    "title": "The Holy Spirit",
+                    "content": "The Holy Spirit is of one substance with the Father and the Son. He eternally proceeds from the Father and the Son, and He dwells in the hearts of believers, effecting their regeneration monergistically and operating in their sanctification synergistically."
+                },
+                {
+                    "title": "Creation",
+                    "content": "God, by the word of His power, created from nothing the heavens and the earth and all that is in them. He further preserves and governs all His creatures and all their actions according to His most holy, wise, and powerful providence."
+                },
+                {
+                    "title": "Man",
+                    "content": "After God made the other creatures, He created man, both male and female, in His own image, but because Adam sinned and woefully fell in his responsibility, he and his posterity entered into a state of moral corruption and moral inability and became estranged from their Creator, thus deserving death as the punishment for sin."
+                },
+                {
+                    "title": "Atonement",
+                    "content": "Because all have sinned, atonement must be made in order for man to be reconciled to God. Jesus Christ made a complete atonement for His people through His substitutionary atoning death on the cross. He imputes His righteousness to all believers securing us full redemption for all who repent of their sin and trust in Him alone for salvation."
+                },
+                {
+                    "title": "The Law",
+                    "content": "The moral law perfectly reflects the unchangeable character of God and forever binds all people, believers as well as unbelievers."
+                },
+                {
+                    "title": "The Church",
+                    "content": "Christ has established a visible church, which is called to live in the power of the Holy Spirit under the regulation of the authority of Holy Scripture, preaching the gospel of Christ, administering the sacraments, and exercising discipline."
+                },
+                {
+                    "title": "Christianity & Culture",
+                    "content": "Supports the work of Christian organizations and institutions that confess the final authority of Scripture and lordship of Jesus Christ, and are committed to the implementation of the social and cultural implications of God’s commandments for the well-being of man and his environment. TrieuMinistry especially supports those organizations that condemn the murder of defenseless human beings at the earliest stages of their development and that reject unbiblical definitions of gender, sexuality, and marriage."
+                }
+            ]
         }
     },
     "blogs": {
