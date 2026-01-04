@@ -23,38 +23,43 @@ export default function CreateMinistryPage() {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
+        category: "General", // Default category
         description: "",
+        prayerNeeds: "", // Added Prayer Needs
         status: "active",
         visibility: "public",
         sharedWith: "" // Comma separated emails
     });
-    const [images, setImages] = useState<MinistryImage[]>([]);
+    const [coverImage, setCoverImage] = useState<string>(""); // Single image
     const [uploadKey, setUploadKey] = useState(0);
+
+    const categories = [
+        "Vision Man Discipleship",
+        "Fellowship Community",
+        "Youth Ministry",
+        "Worship Team",
+        "Outreach",
+        "Education",
+        "General"
+    ];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Handle single image upload
     const handleImageUploaded = (url: string) => {
         if (url) {
-            setImages(prev => [...prev, { url, caption: "" }]);
-            setUploadKey(prev => prev + 1); // Reset uploader
+            setCoverImage(url);
+            setUploadKey(prev => prev + 1); // Reset uploader to allow re-upload if needed (though generic uploader might not need this if it just fires callback)
         }
     };
 
-    const removeImage = (index: number) => {
-        setImages(images.filter((_, i) => i !== index));
+    const removeImage = () => {
+        setCoverImage("");
     };
 
-    const updateCaption = (index: number, caption: string) => {
-        const newImages = [...images];
-        newImages[index].caption = caption;
-        setImages(newImages);
-    };
-
-    const { showAlert } = useModal(); // Added hook
-
-    // ... existing state ...
+    const { showAlert } = useModal();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,11 +70,14 @@ export default function CreateMinistryPage() {
 
             await addDoc(collection(db, "ministries"), {
                 title: formData.title,
+                category: formData.category || "General",
                 description: formData.description,
+                prayerNeeds: formData.prayerNeeds,
                 status: formData.status,
                 visibility: formData.visibility,
                 sharedWith: sharedWithArray,
-                images: images,
+                coverImage: coverImage, // Single image
+                // Removed images array
                 authorId: user?.uid,
                 authorName: user?.displayName || 'Admin',
                 createdAt: serverTimestamp(),
@@ -88,7 +96,7 @@ export default function CreateMinistryPage() {
 
     return (
         <AdminGuard>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto mb-20">
             <div className="flex items-center gap-4 mb-6">
                 <Link href={returnUrl} className="text-gray-500 hover:text-gray-700">
                     <i className="fas fa-arrow-left"></i> Back
@@ -97,55 +105,67 @@ export default function CreateMinistryPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-                <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Ministry Title</label>
-                    <input 
-                        type="text" 
-                        name="title" 
-                        required
-                        value={formData.title} 
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="e.g. Youth Mentorship Program"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Ministry Title</label>
+                        <input 
+                            type="text" 
+                            name="title" 
+                            required
+                            value={formData.title} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="e.g. Youth Mentorship Program"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700">Category</label>
+                        <input 
+                            type="text" 
+                            name="category" 
+                            list="category-suggestions"
+                            required
+                            value={formData.category} 
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Select or type a category..."
+                        />
+                        <datalist id="category-suggestions">
+                            {categories.map((cat, idx) => (
+                                <option key={idx} value={cat} />
+                            ))}
+                        </datalist>
+                    </div>
                 </div>
 
-                {/* Image Gallery Section */}
+                {/* Single Image Section */}
                 <div className="space-y-4">
-                    <label className="text-sm font-bold text-gray-700">Gallery Images</label>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {images.map((img, index) => (
-                            <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50 relative">
+                    <label className="text-sm font-bold text-gray-700">Cover Image (One Image)</label>
+                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50">
+                        {coverImage ? (
+                            <div className="relative group max-w-md mx-auto">
+                                <img src={coverImage} alt="Cover" className="w-full h-auto rounded-lg shadow-md" />
                                 <button 
                                     type="button" 
-                                    onClick={() => removeImage(index)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs hover:bg-red-600 z-10"
+                                    onClick={removeImage}
+                                    className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 shadow-sm transition-colors"
+                                    title="Remove Image"
                                 >
                                     <i className="fas fa-times"></i>
                                 </button>
-                                <img src={img.url} alt="Uploaded" className="w-full h-40 object-cover rounded-md mb-2" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Image caption..."
-                                    value={img.caption}
-                                    onChange={(e) => updateCaption(index, e.target.value)}
-                                    className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded outline-none focus:border-blue-500"
-                                />
                             </div>
-                        ))}
-                        
-                        {/* Upload Helper */}
-                        <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-50 min-h-[240px] hover:bg-gray-50 transition-colors">
-                           <div className="w-full max-w-[200px]">
-                                <ImageUploader 
-                                    key={uploadKey}
-                                    onImageUploaded={handleImageUploaded} 
-                                    folder="ministries" 
-                                />
-                           </div>
-                           <p className="text-xs text-center text-gray-400 mt-2 font-medium">Click above to add an image</p>
-                        </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center min-h-[200px]">
+                                <div className="w-full max-w-[200px]">
+                                     <ImageUploader 
+                                         key={uploadKey}
+                                         onImageUploaded={handleImageUploaded} 
+                                         folder="ministries" 
+                                     />
+                                </div>
+                                <p className="text-sm text-gray-500 mt-4">Upload a representative image for this ministry.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -196,15 +216,31 @@ export default function CreateMinistryPage() {
                 )}
                 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Description / Details</label>
+                    <label className="text-sm font-bold text-gray-700">Ministry Descriptions</label>
                     <textarea 
                         name="description" 
                         required
-                        rows={6}
+                        rows={5}
                         value={formData.description} 
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Describe the ministry works..."
+                    ></textarea>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                        <span className="bg-orange-100 text-orange-700 p-1 rounded"><i className="fas fa-pray"></i></span>
+                        Prayer Needs & Topics
+                        <span className="text-gray-400 font-normal ml-auto text-xs">(Specific prayer points for this ministry)</span>
+                    </label>
+                    <textarea 
+                        name="prayerNeeds" 
+                        rows={4}
+                        value={formData.prayerNeeds} 
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-orange-200 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 bg-orange-50/30"
+                        placeholder="List the specific prayer needs for this ministry..."
                     ></textarea>
                 </div>
 

@@ -2,54 +2,24 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
-import AddPrayerModal from '@/components/AddPrayerModal';
-import CreateAppealModal from '@/components/CreateAppealModal';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 interface Ministry {
   id: string;
   title: string;
+  category?: string; // Added category
   description: string;
+  prayerNeeds?: string; // Added Prayer Needs
   status: 'active' | 'completed' | 'on-hold';
   visibility: 'public' | 'private' | 'shared';
   sharedWith?: string[];
-  images?: { url: string; caption: string }[];
+  coverImage?: string; // Single Image
+  images?: { url: string; caption: string }[]; // Keeping for backward compatibility
   createdAt: any;
 }
-
-interface Prayer {
-  id: string;
-  title?: string; 
-  content: string;
-  name?: string;
-  userName?: string; // Add fallback compatibility
-  date?: string;
-  createdAt: any;
-  type?: 'personal' | 'community';
-  prayerCount?: number;
-  status?: string;
-}
-
-// Interfaces defined correctly above
-
-
-interface Appeal {
-    id: string;
-    title: string;
-    content: string;
-    coverImage?: string;
-    authorName?: string;
-    authorId?: string;
-    createdAt: any;
-    status: 'published' | 'draft' | 'archived';
-    type: 'urgent' | 'update' | 'thank_you' | 'general';
-}
-
-type TabType = 'ministries' | 'prayers' | 'appeals';
 
 export default function MinistryPage() {
   const { t } = useLanguage();
@@ -57,29 +27,10 @@ export default function MinistryPage() {
   
   // Data States
   const [ministries, setMinistries] = useState<Ministry[]>([]);
-  const [personalPrayers, setPersonalPrayers] = useState<Prayer[]>([]);
-  const [appeals, setAppeals] = useState<Appeal[]>([]);
-  
-  // UI States
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('ministries');
-  const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
-  const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
-
-  const handlePrayClick = async (id: string) => {
-     try {
-         const prayerRef = doc(db, 'prayers', id);
-         await updateDoc(prayerRef, {
-             prayerCount: increment(1),
-             status: 'prayed' // Auto update status to prayed if not already
-         });
-     } catch (error) {
-         console.error("Error praying", error);
-     }
-  };
 
   useEffect(() => {
-    // 1. Fetch Ministries
+    // Fetch Ministries
     const qMinistries = query(collection(db, "ministries"), orderBy("createdAt", "desc"));
     const unsubscribeMinistries = onSnapshot(qMinistries, (snapshot) => {
       const list: Ministry[] = [];
@@ -87,51 +38,11 @@ export default function MinistryPage() {
         list.push({ id: doc.id, ...doc.data() } as Ministry);
       });
       setMinistries(list);
+      setLoading(false); // Move loading false here or after all fetches if multiple
     });
-
-    // 2. Fetch Prayers (Personal)
-    // Removed orderBy to avoid missing index issues. Sorted client-side.
-    const qPrayers = query(
-        collection(db, "prayers"), 
-        where("type", "==", "personal")
-    );
-    const unsubscribePrayers = onSnapshot(qPrayers, (snapshot) => {
-      const list: Prayer[] = [];
-      snapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() } as Prayer);
-      });
-      // Sort client-side
-      list.sort((a, b) => {
-          const tA = a.createdAt?.seconds || 0;
-          const tB = b.createdAt?.seconds || 0;
-          return tB - tA;
-      });
-      setPersonalPrayers(list);
-    }, (error) => {
-        console.error("Error fetching prayers:", error);
-    });
-    
-    // 3. Fetch Appeals
-    const qAppeals = query(
-        collection(db, "appeals"), 
-        where("status", "==", "published"),
-        where("type", "==", "user_request"),
-        orderBy("createdAt", "desc")
-    );
-    const unsubscribeAppeals = onSnapshot(qAppeals, (snapshot) => {
-        const list: Appeal[] = [];
-        snapshot.forEach((doc) => {
-            list.push({ id: doc.id, ...doc.data() } as Appeal);
-        });
-        setAppeals(list);
-    });
-
-    setLoading(false);
 
     return () => {
       unsubscribeMinistries();
-      unsubscribePrayers();
-      unsubscribeAppeals();
     };
   }, []);
 
@@ -148,27 +59,26 @@ export default function MinistryPage() {
     return false; // Private or not shared with user
   });
 
-  const sidebarItems = [
-      { id: 'ministries', label: t('ministry.letters.title') || 'Ministries', icon: 'fas fa-church' },
-      { id: 'prayers', label: t('ministry.personal_prayers.title') || 'Personal Prayers', icon: 'fas fa-praying-hands' },
-      { id: 'appeals', label: t('nav.appeals') || 'Call for Support', icon: 'fas fa-hand-holding-heart' },
-  ];
+  // Group by Category
+  const groupedMinistries: Record<string, Ministry[]> = {};
+  
+  filteredMinistries.forEach(ministry => {
+      const cat = ministry.category || "General";
+      if (!groupedMinistries[cat]) {
+          groupedMinistries[cat] = [];
+      }
+      groupedMinistries[cat].push(ministry);
+  });
+
+  // Get sorted categories (optional: alphabetical or predefined order)
+  const categories = Object.keys(groupedMinistries).sort();
 
   return (
     <main className="bg-gray-50 min-h-screen pb-20 font-sans">
-      <AddPrayerModal 
-          isOpen={isPrayerModalOpen} 
-          onClose={() => setIsPrayerModalOpen(false)} 
-      />
-      <CreateAppealModal
-          isOpen={isAppealModalOpen}
-          onClose={() => setIsAppealModalOpen(false)}
-      />
-
-      {/* Unified Container for Consistent Spacing - Adjusted for perfect balance */}
+      {/* Unified Container for Consistent Spacing */}
       <div className="container container-custom pb-20" style={{ paddingTop: '40px' }}>
           {/* Header Section */}
-          <div className="max-w-4xl mb-20 md:mb-24">
+          <div className="max-w-4xl mb-12 md:mb-16">
               <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
                   {t('nav.ministry')}
               </h1>
@@ -176,276 +86,129 @@ export default function MinistryPage() {
                   {t('ministry.hero.subtitle')}
               </p>
               <div className="mt-8 h-1 w-20 bg-blue-600 rounded-full"></div>
+              
+               {isAdmin && (
+                  <div className="mt-8">
+                      <Link href="/admin/ministries/create?returnUrl=/ministry" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95">
+                          <i className="fas fa-plus"></i>
+                          <span>Add New Ministry</span>
+                      </Link>
+                  </div>
+              )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-              {/* Left Sidebar */}
-              <div className="lg:col-span-3">
-                  <div>
-                      <nav className="space-y-4">
-                          {sidebarItems.map((item) => (
-                              <button
-                                  key={item.id}
-                                  onClick={() => setActiveTab(item.id as TabType)}
-                                  className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-sm ${
-                                      activeTab === item.id
-                                          ? 'bg-blue-600 text-white shadow-blue-200 shadow-lg scale-105'
-                                          : 'bg-white text-gray-500 hover:bg-white hover:text-blue-600 hover:shadow-md'
-                                  }`}
-                              >
-                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                      activeTab === item.id ? 'bg-white/20' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50'
-                                  }`}>
-                                      <i className={`${item.icon} text-lg`}></i>
-                                  </div>
-                                  <span className="text-base tracking-wide">{item.label}</span>
-                              </button>
-                          ))}
-                      </nav>
-                  </div>
-              </div>
-
-              {/* Right Content */}
-              <div className="lg:col-span-9">
-                  {/* Tab: Ministries */}
-                  {activeTab === 'ministries' && (
-                      <div className="space-y-8 animate-fade-in">
-                          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 w-full flex items-center justify-between mb-6">
-                              <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
-                                      <i className="fas fa-church"></i>
-                                  </div>
-                                  <div>
-                                       <h2 className="text-xl font-bold text-gray-900">{t('ministry.letters.title') || 'Ministries'}</h2>
-                                       <p className="text-sm text-gray-600">Explore our ministry outreach.</p>
-                                  </div>
-                              </div>
-                              {isAdmin && (
-                                  <Link href="/admin/ministries/create?returnUrl=/ministry" className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md transition-all active:scale-95 flex items-center gap-2">
-                                      <i className="fas fa-plus"></i>
-                                      <span>Add Ministry</span>
-                                  </Link>
-                              )}
+          <div className="space-y-16 animate-fade-in">
+              {categories.length > 0 ? (
+                  categories.map(category => (
+                      <section key={category} className="scroll-mt-24">
+                          <div className="flex items-center gap-4 mb-8">
+                             <div className="h-10 w-2 bg-blue-500 rounded-full"></div>
+                             <h2 className="text-3xl font-bold text-gray-900">{category}</h2>
                           </div>
 
-                          {filteredMinistries.length > 0 ? (
-                              <div className="grid grid-cols-1 gap-8">
-                                  {filteredMinistries.map((ministry) => (
-                                      <div key={ministry.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                                          <div className="p-6">
-                                              <div className="flex justify-between items-start mb-4">
-                                                  <div>
-                                                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{ministry.title}</h3>
-                                                      <div className="flex items-center gap-2 text-sm">
-                                                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
+                          <div className="grid grid-cols-1 gap-8">
+                              {groupedMinistries[category].map((ministry) => {
+                                  // Fallback for image: coverImage or first image in old array
+                                  const displayImage = ministry.coverImage || (ministry.images && ministry.images.length > 0 ? ministry.images[0].url : null);
+
+                                  return (
+                                  <div key={ministry.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col">
+                                      
+                                      {/* Main Body: Image + Content Side-by-Side on Desktop */}
+                                      <div className={`flex flex-col ${displayImage ? 'md:flex-row' : ''}`}>
+                                          
+                                          {/* 1. Image Section */}
+                                          {displayImage && (
+                                              <div className="md:w-5/12 bg-gray-50 flex items-center justify-center relative min-h-[300px] md:min-h-full">
+                                                  <img 
+                                                      src={displayImage} 
+                                                      alt={ministry.title} 
+                                                      className="w-full h-full object-cover absolute inset-0 md:static md:object-cover" 
+                                                      // Mobile: Absolute inset to fill fixed height. Desktop: Static to fill column height (flex stretch)
+                                                      // Actually 'h-full object-cover' works if parent has height.
+                                                      // Let's use simple responsive:
+                                                      // Mobile: h-64 w-full object-cover.
+                                                      // Desktop: w-full h-full object-cover (and parent flex stretch makes it match content height).
+                                                  />
+                                                  {/* Mobile/Desktop Image styling adjustment */}
+                                                  <style jsx>{`
+                                                    @media (max-width: 768px) {
+                                                        img { position: absolute; height: 100%; top: 0; left: 0; }
+                                                        .md\\:w-5\\/12 { height: 300px; display: block; }
+                                                    }
+                                                    @media (min-width: 769px) {
+                                                        img { height: 100%; object-fit: cover; }
+                                                    }
+                                                  `}</style>
+                                              </div>
+                                          )}
+
+                                          {/* 2. Content Section */}
+                                          <div className={`p-8 flex flex-col ${displayImage ? 'md:w-7/12 border-l border-gray-50' : 'w-full'}`}>
+                                              <div className="mb-6">
+                                                  <div className="flex justify-between items-start gap-4">
+                                                      <h3 className="text-2xl font-bold text-gray-900 leading-tight">{ministry.title}</h3>
+                                                      
+                                                      {/* Status & Edit - Visible on Desktop here. On Mobile maybe overlay image? 
+                                                          Let's keep it simple: always here for consistency. 
+                                                      */}
+                                                      <div className="flex items-center gap-2 shrink-0">
+                                                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
                                                               ministry.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                                                           }`}>
                                                               {ministry.status}
                                                           </span>
-                                                          <span className="text-gray-400">•</span>
-                                                          <span className="text-gray-500">
-                                                              {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : ''}
-                                                          </span>
+                                                          {isAdmin && (
+                                                              <Link href={`/admin/ministries/${ministry.id}/edit`} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                                  <i className="fas fa-edit"></i>
+                                                              </Link>
+                                                          )}
                                                       </div>
                                                   </div>
-                                                  {isAdmin && (
-                                                      <Link href={`/admin/ministries/${ministry.id}/edit`} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                                                          <i className="fas fa-edit"></i>
-                                                      </Link>
-                                                  )}
+                                                  
+                                                  <div className="text-sm text-gray-500 mt-2 flex items-center gap-2">
+                                                     <i className="far fa-calendar-alt text-gray-400"></i>
+                                                     <span>Added: {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
+                                                  </div>
                                               </div>
 
-                                              <div className="prose prose-blue max-w-none text-gray-600 mb-6 whitespace-pre-line">
+                                              <div className="prose prose-blue max-w-none text-gray-600 whitespace-pre-line leading-relaxed flex-grow">
                                                   {ministry.description}
                                               </div>
+                                          </div>
+                                      </div>
 
-                                              {/* Gallery */}
-                                              {ministry.images && ministry.images.length > 0 && (
+                                      {/* 3. Prayer Needs Section - Full Width Footer */}
+                                      {ministry.prayerNeeds && (
+                                          <div className="bg-orange-50/50 border-t border-orange-100 p-6 md:p-8">
+                                              <div className="flex items-start gap-4">
+                                                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0 mt-1">
+                                                      <i className="fas fa-pray"></i>
+                                                  </div>
                                                   <div>
-                                                      <h4 className="font-bold text-gray-800 mb-3 text-xs uppercase tracking-wide opacity-70">
-                                                          <i className="fas fa-images mr-2"></i>Gallery
-                                                      </h4>
-                                                      <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
-                                                          {ministry.images.map((img, idx) => (
-                                                              <div key={idx} className="flex-none w-64 snap-start relative group rounded-lg overflow-hidden border border-gray-200">
-                                                                  <div className="aspect-video bg-gray-100">
-                                                                      <img src={img.url} alt={img.caption || `Image ${idx + 1}`} className="w-full h-full object-cover" />
-                                                                  </div>
-                                                                  {img.caption && (
-                                                                      <div className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/70 to-transparent text-white text-xs truncate">
-                                                                          {img.caption}
-                                                                      </div>
-                                                                  )}
-                                                              </div>
-                                                          ))}
+                                                      <h4 className="font-bold text-lg text-gray-900 mb-2">Prayer Needs</h4>
+                                                      <div className="text-gray-700 whitespace-pre-line leading-relaxed italic">
+                                                          {ministry.prayerNeeds}
                                                       </div>
                                                   </div>
-                                              )}
+                                              </div>
                                           </div>
-                                      </div>
-                                  ))}
-                              </div>
-                          ) : (
-                              <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
-                                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                      <i className="fas fa-church text-2xl"></i>
+                                      )}
                                   </div>
-                                  <p className="text-gray-500 font-medium">No ministries found.</p>
-                              </div>
-                          )}
-                      </div>
-                  )}
-
-                  {/* Tab: Personal Prayers */}
-                  {activeTab === 'prayers' && (
-                      <div className="space-y-6 animate-fade-in">
-                          <div className="flex justify-between items-center mb-6">
-                              <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 w-full flex items-center justify-between">
-                                  <div className="flex items-center gap-4">
-                                      <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xl">
-                                          <i className="fas fa-pray"></i>
-                                      </div>
-                                      <div>
-                                          <h2 className="text-xl font-bold text-gray-900">{t('ministry.personal_prayers.title') || 'Personal Prayers'}</h2>
-                                          <p className="text-sm text-gray-600">prayer requests in ministries</p>
-                                      </div>
-                                  </div>
-                                  {isAdmin && (
-                                      <button 
-                                          onClick={() => setIsPrayerModalOpen(true)}
-                                          className="px-5 py-2.5 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 shadow-md transition-all active:scale-95"
-                                      >
-                                          <i className="fas fa-plus mr-2"></i>
-                                          {t('ministry.personal_prayers.btn_add') || 'Add Request'}
-                                      </button>
-                                  )}
-                              </div>
+                                  );
+                              })}
                           </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {personalPrayers.length > 0 ? (
-                                  personalPrayers.map((prayer) => (
-                                      <div key={prayer.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
-                                          <div className="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                                          
-                                          <div className="flex items-center justify-between mb-3">
-                                              <span className="text-sm font-bold text-gray-800 bg-gray-50 px-2 py-1 rounded">
-                                                  {prayer.name || prayer.userName || 'Anonymous'}
-                                              </span>
-                                              <span className="text-xs text-gray-400 font-mono">
-                                                  {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : ''}
-                                              </span>
-                                          </div>
-                                          
-                                          {prayer.title && (
-                                              <h5 className="font-bold text-gray-900 mb-2 line-clamp-1">{prayer.title}</h5>
-                                          )}
-                                          
-                                          <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line italic mb-4">
-                                              "{prayer.content}"
-                                          </p>
-
-                                          <div className="flex justify-end pt-2 border-t border-gray-50">
-                                              <button 
-                                                  onClick={() => handlePrayClick(prayer.id)}
-                                                  className="text-xs font-bold text-orange-600 flex items-center gap-1 hover:underline transition-all active:scale-95"
-                                              >
-                                                  <i className="fas fa-praying-hands"></i> 
-                                                  Pray {prayer.prayerCount ? `(${prayer.prayerCount})` : ''}
-                                              </button>
-                                          </div>
-                                      </div>
-                                  ))
-                              ) : (
-                                  <div className="col-span-2 text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
-                                      <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                          <i className="fas fa-praying-hands text-2xl"></i>
-                                      </div>
-                                      <p className="text-gray-500">No personal prayer requests yet.</p>
-                                  </div>
-                              )}
-                          </div>
+                      </section>
+                  ))
+              ) : (
+                  <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                      <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                          <i className="fas fa-church text-4xl"></i>
                       </div>
-                  )}
-
-                  {/* Tab: Appeal Letters (Call for Support) */}
-                  {activeTab === 'appeals' && (
-                      <div className="space-y-8 animate-fade-in">
-                          <div className="bg-red-50 p-4 rounded-xl border border-red-100 w-full flex items-center justify-between mb-6">
-                              <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xl">
-                                      <i className="fas fa-hand-holding-heart"></i>
-                                  </div>
-                                  <div>
-                                      <h2 className="text-xl font-bold text-gray-900">{t('nav.appeals') || 'Call for Support'}</h2>
-                                       <p className="text-sm text-gray-600">Support our mission and projects.</p>
-                                  </div>
-                              </div>
-                              {isAdmin && (
-                                  <button onClick={() => setIsAppealModalOpen(true)} className="px-5 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-all active:scale-95 shadow-md flex items-center gap-2">
-                                      <i className="fas fa-plus"></i>
-                                      <span>New Appeal</span>
-                                  </button>
-                              )}
-                          </div>
-
-                            <div className="space-y-6">
-                                {appeals.length > 0 ? (
-                                    appeals.map((appeal) => (
-                                        <article key={appeal.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col md:flex-row hover:shadow-lg transition-all duration-300 group">
-                                            {appeal.coverImage && (
-                                                <div className="md:w-1/3 relative h-48 md:h-auto overflow-hidden">
-                                                    <Image 
-                                                        src={appeal.coverImage} 
-                                                        alt={appeal.title} 
-                                                        fill
-                                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                                    />
-                                                </div>
-                                            )}
-                                            
-                                            <div className={`p-6 flex flex-col justify-center ${appeal.coverImage ? 'md:w-2/3' : 'w-full'}`}>
-                                                <div className="flex items-center gap-2 text-xs text-gray-400 mb-3 font-medium uppercase tracking-wide">
-                                                    <span className="text-blue-600"><i className="far fa-calendar-alt mr-1"></i>{appeal.createdAt?.seconds ? new Date(appeal.createdAt.seconds * 1000).toLocaleDateString() : ''}</span>
-                                                    <span>•</span>
-                                                    <span>{appeal.authorName || 'Admin'}</span>
-                                                </div>
-                                                
-                                                <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-blue-600 transition-colors">
-                                                    <Link href={`/appeals/${appeal.id}`}>
-                                                        {appeal.title}
-                                                    </Link>
-                                                </h3>
-                                                
-                                                <div 
-                                                    className="prose prose-sm text-gray-500 mb-4 line-clamp-2"
-                                                    dangerouslySetInnerHTML={{ __html: (appeal.content || '').replace(/<[^>]+>/g, '') }}
-                                                />
-                                                
-                                                <div className="mt-auto">
-                                                    <Link 
-                                                        href={`/appeals/${appeal.id}`}
-                                                        className="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 group/link"
-                                                    >
-                                                        {t('common.read_more') || 'Read Full Letter'}
-                                                        <i className="fas fa-arrow-right transform group-hover/link:translate-x-1 transition-transform text-xs"></i>
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
-                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                            <i className="fas fa-hand-holding-heart text-2xl"></i>
-                                        </div>
-                                        <p className="text-gray-500">No active calls for support at this time.</p>
-                                    </div>
-                                )}
-                            </div>
-                      </div>
-                  )}
-              </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">No Ministries Found</h3>
+                      <p className="text-gray-500">{t('ministry.empty_message') || 'We have not added any ministries yet.'}</p>
+                  </div>
+              )}
           </div>
       </div>
     </main>
