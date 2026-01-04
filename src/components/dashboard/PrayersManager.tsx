@@ -6,6 +6,7 @@ import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, 
 import TableSkeleton from "@/components/admin/TableSkeleton";
 import { useAuth } from "@/context/AuthContext";
 import { useModal } from "@/context/ModalContext";
+import { logActivity } from "@/lib/activity-logger";
 
 interface PrayerData {
     id: string;
@@ -119,6 +120,12 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                     type: newPrayerScope, // Ensure type stays in sync
                     updatedAt: serverTimestamp()
                 });
+                await logActivity(
+                    'prayer',
+                    'update',
+                    `Updated prayer request: ${finalContent.substring(0, 30)}${finalContent.length > 30 ? '...' : ''}`,
+                    { prayerId: editId, scope: newPrayerScope }
+                );
                 showAlert("Success", "Prayer request updated.");
             } else {
                 // Create new
@@ -136,6 +143,12 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                     scope: newPrayerScope,
                     type: newPrayerScope // Legacy compatibility
                 });
+                await logActivity(
+                    'prayer',
+                    'create',
+                    `New (Manager) ${newPrayerScope} prayer request: ${newPrayerContent.substring(0, 30)}${newPrayerContent.length > 30 ? '...' : ''}`,
+                    { userId: user.uid, scope: newPrayerScope }
+                );
                 showAlert("Success", "Prayer request created.");
             }
             
@@ -178,6 +191,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
             async () => {
                  try {
                     await deleteDoc(doc(db, "prayers", id));
+                    await logActivity('prayer', 'delete', `Deleted prayer request`, { prayerId: id });
                     setPrayers(prev => prev.filter(p => p.id !== id));
                     showAlert("Success", "Prayer request deleted.");
                 } catch (error) {
@@ -194,6 +208,12 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     const handleStatusChange = async (id: string, newStatus: 'pending' | 'prayed' | 'answered') => {
         try {
             await updateDoc(doc(db, "prayers", id), { status: newStatus });
+            await logActivity(
+                'prayer',
+                'update',
+                `Prayer status updated to ${newStatus}`,
+                { prayerId: id, newStatus }
+            );
             setPrayers(prayers.map(p => p.id === id ? { ...p, status: newStatus } : p));
         } catch (error) {
             console.error("Error updating status:", error);

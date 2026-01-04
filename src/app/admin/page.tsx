@@ -2,8 +2,31 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+import { collection, query, where, getCountFromServer, orderBy, limit, getDocs, doc, getDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from "@/context/AuthContext";
+import { ActivityLog } from '@/lib/activity-logger';
+
+// Helper to format date relative
+const timeAgo = (date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " years ago";
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " months ago";
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " days ago";
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " hours ago";
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " minutes ago";
+    
+    return Math.floor(seconds) + " seconds ago";
+};
 
 export default function AdminDashboardPage() {
     const { user, isAdmin, isVolunteer } = useAuth();
@@ -11,13 +34,14 @@ export default function AdminDashboardPage() {
         card1: 0,
         card2: 0,
         card3: 0,
-        visits: 12450,
+        visits: 0,
         prayersBreakdown: {
             personal: 0,
             community: 0,
             answered: 0
         }
     });
+    const [activities, setActivities] = useState<ActivityLog[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,6 +50,7 @@ export default function AdminDashboardPage() {
                 let card1Count = 0;
                 let card2Count = 0;
                 let card3Count = 0;
+                let visitsCount = 0;
                 
                 // Card 1: Total Users
                 const usersSnap = await getCountFromServer(collection(db, "users"));
@@ -46,11 +71,37 @@ export default function AdminDashboardPage() {
                 const snap = await getCountFromServer(q);
                 card3Count = snap.data().count;
 
+                // Visits
+                try {
+                    const visitsDoc = await getDoc(doc(db, "stats", "general"));
+                    if (visitsDoc.exists()) {
+                        visitsCount = visitsDoc.data().totalVisits || 0;
+                    }
+                } catch (e) {
+                    console.error("Error fetching visits:", e);
+                }
+
+                // Recent Activities
+                try {
+                    const activitiesQ = query(collection(db, "activities"), orderBy("timestamp", "desc"), limit(10));
+                    const activitiesSnap = await getDocs(activitiesQ);
+                    const activitiesList = activitiesSnap.docs.map(doc => {
+                        const data = doc.data();
+                        return {
+                            ...data,
+                            timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toDate() : new Date(),
+                        } as ActivityLog;
+                    });
+                    setActivities(activitiesList);
+                } catch (e) {
+                    console.error("Error fetching activities:", e);
+                }
+
                 setStats({
                     card1: card1Count,
                     card2: card2Count,
                     card3: card3Count,
-                    visits: 12450, // Keep placeholder
+                    visits: visitsCount,
                     prayersBreakdown: {
                         personal: personalSnap.data().count,
                         community: communitySnap.data().count,
@@ -166,10 +217,13 @@ export default function AdminDashboardPage() {
                         {loading ? (
                             <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div>
                         ) : ( 
-                            stats.visits 
+                            stats.visits.toLocaleString() 
                         )}
                      </div>
-                     <p className="text-gray-400 text-sm mt-2 font-medium">Coming Soon</p>
+                     <p className="text-emerald-600 text-sm mt-2 font-medium">
+                        <i className="fas fa-arrow-up mr-1"></i>
+                        Live Tracking
+                     </p>
                 </div>
             </div>
 
@@ -205,9 +259,42 @@ export default function AdminDashboardPage() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
-                <div className="text-center text-gray-500 py-8">
-                    Activity log coming soon...
-                </div>
+                {activities.length === 0 ? (
+                    <div className="text-center text-gray-500 py-8">
+                        No recent activity found.
+                    </div>
+                ) : (
+                    <div className="divide-y divide-gray-100">
+                        {activities.map((activity, index) => (
+                            <div key={index} className="py-4 flex items-start gap-4">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+                                    ${activity.type === 'prayer' ? 'bg-orange-100 text-orange-600' : 
+                                      activity.type === 'blog' ? 'bg-purple-100 text-purple-600' :
+                                      activity.type === 'appeal' ? 'bg-blue-100 text-blue-600' :
+                                      'bg-gray-100 text-gray-600'}`}>
+                                    <i className={`fas 
+                                        ${activity.type === 'prayer' ? 'fa-praying-hands' : 
+                                          activity.type === 'blog' ? 'fa-blog' :
+                                          activity.type === 'appeal' ? 'fa-hand-holding-heart' :
+                                          'fa-info-circle'}`}></i>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-gray-900 font-medium">{activity.description}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-xs text-gray-500">{timeAgo(activity.timestamp)}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full capitalize
+                                            ${activity.action === 'create' ? 'bg-green-100 text-green-700' :
+                                              activity.action === 'update' ? 'bg-blue-100 text-blue-700' :
+                                              activity.action === 'delete' ? 'bg-red-100 text-red-700' :
+                                              'bg-gray-100 text-gray-700'}`}>
+                                            {activity.action}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

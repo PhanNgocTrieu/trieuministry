@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import { useModal } from "@/context/ModalContext";
+import { logActivity } from "@/lib/activity-logger";
 
 interface AddPrayerModalProps {
     isOpen: boolean;
@@ -44,6 +45,13 @@ export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayer
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
+
+            await logActivity(
+                'prayer', 
+                'create', 
+                `New ${prayerType} prayer request: ${formData.content.substring(0, 30)}${formData.content.length > 30 ? '...' : ''}`,
+                { user: formData.name, scope: prayerType }
+            );
 
             setFormData({ name: "", content: "" });
             if (onSuccess) onSuccess();

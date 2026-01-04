@@ -8,6 +8,7 @@ import RichTextEditor from '@/components/RichTextEditor';
 import ImageUploader from '@/components/ImageUploader';
 import { useLanguage } from '@/context/LanguageContext';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 const categories = ['Bible Study', 'Sharing', 'Music', 'Leadership', 'Testimony'];
 
@@ -62,6 +63,13 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
                 status: 'pending',
                 tags: []
             });
+
+            await logActivity(
+                'blog',
+                'create',
+                `New blog submitted: ${title}`,
+                { title, category, author: user?.displayName }
+            );
 
             setShowSuccess(true);
             onSuccess(); // Triggers refresh in parent

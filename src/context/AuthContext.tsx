@@ -15,6 +15,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp, getDoc, onSnapshot } from "firebase/firestore";
+import { logActivity } from "@/lib/activity-logger";
 
 interface AuthContextType {
     user: User | null;
@@ -156,6 +157,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             // Sync new user immediately
             await syncUserToFirestore({ ...userCredential.user, displayName: name } as User);
+
+            // Log activity
+            await logActivity(
+                'user', 
+                'register', 
+                `New user registered: ${name} (${email})`,
+                { userId: userCredential.user.uid, email }
+            );
         } catch (error) {
             console.error("Error signing up", error);
             throw error;

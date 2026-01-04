@@ -11,6 +11,7 @@ import RichTextEditor from '@/components/RichTextEditor';
 import ImageUploader from '@/components/ImageUploader';
 import FileUploader from '@/components/FileUploader';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface MinistrySection {
     id: string;
@@ -114,6 +115,13 @@ export default function CreateAppealPage() {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
+
+            await logActivity(
+                'appeal',
+                'create',
+                `New appeal created: ${formData.title}`,
+                { title: formData.title, status: formData.status }
+            );
 
             showAlert("Success", "Appeal created successfully!");
             router.push("/admin/appeals");
