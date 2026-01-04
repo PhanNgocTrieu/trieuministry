@@ -55,6 +55,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
                         <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">My Personal</div>
 
+                        <Link href="/admin/discipline" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/discipline')}`}>
+                            <i className="fas fa-clipboard-check w-5 text-center"></i>
+                            Discipline
+                        </Link>
+
                         <Link href="/admin/goals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/goals')}`}>
                             <i className="fas fa-bullseye w-5 text-center"></i>
                             Goals
