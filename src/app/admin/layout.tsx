@@ -48,6 +48,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                     
                     <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                         
+                        <Link href="/admin" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/admin' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}>
+                            <i className="fas fa-th-large w-5 text-center"></i>
+                            Dashboard
+                        </Link>
+
                         <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">My Personal</div>
 
                         <Link href="/admin/goals" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/goals')}`}>

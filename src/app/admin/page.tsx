@@ -11,7 +11,12 @@ export default function AdminDashboardPage() {
         card1: 0,
         card2: 0,
         card3: 0,
-        visits: 12450
+        visits: 12450,
+        prayersBreakdown: {
+            personal: 0,
+            community: 0,
+            answered: 0
+        }
     });
     const [loading, setLoading] = useState(true);
 
@@ -26,9 +31,15 @@ export default function AdminDashboardPage() {
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 card1Count = usersSnap.data().count;
 
-                // Card 2: Total Prayers
-                const prayersSnap = await getCountFromServer(collection(db, "prayers"));
-                card2Count = prayersSnap.data().count;
+                // Card 2: Total Prayers & Breakdown
+                const prayersColl = collection(db, "prayers");
+                const totalPrayersSnap = await getCountFromServer(prayersColl);
+                card2Count = totalPrayersSnap.data().count;
+
+                // Granular Stats
+                const personalSnap = await getCountFromServer(query(prayersColl, where("scope", "==", "personal")));
+                const communitySnap = await getCountFromServer(query(prayersColl, where("scope", "==", "community")));
+                const answeredSnap = await getCountFromServer(query(prayersColl, where("status", "==", "answered")));
 
                 // Card 3: Pending Blogs
                 const q = query(collection(db, "blogs"), where("status", "==", "pending"));
@@ -39,7 +50,12 @@ export default function AdminDashboardPage() {
                     card1: card1Count,
                     card2: card2Count,
                     card3: card3Count,
-                    visits: 12450 // Keep placeholder
+                    visits: 12450, // Keep placeholder
+                    prayersBreakdown: {
+                        personal: personalSnap.data().count,
+                        community: communitySnap.data().count,
+                        answered: answeredSnap.data().count
+                    }
                 });
 
             } catch (error) {
@@ -57,7 +73,7 @@ export default function AdminDashboardPage() {
     const getCardTitle = (index: number) => {
         switch(index) {
             case 1: return "Total Users";
-            case 2: return "Total Prayers";
+            case 2: return "Prayer Requests";
             case 3: return "Pending Blogs";
             default: return "";
         }
@@ -69,46 +85,77 @@ export default function AdminDashboardPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Card 1 */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
                      <div className="flex items-center justify-between mb-4">
                         <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
                          <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
                             <i className={`fas ${isAdmin || isVolunteer ? 'fa-users' : 'fa-hand-holding-heart'}`}></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900">
+                    <div className="text-3xl font-bold text-gray-900 mt-auto">
                         {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card1}
                     </div>
                 </div>
 
-                {/* Card 2 */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                {/* Card 2 - Prayers Breakdown */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 col-span-1 md:col-span-2 lg:col-span-1">
                      <div className="flex items-center justify-between mb-4">
                         <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
                          <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
                             <i className="fas fa-praying-hands"></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900">
-                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card2}
+                    <div className="flex items-end gap-3 mb-4">
+                        <div className="text-3xl font-bold text-gray-900">
+                            {loading ? <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div> : stats.card2}
+                        </div>
+                        <span className="text-sm text-gray-500 mb-1">Total</span>
                     </div>
+                    
+                    {/* Breakdown Stats */}
+                    {!loading && (
+                        <div className="grid grid-cols-3 gap-2 border-t border-gray-50 pt-3 text-center">
+                            <div>
+                                <div className="text-xs text-gray-400 font-bold uppercase mb-1">Public</div>
+                                <div className="text-lg font-bold text-green-600">{stats.prayersBreakdown.community}</div>
+                            </div>
+                            <div className="border-l border-gray-100">
+                                <div className="text-xs text-gray-400 font-bold uppercase mb-1">Private</div>
+                                <div className="text-lg font-bold text-blue-600">{stats.prayersBreakdown.personal}</div>
+                            </div>
+                            {/* Check for discrepancy */}
+                            {(stats.card2 - (stats.prayersBreakdown.community + stats.prayersBreakdown.personal)) > 0 ? (
+                                <div className="border-l border-gray-100">
+                                    <div className="text-xs text-gray-400 font-bold uppercase mb-1">Other</div>
+                                    <div className="text-lg font-bold text-gray-400">
+                                        {stats.card2 - (stats.prayersBreakdown.community + stats.prayersBreakdown.personal)}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="border-l border-gray-100">
+                                    <div className="text-xs text-gray-400 font-bold uppercase mb-1">Answered</div>
+                                    <div className="text-lg font-bold text-yellow-600">{stats.prayersBreakdown.answered}</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
                      <div className="flex items-center justify-between mb-4">
                         <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
                          <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
                             <i className="fas fa-blog"></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900">
+                    <div className="text-3xl font-bold text-gray-900 mt-auto">
                         {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card3}
                     </div>
                 </div>
 
                 {/* Card 4 - Visits (Static) */}
-                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Visits</h3>
                         <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center">

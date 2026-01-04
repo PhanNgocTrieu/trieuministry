@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
 import { useModal } from "@/context/ModalContext";
 
 interface AddPrayerModalProps {
@@ -14,10 +15,19 @@ interface AddPrayerModalProps {
 export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayerModalProps) {
     const [loading, setLoading] = useState(false);
     const { showAlert } = useModal();
+    const { isAdmin, user } = useAuth();
+    const [prayerType, setPrayerType] = useState<'personal' | 'community'>('community'); // Default public for everyone, Admin can change
+
     const [formData, setFormData] = useState({
-        name: "",
+        name: user?.displayName || "",
         content: ""
     });
+
+    useEffect(() => {
+        if (user?.displayName) {
+            setFormData(prev => ({ ...prev, name: user.displayName! }));
+        }
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +39,8 @@ export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayer
                 name: formData.name || "Anonymous",
                 content: formData.content,
                 status: "not_prayed", // Default status
-                type: "personal", // Auto-set for this modal
+                type: isAdmin ? prayerType : "community", // Only Admin can choose personal (private/ministry), users are always community (public)
+
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
@@ -80,6 +91,37 @@ export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayer
                             onChange={(e) => setFormData({...formData, content: e.target.value})}
                         ></textarea>
                     </div>
+
+                    {/* Admin Only: Type Selection */}
+                    {isAdmin && (
+                        <div className="space-y-2">
+                             <label className="text-sm font-bold text-gray-700">Visibility (Admin Only)</label>
+                             <div className="flex gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                        type="radio" 
+                                        name="prayerType"
+                                        value="personal"
+                                        checked={prayerType === 'personal'}
+                                        onChange={() => setPrayerType('personal')}
+                                        className="w-4 h-4 text-blue-600"
+                                    />
+                                    <span className="text-sm text-gray-600">Private (Ministry Page)</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                        type="radio" 
+                                        name="prayerType"
+                                        value="community"
+                                        checked={prayerType === 'community'}
+                                        onChange={() => setPrayerType('community')}
+                                        className="w-4 h-4 text-blue-600"
+                                    />
+                                    <span className="text-sm text-gray-600">Public (Prayers Page)</span>
+                                </label>
+                             </div>
+                        </div>
+                    )}
 
                     <div className="pt-2 flex justify-end gap-3">
                         <button 

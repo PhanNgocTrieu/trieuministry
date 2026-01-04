@@ -34,7 +34,9 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     // Create Modal State
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [newPrayerContent, setNewPrayerContent] = useState("");
-    const [newPrayerScope, setNewPrayerScope] = useState<'personal' | 'community'>('personal');
+    const [newPrayerScope, setNewPrayerScope] = useState<'personal' | 'community'>('community'); // Default to community (public)
+    const [includeSignature, setIncludeSignature] = useState(true);
+    const [editId, setEditId] = useState<string | null>(null);
     const [creating, setCreating] = useState(false);
 
     const fetchPrayers = async () => {
@@ -49,8 +51,8 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                  q = query(prayersRef, where("userId", "==", user.uid), orderBy("createdAt", "desc"));
             } else {
                  // Admin or Community
-                 // Fetch all and filter client side to avoid complex index requirements for now, or simple order by
-                 q = query(prayersRef, orderBy("createdAt", "desc"));
+                 // Fetch all WITHOUT orderBy first to ensure we get docs missing 'createdAt'
+                 q = query(prayersRef);
             }
 
             const querySnapshot = await getDocs(q);
@@ -67,6 +69,14 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                 
                 list.push({ id: doc.id, ...data } as PrayerData);
             });
+
+            // Client-side Sort (descending by createdAt)
+            list.sort((a, b) => {
+                const timeA = a.createdAt?.seconds || 0;
+                const timeB = b.createdAt?.seconds || 0;
+                return timeB - timeA;
+            });
+
             setPrayers(list);
         } catch (error) {
             console.error("Error fetching prayers:", error);
@@ -87,26 +97,78 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
         setCreating(true);
 
         try {
-            await addDoc(collection(db, "prayers"), {
-                userId: user.uid,
-                userName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
-                userAvatar: user.photoURL || '',
-                content: newPrayerContent,
-                status: 'pending',
-                createdAt: serverTimestamp(),
-                prayerCount: 0,
-                scope: newPrayerScope,
-                type: newPrayerScope // Legacy compatibility
-            });
+            if (editId) {
+                // Update existing
+                // Calculate final content with or without signature
+                const signature = `\n\n- ${user.displayName || user.email?.split('@')[0] || 'Anonymous'}`;
+                let finalContent = newPrayerContent;
+
+                if (includeSignature) {
+                    if (!finalContent.includes(signature)) {
+                        finalContent += signature;
+                    }
+                } else {
+                    if (finalContent.includes(signature)) {
+                        finalContent = finalContent.replace(signature, "");
+                    }
+                }
+
+                await updateDoc(doc(db, "prayers", editId), {
+                    content: finalContent,
+                    scope: newPrayerScope,
+                    type: newPrayerScope, // Ensure type stays in sync
+                    updatedAt: serverTimestamp()
+                });
+                showAlert("Success", "Prayer request updated.");
+            } else {
+                // Create new
+                await addDoc(collection(db, "prayers"), {
+                    userId: user.uid,
+                    userName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
+                    name: user.displayName || user.email?.split('@')[0] || 'Anonymous', // Add legacy 'name' field
+                    userAvatar: user.photoURL || '',
+                    content: (includeSignature && !editId) 
+                        ? `${newPrayerContent}\n\n- ${user.displayName || user.email?.split('@')[0] || 'Anonymous'}`
+                        : newPrayerContent,
+                    status: 'pending',
+                    createdAt: serverTimestamp(),
+                    prayerCount: 0,
+                    scope: newPrayerScope,
+                    type: newPrayerScope // Legacy compatibility
+                });
+                showAlert("Success", "Prayer request created.");
+            }
+            
             setNewPrayerContent("");
+            setEditId(null);
+            setIncludeSignature(true); // Reset to default
             setIsCreateOpen(false);
             fetchPrayers(); // Refresh
         } catch (error) {
             console.error(error);
-            showAlert("Error", "Error creating prayer request");
+            showAlert("Error", editId ? "Error updating prayer" : "Error creating prayer request");
         } finally {
             setCreating(false);
         }
+    };
+
+    const handleEdit = (prayer: PrayerData) => {
+        setNewPrayerContent(prayer.content);
+        setNewPrayerScope(prayer.scope || 'personal');
+        
+        // Detect if signature exists
+        const signature = `\n\n- ${user?.displayName || user?.email?.split('@')[0] || 'Anonymous'}`;
+        setIncludeSignature(prayer.content.includes(signature));
+        
+        setEditId(prayer.id);
+        setIsCreateOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsCreateOpen(false);
+        setEditId(null);
+        setNewPrayerContent("");
+        setNewPrayerScope('community');
     };
 
     const handleDelete = (id: string) => {
@@ -158,7 +220,12 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                 </div>
                 {/* Add Button (only for personal or admin/volunteer if they want to post) */}
                 <button 
-                    onClick={() => setIsCreateOpen(true)}
+                    onClick={() => {
+                        setEditId(null);
+                        setNewPrayerContent("");
+                        setNewPrayerScope('community');
+                        setIsCreateOpen(true);
+                    }}
                     className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-sm font-bold flex items-center gap-2"
                 >
                     <i className="fas fa-plus"></i> New Request
@@ -169,7 +236,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
             {isCreateOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in-up">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">New Prayer Request</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{editId ? 'Edit Prayer Request' : 'New Prayer Request'}</h3>
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">My Request</label>
@@ -181,35 +248,48 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                     placeholder="Share what you need prayer for..."
                                 />
+                                <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={includeSignature}
+                                        onChange={(e) => setIncludeSignature(e.target.checked)}
+                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-gray-500">Sign my name in the request</span>
+                                </label>
                             </div>
                             
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Visibility</label>
-                                <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
-                                    <button
-                                        type="button"
-                                        onClick={() => setNewPrayerScope('personal')}
-                                        className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'personal' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}
-                                    >
-                                        Personal (Private)
-                                    </button>
-                                     <button
-                                        type="button"
-                                        onClick={() => setNewPrayerScope('community')}
-                                        className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'community' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500'}`}
-                                    >
-                                        Community (Public)
-                                    </button>
+                            
+                            {/* Visibility - Admin Only */}
+                            {isAdmin && (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Visibility</label>
+                                    <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewPrayerScope('personal')}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'personal' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}
+                                        >
+                                            Personal (Private)
+                                        </button>
+                                         <button
+                                            type="button"
+                                            onClick={() => setNewPrayerScope('community')}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'community' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500'}`}
+                                        >
+                                            Community (Public)
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                        {newPrayerScope === 'personal' ? 'Only you and the ministry team can see this.' : 'Everyone in the community can see and pray for this.'}
+                                    </p>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2">
-                                    {newPrayerScope === 'personal' ? 'Only you and the ministry team can see this.' : 'Everyone in the community can see and pray for this.'}
-                                </p>
-                            </div>
+                            )}
 
                             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                                 <button 
                                     type="button"
-                                    onClick={() => setIsCreateOpen(false)}
+                                    onClick={handleCloseModal}
                                     className="px-4 py-2 rounded-lg text-gray-600 font-bold hover:bg-gray-100 transition-colors"
                                 >
                                     Cancel
@@ -219,7 +299,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                     disabled={creating}
                                     className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
                                 >
-                                    {creating ? 'Sending...' : 'Send Request'}
+                                    {creating ? 'Saving...' : (editId ? 'Update Request' : 'Send Request')}
                                 </button>
                             </div>
                         </form>
@@ -263,9 +343,19 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                             <span className={`text-xs font-bold px-2 py-1 rounded ${prayer.scope === 'community' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                 {prayer.scope === 'community' ? 'Community' : 'Personal'}
-                                             </span>
+                                            {prayer.scope === 'community' ? (
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700">
+                                                    Community
+                                                </span>
+                                            ) : prayer.scope === 'personal' ? (
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-600">
+                                                    Personal
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-600 animate-pulse">
+                                                    Unknown
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
@@ -287,13 +377,22 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                         </td>
                                         <td className="px-6 py-4">
                                            {(isAdmin || prayer.userId === user?.uid) ? (
-                                               <button 
-                                                    onClick={() => handleDelete(prayer.id)}
-                                                    className="text-red-600 hover:text-red-800 font-medium p-2 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <i className="fas fa-trash"></i>
-                                               </button>
+                                               <div className="flex items-center gap-2">
+                                                   <button 
+                                                        onClick={() => handleEdit(prayer)}
+                                                        className="text-blue-600 hover:text-blue-800 font-medium p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <i className="fas fa-edit"></i>
+                                                   </button>
+                                                   <button 
+                                                        onClick={() => handleDelete(prayer.id)}
+                                                        className="text-red-600 hover:text-red-800 font-medium p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                   </button>
+                                               </div>
                                            ) : null}
                                         </td>
                                     </tr>

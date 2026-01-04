@@ -19,6 +19,7 @@ interface Transaction {
     categoryColor: string;
     date: Timestamp;
     description: string;
+    createdAt?: Timestamp;
 }
 
 interface ExpensesManagerProps {
@@ -114,12 +115,26 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                     // No filtering needed
                 }
 
-                list.push({ 
+                list.push({
                     id: doc.id, 
                     ...data,
                     type: data.type || 'expense' 
                 } as Transaction);
             });
+            
+            // Client-side sort: Date DESC, then CreatedAt DESC
+            list.sort((a, b) => {
+                const dateA = a.date.toMillis();
+                const dateB = b.date.toMillis();
+                if (dateA !== dateB) {
+                    return dateB - dateA;
+                }
+                // Same date, check created time
+                const createdA = a.createdAt?.toMillis() || 0;
+                const createdB = b.createdAt?.toMillis() || 0;
+                return createdB - createdA;
+            });
+
             setTransactions(list);
             setLoading(false);
         });

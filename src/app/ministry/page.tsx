@@ -26,6 +26,7 @@ interface Prayer {
   title?: string; 
   content: string;
   name?: string;
+  userName?: string; // Add fallback compatibility
   date?: string;
   createdAt: any;
   type?: 'personal' | 'community';
@@ -89,26 +90,32 @@ export default function MinistryPage() {
     });
 
     // 2. Fetch Prayers (Personal)
+    // Removed orderBy to avoid missing index issues. Sorted client-side.
     const qPrayers = query(
         collection(db, "prayers"), 
-        where("type", "==", "personal"),
-        orderBy("createdAt", "desc")
+        where("type", "==", "personal")
     );
     const unsubscribePrayers = onSnapshot(qPrayers, (snapshot) => {
       const list: Prayer[] = [];
       snapshot.forEach((doc) => {
         list.push({ id: doc.id, ...doc.data() } as Prayer);
       });
+      // Sort client-side
+      list.sort((a, b) => {
+          const tA = a.createdAt?.seconds || 0;
+          const tB = b.createdAt?.seconds || 0;
+          return tB - tA;
+      });
       setPersonalPrayers(list);
     }, (error) => {
         console.error("Error fetching prayers:", error);
     });
     
-    // 3. Fetch Appeals (Ministry Appeals - User Submitted)
+    // 3. Fetch Appeals
     const qAppeals = query(
         collection(db, "appeals"), 
+        where("status", "==", "published"),
         where("type", "==", "user_request"),
-        where("status", "==", "published"), 
         orderBy("createdAt", "desc")
     );
     const unsubscribeAppeals = onSnapshot(qAppeals, (snapshot) => {
@@ -323,7 +330,7 @@ export default function MinistryPage() {
                                           
                                           <div className="flex items-center justify-between mb-3">
                                               <span className="text-sm font-bold text-gray-800 bg-gray-50 px-2 py-1 rounded">
-                                                  {prayer.name || 'Anonymous'}
+                                                  {prayer.name || prayer.userName || 'Anonymous'}
                                               </span>
                                               <span className="text-xs text-gray-400 font-mono">
                                                   {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : ''}
