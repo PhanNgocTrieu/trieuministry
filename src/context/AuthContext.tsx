@@ -11,7 +11,10 @@ import {
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
     updateProfile,
-    sendEmailVerification
+    sendEmailVerification,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp, getDoc, onSnapshot } from "firebase/firestore";
@@ -31,6 +34,7 @@ interface AuthContextType {
     isVerified: boolean;
     role: string | null;
     updateUser: (displayName: string, photoURL: string) => Promise<void>;
+    changePassword: (newPassword: string, currentPassword?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,10 +105,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     const isHardcodedAdmin = (adminEmail && userEmail === adminEmail) || allowedAdmins.includes(userEmail);
                     const isDbAdmin = userRole === 'admin';
 
-                    if (isHardcodedAdmin || isDbAdmin) {
+                    const isEmailVerified = user.emailVerified;
+                    // Strict Rule: Must be verified to be admin/volunteer (unless hardcoded dev backdoor)
+                    const isVerifiedRequirementMet = isEmailVerified || isHardcodedAdmin;
+
+                    if ((isHardcodedAdmin || isDbAdmin) && isVerifiedRequirementMet) {
                         setIsAdmin(true);
                         setIsVolunteer(false);
-                    } else if (userRole === 'volunteer') {
+                    } else if (userRole === 'volunteer' && isVerifiedRequirementMet) {
                         setIsAdmin(false);
                         setIsVolunteer(true);
                     } else {
@@ -113,7 +121,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     }
                     
                     // Determine if verified (either by email or admin override)
-                    const isEmailVerified = user.emailVerified;
                     const userDataForVerify = docSnap.exists() ? docSnap.data() : null;
                     const isAdminVerified = userDataForVerify?.emailVerified === true; // Wait, I need to use a different field or reuse emailVerified?
                     // If I use emailVerified from Firestore, syncUserToFirestore overwrites it with user.emailVerified.
@@ -173,9 +180,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const signIn = async (email: string, pass: string) => {
         try {
-             await signInWithEmailAndPassword(auth, email, pass);
-        } catch (error) {
-            console.error("Error signing in", error);
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch (error: any) {
+            // Don't log expected user errors as console errors
+            if (error.code !== 'auth/invalid-credential' && error.code !== 'auth/user-not-found' && error.code !== 'auth/wrong-password') {
+                console.error("Error signing in", error);
+            }
             throw error;
         }
     }
@@ -192,6 +202,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const sendVerificationEmail = async () => {
         if (auth.currentUser) {
             await sendEmailVerification(auth.currentUser);
+        }
+    }
+
+    const changePassword = async (newPassword: string, currentPassword?: string) => {
+        if (auth.currentUser) {
+            try {
+                // If current password provided, try to re-authenticate first
+                if (currentPassword && auth.currentUser.email) {
+                    const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+                    await reauthenticateWithCredential(auth.currentUser, credential);
+                }
+                
+                await updatePassword(auth.currentUser, newPassword);
+            } catch (error) {
+                console.error("Error changing password", error);
+                throw error;
+            }
         }
     }
 
@@ -227,7 +254,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 // Also sync to firestore
                 await syncUserToFirestore(auth.currentUser);
             }
-        }
+        },
+        changePassword
     }}>
             {children}
         </AuthContext.Provider>

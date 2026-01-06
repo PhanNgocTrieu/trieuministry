@@ -10,7 +10,7 @@ import { auth, db } from '@/lib/firebase'; // Keep for other usages if any
 import ImageUploader from '@/components/ImageUploader';
 
 export default function AccountPage() {
-  const { user, loading, logout, resetPassword, updateUser } = useAuth();
+  const { user, loading, logout, changePassword, updateUser } = useAuth();
   const router = useRouter();
   const { showAlert, showConfirm } = useModal();
 
@@ -21,6 +21,11 @@ export default function AccountPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   
+  // Password Change State
+  // Password Change State
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
@@ -49,23 +54,33 @@ export default function AccountPage() {
       }
   };
 
-  const handlePasswordResetClick = () => {
-      if (!user?.email) return;
-      showConfirm(
-          "Reset Password",
-          `Are you sure you want to send a password reset email to ${user.email}?`,
-          async () => {
-              try {
-                  await resetPassword(user.email!);
-                  showAlert("Success", "Password reset email sent! Please check your inbox.");
-              } catch (error) {
-                  console.error("Error sending reset email:", error);
-                  showAlert("Error", "Failed to send reset email.");
-              }
-          },
-          false,
-          "Send Email"
-      );
+  const handleChangePassword = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (passwordForm.new !== passwordForm.confirm) {
+          showAlert("Error", "Passwords do not match.");
+          return;
+      }
+      if (passwordForm.new.length < 6) {
+          showAlert("Error", "Password must be at least 6 characters.");
+          return;
+      }
+
+      setIsSaving(true);
+      try {
+          await changePassword(passwordForm.new, passwordForm.current);
+          setIsChangingPassword(false);
+          setPasswordForm({ current: '', new: '', confirm: '' });
+          showAlert("Success", "Password changed successfully!");
+      } catch (error: any) {
+          console.error("Error changing password:", error);
+          if (error.code === 'auth/requires-recent-login') {
+              showAlert("Security Update", "Please log out and log back in to change your password.");
+          } else {
+              showAlert("Error", error.message || "Failed to change password.");
+          }
+      } finally {
+          setIsSaving(false);
+      }
   };
 
   const handleImageUploaded = (url: string) => {
@@ -166,12 +181,12 @@ export default function AccountPage() {
                   </li>
                   <li>
                      <button 
-                        onClick={handlePasswordResetClick} 
+                        onClick={() => setIsChangingPassword(true)}
                         className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                      >
                         <span className="font-medium text-gray-700">Change Password</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-400">Via Email</span>
+                            <span className="text-xs text-gray-400">Directly</span>
                             <i className="fas fa-chevron-right text-gray-400"></i>
                         </div>
                      </button>
@@ -240,6 +255,81 @@ export default function AccountPage() {
                             className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50"
                         >
                             {isSaving ? 'Saving...' : 'Save Changes'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {isChangingPassword && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+                <div className="p-5 border-b border-gray-100 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-gray-800">Change Password</h3>
+                    <button onClick={() => setIsChangingPassword(false)} className="text-gray-400 hover:text-gray-600">
+                        <i className="fas fa-times"></i>
+                    </button>
+                </div>
+                <form onSubmit={handleChangePassword} className="p-6 space-y-4">
+                    <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800 mb-4">
+                        <i className="fas fa-info-circle mr-2"></i>
+                        Enter your new password below.
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Current Password</label>
+                        <input 
+                            type="password" 
+                            value={passwordForm.current}
+                            onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter current password"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">New Password</label>
+                        <input 
+                            type="password" 
+                            value={passwordForm.new}
+                            onChange={(e) => setPasswordForm({ ...passwordForm, new: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Min 6 characters"
+                            required
+                            minLength={6}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Confirm New Password</label>
+                        <input 
+                            type="password" 
+                            value={passwordForm.confirm}
+                            onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Re-enter password"
+                            required
+                            minLength={6}
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-2">
+                        <button 
+                            type="button" 
+                            onClick={() => setIsChangingPassword(false)}
+                            className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={isSaving}
+                            className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        >
+                            {isSaving ? 'Updating...' : 'Update Password'}
                         </button>
                     </div>
                 </form>

@@ -100,8 +100,20 @@ export default function VerifyEmailPage() {
                 </p>
                 <p className="mt-2 text-center text-sm text-gray-600">
                     Just click on the link in that email to complete your signup. 
-                    If you don't see it, you may need to check your spam folder.
                 </p>
+                <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <i className="fas fa-exclamation-triangle text-yellow-500"></i>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-yellow-700">
+                                <strong>Can't find the email?</strong><br/>
+                                Please check your <strong>Spam</strong> or <strong>Junk</strong> folder.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

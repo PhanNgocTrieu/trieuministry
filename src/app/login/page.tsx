@@ -27,7 +27,14 @@ export default function LoginPage() {
       await signIn(email, password);
       router.push('/');
     } catch (err: any) {
-      setError(err.message.replace('Firebase: ', ''));
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setError('Incorrect email or password. Please try again.');
+        // If they just changed password, maybe remind them? But keep it generic for security.
+      } else if (err.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
+      } else {
+        setError(err.message.replace('Firebase: ', ''));
+      }
     }
   };
 
