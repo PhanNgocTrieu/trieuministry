@@ -187,7 +187,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
     const expenseBreakdown = getBreakdown('expense');
 
     // Split Income Analysis
-    const realIncomeCategories = ['salary', 'balance', 'sponsors']; // Lowercase for comparison
+    const realIncomeCategories = ['salary', 'sponsors']; // Lowercase for comparison
     const realIncomeBreakdown = incomeBreakdown.filter(item => realIncomeCategories.includes(item.name.toLowerCase().trim()));
     const circulatingIncomeBreakdown = incomeBreakdown.filter(item => !realIncomeCategories.includes(item.name.toLowerCase().trim()));
 
@@ -393,7 +393,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                         <>
                                             <tr className="bg-green-50/50">
                                                 <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-green-600 uppercase tracking-wide">
-                                                    Real Income (Salary & Balance)
+                                                    Real Income (Salary & Sponsors)
                                                 </td>
                                             </tr>
                                             {realIncomeBreakdown.map(item => (
@@ -416,7 +416,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                         <>
                                             <tr className="bg-blue-50/50">
                                                 <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-blue-600 uppercase tracking-wide mt-2">
-                                                    Circulating Income (Others)
+                                                    Circulating Income (Balance & Others)
                                                 </td>
                                             </tr>
                                             {circulatingIncomeBreakdown.map(item => (
