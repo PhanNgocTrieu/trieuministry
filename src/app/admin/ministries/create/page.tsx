@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, setDoc, doc } from "firebase/firestore";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import ImageUploader from "@/components/ImageUploader";
@@ -32,16 +32,38 @@ export default function CreateMinistryPage() {
     });
     const [coverImage, setCoverImage] = useState<string>(""); // Single image
     const [uploadKey, setUploadKey] = useState(0);
+    const [isCustomCategory, setIsCustomCategory] = useState(false);
 
-    const categories = [
-        "Vision Man Discipleship",
-        "Fellowship Community",
-        "Youth Ministry",
-        "Worship Team",
-        "Outreach",
-        "Education",
-        "General"
-    ];
+    const [categories, setCategories] = useState<string[]>([]);
+    // Fetch existing categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                // Fetch from explicit categories collection
+                const catsSnapshot = await getDocs(collection(db, "ministry_categories"));
+                const storedCategories = new Set<string>();
+                catsSnapshot.forEach(doc => {
+                    storedCategories.add(doc.data().name);
+                });
+
+                // Also fetch from existing ministries (legacy support)
+                const ministriesSnapshot = await getDocs(collection(db, "ministries"));
+                ministriesSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.category) {
+                        storedCategories.add(data.category);
+                    }
+                });
+
+                // Merge default and existing unique categories
+                setCategories(prev => Array.from(new Set([...prev, ...Array.from(storedCategories)])).sort());
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,9 +90,24 @@ export default function CreateMinistryPage() {
         try {
             const sharedWithArray = formData.sharedWith.split(',').map(email => email.trim()).filter(email => email);
 
+            // Auto-save category if new
+            const categoryName = formData.category || "General";
+            if (!categories.includes(categoryName)) {
+                try {
+                    const catId = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                    await setDoc(doc(db, "ministry_categories", catId), {
+                        name: categoryName,
+                        createdAt: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Error auto-saving category:", err);
+                    // Non-blocking error
+                }
+            }
+
             await addDoc(collection(db, "ministries"), {
                 title: formData.title,
-                category: formData.category || "General",
+                category: categoryName,
                 description: formData.description,
                 prayerNeeds: formData.prayerNeeds,
                 status: formData.status,
@@ -120,21 +157,63 @@ export default function CreateMinistryPage() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-700">Category</label>
-                        <input 
-                            type="text" 
-                            name="category" 
-                            list="category-suggestions"
-                            required
-                            value={formData.category} 
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Select or type a category..."
-                        />
-                        <datalist id="category-suggestions">
-                            {categories.map((cat, idx) => (
-                                <option key={idx} value={cat} />
-                            ))}
-                        </datalist>
+                        <div className="flex gap-2">
+                            {isCustomCategory ? (
+                                <input 
+                                    type="text" 
+                                    name="category" 
+                                    required
+                                    value={formData.category} 
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-blue-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                                    placeholder="Type new category name..."
+                                    autoFocus
+                                />
+                            ) : (
+                                <select
+                                    name="category"
+                                    required
+                                    value={formData.category}
+                                    onChange={(e) => {
+                                        if (e.target.value === '__NEW__') {
+                                            setIsCustomCategory(true);
+                                            setFormData(prev => ({ ...prev, category: '' }));
+                                        } else {
+                                            handleChange(e);
+                                        }
+                                    }}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select a category...</option>
+                                    {categories.map((cat, idx) => (
+                                        <option key={idx} value={cat}>{cat}</option>
+                                    ))}
+                                    <option value="__NEW__" className="font-bold text-blue-600">+ Create New Category</option>
+                                </select>
+                            )}
+                            
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsCustomCategory(!isCustomCategory);
+                                    if (!isCustomCategory) setFormData(prev => ({ ...prev, category: '' }));
+                                }}
+                                className="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600"
+                                title={isCustomCategory ? "Select Existing" : "Create New"}
+                            >
+                                <i className={`fas ${isCustomCategory ? 'fa-list' : 'fa-plus'}`}></i>
+                            </button>
+                        </div>
+                        {isCustomCategory && (
+                            <p className="text-xs text-blue-500 mt-1">
+                                <i className="fas fa-info-circle"></i> New category will be saved automatically.
+                            </p>
+                        )}
+                        {!isCustomCategory && (
+                             <p className="text-xs text-gray-400 mt-1">
+                                Can't find it? <button type="button" onClick={() => setIsCustomCategory(true)} className="text-blue-600 hover:underline">Create new</button> or <Link href="/admin/ministries/categories" className="text-blue-600 hover:underline">Manage Categories</Link>
+                            </p>
+                        )}
                     </div>
                 </div>
 
