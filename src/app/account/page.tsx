@@ -70,7 +70,10 @@ export default function AccountPage() {
           await changePassword(passwordForm.new, passwordForm.current);
           setIsChangingPassword(false);
           setPasswordForm({ current: '', new: '', confirm: '' });
-          showAlert("Success", "Password changed successfully!");
+          
+          showAlert("Success", "Password changed successfully! Please log in again.");
+          await logout();
+          router.push('/login');
       } catch (error: any) {
           console.error("Error changing password:", error);
           if (error.code === 'auth/requires-recent-login') {
