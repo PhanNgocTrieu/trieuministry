@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 
 interface Ministry {
   id: string;
@@ -21,15 +21,33 @@ interface Ministry {
   createdAt: any;
 }
 
+interface IntercessionTarget {
+  id: string;
+  name: string;
+  status: 'active' | 'answered';
+  createdAt: any;
+}
+
 export default function MinistryPage() {
   const { t } = useLanguage();
   const { user, isAdmin } = useAuth();
   
   // Data States
   const [ministries, setMinistries] = useState<Ministry[]>([]);
+  const [intercessionTargets, setIntercessionTargets] = useState<IntercessionTarget[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch Intercession Targets (Active Only)
+    const qIntercession = query(collection(db, "intercession_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
+    const unsubscribeIntercession = onSnapshot(qIntercession, (snapshot) => {
+      const list: IntercessionTarget[] = [];
+      snapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() } as IntercessionTarget);
+      });
+      setIntercessionTargets(list);
+    });
+
     // Fetch Ministries
     const qMinistries = query(collection(db, "ministries"), orderBy("createdAt", "desc"));
     const unsubscribeMinistries = onSnapshot(qMinistries, (snapshot) => {
@@ -43,6 +61,7 @@ export default function MinistryPage() {
 
     return () => {
       unsubscribeMinistries();
+      unsubscribeIntercession();
     };
   }, []);
 
@@ -96,6 +115,44 @@ export default function MinistryPage() {
                   </div>
               )}
           </div>
+          
+
+
+          {/* Intercessory Focus Section */}
+          {intercessionTargets.length > 0 && (
+             <div className="mb-20 animate-fade-in">
+                 <div className="flex items-center gap-4 mb-8">
+                     <div className="h-10 w-2 bg-purple-500 rounded-full"></div>
+                     <h2 className="text-3xl font-bold text-gray-900">Intercessory Focus</h2>
+                 </div>
+                 
+                 <div className="bg-white rounded-3xl p-8 border border-purple-100 shadow-sm relative overflow-hidden">
+                     {/* Decoration */}
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
+
+                     <div className="relative z-10">
+                        <p className="text-gray-500 mb-6 italic">
+                            <i className="fas fa-quote-left mr-2 text-purple-200"></i>
+                            We are currently interceding for these specific people, nations, and topics. Join us in prayer.
+                        </p>
+                         
+                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                             {intercessionTargets.map(target => (
+                                 <div key={target.id} className="bg-purple-50/50 p-4 rounded-xl border border-purple-100 flex items-start gap-3">
+                                     <div className="mt-1 w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 text-xs">
+                                         <i className="fas fa-praying-hands"></i>
+                                     </div>
+                                     <div>
+                                         <h4 className="font-bold text-gray-900 leading-tight">{target.name}</h4>
+                                         <span className="text-xs text-purple-600 mt-1 block">Active Request</span>
+                                     </div>
+                                 </div>
+                             ))}
+                         </div>
+                     </div>
+                 </div>
+             </div>
+          )}
 
           <div className="space-y-16 animate-fade-in">
               {categories.length > 0 ? (

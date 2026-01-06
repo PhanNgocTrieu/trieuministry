@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, startOfYear, endOfYear, addMonths, subMonths, addYears, subYears } from 'date-fns';
-import PrayerTargetList from '@/components/admin/discipline/PrayerTargetList';
+import Link from 'next/link';
 
 type LogType = 'personal_prayer' | 'intercession' | 'scripture';
 
@@ -279,27 +279,27 @@ export default function DisciplinePage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
-                    {/* 1. Personal Prayers (Using Component) */}
-                    <PrayerTargetList
-                        title="Personal Prayers"
-                        icon="fas fa-praying-hands"
-                        color="green"
-                        collectionName="personal_prayer_targets"
-                        logType="personal_prayer"
-                        isTodayLogged={todayLogs.personal_prayer}
-                        onLog={handleLog}
-                    />
+                    {/* 1. Personal Prayers Link */}
+                    <div className="bg-white rounded-xl shadow-sm border border-green-100 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-md transition-shadow">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 text-2xl">
+                            <i className="fas fa-praying-hands"></i>
+                        </div>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2">Personal Prayers</h4>
+                        <Link href="/admin/ministries/personal" className="text-green-600 font-bold hover:underline">
+                            Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
+                        </Link>
+                    </div>
 
-                    {/* 2. Intercessory List (Using Component) */}
-                    <PrayerTargetList
-                        title="Intercessory List"
-                        icon="fas fa-hand-holding-heart"
-                        color="purple"
-                        collectionName="intercession_targets"
-                        logType="intercession"
-                        isTodayLogged={todayLogs.intercession}
-                        onLog={handleLog}
-                    />
+                    {/* 2. Intercessory Link */}
+                    <div className="bg-white rounded-xl shadow-sm border border-purple-100 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-md transition-shadow">
+                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-4 text-2xl">
+                            <i className="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2">Intercession</h4>
+                        <Link href="/admin/ministries/intercessory" className="text-purple-600 font-bold hover:underline">
+                            Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
+                        </Link>
+                    </div>
 
                     {/* 3. Scripture Today */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col relative h-[500px]">
