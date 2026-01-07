@@ -65,6 +65,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                             Goals
                         </Link>
 
+                        <Link href="/admin/tasks" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/tasks')}`}>
+                            <i className="fas fa-tasks w-5 text-center"></i>
+                            Tasks
+                        </Link>
+
                         <Link href="/admin/my-expenses" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/my-expenses')}`}>
                             <i className="fas fa-wallet w-5 text-center"></i>
                             My Expenses
