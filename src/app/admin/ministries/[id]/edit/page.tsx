@@ -7,6 +7,7 @@ import { doc, getDoc, updateDoc, serverTimestamp, getDocs, collection, setDoc } 
 import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
 import { useModal } from "@/context/ModalContext";
+import AdminGuard from "@/components/admin/AdminGuard";
 
 interface MinistryImage {
   url: string;
@@ -21,33 +22,42 @@ export default function EditMinistryPage() {
     
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    
+    // Bilingual Form Data
     const [formData, setFormData] = useState({
-        title: "",
+        // English (Default)
+        title_en: "",
+        description_en: "",
+        prayerNeeds_en: "",
+        
+        // Vietnamese
+        title_vi: "",
+        description_vi: "",
+        prayerNeeds_vi: "",
+
         category: "General",
-        description: "",
-        prayerNeeds: "", // Added
         status: "active",
         visibility: "public",
-        sharedWith: "" // Comma separated emails
+        sharedWith: "" 
     });
-    const [coverImage, setCoverImage] = useState<string>(""); // Single Image
+
+    const [activeTab, setActiveTab] = useState<'en' | 'vi'>('en');
+
+    const [coverImage, setCoverImage] = useState<string>(""); 
     const [uploadKey, setUploadKey] = useState(0);
     const [isCustomCategory, setIsCustomCategory] = useState(false);
-
     const [categories, setCategories] = useState<string[]>([]);
 
     // Fetch existing categories
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                // Fetch from explicit categories collection
                 const catsSnapshot = await getDocs(collection(db, "ministry_categories"));
                 const storedCategories = new Set<string>();
                 catsSnapshot.forEach(doc => {
                     storedCategories.add(doc.data().name);
                 });
 
-                // Also fetch from existing ministries (legacy support)
                 const ministriesSnapshot = await getDocs(collection(db, "ministries"));
                 ministriesSnapshot.forEach((doc) => {
                     const data = doc.data();
@@ -56,7 +66,6 @@ export default function EditMinistryPage() {
                     }
                 });
 
-                // Merge default and existing unique categories
                 setCategories(prev => Array.from(new Set([...prev, ...Array.from(storedCategories)])).sort());
             } catch (error) {
                 console.error("Error fetching categories:", error);
@@ -74,17 +83,25 @@ export default function EditMinistryPage() {
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    
                     setFormData({
-                        title: data.title || "",
+                        // Load bilingual fields if exist, else fallback to legacy field
+                        title_en: data.title_en || data.title || "",
+                        title_vi: data.title_vi || "", // If empty, user can translate
+                        
+                        description_en: data.description_en || data.description || "",
+                        description_vi: data.description_vi || "",
+
+                        prayerNeeds_en: data.prayerNeeds_en || data.prayerNeeds || "",
+                        prayerNeeds_vi: data.prayerNeeds_vi || "",
+
                         category: data.category || "General",
-                        description: data.description || "",
-                        prayerNeeds: data.prayerNeeds || "",
                         status: data.status || "active",
                         visibility: data.visibility || "public",
                         sharedWith: data.sharedWith?.join(', ') || ""
                     });
                     
-                    // Handle image migration: try coverImage, fallback to first image in 'images' array
+                    // Handle image migration
                     if (data.coverImage) {
                         setCoverImage(data.coverImage);
                     } else if (data.images && data.images.length > 0) {
@@ -143,14 +160,24 @@ export default function EditMinistryPage() {
 
             const docRef = doc(db, "ministries", id);
             await updateDoc(docRef, {
-                title: formData.title,
+                // Save Bilingual Data
+                title_en: formData.title_en,
+                title_vi: formData.title_vi,
+                description_en: formData.description_en,
+                description_vi: formData.description_vi,
+                prayerNeeds_en: formData.prayerNeeds_en,
+                prayerNeeds_vi: formData.prayerNeeds_vi,
+                
+                // Keep legacy fields updated with English (or best available) for backward compatibility
+                title: formData.title_en || formData.title_vi,
+                description: formData.description_en || formData.description_vi,
+                prayerNeeds: formData.prayerNeeds_en || formData.prayerNeeds_vi,
+
                 category: categoryName,
-                description: formData.description,
-                prayerNeeds: formData.prayerNeeds, // Save prayer needs
                 status: formData.status,
                 visibility: formData.visibility,
                 sharedWith: sharedWithArray,
-                coverImage: coverImage, // Save single image
+                coverImage: coverImage, 
                 updatedAt: serverTimestamp()
             });
 
@@ -167,7 +194,8 @@ export default function EditMinistryPage() {
     if (loading) return <div className="p-10 text-center">Loading ministry details...</div>;
 
     return (
-        <div className="max-w-4xl mx-auto mb-20">
+        <AdminGuard>
+            <div className="max-w-4xl mx-auto mb-20">
             <div className="flex items-center gap-4 mb-6">
                 <Link href="/admin/ministries" className="text-gray-500 hover:text-gray-700">
                     <i className="fas fa-arrow-left"></i> Back
@@ -179,19 +207,43 @@ export default function EditMinistryPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+                
+                {/* Language Tabs */}
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                    <div className="flex gap-2">
+                        <button 
+                            type="button" 
+                            onClick={() => setActiveTab('en')}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-blue-50 text-blue-600 ring-2 ring-blue-100' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            <span className="mr-2">🇺🇸</span> English
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => setActiveTab('vi')}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'vi' ? 'bg-blue-50 text-blue-600 ring-2 ring-blue-100' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            <span className="mr-2">🇻🇳</span> Vietnamese
+                        </button>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Ministry Title</label>
+                    <div className="space-y-2 md:col-span-2">
+                        <label className="text-sm font-bold text-gray-700">
+                            Ministry Title <span className="text-gray-400 font-normal">({activeTab.toUpperCase()})</span>
+                        </label>
                         <input 
                             type="text" 
-                            name="title" 
+                            name={`title_${activeTab}`} 
                             required
-                            value={formData.title} 
+                            // @ts-ignore
+                            value={formData[`title_${activeTab}`]} 
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                     <div className="space-y-2">
+                     <div className="space-y-2 md:col-span-2">
                         <label className="text-sm font-bold text-gray-700">Category</label>
                         <div className="flex gap-2">
                             {isCustomCategory ? (
@@ -203,7 +255,6 @@ export default function EditMinistryPage() {
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border border-blue-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
                                     placeholder="Type new category name..."
-                                    autoFocus
                                 />
                             ) : (
                                 <select
@@ -240,16 +291,6 @@ export default function EditMinistryPage() {
                                 <i className={`fas ${isCustomCategory ? 'fa-list' : 'fa-plus'}`}></i>
                             </button>
                         </div>
-                        {isCustomCategory && (
-                            <p className="text-xs text-blue-500 mt-1">
-                                <i className="fas fa-info-circle"></i> New category will be saved automatically.
-                            </p>
-                        )}
-                        {!isCustomCategory && (
-                             <p className="text-xs text-gray-400 mt-1">
-                                Can't find it? <button type="button" onClick={() => setIsCustomCategory(true)} className="text-blue-600 hover:underline">Create new</button> or <Link href="/admin/ministries/categories" className="text-blue-600 hover:underline">Manage Categories</Link>
-                            </p>
-                        )}
                     </div>
                 </div>
 
@@ -331,12 +372,13 @@ export default function EditMinistryPage() {
                 )}
                 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Ministry Descriptions</label>
+                    <label className="text-sm font-bold text-gray-700">Description <span className="text-gray-400 font-normal">({activeTab.toUpperCase()})</span></label>
                     <textarea 
-                        name="description" 
+                        name={`description_${activeTab}`} 
                         required
                         rows={6}
-                        value={formData.description} 
+                        // @ts-ignore
+                        value={formData[`description_${activeTab}`]} 
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Describe the ministry works..."
@@ -346,13 +388,13 @@ export default function EditMinistryPage() {
                  <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                         <span className="bg-orange-100 text-orange-700 p-1 rounded"><i className="fas fa-pray"></i></span>
-                        Prayer Needs & Topics
-                        <span className="text-gray-400 font-normal ml-auto text-xs">(Specific prayer points for this ministry)</span>
+                        Prayer Needs <span className="text-gray-400 font-normal">({activeTab.toUpperCase()})</span>
                     </label>
                     <textarea 
-                        name="prayerNeeds" 
+                        name={`prayerNeeds_${activeTab}`} 
                         rows={4}
-                        value={formData.prayerNeeds} 
+                        // @ts-ignore
+                        value={formData[`prayerNeeds_${activeTab}`]} 
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-orange-200 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 bg-orange-50/30"
                         placeholder="List the specific prayer needs for this ministry..."
@@ -372,6 +414,7 @@ export default function EditMinistryPage() {
                     </button>
                 </div>
             </form>
-        </div>
+            </div>
+        </AdminGuard>
     );
 }
