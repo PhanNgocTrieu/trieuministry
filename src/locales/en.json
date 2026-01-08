@@ -48,6 +48,13 @@
         "daily_verse": {
             "content": "\"Do not lie to each other, since you have taken off your old self with its practices and have put on the new self, which is being renewed in knowledge in the image of its Creator. Here there is no Gentile or Jew, circumcised or uncircumcised, barbarian, Scythian, slave or free, but Christ is all, and is in all.\"",
             "citation": "Colossians 3:9-11"
+        },
+        "newsletter": {
+            "title": "Sign up for our Newsletter",
+            "description": "Receive the latest articles, testimonies, and updates from TrieuMinistry directly to your inbox every week.",
+            "placeholder": "Enter your email address",
+            "button": "Subscribe",
+            "note": "Your email is safe with us. No spam."
         }
     },
     "profile": {

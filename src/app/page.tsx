@@ -116,17 +116,17 @@ export default function Home() {
       </section>
 
       {/* Daily Verse Section */}
-      <section className="py-32 relative text-white text-center flex items-center justify-center min-h-[500px] overflow-hidden">
+      <section className="py-20 relative text-white text-center flex items-center justify-center min-h-[400px] overflow-hidden">
          {/* Parallax-like Background */}
          <div className="absolute inset-0 bg-[url('/hero_bg.png')] bg-cover bg-fixed bg-center opacity-30 dark:opacity-30 mix-blend-multiply dark:mix-blend-normal"></div>
          <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-slate-900 to-slate-950 dark:from-slate-950 dark:via-slate-950/80 dark:to-slate-950 opacity-90 dark:opacity-100"></div>
 
          <div className="container container-custom fade-in-up relative z-10">
-            <i className="fas fa-quote-left text-6xl mb-8 text-purple-500/30 block mx-auto"></i>
-            <blockquote className="text-3xl md:text-5xl font-light italic font-serif mb-10 block mx-auto max-w-5xl leading-tight text-slate-100">
+            <i className="fas fa-quote-left text-4xl mb-6 text-purple-500/30 block mx-auto"></i>
+            <blockquote className="text-2xl md:text-3xl font-light italic font-serif mb-6 block mx-auto max-w-4xl leading-relaxed text-slate-100">
                {t('home.daily_verse.content')}
             </blockquote>
-            <cite className="block text-xl md:text-2xl text-purple-300 not-italic font-bold tracking-wide">
+            <cite className="block text-lg md:text-xl text-purple-300 not-italic font-bold tracking-wide">
                — {t('home.daily_verse.citation')}
             </cite>
          </div>
@@ -137,13 +137,15 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
           <div className="container container-custom text-center fade-in-up relative z-10">
-             <div className="max-w-3xl mx-auto glass-panel p-10 md:p-14 rounded-[3rem] shadow-2xl dark:shadow-none">
+             <div className="max-w-3xl mx-auto bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-10 md:p-14 rounded-[3rem] shadow-2xl dark:shadow-none border border-white dark:border-white/10 ring-1 ring-slate-200/50 dark:ring-transparent">
                 <h2 className="text-4xl font-bold mb-8 text-slate-900 dark:text-white">{t('home.cta.title')}</h2>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                   <Link href="/prayers" className="px-10 py-4 border border-purple-500 text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl font-bold transition-colors text-lg">
+                   <Link href="/prayers" className="px-10 py-4 border-2 border-purple-500/20 text-purple-600 dark:text-purple-300 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl font-bold transition-all text-lg flex items-center justify-center gap-2">
+                      <i className="fas fa-praying-hands"></i>
                       {t('home.cta.btn_prayer')}
                    </Link>
-                   <Link href="/donate" className="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:scale-105 rounded-xl font-bold shadow-lg shadow-purple-500/20 transition-all text-lg">
+                   <Link href="/donate" className="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:scale-105 rounded-xl font-bold shadow-lg shadow-purple-500/20 transition-all text-lg flex items-center justify-center gap-2">
+                      <i className="fas fa-heart text-red-200"></i>
                       {t('home.cta.btn_donate')}
                    </Link>
                 </div>
@@ -157,37 +159,36 @@ export default function Home() {
            <div className="flex flex-col lg:flex-row items-center justify-between gap-12 glass-panel p-8 md:p-16 rounded-[2.5rem] shadow-premium relative overflow-hidden">
               {/* Glow effects inside card */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]"></div>
-              
-              <div className="lg:w-1/2 text-center lg:text-left relative z-10">
-                 <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-700/50 text-purple-400 rounded-2xl mb-6 border border-white/10">
-                    <i className="fas fa-envelope-open-text text-2xl"></i>
-                 </div>
-                 <h3 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-                    Sign up for our Newsletter
-                 </h3>
-                 <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
-                    Receive the latest articles, testimonies, and updates from TrieuMinistry directly to your inbox every week.
-                 </p>
-              </div>
+                            <div className="lg:w-1/2 text-center lg:text-left relative z-10">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-purple-100 dark:bg-slate-700/50 text-purple-600 dark:text-purple-400 rounded-2xl mb-6 border border-purple-200 dark:border-white/10">
+                     <i className="fas fa-envelope-open-text text-2xl"></i>
+                  </div>
+                  <h3 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+                     {t('home.newsletter.title')}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                     {t('home.newsletter.description')}
+                  </p>
+               </div>
 
-              <div className="lg:w-1/2 w-full relative z-10">
-                 <form className="flex flex-col sm:flex-row gap-4">
-                    <input 
-                       type="email" 
-                       placeholder="Enter your email address" 
-                       className="flex-1 px-6 py-4 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                       required
-                    />
-                    <button 
-                       type="submit" 
-                       className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-1"
-                    >
-                       Subscribe
-                    </button>
-                 </form>
-                 <p className="text-xs text-slate-500 mt-4 text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
-                    <i className="fas fa-lock opacity-50"></i> Your email is safe with us. No spam.
-                 </p>
+               <div className="lg:w-1/2 w-full relative z-10">
+                  <form className="flex flex-col sm:flex-row gap-4">
+                     <input 
+                        type="email" 
+                        placeholder={t('home.newsletter.placeholder')} 
+                        className="flex-1 px-6 py-4 rounded-xl bg-white dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-medium"
+                        required
+                     />
+                     <button 
+                        type="submit" 
+                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-1 whitespace-nowrap"
+                     >
+                        {t('home.newsletter.button')}
+                     </button>
+                  </form>
+                  <p className="text-xs text-slate-500 mt-4 text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
+                     <i className="fas fa-lock opacity-50"></i> {t('home.newsletter.note')}
+                  </p>
               </div>
            </div>
         </div>
