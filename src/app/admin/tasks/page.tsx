@@ -187,17 +187,17 @@ export default function AdminTasksPage() {
                 {/* Header & Tabs */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
-                        <p className="text-sm text-gray-500">Manage your personal tasks and deadlines.</p>
+                        <h1 className="text-2xl font-bold text-white">Task Management</h1>
+                        <p className="text-sm text-slate-400">Manage your personal tasks and deadlines.</p>
                     </div>
                     
-                    <div className="flex bg-gray-100 p-1 rounded-lg self-start">
+                    <div className="flex bg-slate-900 p-1 rounded-lg self-start border border-white/10">
                         <button
                             onClick={() => setViewMode('active')}
                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
                                 viewMode === 'active' 
-                                ? 'bg-white text-blue-600 shadow-sm' 
-                                : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-slate-800 text-blue-400 shadow-sm border border-white/5' 
+                                : 'text-slate-500 hover:text-slate-300'
                             }`}
                         >
                             <i className="fas fa-list-ul mr-2"></i> Active Tasks
@@ -206,8 +206,8 @@ export default function AdminTasksPage() {
                             onClick={() => setViewMode('report')}
                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
                                 viewMode === 'report' 
-                                ? 'bg-white text-purple-600 shadow-sm' 
-                                : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-slate-800 text-purple-400 shadow-sm border border-white/5' 
+                                : 'text-slate-500 hover:text-slate-300'
                             }`}
                         >
                             <i className="fas fa-archive mr-2"></i> Reports / Archive
@@ -222,17 +222,17 @@ export default function AdminTasksPage() {
                             {/* Controls */}
                             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                                 <div className="flex items-center gap-4 flex-wrap">
-                                    <span className="text-xs font-bold uppercase text-gray-400 whitespace-nowrap">
+                                    <span className="text-xs font-bold uppercase text-slate-500 whitespace-nowrap">
                                         {tasks.filter(t => !t.isCompleted).length} Pending
                                     </span>
                                     
                                     {/* Sort Dropdown */}
                                     <div className="flex items-center gap-2">
-                                        <label className="text-xs font-bold text-gray-400"><i className="fas fa-sort"></i></label>
+                                        <label className="text-xs font-bold text-slate-500"><i className="fas fa-sort"></i></label>
                                         <select
                                             value={sortBy}
                                             onChange={(e) => setSortBy(e.target.value as any)}
-                                            className="px-2 py-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="px-2 py-1.5 text-xs font-bold text-slate-300 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                                         >
                                             <option value="default">Default (Smart)</option>
                                             <option value="deadline">Deadline</option>
@@ -244,7 +244,7 @@ export default function AdminTasksPage() {
                                     {tasks.some(t => t.isCompleted) && (
                                         <button 
                                             onClick={handleBatchArchive}
-                                            className="px-3 py-1.5 text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors flex items-center gap-1 border border-purple-200"
+                                            className="px-3 py-1.5 text-xs font-bold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg transition-colors flex items-center gap-1 border border-purple-500/20"
                                         >
                                             <i className="fas fa-boxes"></i> Archive Completed
                                         </button>
@@ -255,7 +255,7 @@ export default function AdminTasksPage() {
                                         setEditingTask(undefined);
                                         setIsModalOpen(true);
                                     }}
-                                    className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap"
+                                    className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20 whitespace-nowrap"
                                 >
                                     <i className="fas fa-plus"></i> Add New Task
                                 </button>
@@ -265,7 +265,7 @@ export default function AdminTasksPage() {
                             {loading ? (
                                 <div className="space-y-4">
                                     {[1,2,3].map(i => (
-                                        <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+                                        <div key={i} className="h-24 bg-slate-800/50 rounded-xl animate-pulse"></div>
                                     ))}
                                 </div>
                             ) : sortedTasks.length > 0 ? (
@@ -285,15 +285,15 @@ export default function AdminTasksPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-200">
-                                    <i className="fas fa-clipboard-check text-4xl text-gray-300 mb-4"></i>
-                                    <h3 className="text-lg font-bold text-gray-800">All Caught Up!</h3>
-                                    <p className="text-gray-500 max-w-xs mx-auto mt-2">
+                                <div className="text-center py-20 bg-slate-900 rounded-xl border border-dashed border-white/10">
+                                    <i className="fas fa-clipboard-check text-4xl text-slate-700 mb-4"></i>
+                                    <h3 className="text-lg font-bold text-white">All Caught Up!</h3>
+                                    <p className="text-slate-500 max-w-xs mx-auto mt-2">
                                         You have no pending tasks. Enjoy your day or add a new task to get started.
                                     </p>
                                     <button
                                         onClick={() => setIsModalOpen(true)}
-                                        className="mt-6 text-blue-600 font-bold hover:underline"
+                                        className="mt-6 text-blue-400 font-bold hover:underline"
                                     >
                                         Create a task now
                                     </button>

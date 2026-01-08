@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -142,33 +141,33 @@ export default function PersonalPrayerPage() {
              <div className="max-w-6xl mx-auto mb-20 p-4">
                  <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                            <span className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                            <span className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 border border-green-500/30">
                                 <i className="fas fa-praying-hands"></i>
                             </span>
                              Personal Prayer List
                         </h1>
-                        <p className="text-gray-500 mt-1 ml-14">Track your personal prayer requests and walk with God.</p>
+                        <p className="text-slate-400 mt-1 ml-14">Track your personal prayer requests and walk with God.</p>
                     </div>
-                    <Link href="/admin/discipline" className="text-gray-500 hover:text-gray-700 font-bold text-sm bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <Link href="/admin/discipline" className="text-slate-400 hover:text-white font-bold text-sm bg-slate-900 border border-white/10 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
                         <i className="fas fa-arrow-left mr-2"></i> Back to Discipline
                     </Link>
                 </div>
 
                 {/* Input Area */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100 mb-8">
+                <div className="bg-slate-900 p-6 rounded-2xl shadow-lg border border-green-500/20 mb-8">
                     <form onSubmit={handleAddTarget} className="flex gap-3">
                         <input
                             type="text"
                             value={newTargetName}
                             onChange={(e) => setNewTargetName(e.target.value)}
                             placeholder="What do you want to pray for today?"
-                            className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all font-medium"
+                            className="flex-1 px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-800 focus:ring-2 focus:ring-green-500 outline-none transition-all font-medium text-white placeholder:text-slate-500"
                         />
                         <button 
                             type="submit"
                             disabled={!newTargetName.trim()}
-                            className="px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                            className="px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-lg shadow-green-900/20 transition-all disabled:opacity-50 disabled:shadow-none"
                         >
                             <i className="fas fa-plus mr-2"></i> Add Item
                         </button>
@@ -176,35 +175,35 @@ export default function PersonalPrayerPage() {
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex gap-4 mb-6 border-b border-gray-200 pb-1">
+                <div className="flex gap-4 mb-6 border-b border-white/10 pb-1">
                     <button 
                         onClick={() => setShowAnswered(false)}
-                        className={`pb-3 px-2 font-bold text-sm transition-colors border-b-2 ${!showAnswered ? 'text-green-600 border-green-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}
+                        className={`pb-3 px-2 font-bold text-sm transition-colors border-b-2 ${!showAnswered ? 'text-green-400 border-green-500' : 'text-slate-500 border-transparent hover:text-slate-300'}`}
                     >
-                        Active <span className="ml-2 bg-green-100 text-green-600 px-2 py-0.5 rounded-full text-xs">{activeTargets.length}</span>
+                        Active <span className="ml-2 bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs border border-green-500/30">{activeTargets.length}</span>
                     </button>
                     <button 
                         onClick={() => setShowAnswered(true)}
-                        className={`pb-3 px-2 font-bold text-sm transition-colors border-b-2 ${showAnswered ? 'text-yellow-600 border-yellow-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}
+                        className={`pb-3 px-2 font-bold text-sm transition-colors border-b-2 ${showAnswered ? 'text-yellow-400 border-yellow-500' : 'text-slate-500 border-transparent hover:text-slate-300'}`}
                     >
-                        Answered <span className="ml-2 bg-yellow-100 text-yellow-600 px-2 py-0.5 rounded-full text-xs">{answeredTargets.length}</span>
+                        Answered <span className="ml-2 bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full text-xs border border-yellow-500/30">{answeredTargets.length}</span>
                     </button>
                 </div>
 
                 {/* Grid */}
                  {loading ? (
-                    <div className="text-center py-12 text-gray-400">Loading your list...</div>
+                    <div className="text-center py-12 text-slate-500">Loading your list...</div>
                 ) : (
                     <>
                         {displayTargets.length === 0 ? (
-                            <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400 text-2xl">
+                            <div className="text-center py-20 bg-slate-900 rounded-2xl border-2 border-dashed border-white/10">
+                                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600 text-2xl">
                                     <i className="fas fa-praying-hands"></i>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                                <h3 className="text-lg font-bold text-white mb-1">
                                     {showAnswered ? "No answered prayers yet." : "Your personal list is empty."}
                                 </h3>
-                                <p className="text-gray-500 text-sm">
+                                <p className="text-slate-500 text-sm">
                                     {showAnswered ? "Mark items as answered to see them here." : "Add a request above to start praying."}
                                 </p>
                             </div>

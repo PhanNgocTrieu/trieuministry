@@ -165,12 +165,12 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
     };
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="max-w-3xl mx-auto pb-20">
+            <h1 className="text-2xl font-bold text-white mb-6">
                 {editId ? 'Edit Goal' : 'Create New Goal'}
             </h1>
 
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-8">
+            <form onSubmit={handleSubmit} className="bg-slate-900 p-8 rounded-2xl border border-white/5 shadow-lg space-y-8">
                 
                 {/* Type Selection */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -186,8 +186,8 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                             onClick={() => setType(t.id as any)}
                             className={`py-4 px-2 rounded-xl font-bold text-sm capitalize border-2 transition-all flex flex-col items-center gap-2 ${
                                 type === t.id 
-                                ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' 
-                                : 'bg-white text-gray-500 border-gray-100 hover:border-blue-200 hover:bg-gray-50'
+                                ? 'bg-blue-500/10 border-blue-500 text-blue-400 shadow-sm shadow-blue-500/10' 
+                                : 'bg-slate-800 text-slate-500 border-white/5 hover:border-white/20 hover:bg-slate-700'
                             }`}
                         >
                             <i className={`fas ${t.icon} text-lg mb-0.5`}></i>
@@ -199,46 +199,46 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                 {/* Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Year</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Year</label>
                         <input 
                             type="number" 
                             required
                             value={year}
                             onChange={(e) => setYear(Number(e.target.value))}
-                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-900 shadow-sm"
+                            className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-white shadow-sm outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Priority</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Priority</label>
                         <div className="relative">
                             <select 
                                 value={priority}
                                 onChange={(e) => setPriority(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700 appearance-none shadow-sm"
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-300 appearance-none shadow-sm outline-none"
                             >
                                 <option value="high">High</option>
                                 <option value="medium">Medium</option>
                                 <option value="low">Low</option>
                             </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                                 <i className="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Status</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Status</label>
                          <div className="relative">
                             <select 
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700 appearance-none shadow-sm"
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-300 appearance-none shadow-sm outline-none"
                             >
                                 <option value="planned">Planned</option>
                                 <option value="in_progress">In Progress</option>
                                 <option value="completed">Completed</option>
                                 <option value="on_hold">On Hold</option>
                             </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                                 <i className="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
@@ -246,24 +246,24 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Goal Title</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Goal Title</label>
                     <input 
                         type="text" 
                         required
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-xl text-gray-900 placeholder:text-gray-300 shadow-sm"
+                        className="w-full px-5 py-4 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-xl text-white placeholder:text-slate-600 shadow-sm outline-none"
                         placeholder="e.g., Run a Marathon"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Description</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Description</label>
                     <textarea 
                         rows={3}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-gray-700 resize-none placeholder:text-gray-400 shadow-sm"
+                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-slate-300 resize-none placeholder:text-slate-600 shadow-sm outline-none"
                         placeholder="Details..."
                     />
                 </div>
@@ -272,16 +272,16 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                 
                 {/* 1. Milestone Type */}
                 {type === 'milestone' && (
-                    <div className="border-t border-gray-100 pt-8">
+                    <div className="border-t border-white/10 pt-8">
                         <div className="flex justify-between items-center mb-6">
-                            <label className="block text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <label className="block text-sm font-bold text-white flex items-center gap-2">
                                  <div className="w-1 h-5 bg-blue-500 rounded-full"></div>
                                  Milestones & Key Steps
                             </label>
                             <button 
                                 type="button"
                                 onClick={handleAddMilestone}
-                                className="text-sm text-blue-600 font-bold hover:text-blue-700 flex items-center gap-2 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl transition-colors"
+                                className="text-sm text-blue-400 font-bold hover:text-blue-300 flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-2 rounded-xl transition-colors"
                             >
                                 <i className="fas fa-plus"></i> Add Milestone
                             </button>
@@ -289,13 +289,13 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                         
                         <div className="space-y-3">
                             {milestones.map((ms, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm group hover:border-blue-300 transition-all focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500">
+                                <div key={idx} className="flex items-center gap-3 p-3 bg-slate-800 rounded-xl border border-white/5 shadow-sm group hover:border-blue-500/30 transition-all focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500">
                                     <div className="pl-1">
                                         <input 
                                             type="checkbox"
                                             checked={ms.isCompleted}
                                             onChange={() => toggleMilestone(idx)}
-                                            className="h-5 w-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500 cursor-pointer"
+                                            className="h-5 w-5 text-blue-600 rounded-md border-slate-600 focus:ring-blue-500 cursor-pointer bg-slate-700"
                                             title="Mark as completed"
                                         />
                                     </div>
@@ -304,24 +304,24 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
                                         value={ms.title}
                                         onChange={(e) => handleMilestoneChange(idx, e.target.value)}
                                         placeholder={`Milestone ${idx + 1}`}
-                                        className="flex-1 bg-transparent border-none text-sm font-bold text-gray-700 placeholder:text-gray-300 focus:ring-0 p-0"
+                                        className="flex-1 bg-transparent border-none text-sm font-bold text-white placeholder:text-slate-600 focus:ring-0 p-0 outline-none"
                                     />
                                     <button 
                                         type="button" 
                                         onClick={() => removeMilestone(idx)}
-                                        className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                        className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                     >
                                         <i className="fas fa-times text-sm"></i>
                                     </button>
                                 </div>
                             ))}
                             {milestones.length === 0 && (
-                                <div className="text-center py-8 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
+                                <div className="text-center py-8 bg-slate-800/50 rounded-2xl border-2 border-dashed border-white/10">
+                                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-500">
                                         <i className="fas fa-list-ul"></i>
                                     </div>
-                                    <p className="text-sm text-gray-500 font-medium">No milestones yet.</p>
-                                    <p className="text-xs text-gray-400">Add steps to track your progress.</p>
+                                    <p className="text-sm text-slate-400 font-medium">No milestones yet.</p>
+                                    <p className="text-xs text-slate-500">Add steps to track your progress.</p>
                                 </div>
                             )}
                         </div>
@@ -330,37 +330,37 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
 
                 {/* 2. Target / Savings Type */}
                 {(type === 'target' || type === 'savings') && (
-                    <div className="border-t border-gray-100 pt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="border-t border-white/10 pt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Current Value</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Current Value</label>
                             <input 
                                 type="number" 
                                 value={currentValue}
                                 onChange={(e) => setCurrentValue(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-900 shadow-sm placeholder:text-gray-300"
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-white shadow-sm placeholder:text-slate-600 outline-none"
                                 placeholder="0"
                             />
                         </div>
                          <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Target Value</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Target Value</label>
                             <input 
                                 type="number" 
                                 required
                                 value={targetValue}
                                 onChange={(e) => setTargetValue(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-900 shadow-sm placeholder:text-gray-300"
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-white shadow-sm placeholder:text-slate-600 outline-none"
                                 placeholder="Target"
                             />
                         </div>
                          <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Unit</label>
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Unit</label>
                             <input 
                                 type="text" 
                                 value={type === 'savings' ? 'VND' : unit}
                                 disabled={type === 'savings'}
                                 onChange={(e) => setUnit(e.target.value)}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-900 shadow-sm placeholder:text-gray-300 ${
-                                    type === 'savings' ? 'bg-gray-50 text-gray-500' : 'bg-white'
+                                className={`w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-white shadow-sm placeholder:text-slate-600 outline-none ${
+                                    type === 'savings' ? 'bg-slate-900 text-slate-500' : 'bg-slate-800'
                                 }`}
                                 placeholder={type === 'savings' ? 'VND' : 'e.g. Books, Km'}
                             />
@@ -370,16 +370,16 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
 
                 {/* 3. Simple Type */}
                 {type === 'simple' && (
-                    <div className="border-t border-gray-100 pt-8 pb-4">
-                         <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <div className="border-t border-white/10 pt-8 pb-4">
+                         <div className="flex items-center gap-4 bg-slate-800 p-4 rounded-xl border border-white/10">
                             <input 
                                 type="checkbox"
                                 id="isCompleted"
                                 checked={isCompleted}
                                 onChange={(e) => setIsCompleted(e.target.checked)}
-                                className="h-6 w-6 text-green-600 rounded-md border-gray-300 focus:ring-green-500 cursor-pointer"
+                                className="h-6 w-6 text-green-600 rounded-md border-slate-600 focus:ring-green-500 cursor-pointer bg-slate-700"
                             />
-                            <label htmlFor="isCompleted" className="text-gray-900 font-bold cursor-pointer select-none">
+                            <label htmlFor="isCompleted" className="text-white font-bold cursor-pointer select-none">
                                 Mark as Completed
                             </label>
                         </div>
@@ -388,18 +388,18 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
 
 
                 {/* Actions */}
-                <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
                     <button 
                         type="button"
                         onClick={() => router.back()}
-                        className="px-6 py-3 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition-colors"
+                        className="px-6 py-3 rounded-xl text-slate-400 font-bold hover:bg-slate-800 transition-colors"
                     >
                         Cancel
                     </button>
                     <button 
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
+                        className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/40 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
                     >
                          {loading ? 'Saving...' : 'Save Goal'}
                     </button>

@@ -150,39 +150,45 @@ export default function MinistryPage() {
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen font-sans">
+    <main className="bg-slate-950 min-h-screen font-sans selection:bg-purple-500/30 text-slate-200">
       
-      {/* SECTION 1: MINISTRY UPDATES (White Background) */}
-      <section className="bg-white pb-20 pt-32">
-        <div className="container container-custom">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+      {/* SECTION 1: MINISTRY UPDATES */}
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"></div>
+            <div className="absolute top-[20%] left-[-10%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div className="container container-custom relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
                 <div>
-                    <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-2 block">Our Work & Mission</span>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Our Work & Mission</span>
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
                         {t('nav.ministry')}
                     </h1>
-                    <p className="text-xl text-gray-500 mt-4 max-w-2xl">
+                    <p className="text-xl text-slate-400 mt-4 max-w-2xl leading-relaxed">
                          {t('ministry.hero.subtitle')}
                     </p>
                 </div>
                 {isAdmin && (
-                    <Link href="/admin/ministries/create?returnUrl=/ministry" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95">
-                        <i className="fas fa-plus"></i>
+                    <Link href="/admin/ministries/create?returnUrl=/ministry" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-bold rounded-xl hover:bg-gray-100 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        <i className="fas fa-plus text-purple-600"></i>
                         <span>Add Ministry</span>
                     </Link>
                 )}
             </div>
 
-            <div className="space-y-16">
+            <div className="space-y-20">
                {categories.length > 0 ? (
                    categories.map(category => (
                        <div key={category}>
-                           <div className="flex items-center gap-4 mb-8">
-                              <div className="h-10 w-2 bg-blue-500 rounded-full"></div>
-                              <h2 className="text-3xl font-bold text-gray-900">{category}</h2>
+                           <div className="flex items-center gap-4 mb-10">
+                              <div className="h-8 w-1.5 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                              <h2 className="text-3xl font-bold text-white tracking-tight">{category}</h2>
                            </div>
 
-                           <div className="grid grid-cols-1 gap-8">
+                           <div className="grid grid-cols-1 gap-10">
                                {groupedMinistries[category].map((ministry) => {
                                    const displayImage = ministry.coverImage || (ministry.images && ministry.images.length > 0 ? ministry.images[0].url : null);
                                    const title = getLocalized(ministry, 'title');
@@ -190,54 +196,58 @@ export default function MinistryPage() {
                                    const prayerNeeds = getLocalized(ministry, 'prayerNeeds');
 
                                    return (
-                                   <div key={ministry.id} className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group">
+                                   <div key={ministry.id} className="relative bg-slate-900/40 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-500 flex flex-col group">
                                        <div className={`flex flex-col ${displayImage ? 'md:flex-row' : ''}`}>
                                            {displayImage && (
-                                               <div className="md:w-5/12 bg-gray-200 relative min-h-[300px] overflow-hidden">
+                                               <div className="md:w-5/12 bg-slate-800 relative min-h-[300px] overflow-hidden">
+                                                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10 opacity-60"></div>
                                                    <img 
                                                        src={displayImage} 
                                                        alt={title} 
-                                                       className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" 
+                                                       className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110" 
                                                    />
                                                </div>
                                            )}
-                                           <div className={`p-8 flex flex-col ${displayImage ? 'md:w-7/12' : 'w-full'}`}>
+                                           <div className={`p-8 md:p-10 flex flex-col ${displayImage ? 'md:w-7/12' : 'w-full'}`}>
                                                <div className="mb-6">
                                                    <div className="flex justify-between items-start gap-4">
-                                                       <h3 className="text-2xl font-bold text-gray-900 leading-tight">{title}</h3>
+                                                       <h3 className="text-3xl font-bold text-white leading-tight">{title}</h3>
                                                        <div className="flex items-center gap-2 shrink-0">
                                                            {ministry.status !== 'active' && (
-                                                               <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                                                                   ministry.status === 'completed' ? 'bg-gray-200 text-gray-600' : 'bg-yellow-100 text-yellow-700'
+                                                               <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
+                                                                   ministry.status === 'completed' 
+                                                                    ? 'bg-slate-800 text-slate-400 border-slate-700' 
+                                                                    : 'bg-amber-900/30 text-amber-500 border-amber-900/50'
                                                                }`}>
                                                                    {ministry.status}
                                                                </span>
                                                            )}
                                                            {isAdmin && (
-                                                               <Link href={`/admin/ministries/${ministry.id}/edit`} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors">
+                                                               <Link href={`/admin/ministries/${ministry.id}/edit`} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-slate-400 hover:bg-white hover:text-slate-900 transition-all">
                                                                    <i className="fas fa-edit"></i>
                                                                </Link>
                                                            )}
                                                        </div>
                                                    </div>
-                                                   <div className="text-sm text-gray-400 mt-2">
-                                                      Added: {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                                                   <div className="text-sm text-slate-500 mt-3 font-medium flex items-center gap-2">
+                                                      <i className="fas fa-calendar-alt opacity-50"></i>
+                                                      {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
                                                    </div>
                                                </div>
-                                               <div className="prose prose-blue max-w-none text-gray-600 whitespace-pre-line leading-relaxed flex-grow">
+                                               <div className="prose prose-invert max-w-none text-slate-300 whitespace-pre-line leading-relaxed flex-grow">
                                                    {description}
                                                </div>
                                            </div>
                                        </div>
                                        {prayerNeeds && (
-                                           <div className="bg-white border-t border-gray-100 p-6 md:p-8">
-                                               <div className="flex items-start gap-4">
-                                                   <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0 mt-1">
-                                                       <i className="fas fa-pray text-sm"></i>
+                                           <div className="bg-slate-900/50 border-t border-white/5 p-6 md:p-8">
+                                               <div className="flex items-start gap-5">
+                                                   <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0 mt-1 border border-orange-500/20">
+                                                       <i className="fas fa-pray"></i>
                                                    </div>
                                                    <div>
-                                                       <h4 className="font-bold text-base text-gray-900 mb-1">Prayer Needs</h4>
-                                                       <div className="text-gray-600 whitespace-pre-line text-sm italic">
+                                                       <h4 className="font-bold text-base text-white mb-2">Prayer Needs</h4>
+                                                       <div className="text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
                                                            {prayerNeeds}
                                                        </div>
                                                    </div>
@@ -251,27 +261,33 @@ export default function MinistryPage() {
                        </div>
                    ))
                ) : (
-                   <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                       <i className="fas fa-church text-4xl text-gray-300 mb-4"></i>
-                       <p className="text-gray-500 font-medium">No ministry updates yet.</p>
+                   <div className="text-center py-24 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
+                       <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i className="fas fa-church text-4xl text-slate-600"></i>
+                       </div>
+                       <h3 className="text-xl font-bold text-white mb-2">No Updates Yet</h3>
+                       <p className="text-slate-500 font-medium">Ministry updates will appear here soon.</p>
                    </div>
                )}
             </div>
         </div>
       </section>
 
-      {/* SECTION 2: INTERCESSORY PRAYER (Distinct Darker/Colored Background) */}
-      <section className="bg-slate-900 py-24 text-white relative">
-          <div className="container container-custom">
-             <div className="max-w-4xl mb-12">
+      {/* SECTION 2: INTERCESSORY PRAYER */}
+      <section className="bg-slate-950 py-24 text-white relative border-t border-white/5">
+          {/* Subtle separator glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+
+          <div className="container container-custom relative z-10">
+             <div className="max-w-4xl mb-16">
                  <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Join Us In Prayer</span>
-                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
+                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                      Intercessory Focus
                  </h2>
                  <p className="text-xl text-slate-400 max-w-2xl leading-relaxed">
                      We are standing in the gap for these specific needs. Click a card to read more and pray.
                  </p>
-                 <div className="mt-8 h-1 w-20 bg-purple-500 rounded-full"></div>
+                 <div className="mt-8 h-1 w-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
              </div>
 
              {intercessionTargets.length > 0 ? (
@@ -282,35 +298,35 @@ export default function MinistryPage() {
                          <div 
                              key={target.id} 
                              onClick={() => setSelectedTarget(target)}
-                             className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800 hover:border-purple-500/50 transition-all group cursor-pointer active:scale-95"
+                             className="bg-slate-900/60 backdrop-blur-sm p-6 rounded-3xl border border-white/5 hover:bg-slate-800 hover:border-purple-500/50 transition-all group cursor-pointer active:scale-95 shadow-lg shadow-black/20"
                          >
                              {/* Commitment Time Badge */}
                              {target.commitmentTime && (
-                                 <div className="absolute top-0 right-0 bg-slate-700/60 px-3 py-1.5 rounded-bl-xl border-l border-b border-slate-600/50 flex items-center gap-2">
+                                 <div className="absolute top-0 right-0 bg-slate-800/90 px-3 py-1.5 rounded-bl-2xl border-l border-b border-white/5 flex items-center gap-2 backdrop-blur-md">
                                      <i className="fas fa-clock text-purple-400 text-xs"></i>
-                                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wide">{target.commitmentTime}</span>
+                                     <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wide">{target.commitmentTime}</span>
                                  </div>
                              )}
 
                              <div className="flex items-start gap-4 mt-2">
-                                 <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-110 group-hover:from-purple-600 group-hover:to-blue-600 group-hover:text-white transition-all duration-300 border border-white/5 group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-purple-500/30">
                                      <i className="fas fa-praying-hands text-xl"></i>
                                  </div>
                                  <div className="flex-1">
                                      {/* Name / Group */}
-                                     <h4 className="text-lg font-bold text-white mb-1 leading-tight">{targetName}</h4>
+                                     <h4 className="text-lg font-bold text-white mb-1 leading-tight group-hover:text-purple-300 transition-colors">{targetName}</h4>
                                      
                                      {/* Title / Topic */}
                                      {target.title && (
-                                         <p className="text-purple-300 font-medium text-sm mb-3">{target.title}</p>
+                                         <p className="text-slate-400 font-medium text-sm mb-3">{target.title}</p>
                                      )}
 
-                                     <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-slate-700/50">
-                                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-purple-400 transition-colors">
-                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-500 group-hover:bg-purple-400"></span>
+                                     <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-white/5">
+                                         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-purple-400 transition-colors">
+                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-purple-400 transition-colors"></span>
                                              Read Request
                                          </div>
-                                         <div className="flex items-center gap-1.5 text-slate-400">
+                                         <div className="flex items-center gap-1.5 text-slate-400 bg-slate-800/50 px-2 py-1 rounded-md">
                                              <span className="text-xs font-bold text-white">{target.prayerCount || 0}</span>
                                              <span className="text-[10px] uppercase font-bold text-slate-500">prayers</span>
                                          </div>
@@ -322,7 +338,7 @@ export default function MinistryPage() {
                      })}
                  </div>
              ) : (
-                 <div className="text-center py-16 border border-dashed border-slate-700 rounded-3xl bg-slate-800/20">
+                 <div className="text-center py-16 border border-dashed border-slate-800 rounded-3xl bg-slate-900/30">
                      <p className="text-slate-500">No active intercession targets at the moment.</p>
                  </div>
              )}
@@ -332,62 +348,62 @@ export default function MinistryPage() {
       {/* Detail Modal */}
       {selectedTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedTarget(null)}></div>
-            <div className="bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-700 relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setSelectedTarget(null)}></div>
+            <div className="bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-700 relative z-10 overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
                 
                 {/* Header */}
-                <div className="p-6 md:p-8 border-b border-slate-700/50 bg-slate-800/50">
+                <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-b from-slate-800 to-slate-900">
                     <button 
                         onClick={() => setSelectedTarget(null)}
-                        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+                        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all border border-white/5"
                     >
                         <i className="fas fa-times"></i>
                     </button>
 
-                    <div className="flex gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white shadow-lg shrink-0">
+                    <div className="flex gap-5">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white shadow-xl shadow-purple-900/30 shrink-0">
                             <i className="fas fa-praying-hands text-2xl"></i>
                         </div>
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded border border-purple-500/20">
                                     Prayer Request
                                 </span>
                                 {selectedTarget.commitmentTime && (
-                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                                        <i className="fas fa-clock text-[10px]"></i> {selectedTarget.commitmentTime}
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded border border-white/5">
+                                        <i className="fas fa-clock text-[9px]"></i> {selectedTarget.commitmentTime}
                                     </span>
                                 )}
                             </div>
                             <h3 className="text-2xl font-bold text-white leading-tight">{selectedTarget.name}</h3>
-                            {selectedTarget.title && <p className="text-lg text-purple-200 mt-1">{selectedTarget.title}</p>}
+                            {selectedTarget.title && <p className="text-lg text-purple-200 mt-1 font-medium">{selectedTarget.title}</p>}
                         </div>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
-                    <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                        <p className="whitespace-pre-line text-lg leading-relaxed text-slate-200">
+                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar bg-slate-900">
+                    <div className="bg-slate-800/50 rounded-2xl p-6 border border-white/5 shadow-inner">
+                        <p className="whitespace-pre-line text-lg leading-relaxed text-slate-300">
                             {selectedTarget.description || "No specific details provided. Please pray as led by the Spirit."}
                         </p>
                     </div>
                     
-                    <div className="mt-8 flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <div className="mt-8 flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5">
                         <div className="text-slate-400 text-sm">
-                            Current Prayers: <span className="text-white font-bold">{selectedTarget.prayerCount || 0}</span>
+                            Current Prayers: <span className="text-white font-bold ml-1">{selectedTarget.prayerCount || 0}</span>
                         </div>
-                        <div className="text-slate-500 text-xs">
+                        <div className="text-slate-500 text-xs font-mono">
                             Posted: {selectedTarget.createdAt?.seconds ? new Date(selectedTarget.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
                         </div>
                     </div>
                 </div>
 
                 {/* Footer / Actions */}
-                <div className="p-6 border-t border-slate-700/50 bg-slate-800/30 flex justify-end gap-3">
+                <div className="p-6 border-t border-white/10 bg-slate-800/50 flex justify-end gap-3 backdrop-blur-sm">
                     <button 
                         onClick={() => setSelectedTarget(null)}
-                        className="px-6 py-3 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+                        className="px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm"
                     >
                         Close
                     </button>
@@ -397,16 +413,16 @@ export default function MinistryPage() {
                                 handlePray(selectedTarget.id, selectedTarget.name);
                                 setSelectedTarget(null);
                             }}
-                            className="px-6 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 shadow-lg shadow-purple-500/20 transition-all active:scale-95 flex items-center gap-2"
+                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 flex items-center gap-2 text-sm"
                         >
                             <i className="fas fa-check"></i> Pray & Log
                         </button>
                     ) : (
                         <button 
                              onClick={() => handlePray(selectedTarget.id, selectedTarget.name)}
-                             className="px-6 py-3 bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-600 transition-all active:scale-95 flex items-center gap-2"
+                             className="px-6 py-3 bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-600 transition-all active:scale-95 flex items-center gap-2 text-sm border border-white/5"
                         >
-                             <i className="fas fa-heart"></i> I Prayed
+                             <i className="fas fa-heart text-pink-500"></i> I Prayed
                         </button>
                     )}
                 </div>

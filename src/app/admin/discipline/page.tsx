@@ -7,6 +7,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, startOfYear, endOfYear, addMonths, subMonths, addYears, subYears } from 'date-fns';
 import Link from 'next/link';
+import { useModal } from '@/context/ModalContext';
 
 type LogType = 'personal_prayer' | 'intercession' | 'scripture';
 
@@ -21,6 +22,7 @@ interface DisciplineLog {
 
 export default function DisciplinePage() {
     const { user } = useAuth();
+    const { showAlert } = useModal();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [logs, setLogs] = useState<DisciplineLog[]>([]);
     const [loading, setLoading] = useState(true);
@@ -110,10 +112,10 @@ export default function DisciplinePage() {
 
             setTodayLogs(prev => ({ ...prev, [type]: true }));
             fetchLogs();
-            alert("Updated successfully!");
+            showAlert("Success", "Updated successfully!");
         } catch (error) {
             console.error("Error logging:", error);
-            alert("Failed to update.");
+            showAlert("Error", "Failed to update.");
         }
     };
 
@@ -155,84 +157,84 @@ export default function DisciplinePage() {
         <AdminGuard>
             <div className="max-w-6xl mx-auto mb-20 p-4">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h1 className="text-3xl font-bold text-gray-900">Spiritual Discipline</h1>
-                    <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
-                        <button onClick={prevYear} className="p-2 hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-gray-500" title="Previous Year">
+                    <h1 className="text-3xl font-bold text-white">Spiritual Discipline</h1>
+                    <div className="flex items-center gap-2 bg-slate-900 p-2 rounded-full shadow-lg border border-white/10">
+                        <button onClick={prevYear} className="p-2 hover:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Previous Year">
                             <i className="fas fa-angle-double-left"></i>
                         </button>
-                        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-gray-600" title="Previous Month">
+                        <button onClick={prevMonth} className="p-2 hover:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Previous Month">
                             <i className="fas fa-chevron-left"></i>
                         </button>
                         
-                        <h2 className="text-lg font-bold w-40 text-center text-gray-800">{format(currentDate, 'MMMM yyyy')}</h2>
+                        <h2 className="text-lg font-bold w-40 text-center text-white">{format(currentDate, 'MMMM yyyy')}</h2>
                         
-                        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-gray-600" title="Next Month">
+                        <button onClick={nextMonth} className="p-2 hover:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Next Month">
                             <i className="fas fa-chevron-right"></i>
                         </button>
-                        <button onClick={nextYear} className="p-2 hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center text-gray-500" title="Next Year">
+                        <button onClick={nextYear} className="p-2 hover:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Next Year">
                             <i className="fas fa-angle-double-right"></i>
                         </button>
                     </div>
-                    <button onClick={goToToday} className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-bold transition-colors">
+                    <button onClick={goToToday} className="px-4 py-2 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 text-sm font-bold transition-colors border border-blue-500/20">
                         Current Month
                     </button>
                 </div>
 
                 {/* Summary Stats Bar */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-green-50 rounded-xl p-4 border border-green-100 flex items-center justify-between">
+                    <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/20 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                             <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 border border-green-500/30">
                                 <i className="fas fa-praying-hands"></i>
                             </div>
                             <div>
-                                <span className="block font-medium text-green-900 leading-tight">Personal Prayers</span>
-                                <span className="text-xs text-green-600">Month / Year {currentYear}</span>
+                                <span className="block font-medium text-green-400 leading-tight">Personal Prayers</span>
+                                <span className="text-xs text-green-500/70">Month / Year {currentYear}</span>
                             </div>
                         </div>
                         <div className="text-right">
-                             <div className="text-2xl font-bold text-green-700">{stats.month.personal_prayer} <span className="text-sm font-normal text-green-600">/ {stats.year.personal_prayer}</span></div>
+                             <div className="text-2xl font-bold text-white">{stats.month.personal_prayer} <span className="text-sm font-normal text-slate-400">/ {stats.year.personal_prayer}</span></div>
                         </div>
                     </div>
-                    <div className="bg-purple-50 rounded-xl p-4 border border-purple-100 flex items-center justify-between">
+                    <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                             <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/30">
                                 <i className="fas fa-hand-holding-heart"></i>
                             </div>
                              <div>
-                                <span className="block font-medium text-purple-900 leading-tight">Intercession</span>
-                                <span className="text-xs text-purple-600">Month / Year {currentYear}</span>
+                                <span className="block font-medium text-purple-400 leading-tight">Intercession</span>
+                                <span className="text-xs text-purple-500/70">Month / Year {currentYear}</span>
                             </div>
                         </div>
                          <div className="text-right">
-                             <div className="text-2xl font-bold text-purple-700">{stats.month.intercession} <span className="text-sm font-normal text-purple-600">/ {stats.year.intercession}</span></div>
+                             <div className="text-2xl font-bold text-white">{stats.month.intercession} <span className="text-sm font-normal text-slate-400">/ {stats.year.intercession}</span></div>
                         </div>
                     </div>
-                     <div className="bg-orange-50 rounded-xl p-4 border border-orange-100 flex items-center justify-between">
+                     <div className="bg-orange-500/10 rounded-xl p-4 border border-orange-500/20 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                             <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 border border-orange-500/30">
                                 <i className="fas fa-book-open"></i>
                             </div>
                              <div>
-                                <span className="block font-medium text-orange-900 leading-tight">Scripture</span>
-                                <span className="text-xs text-orange-600">Month / Year {currentYear}</span>
+                                <span className="block font-medium text-orange-400 leading-tight">Scripture</span>
+                                <span className="text-xs text-orange-500/70">Month / Year {currentYear}</span>
                             </div>
                         </div>
                          <div className="text-right">
-                             <div className="text-2xl font-bold text-orange-700">{stats.month.scripture} <span className="text-sm font-normal text-orange-600">/ {stats.year.scripture}</span></div>
+                             <div className="text-2xl font-bold text-white">{stats.month.scripture} <span className="text-sm font-normal text-slate-400">/ {stats.year.scripture}</span></div>
                         </div>
                     </div>
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-                    <div className="grid grid-cols-7 gap-2 mb-2 text-center text-sm font-bold text-gray-400 uppercase tracking-wider">
+                <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 mb-8">
+                    <div className="grid grid-cols-7 gap-2 mb-2 text-center text-sm font-bold text-slate-500 uppercase tracking-wider">
                         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                     </div>
                     <div className="grid grid-cols-7 gap-2">
                         {/* Empty cells for offset */}
                         {Array.from({ length: startOfMonth(currentDate).getDay() }).map((_, i) => (
-                            <div key={`empty-${i}`} className="h-24 md:h-32 bg-gray-50/30 rounded-lg"></div>
+                            <div key={`empty-${i}`} className="h-24 md:h-32 bg-slate-800/30 rounded-lg"></div>
                         ))}
                         
                         {daysInMonth.map((day) => {
@@ -244,26 +246,30 @@ export default function DisciplinePage() {
 
                             return (
                                 <div key={day.toISOString()} 
-                                     className={`h-24 md:h-32 border rounded-lg p-2 flex flex-col justify-between transition-colors ${isTodayDate ? 'border-blue-400 bg-blue-50' : 'border-gray-100 hover:bg-gray-50'}`}
+                                     className={`h-24 md:h-32 border rounded-lg p-2 flex flex-col justify-between transition-colors ${
+                                        isTodayDate 
+                                            ? 'border-blue-500/50 bg-blue-900/10' 
+                                            : 'border-white/5 hover:bg-slate-800/50 hover:border-white/10'
+                                     }`}
                                 >
                                     <div className="text-right">
-                                        <span className={`text-sm font-medium ${isTodayDate ? 'text-blue-600' : 'text-gray-500'}`}>
+                                        <span className={`text-sm font-medium ${isTodayDate ? 'text-blue-400' : 'text-slate-500'}`}>
                                             {format(day, 'd')}
                                         </span>
                                     </div>
                                     <div className="flex flex-col gap-1 text-xs">
                                         {hasPersonal && (
-                                            <div className="flex items-center gap-1 text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                                            <div className="flex items-center gap-1 text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">
                                                 <i className="fas fa-check-circle text-[10px]"></i> <span className="hidden md:inline">Prayer</span>
                                             </div>
                                         )}
                                         {hasIntercession && (
-                                            <div className="flex items-center gap-1 text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">
+                                            <div className="flex items-center gap-1 text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
                                                 <i className="fas fa-hand-holding-heart text-[10px]"></i> <span className="hidden md:inline">Intercede</span>
                                             </div>
                                         )}
                                         {hasScripture && (
-                                            <div className="flex items-center gap-1 text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
+                                            <div className="flex items-center gap-1 text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20">
                                                 <i className="fas fa-book-open text-[10px]"></i> <span className="hidden md:inline">Scripture</span>
                                             </div>
                                         )}
@@ -275,54 +281,58 @@ export default function DisciplinePage() {
                 </div>
 
                 {/* Entry Sections */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Today's Log: <span className="text-blue-600">{format(new Date(), 'EEEE, MMMM do')}</span></h3>
+                <h3 className="text-xl font-bold text-white mb-4">Today's Log: <span className="text-blue-400">{format(new Date(), 'EEEE, MMMM do')}</span></h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     {/* 1. Personal Prayers Link */}
-                    <div className="bg-white rounded-xl shadow-sm border border-green-100 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-md transition-shadow">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 text-2xl">
+                    <div className="bg-slate-900 rounded-xl shadow-lg border border-green-500/20 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-xl hover:border-green-500/30 transition-all group">
+                        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-4 text-2xl group-hover:scale-110 transition-transform">
                             <i className="fas fa-praying-hands"></i>
                         </div>
-                        <h4 className="font-bold text-lg text-gray-900 mb-2">Personal Prayers</h4>
-                        <Link href="/admin/ministries/personal" className="text-green-600 font-bold hover:underline">
+                        <h4 className="font-bold text-lg text-white mb-2">Personal Prayers</h4>
+                        <Link href="/admin/ministries/personal" className="text-green-500 font-bold hover:text-green-400 hover:underline">
                             Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
                         </Link>
                     </div>
 
                     {/* 2. Intercessory Link */}
-                    <div className="bg-white rounded-xl shadow-sm border border-purple-100 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-md transition-shadow">
-                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-4 text-2xl">
+                    <div className="bg-slate-900 rounded-xl shadow-lg border border-purple-500/20 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-xl hover:border-purple-500/30 transition-all group">
+                        <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 mb-4 text-2xl group-hover:scale-110 transition-transform">
                             <i className="fas fa-hand-holding-heart"></i>
                         </div>
-                        <h4 className="font-bold text-lg text-gray-900 mb-2">Intercession</h4>
-                        <Link href="/admin/ministries/intercessory" className="text-purple-600 font-bold hover:underline">
+                        <h4 className="font-bold text-lg text-white mb-2">Intercession</h4>
+                        <Link href="/admin/ministries/intercessory" className="text-purple-500 font-bold hover:text-purple-400 hover:underline">
                             Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
                         </Link>
                     </div>
 
                     {/* 3. Scripture Today */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col relative h-[500px]">
-                        <div className="flex items-center gap-3 mb-4 text-orange-700">
-                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                    <div className="bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-6 flex flex-col relative h-[500px] md:h-auto">
+                        <div className="flex items-center gap-3 mb-4 text-orange-500">
+                            <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
                                 <i className="fas fa-book-open"></i>
                             </div>
                             <h4 className="font-bold text-lg">Scripture Today</h4>
                         </div>
                         <div className="flex-1 mb-4">
-                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Passage / Reading</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Passage / Reading</label>
                             <input 
                                 type="text"
-                                className="w-full border border-gray-200 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-orange-500"
+                                className="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm text-white outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-slate-600"
                                 placeholder="e.g. John 3:16, Psalm 23"
                                 value={scripture}
                                 onChange={(e) => setScripture(e.target.value)}
                             />
-                            <p className="text-xs text-gray-400 mt-2">Create your own schedule or follow a plan.</p>
+                            <p className="text-xs text-slate-500 mt-2">Create your own schedule or follow a plan.</p>
                         </div>
                         <button 
                             onClick={() => handleLog('scripture', scripture)}
-                            className={`w-full py-2 rounded-lg font-bold transition-colors mt-auto ${todayLogs.scripture ? 'bg-orange-100 text-orange-700' : 'bg-orange-600 text-white hover:bg-orange-700'}`}
+                            className={`w-full py-2 rounded-lg font-bold transition-colors mt-auto ${
+                                todayLogs.scripture 
+                                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                                    : 'bg-orange-600 text-white hover:bg-orange-500 shadow-lg shadow-orange-900/20'
+                            }`}
                         >
                              {todayLogs.scripture ? <span><i className="fas fa-check mr-2"></i> Updated</span> : "Update"}
                         </button>

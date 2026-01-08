@@ -11,49 +11,49 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     const { logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white';
+    const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white';
     
     const handleLinkClick = () => setIsSidebarOpen(false);
 
     return (
         <RoleGuard requireRole="admin">
-            <div className="min-h-screen bg-gray-100 flex">
+            <div className="min-h-screen bg-slate-950 flex">
                 {/* Mobile Overlay */}
                 {isSidebarOpen && (
                     <div 
-                        className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+                        className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
                         onClick={() => setIsSidebarOpen(false)}
                     />
                 )}
 
                 {/* Sidebar */}
                 <aside className={`
-                    fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col
+                    fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-white/5 text-white flex flex-col
                     transform transition-transform duration-300 ease-in-out
                     lg:static lg:translate-x-0 lg:z-0
                     ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
                 `}>
-                    <div className="p-6 border-b border-gray-800 flex items-center justify-between gap-2">
+                    <div className="p-6 border-b border-white/5 flex items-center justify-between gap-2">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-xl text-blue-500"></i>
-                             <span className="text-xl font-bold">Admin Panel</span>
+                             <i className="fas fa-user-shield text-xl text-purple-500"></i>
+                             <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Admin Panel</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(false)}
-                            className="lg:hidden text-gray-400 hover:text-white"
+                            className="lg:hidden text-slate-400 hover:text-white"
                          >
                              <i className="fas fa-times text-xl"></i>
                          </button>
                     </div>
                     
-                    <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                    <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
                         
-                        <Link href="/admin" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/admin' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}>
+                        <Link href="/admin" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/admin' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                             <i className="fas fa-th-large w-5 text-center"></i>
                             Dashboard
                         </Link>
 
-                        <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">My Personal</div>
+                        <div className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">My Personal</div>
 
                         <Link href="/admin/discipline" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/discipline')}`}>
                             <i className="fas fa-clipboard-check w-5 text-center"></i>
@@ -85,7 +85,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                             My Appeals
                         </Link>
 
-                        <div className="px-4 py-2 mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Ministry Management</div>
+                        <div className="px-4 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ministry Management</div>
 
                         <Link href="/admin/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
                             <i className="fas fa-users w-5 text-center"></i>
@@ -136,10 +136,10 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
                     </nav>
 
-                    <div className="p-4 border-t border-gray-800">
+                    <div className="p-4 border-t border-white/5">
                         <button 
                             onClick={() => logout()}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-gray-800 hover:text-red-300 w-full transition-colors"
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 w-full transition-colors border border-transparent hover:border-red-500/20"
                         >
                             <i className="fas fa-sign-out-alt w-5 text-center"></i>
                             Logout
@@ -148,21 +148,21 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    <header className="lg:hidden bg-gray-900 text-white p-4 flex justify-between items-center shadow-md z-30 sticky top-0">
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-950">
+                    <header className="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-30 sticky top-0 border-b border-white/5">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-blue-500"></i>
+                             <i className="fas fa-user-shield text-purple-500"></i>
                              <span className="font-bold">Admin Panel</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 text-gray-300 hover:text-white focus:outline-none"
+                            className="p-2 text-slate-300 hover:text-white focus:outline-none"
                          >
                              <i className="fas fa-bars text-xl"></i>
                          </button>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+                    <main className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar">
                         {children}
                     </main>
                 </div>

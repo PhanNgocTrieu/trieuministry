@@ -61,18 +61,18 @@ export default function CreateBlogPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-10">
             <div className="flex items-center gap-4 mb-6">
-                <Link href="/admin/blogs" className="text-gray-500 hover:text-gray-700">
+                <Link href="/admin/blogs" className="text-slate-400 hover:text-white transition-colors">
                     <i className="fas fa-arrow-left"></i> Back
                 </Link>
-                <h1 className="text-2xl font-bold text-gray-900">Create New Blog Post</h1>
+                <h1 className="text-2xl font-bold text-white">Create New Blog Post</h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Title</label>
+                        <label className="text-sm font-bold text-slate-400">Title</label>
                         <input 
                             type="text" 
                             name="title" 
@@ -80,20 +80,20 @@ export default function CreateBlogPage() {
                             value={formData.title} 
                             onChange={handleChange}
                             onBlur={generateSlug}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-white placeholder-slate-600"
                             placeholder="Enter blog title"
                         />
                     </div>
                     
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Slug (URL)</label>
+                        <label className="text-sm font-bold text-slate-400">Slug (URL)</label>
                         <input 
                             type="text" 
                             name="slug" 
                             required
                             value={formData.slug} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-slate-300 placeholder-slate-600"
                             placeholder="walking-in-faith"
                         />
                     </div>
@@ -101,12 +101,12 @@ export default function CreateBlogPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Category</label>
+                        <label className="text-sm font-bold text-slate-400">Category</label>
                         <select 
                             name="category" 
                             value={formData.category} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white"
                         >
                             <option value="Faith">Faith</option>
                             <option value="Ministry">Ministry</option>
@@ -117,53 +117,53 @@ export default function CreateBlogPage() {
                     </div>
 
                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Tags (comma separated)</label>
+                        <label className="text-sm font-bold text-slate-400">Tags (comma separated)</label>
                         <input 
                             type="text" 
                             name="tags" 
                             value={formData.tags} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white placeholder-slate-600"
                             placeholder="faith, prayer, god"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Short Excerpt</label>
+                    <label className="text-sm font-bold text-slate-400">Short Excerpt</label>
                     <textarea 
                         name="excerpt" 
                         required
                         rows={3}
                         value={formData.excerpt} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white placeholder-slate-600"
                         placeholder="Brief summary of the post..."
                     ></textarea>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Content (HTML allowed)</label>
+                    <label className="text-sm font-bold text-slate-400">Content (HTML allowed)</label>
                     <textarea 
                         name="content" 
                         required
                         rows={10}
                         value={formData.content} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm"
+                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm text-white placeholder-slate-600"
                         placeholder="<p>Write your content here...</p>"
                     ></textarea>
-                    <p className="text-xs text-gray-500">Currently only basic HTML is supported. Markdown or Rich Text Editor coming soon.</p>
+                    <p className="text-xs text-slate-500">Currently only basic HTML is supported. Markdown or Rich Text Editor coming soon.</p>
                 </div>
 
-                <div className="pt-4 border-t border-gray-50 flex justify-end gap-3">
-                    <Link href="/admin/blogs" className="px-6 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+                    <Link href="/admin/blogs" className="px-6 py-2 border border-white/10 text-slate-400 font-bold rounded-lg hover:bg-slate-800 transition-colors">
                         Cancel
                     </Link>
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:bg-gray-400"
+                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/30 disabled:opacity-50"
                     >
                         {loading ? 'Publishing...' : 'Publish Post'}
                     </button>

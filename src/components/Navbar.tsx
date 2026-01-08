@@ -37,7 +37,7 @@ const Navbar = () => {
  
    useEffect(() => {
      const handleScroll = () => {
-       setScrolled(window.scrollY > 50);
+       setScrolled(window.scrollY > 20);
      };
 
      const handleClickOutside = (event: MouseEvent) => {
@@ -56,7 +56,8 @@ const Navbar = () => {
  
    const toggle = () => setIsOpen(!isOpen);
  
-   const isActive = (path: string) => pathname === path ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-blue-600';
+   const isActive = (path: string) => pathname === path ? 'text-purple-400 font-bold bg-white/5 rounded-lg' : 'text-slate-300 hover:text-white hover:bg-white/5 rounded-lg';
+   const isActiveMobile = (path: string) => pathname === path ? 'text-purple-400 font-bold bg-white/5 border-l-2 border-purple-500 pl-3' : 'text-slate-300 hover:text-white pl-4';
  
    const switchLanguage = (lang: 'en' | 'vi') => {
      setLanguage(lang);
@@ -73,35 +74,35 @@ const Navbar = () => {
    ];
 
    return (
-     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-2' : 'bg-white shadow-sm py-4'}`}>
+     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${scrolled ? 'bg-slate-950/80 backdrop-blur-md border-white/5 py-2' : 'bg-transparent border-transparent py-4'}`}>
        <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center">
          {/* Brand */}
-         <Link href="/" className="text-xl md:text-2xl font-bold text-blue-600 flex items-center gap-2">
-           <i className="fas fa-church"></i>
-           <span>{t('nav.brand')}</span>
+         <Link href="/" className="text-xl md:text-2xl font-bold text-white flex items-center gap-2 hover:scale-105 transition-transform">
+           <i className="fas fa-church text-purple-500"></i>
+           <span className="tracking-tight">{t('nav.brand')}</span>
          </Link>
 
          {/* Desktop Menu */}
          <div className="hidden lg:flex items-center gap-6">
-           <ul className="flex items-center gap-6">
+           <ul className="flex items-center gap-2">
              {navLinks.map((link) => (
                <li key={link.href}>
-                 <Link href={link.href} className={`text-base font-medium transition-colors ${isActive(link.href)}`}>
+                 <Link href={link.href} className={`px-4 py-2 text-sm font-medium transition-all ${isActive(link.href)}`}>
                    {link.label}
                  </Link>
                </li>
              ))}
            </ul>
 
-           <div className="flex items-center gap-4 border-l border-gray-200 pl-6">
+           <div className="flex items-center gap-4 border-l border-white/10 pl-6">
               {/* Action Buttons */}
              {user ? (
                 <div className="relative" ref={dropdownRef}>
                    <button 
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-white/5 transition-colors border border-transparent hover:border-white/10"
                    >
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 relative">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20 relative bg-slate-800">
                          {user.photoURL ? (
                             <Image 
                                src={user.photoURL} 
@@ -111,85 +112,86 @@ const Navbar = () => {
                                className="object-cover"
                             />
                          ) : (
-                            <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
                                {user.email?.charAt(0).toUpperCase()}
                             </div>
                          )}
                       </div>
-                      <span className="text-sm font-semibold max-w-[100px] truncate hidden xl:block">
+                      <span className="text-sm font-semibold max-w-[100px] truncate hidden xl:block text-slate-200">
                          {user.displayName?.split(' ')[0] || 'User'}
                       </span>
                       {isAdmin && (
-                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded ml-1">{t('nav.admin_role')}</span>
+                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold uppercase rounded ml-1">{t('nav.admin_role')}</span>
                       )}
                       {isVolunteer && (
-                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded ml-1">Volunteer</span>
+                        <span className="hidden xl:inline-block px-1.5 py-0.5 bg-green-500/20 text-green-300 border border-green-500/30 text-[10px] font-bold uppercase rounded ml-1">Volunteer</span>
                       )}
-                       <i className="fas fa-chevron-down text-xs text-gray-400"></i>
+                       <i className="fas fa-chevron-down text-xs text-slate-500"></i>
                    </button>
 
                    {userDropdownOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 animate-fade-in-up">
-                         <div className="px-4 py-3 border-b border-gray-50 mb-1">
-                            <p className="text-sm font-bold text-gray-900 truncate">{user.displayName}</p>
-                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                                <span className="text-[10px] text-gray-400">Role:</span>
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-slate-900 rounded-xl shadow-2xl border border-white/10 py-2 animate-fade-in-up backdrop-blur-xl">
+                         <div className="px-4 py-3 border-b border-white/5 mb-2 bg-slate-800/50">
+                            <p className="text-sm font-bold text-white truncate">{user.displayName}</p>
+                            <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                            <div className="flex items-center gap-1 mt-2">
+                                <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Role:</span>
                                 {isAdmin ? (
-                                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
+                                    <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
                                 ) : isVolunteer ? (
-                                    <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded">Volunteer</span>
+                                    <span className="px-1.5 py-0.5 bg-green-500/20 text-green-300 border border-green-500/30 text-[10px] font-bold uppercase rounded">Volunteer</span>
                                 ) : (
-                                    <span className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
+                                    <span className="px-1.5 py-0.5 bg-slate-700 text-slate-300 border border-slate-600 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
                                 )}
                             </div>
                          </div>
                          
                          <Link 
                             href="/admin" 
-                            className="block px-4 py-2 text-sm text-purple-700 font-bold hover:bg-purple-50"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-purple-400 font-bold hover:bg-white/5 transition-colors"
                             onClick={() => setUserDropdownOpen(false)}
                          >
-                            <i className="fas fa-tachometer-alt me-2"></i> {t('nav.dashboard_admin')}
+                            <i className="fas fa-tachometer-alt w-5"></i> {t('nav.dashboard_admin')}
                          </Link>
 
                          <Link 
                             href="/account" 
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
                             onClick={() => setUserDropdownOpen(false)}
                          >
-                            <i className="fas fa-user-circle me-2"></i> {t('nav.my_account')}
+                            <i className="fas fa-user-circle w-5"></i> {t('nav.my_account')}
                          </Link>
+                         <div className="h-px bg-white/5 my-1"></div>
                          <button 
                             onClick={handleLogout}
-                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                            className="w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 font-medium transition-colors"
                          >
-                            <i className="fas fa-sign-out-alt me-2"></i> {t('nav.logout')}
+                            <i className="fas fa-sign-out-alt w-5"></i> {t('nav.logout')}
                          </button>
                       </div>
                    )}
                </div>
             ) : (
-               <Link href="/login" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold shadow-sm transition-all text-sm flex items-center gap-2">
+               <Link href="/login" className="px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full font-semibold backdrop-blur-sm transition-all text-sm flex items-center gap-2 border border-white/5">
                   <i className="fas fa-user"></i> {t('nav.login')}
                </Link>
             )}
 
-            <Link href="/donate" className="px-5 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full font-semibold transition-all text-sm">
+            <Link href="/donate" className="px-5 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 text-white rounded-full font-bold transition-all text-sm transform hover:-translate-y-0.5">
               {t('nav.donate')}
             </Link>
 
             {/* Language Switcher */}
-            <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
+            <div className="flex bg-slate-800/50 rounded-lg p-1 gap-1 border border-white/5">
                <button 
                  onClick={() => switchLanguage('vi')} 
-                 className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${language === 'vi' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                 className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${language === 'vi' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
                >
                  VI
                </button>
                <button 
                  onClick={() => switchLanguage('en')} 
-                 className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${language === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                 className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${language === 'en' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
                >
                  EN
                </button>
@@ -199,7 +201,7 @@ const Navbar = () => {
 
         {/* Mobile Toggle */}
         <button 
-          className="lg:hidden p-2 text-gray-600 hover:text-blue-600 focus:outline-none"
+          className="lg:hidden p-2 text-slate-300 hover:text-white focus:outline-none"
           onClick={toggle}
           aria-label="Toggle navigation"
         >
@@ -208,14 +210,14 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Dropdown */}
-      <div className={`lg:hidden bg-white border-t overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
-          <ul className="flex flex-col gap-3">
+      <div className={`lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="container mx-auto px-4 py-6 flex flex-col gap-6">
+          <ul className="flex flex-col gap-2">
              {navLinks.map((link) => (
               <li key={link.href}>
                 <Link 
                   href={link.href} 
-                  className={`block py-2 text-lg font-medium border-b border-gray-100 ${isActive(link.href)}`}
+                  className={`block py-3 text-lg font-medium transition-colors ${isActiveMobile(link.href)}`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -224,43 +226,43 @@ const Navbar = () => {
             ))}
           </ul>
           
-          <div className="flex flex-col gap-3 mt-2">
+          <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
              {user ? (
-               <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
-                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative">
+               <div className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                  <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/5">
+                     <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 relative bg-slate-700">
                         {user.photoURL ? (
                            <Image 
                               src={user.photoURL} 
                               alt={user.displayName || 'User'} 
                               fill
-                              sizes="40px"
+                              sizes="48px"
                               className="object-cover"
                            />
                         ) : (
-                           <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-base font-bold">
                               {user.email?.charAt(0).toUpperCase()}
                            </div>
                         )}
                      </div>
                      <div>
                         <div className="flex items-center gap-2">
-                            <p className="font-bold text-gray-900">{user.displayName || 'User'}</p>
+                            <p className="font-bold text-white">{user.displayName || 'User'}</p>
                              {isAdmin ? (
-                                <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
+                                <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold uppercase rounded">{t('nav.admin_role')}</span>
                              ) : isVolunteer ? (
-                                <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded">Volunteer</span>
+                                <span className="px-1.5 py-0.5 bg-green-500/20 text-green-300 border border-green-500/30 text-[10px] font-bold uppercase rounded">Volunteer</span>
                              ) : (
-                                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
+                                <span className="px-1.5 py-0.5 bg-slate-700 text-slate-300 border border-slate-600 text-[10px] font-bold uppercase rounded">{t('nav.user_role')}</span>
                              )}
                         </div>
-                        <p className="text-xs text-gray-500 truncate max-w-[200px]">{user.email}</p>
+                        <p className="text-xs text-slate-400 truncate max-w-[200px]">{user.email}</p>
                      </div>
                   </div>
                   
                    <Link 
                       href="/admin"
-                      className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2 hover:bg-purple-700"
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-purple-600/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition-all text-sm mb-2 hover:bg-purple-600/30"
                       onClick={() => setIsOpen(false)}
                    >
                       <i className="fas fa-tachometer-alt"></i> {t('nav.dashboard_admin')}
@@ -268,14 +270,14 @@ const Navbar = () => {
 
                   <Link 
                      href="/account"
-                     className="w-full flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg font-bold shadow-sm transition-all text-sm mb-2"
+                     className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-slate-700 text-white rounded-lg font-bold transition-all text-sm mb-2 hover:bg-slate-600"
                      onClick={() => setIsOpen(false)}
                   >
                      <i className="fas fa-user-circle"></i> {t('nav.my_account')}
                   </Link>
                   <button 
                      onClick={handleLogout}
-                     className="w-full text-center px-5 py-2 bg-white border border-red-100 text-red-600 hover:bg-red-50 rounded-lg font-bold shadow-sm transition-all text-sm"
+                     className="w-full text-center px-5 py-3 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg font-bold transition-all text-sm"
                   >
                      {t('nav.logout')}
                   </button>
@@ -283,7 +285,7 @@ const Navbar = () => {
              ) : (
                <Link 
                   href="/login" 
-                  className="w-full text-center px-5 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-sm"
+                  className="w-full text-center px-5 py-3 bg-slate-800 text-white border border-slate-700 rounded-lg font-bold"
                   onClick={() => setIsOpen(false)}
                >
                   {t('nav.login')}
@@ -291,15 +293,15 @@ const Navbar = () => {
              )}
             <Link 
               href="/donate" 
-              className="w-full text-center px-5 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-bold"
+              className="w-full text-center px-5 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-bold shadow-lg shadow-purple-900/20"
               onClick={() => setIsOpen(false)}
             >
               {t('nav.donate')}
             </Link>
-             <div className="flex justify-center gap-4 py-2">
-               <button onClick={() => switchLanguage('vi')} className={`font-bold ${language === 'vi' ? 'text-blue-600' : 'text-gray-500'}`}>Tiếng Việt</button>
-               <span className="text-gray-300">|</span>
-               <button onClick={() => switchLanguage('en')} className={`font-bold ${language === 'en' ? 'text-blue-600' : 'text-gray-500'}`}>English</button>
+             <div className="flex justify-center gap-4 py-2 mt-2">
+               <button onClick={() => switchLanguage('vi')} className={`font-bold transition-colors ${language === 'vi' ? 'text-purple-400' : 'text-slate-500'}`}>Tiếng Việt</button>
+               <span className="text-slate-700">|</span>
+               <button onClick={() => switchLanguage('en')} className={`font-bold transition-colors ${language === 'en' ? 'text-purple-400' : 'text-slate-500'}`}>English</button>
             </div>
           </div>
         </div>

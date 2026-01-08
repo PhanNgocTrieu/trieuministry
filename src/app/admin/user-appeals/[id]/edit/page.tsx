@@ -97,26 +97,26 @@ export default function EditUserAppealPage() {
         }
     };
 
-    if (fetching) return <div className="text-center py-20">Loading...</div>;
+    if (fetching) return <div className="text-center py-20 text-slate-400">Loading details...</div>;
 
     return (
         <AdminGuard>
             <div className="max-w-4xl mx-auto pb-20">
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/admin/user-appeals" className="text-gray-500 hover:text-gray-700">
+                    <Link href="/admin/user-appeals" className="text-slate-400 hover:text-white transition-colors">
                         <i className="fas fa-arrow-left"></i> Back
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Review User Appeal</h1>
+                    <h1 className="text-3xl font-bold text-white">Review User Appeal</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Status & Review */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Review Status</h2>
+                            <h2 className="text-xl font-bold text-white">Review Status</h2>
                             <div className={`px-4 py-2 rounded-full font-bold text-sm uppercase ${
-                                formData.status === 'published' ? 'bg-green-100 text-green-700' : 
-                                formData.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100'
+                                formData.status === 'published' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
+                                formData.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-slate-800 text-slate-400 border border-white/10'
                             }`}>
                                 Current: {formData.status}
                             </div>
@@ -124,93 +124,93 @@ export default function EditUserAppealPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Change Status</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Change Status</label>
                                 <select 
                                     name="status" 
                                     value={formData.status} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-white"
                                 >
                                     <option value="pending">Pending Review</option>
                                     <option value="published">Approved & Published</option>
                                     <option value="rejected">Rejected</option>
                                     <option value="draft">Draft (On Hold)</option>
                                 </select>
-                                <p className="text-sm text-gray-500 mt-2">
+                                <p className="text-sm text-slate-500 mt-2">
                                     <i className="fas fa-info-circle mr-1"></i>
                                     setting to <strong>Published</strong> will make it visible on the Donate page.
                                 </p>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Target Amount (VND)</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Target Amount (VND)</label>
                                 <input 
                                     type="number" 
                                     name="target" 
                                     required
                                     value={formData.target} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Currency</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Currency</label>
                                 <select 
                                     name="currency" 
                                     value={formData.currency} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                 >
                                     <option value="VND">VND (Vietnamese Dong)</option>
                                     <option value="USD">USD (US Dollar)</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Current Amount (Raised)</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Current Amount (Raised)</label>
                                 <input 
                                     type="number" 
                                     name="currentAmount" 
                                     value={formData.currentAmount} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* User Info & Content */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">Request Details</h2>
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-white mb-6">Request Details</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Submitter Name</label>
-                                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Submitter Name</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white" />
                             </div>
                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Phone / Contact</label>
-                                <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Phone / Contact</label>
+                                <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white" />
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Appeal Title</label>
-                                <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Appeal Title</label>
+                                <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white" />
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Detailed Content</label>
-                                <textarea name="content" rows={5} value={formData.content} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Detailed Content</label>
+                                <textarea name="content" rows={5} value={formData.content} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600"></textarea>
                             </div>
                         </div>
                     </div>
 
                     {/* Banking Info */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">Receiving Information</h2>
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-white mb-6">Receiving Information</h2>
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <input type="text" name="bankName" placeholder="Bank Name" value={formData.bankName} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
-                            <input type="text" name="bankAccount" placeholder="Account Number" value={formData.bankAccount} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
-                            <input type="text" name="bankOwner" placeholder="Account Owner" value={formData.bankOwner} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                            <input type="text" name="bankName" placeholder="Bank Name" value={formData.bankName} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600" />
+                            <input type="text" name="bankAccount" placeholder="Account Number" value={formData.bankAccount} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600" />
+                            <input type="text" name="bankOwner" placeholder="Account Owner" value={formData.bankOwner} onChange={handleChange} className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600" />
                          </div>
                          <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">QR Code Image</label>
-                            <div className="border border-gray-200 rounded-xl p-4 bg-gray-50 max-w-sm">
+                            <label className="block text-sm font-bold text-slate-400 mb-2">QR Code Image</label>
+                            <div className="border border-white/10 rounded-xl p-4 bg-slate-800/50 max-w-sm">
                                 <ImageUploader 
                                     onImageUploaded={(url) => setFormData(prev => ({...prev, bankQR: url}))}
                                     currentImage={formData.bankQR}
@@ -222,13 +222,13 @@ export default function EditUserAppealPage() {
 
                     {/* Actions */}
                     <div className="flex justify-end gap-4 pt-4">
-                        <Link href="/admin/user-appeals" className="px-8 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-bold transition-colors">
+                        <Link href="/admin/user-appeals" className="px-8 py-3 border border-white/10 text-slate-400 rounded-xl hover:bg-slate-800 font-bold transition-colors">
                             Cancel
                         </Link>
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold shadow-lg shadow-blue-200 disabled:opacity-50"
+                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 font-bold shadow-lg shadow-blue-900/50 disabled:opacity-50 transform active:scale-95 transition-all"
                         >
                             {loading ? 'Saving...' : 'Save Changes'}
                         </button>

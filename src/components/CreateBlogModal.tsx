@@ -93,16 +93,16 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
 
     if (showSuccess) {
          return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 text-center animate-in zoom-in-95 duration-200">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i className="fas fa-check text-4xl text-green-600"></i>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-slate-900 border border-white/10 rounded-3xl shadow-2xl w-full max-w-lg p-8 text-center animate-in zoom-in-95 duration-200">
+                    <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/30">
+                        <i className="fas fa-check text-4xl text-green-400"></i>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('blogs.create.success_title')}</h2>
-                    <p className="text-gray-500 mb-8 text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: t('blogs.create.success_message') }}></p>
+                    <h2 className="text-3xl font-bold text-white mb-4">{t('blogs.create.success_title')}</h2>
+                    <p className="text-slate-400 mb-8 text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: t('blogs.create.success_message') }}></p>
                     <button 
                         onClick={handleClose}
-                        className="w-full py-4 rounded-2xl bg-gray-900 text-white font-bold text-lg hover:bg-gray-800 hover:scale-[0.98] transition-all"
+                        className="w-full py-4 rounded-2xl bg-white text-slate-900 font-bold text-lg hover:bg-slate-200 hover:scale-[0.98] transition-all"
                     >
                         {t('blogs.create.btn_got_it')}
                     </button>
@@ -112,12 +112,12 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col animate-in fade-in zoom-in duration-200 border border-white/10">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
-                    <h2 className="text-2xl font-bold text-gray-900">{t('blogs.create.title')}</h2>
-                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-between p-6 border-b border-white/5 bg-slate-900 sticky top-0 z-10">
+                    <h2 className="text-2xl font-bold text-white">{t('blogs.create.title')}</h2>
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
                         <i className="fas fa-times text-xl"></i>
                     </button>
                 </div>
@@ -127,22 +127,22 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
                         {/* Title & Category */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('blogs.create.label_title')}</label>
+                                <label className="block text-sm font-bold text-slate-300 mb-2">{t('blogs.create.label_title')}</label>
                                 <input 
                                     type="text" 
                                     required
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-bold text-lg"
+                                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-slate-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all font-bold text-lg placeholder-slate-500"
                                     placeholder={t('blogs.create.placeholder_title')}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t('blogs.create.label_category')}</label>
+                                <label className="block text-sm font-bold text-slate-300 mb-2">{t('blogs.create.label_category')}</label>
                                 <select 
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all bg-gray-50"
+                                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-slate-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
                                 >
                                     {categories.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
@@ -153,7 +153,7 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
 
                         {/* Cover Image */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">{t('blogs.create.label_cover')}</label>
+                            <label className="block text-sm font-bold text-slate-300 mb-2">{t('blogs.create.label_cover')}</label>
                             <ImageUploader 
                                 onImageUploaded={setCoverImage}
                                 currentImage={coverImage}
@@ -162,42 +162,50 @@ export default function CreateBlogModal({ isOpen, onClose, onSuccess }: CreateBl
 
                         {/* Rich Editor */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">{t('blogs.create.label_content')}</label>
-                            <RichTextEditor 
-                                value={content}
-                                onChange={setContent}
-                                placeholder={t('blogs.create.placeholder_content')}
-                            />
+                            <label className="block text-sm font-bold text-slate-300 mb-2">{t('blogs.create.label_content')}</label>
+                            <div className="text-black"> 
+                                {/* RichTextEditor usually has its own styling, wrapping in text-black if it relies on white bg, 
+                                    but ideally we should update RichTextEditor too. keeping text-black for safety for now 
+                                    or assuming it handles its own theme. Let's try to check RichTextEditor later. 
+                                    Actually, usually TinyMCE/Quill needs light mode or specific config. 
+                                    Let's wrap in a white container or check if it can be dark. 
+                                    For now, I'll keep it as is but be aware it might need fixes. */}
+                                <RichTextEditor 
+                                    value={content}
+                                    onChange={setContent}
+                                    placeholder={t('blogs.create.placeholder_content')}
+                                />
+                            </div>
                         </div>
 
                         {/* Excerpt */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
-                                {t('blogs.create.label_excerpt')} <span className="text-gray-400 font-normal text-xs">{t('blogs.create.placeholder_excerpt')}</span>
+                            <label className="block text-sm font-bold text-slate-300 mb-2">
+                                {t('blogs.create.label_excerpt')} <span className="text-slate-500 font-normal text-xs">{t('blogs.create.placeholder_excerpt')}</span>
                             </label>
                             <textarea 
                                 value={excerpt}
                                 onChange={(e) => setExcerpt(e.target.value)}
                                 rows={2}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-slate-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all text-sm placeholder-slate-500"
                             />
                         </div>
                     </form>
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3 sticky bottom-0 z-10 rounded-b-2xl">
+                <div className="p-6 border-t border-white/5 bg-slate-900 flex items-center justify-end gap-3 sticky bottom-0 z-10 rounded-b-2xl">
                     <button 
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-white hover:shadow-sm transition-all"
+                        className="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-white/10 hover:text-white transition-all"
                     >
                         {t('blogs.create.btn_cancel')}
                     </button>
                     <button 
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className={`px-8 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                        className={`px-8 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
                     >
                         {isSubmitting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-paper-plane"></i>}
                         {t('blogs.create.btn_submit')}

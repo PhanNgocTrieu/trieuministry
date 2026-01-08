@@ -244,19 +244,19 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
     };
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto">
+        <div className="space-y-8 max-w-7xl mx-auto pb-20">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Financial Overview</h1>
-                    <p className="text-gray-500">Track income, expenses, and monthly balance.</p>
+                    <h1 className="text-2xl font-bold text-white">Financial Overview</h1>
+                    <p className="text-slate-400">Track income, expenses, and monthly balance.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     {isAdmin && (
                         <button
                             onClick={handlePublishClick}
                             disabled={publishing}
-                            className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                            className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-500 shadow-sm font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
                         >
                             {publishing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
                             <span>Publish Report</span>
@@ -266,8 +266,8 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                         onClick={() => setShowReport(!showReport)}
                         className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl border font-bold text-sm transition-all ${
                             showReport 
-                            ? 'bg-blue-50 border-blue-200 text-blue-700' 
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                            ? 'bg-blue-500/10 border-blue-500 text-blue-400' 
+                            : 'bg-slate-800 border-white/10 text-slate-300 hover:bg-slate-700'
                         }`}
                     >
                         <i className={`fas ${showReport ? 'fa-times' : 'fa-file-export'}`}></i>
@@ -276,13 +276,13 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
 
                     <Link 
                         href={`${basePath}/categories`}
-                        className="bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm font-bold text-sm transition-all"
+                        className="bg-slate-800 text-slate-300 border border-white/10 px-4 py-2.5 rounded-xl hover:bg-slate-700 shadow-sm font-bold text-sm transition-all"
                     >
-                        <i className="fas fa-tags mr-2 text-gray-400"></i> Categories
+                        <i className="fas fa-tags mr-2 text-slate-400"></i> Categories
                     </Link>
                     <Link 
                         href={`${basePath}/add`}
-                        className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-200 font-bold flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
+                        className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-500/20 font-bold flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95"
                     >
                         <i className="fas fa-plus"></i> New Transaction
                     </Link>
@@ -290,9 +290,9 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100 max-w-fit">
+            <div className="flex items-center gap-3 bg-slate-900 p-4 rounded-xl shadow-lg border border-white/5 max-w-fit">
                 <div className="flex items-center gap-2">
-                    <label className="text-sm font-bold text-gray-500">Month:</label>
+                    <label className="text-sm font-bold text-slate-500">Month:</label>
                     <select
                         value={parseInt(selectedMonth.split('-')[1])}
                         onChange={(e) => {
@@ -300,7 +300,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                             const year = selectedMonth.split('-')[0];
                             handleMonthChange(`${year}-${newMonthStr}`);
                         }}
-                        className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
+                        className="bg-slate-800 border-white/10 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold py-2 pl-3 pr-8 outline-none border"
                     >
                         {[
                             "January", "February", "March", "April", "May", "June", 
@@ -312,7 +312,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <label className="text-sm font-bold text-gray-500">Year:</label>
+                    <label className="text-sm font-bold text-slate-500">Year:</label>
                     <select
                         value={parseInt(selectedMonth.split('-')[0])}
                         onChange={(e) => {
@@ -320,7 +320,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                             const month = selectedMonth.split('-')[1];
                             handleMonthChange(`${newYear}-${month}`);
                         }}
-                        className="border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold text-gray-700 py-2 pl-3 pr-8"
+                        className="bg-slate-800 border-white/10 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500 font-bold py-2 pl-3 pr-8 outline-none border"
                     >
                         {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => (
                             <option key={y} value={y}>{y}</option>
@@ -331,32 +331,32 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-2xl border border-green-100 shadow-sm relative overflow-hidden group">
+                <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-lg relative overflow-hidden group hover:border-green-500/20 transition-all">
                     <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i className="fas fa-arrow-up text-6xl text-green-500"></i>
                     </div>
-                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Total Income</p>
-                    <p className="text-3xl font-extrabold text-gray-900">
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-green-400 transition-colors">Total Income</p>
+                    <p className="text-3xl font-extrabold text-white">
                         {totalIncome.toLocaleString('vi-VN')} ₫
                     </p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden group">
+                <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-lg relative overflow-hidden group hover:border-red-500/20 transition-all">
                     <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i className="fas fa-arrow-down text-6xl text-red-500"></i>
                     </div>
-                    <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Total Expense</p>
-                    <p className="text-3xl font-extrabold text-gray-900">
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-red-400 transition-colors">Total Expense</p>
+                    <p className="text-3xl font-extrabold text-white">
                         {totalExpense.toLocaleString('vi-VN')} ₫
                     </p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden group">
+                <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-lg relative overflow-hidden group hover:border-blue-500/20 transition-all">
                     <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i className="fas fa-wallet text-6xl text-blue-500"></i>
                     </div>
-                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Net Balance</p>
-                    <p className={`text-3xl font-extrabold ${netBalance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 group-hover:text-blue-400 transition-colors">Net Balance</p>
+                    <p className={`text-3xl font-extrabold ${netBalance >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                         {netBalance.toLocaleString('vi-VN')} ₫
                     </p>
                 </div>
@@ -364,13 +364,13 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
 
             {/* Detailed Report Section */}
             {showReport && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in-down">
-                    <div className="p-6 border-b border-gray-100 bg-blue-50/50 flex justify-between items-center">
-                        <h2 className="font-bold text-lg text-gray-900">
+                <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 overflow-hidden animate-fade-in-down">
+                    <div className="p-6 border-b border-white/5 bg-slate-800/50 flex justify-between items-center">
+                        <h2 className="font-bold text-lg text-white">
                             <i className="fas fa-file-invoice-dollar text-blue-500 mr-2"></i>
                             Monthly Financial Report - {new Date(selectedMonth).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
                         </h2>
-                        <button onClick={() => window.print()} className="text-gray-500 hover:text-blue-600 print:hidden" title="Print Report">
+                        <button onClick={() => window.print()} className="text-slate-400 hover:text-blue-400 print:hidden" title="Print Report">
                             <i className="fas fa-print text-lg"></i>
                         </button>
                     </div>
@@ -378,34 +378,34 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                     <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Income Table */}
                         <div>
-                            <h3 className="font-bold text-green-700 mb-4 border-b border-green-100 pb-2">Income Analysis</h3>
+                            <h3 className="font-bold text-green-400 mb-4 border-b border-white/10 pb-2">Income Analysis</h3>
                             <table className="w-full text-sm">
-                                <thead className="bg-green-50 text-green-800">
+                                <thead className="bg-slate-800 text-slate-300">
                                     <tr>
                                         <th className="px-3 py-2 text-left rounded-l-md">Category</th>
                                         <th className="px-3 py-2 text-right">Amount</th>
                                         <th className="px-3 py-2 text-right rounded-r-md">%</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-white/5">
                                     {/* Real Income Section */}
                                     {realIncomeBreakdown.length > 0 && (
                                         <>
-                                            <tr className="bg-green-50/50">
-                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-green-600 uppercase tracking-wide">
+                                            <tr className="bg-green-500/5">
+                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-green-400 uppercase tracking-wide">
                                                     Real Income (Salary & Sponsors)
                                                 </td>
                                             </tr>
                                             {realIncomeBreakdown.map(item => (
                                                 <tr key={item.name}>
-                                                    <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
-                                                    <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
-                                                    <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                    <td className="px-3 py-2 font-medium text-slate-300 pl-6">{item.name}</td>
+                                                    <td className="px-3 py-2 text-right text-white">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right text-slate-500">{item.percentage.toFixed(1)}%</td>
                                                 </tr>
                                             ))}
-                                            <tr className="font-bold bg-green-50/20 text-xs">
-                                                <td className="px-3 py-2 text-green-700 pl-6">Subtotal Real Income</td>
-                                                <td className="px-3 py-2 text-right text-green-700">{realIncomeTotal.toLocaleString('vi-VN')} ₫</td>
+                                            <tr className="font-bold bg-green-500/10 text-xs">
+                                                <td className="px-3 py-2 text-green-400 pl-6">Subtotal Real Income</td>
+                                                <td className="px-3 py-2 text-right text-green-400">{realIncomeTotal.toLocaleString('vi-VN')} ₫</td>
                                                 <td className="px-3 py-2 text-right"></td>
                                             </tr>
                                         </>
@@ -414,31 +414,31 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                     {/* Circulating Income Section */}
                                     {circulatingIncomeBreakdown.length > 0 && (
                                         <>
-                                            <tr className="bg-blue-50/50">
-                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-blue-600 uppercase tracking-wide mt-2">
+                                            <tr className="bg-blue-500/5">
+                                                <td colSpan={3} className="px-3 py-1.5 text-xs font-bold text-blue-400 uppercase tracking-wide mt-2">
                                                     Circulating Income (Balance & Others)
                                                 </td>
                                             </tr>
                                             {circulatingIncomeBreakdown.map(item => (
                                                 <tr key={item.name}>
-                                                    <td className="px-3 py-2 font-medium text-gray-700 pl-6">{item.name}</td>
-                                                    <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
-                                                    <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                                    <td className="px-3 py-2 font-medium text-slate-300 pl-6">{item.name}</td>
+                                                    <td className="px-3 py-2 text-right text-white">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                                    <td className="px-3 py-2 text-right text-slate-500">{item.percentage.toFixed(1)}%</td>
                                                 </tr>
                                             ))}
-                                            <tr className="font-bold bg-blue-50/20 text-xs">
-                                                <td className="px-3 py-2 text-blue-700 pl-6">Subtotal Circulating</td>
-                                                <td className="px-3 py-2 text-right text-blue-700">{circulatingIncomeTotal.toLocaleString('vi-VN')} ₫</td>
+                                            <tr className="font-bold bg-blue-500/10 text-xs">
+                                                <td className="px-3 py-2 text-blue-400 pl-6">Subtotal Circulating</td>
+                                                <td className="px-3 py-2 text-right text-blue-400">{circulatingIncomeTotal.toLocaleString('vi-VN')} ₫</td>
                                                 <td className="px-3 py-2 text-right"></td>
                                             </tr>
                                         </>
                                     )}
 
                                     {/* Grand Total */}
-                                    <tr className="font-bold bg-green-100/50 border-t-2 border-green-100">
-                                        <td className="px-3 py-3 text-green-900">Grand Total Income</td>
-                                        <td className="px-3 py-3 text-right text-green-900">{totalIncome.toLocaleString('vi-VN')} ₫</td>
-                                        <td className="px-3 py-3 text-right">100%</td>
+                                    <tr className="font-bold bg-slate-800 border-t-2 border-white/10">
+                                        <td className="px-3 py-3 text-white">Grand Total Income</td>
+                                        <td className="px-3 py-3 text-right text-green-400">{totalIncome.toLocaleString('vi-VN')} ₫</td>
+                                        <td className="px-3 py-3 text-right text-slate-400">100%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -446,27 +446,27 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
 
                         {/* Expense Table */}
                         <div>
-                            <h3 className="font-bold text-red-700 mb-4 border-b border-red-100 pb-2">Expense Analysis</h3>
+                            <h3 className="font-bold text-red-400 mb-4 border-b border-white/10 pb-2">Expense Analysis</h3>
                             <table className="w-full text-sm">
-                                <thead className="bg-red-50 text-red-800">
+                                <thead className="bg-slate-800 text-slate-300">
                                     <tr>
                                         <th className="px-3 py-2 text-left rounded-l-md">Category</th>
                                         <th className="px-3 py-2 text-right">Amount</th>
                                         <th className="px-3 py-2 text-right rounded-r-md">%</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-white/5">
                                     {expenseBreakdown.map(item => (
                                         <tr key={item.name}>
-                                            <td className="px-3 py-2 font-medium text-gray-700">{item.name}</td>
-                                            <td className="px-3 py-2 text-right text-gray-900">{item.amount.toLocaleString('vi-VN')} ₫</td>
-                                            <td className="px-3 py-2 text-right text-gray-500">{item.percentage.toFixed(1)}%</td>
+                                            <td className="px-3 py-2 font-medium text-slate-300">{item.name}</td>
+                                            <td className="px-3 py-2 text-right text-white">{item.amount.toLocaleString('vi-VN')} ₫</td>
+                                            <td className="px-3 py-2 text-right text-slate-500">{item.percentage.toFixed(1)}%</td>
                                         </tr>
                                     ))}
-                                    <tr className="font-bold bg-red-50/30">
-                                        <td className="px-3 py-2 text-red-800">Total Expense</td>
-                                        <td className="px-3 py-2 text-right text-red-700">{totalExpense.toLocaleString('vi-VN')} ₫</td>
-                                        <td className="px-3 py-2 text-right">100%</td>
+                                    <tr className="font-bold bg-slate-800 border-t border-white/10">
+                                        <td className="px-3 py-2 text-white">Total Expense</td>
+                                        <td className="px-3 py-2 text-right text-red-400">{totalExpense.toLocaleString('vi-VN')} ₫</td>
+                                        <td className="px-3 py-2 text-right text-slate-400">100%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -478,8 +478,8 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
             {/* Breakdowns */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Income Chart */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div className="bg-slate-900 p-6 rounded-2xl shadow-lg border border-white/5 flex flex-col h-full hover:border-white/10 transition-colors">
+                    <h3 className="font-bold text-white mb-6 flex items-center gap-2">
                         <div className="w-2 h-6 bg-green-500 rounded-full"></div>
                         Income Sources
                     </h3>
@@ -487,10 +487,10 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                         {incomeBreakdown.length > 0 ? incomeBreakdown.map((stat) => (
                             <div key={stat.name}>
                                 <div className="flex justify-between text-sm mb-1.5 font-medium">
-                                    <span className="text-gray-700">{stat.name}</span>
-                                    <span className="text-gray-900">{stat.amount.toLocaleString('vi-VN')} ₫</span>
+                                    <span className="text-slate-300">{stat.name}</span>
+                                    <span className="text-white">{stat.amount.toLocaleString('vi-VN')} ₫</span>
                                 </div>
-                                <div className="w-full bg-gray-50 rounded-full h-2.5 overflow-hidden">
+                                <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
                                     <div 
                                         className="h-full rounded-full" 
                                         style={{ width: `${stat.percentage}%`, backgroundColor: stat.color }}
@@ -498,7 +498,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                 </div>
                             </div>
                         )) : (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                            <div className="h-full flex flex-col items-center justify-center text-slate-500 py-10">
                                 <i className="fas fa-chart-pie text-3xl mb-2 opacity-50"></i>
                                 <span className="text-sm">No income data</span>
                             </div>
@@ -507,8 +507,8 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                 </div>
 
                 {/* Expense Chart */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div className="bg-slate-900 p-6 rounded-2xl shadow-lg border border-white/5 flex flex-col h-full hover:border-white/10 transition-colors">
+                    <h3 className="font-bold text-white mb-6 flex items-center gap-2">
                         <div className="w-2 h-6 bg-red-500 rounded-full"></div>
                         Spending Breakdown
                     </h3>
@@ -516,10 +516,10 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                         {expenseBreakdown.length > 0 ? expenseBreakdown.map((stat) => (
                             <div key={stat.name}>
                                 <div className="flex justify-between text-sm mb-1.5 font-medium">
-                                    <span className="text-gray-700">{stat.name}</span>
-                                    <span className="text-gray-900">{stat.amount.toLocaleString('vi-VN')} ₫</span>
+                                    <span className="text-slate-300">{stat.name}</span>
+                                    <span className="text-white">{stat.amount.toLocaleString('vi-VN')} ₫</span>
                                 </div>
-                                <div className="w-full bg-gray-50 rounded-full h-2.5 overflow-hidden">
+                                <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
                                     <div 
                                         className="h-full rounded-full" 
                                         style={{ width: `${stat.percentage}%`, backgroundColor: stat.color }}
@@ -527,7 +527,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                 </div>
                             </div>
                         )) : (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                            <div className="h-full flex flex-col items-center justify-center text-slate-500 py-10">
                                 <i className="fas fa-chart-pie text-3xl mb-2 opacity-50"></i>
                                 <span className="text-sm">No expense data</span>
                             </div>
@@ -537,16 +537,16 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
             </div>
 
             {/* Transactions List */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900">Transaction History</h3>
-                    <div className="flex bg-gray-100 rounded-lg p-1">
+            <div className="bg-slate-900 rounded-2xl border border-white/5 shadow-lg overflow-hidden">
+                <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                    <h3 className="font-bold text-white">Transaction History</h3>
+                    <div className="flex bg-slate-800 rounded-lg p-1 border border-white/5">
                         {['all', 'income', 'expense'].map(t => (
                             <button
                                 key={t}
                                 onClick={() => setFilterType(t)}
                                 className={`px-3 py-1 text-xs font-bold rounded-md capitalize transition-all ${
-                                    filterType === t ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                                    filterType === t ? 'bg-slate-700 shadow-sm text-white' : 'text-slate-400 hover:text-slate-200'
                                 }`}
                             >
                                 {t}
@@ -556,18 +556,18 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-slate-800/50">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Details</th>
-                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Action</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Details</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-white/5">
                             {filteredTransactions.length > 0 ? filteredTransactions.map((t) => (
-                                <tr key={t.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
+                                <tr key={t.id} className="hover:bg-slate-800/50 transition-colors">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
                                         {format(t.date.toDate(), 'dd MMM, yyyy')}
                                     </td>
                                     <td className="px-6 py-4">
@@ -577,28 +577,28 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                                                 style={{ backgroundColor: t.categoryColor }}
                                             ></div>
                                             <div>
-                                                <div className="text-sm font-bold text-gray-900">{t.categoryName}</div>
-                                                <div className="text-xs text-gray-500">{t.description || "No description"}</div>
+                                                <div className="text-sm font-bold text-white">{t.categoryName}</div>
+                                                <div className="text-xs text-slate-500">{t.description || "No description"}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-bold ${
-                                        t.type === 'income' ? 'text-green-600' : 'text-gray-900'
+                                        t.type === 'income' ? 'text-green-400' : 'text-white'
                                     }`}>
                                         {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString('vi-VN')} ₫
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                        <Link href={`${basePath}/add?id=${t.id}`} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors">
+                                        <Link href={`${basePath}/add?id=${t.id}`} className="text-slate-500 hover:text-blue-400 mr-3 transition-colors">
                                             <i className="fas fa-pen"></i>
                                         </Link>
-                                        <button onClick={() => handleDelete(t.id, t.description)} className="text-gray-400 hover:text-red-600 transition-colors">
+                                        <button onClick={() => handleDelete(t.id, t.description)} className="text-slate-500 hover:text-red-400 transition-colors">
                                             <i className="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
                                         No transactions found.
                                     </td>
                                 </tr>

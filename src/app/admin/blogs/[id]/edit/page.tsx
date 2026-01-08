@@ -85,28 +85,28 @@ export default function EditBlogPage() {
         }
     };
 
-    if (loading) return <div className="p-10 text-center">Loading blog details...</div>;
+    if (loading) return <div className="p-10 text-center text-slate-400">Loading blog details...</div>;
 
     if (showSuccess) {
          return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 text-center animate-in zoom-in-95 duration-200">
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i className="fas fa-check text-4xl text-green-600"></i>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg p-8 text-center animate-in zoom-in-95 duration-200 border border-white/10">
+                    <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
+                        <i className="fas fa-check text-4xl text-green-400"></i>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Changes Saved!</h2>
-                    <p className="text-gray-500 mb-8 text-lg">
+                    <h2 className="text-3xl font-bold text-white mb-2">Changes Saved!</h2>
+                    <p className="text-slate-400 mb-8 text-lg">
                         The blog post has been successfully updated.
                     </p>
                     <button 
                         onClick={() => router.push("/admin/blogs")}
-                        className="w-full py-3.5 rounded-xl bg-gray-900 text-white font-bold text-lg hover:bg-gray-800 hover:scale-[0.98] transition-all"
+                        className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-500 hover:scale-[0.98] transition-all"
                     >
                         Back to Dashboard
                     </button>
                     <button 
                         onClick={() => setShowSuccess(false)}
-                        className="mt-3 text-gray-400 hover:text-gray-600 font-medium text-sm"
+                        className="mt-3 text-slate-500 hover:text-slate-300 font-medium text-sm"
                     >
                         Stay on this page
                     </button>
@@ -116,53 +116,52 @@ export default function EditBlogPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-10">
             <div className="flex items-center gap-4 mb-6">
-                <Link href="/admin/blogs" className="text-gray-500 hover:text-gray-700">
+                <Link href="/admin/blogs" className="text-slate-400 hover:text-white transition-colors">
                     <i className="fas fa-arrow-left"></i> Back
                 </Link>
                 <div className="flex-1">
-                     <h1 className="text-2xl font-bold text-gray-900">Edit Blog Post</h1>
-                     <p className="text-xs text-gray-500">ID: {id}</p>
+                     <h1 className="text-2xl font-bold text-white">Edit Blog Post</h1>
+                     <p className="text-xs text-slate-500">ID: {id}</p>
                 </div>
-                
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Title</label>
+                        <label className="text-sm font-bold text-slate-400">Title</label>
                         <input 
                             type="text" 
                             name="title" 
                             required
                             value={formData.title} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-white placeholder-slate-600"
                         />
                     </div>
                     
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Slug (URL)</label>
+                        <label className="text-sm font-bold text-slate-400">Slug (URL)</label>
                         <input 
                             type="text" 
                             name="slug" 
                             required
                             value={formData.slug} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-white placeholder-slate-600"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Category</label>
+                        <label className="text-sm font-bold text-slate-400">Category</label>
                         <select 
                             name="category" 
                             value={formData.category} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white"
                         >
                             <option value="Faith">Faith</option>
                             <option value="Ministry">Ministry</option>
@@ -173,12 +172,12 @@ export default function EditBlogPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Status</label>
+                        <label className="text-sm font-bold text-slate-400">Status</label>
                         <select 
                             name="status" 
                             value={formData.status} 
                             onChange={handleChange}
-                            className={`w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold ${formData.status === 'approved' ? 'text-green-600' : 'text-yellow-600'}`}
+                            className={`w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold ${formData.status === 'approved' ? 'text-green-400' : 'text-yellow-400'}`}
                         >
                             <option value="approved">Approved</option>
                             <option value="pending">Pending</option>
@@ -186,49 +185,49 @@ export default function EditBlogPage() {
                     </div>
 
                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Tags</label>
+                        <label className="text-sm font-bold text-slate-400">Tags</label>
                         <input 
                             type="text" 
                             name="tags" 
                             value={formData.tags} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white placeholder-slate-600"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Short Excerpt</label>
+                    <label className="text-sm font-bold text-slate-400">Short Excerpt</label>
                     <textarea 
                         name="excerpt" 
                         required
                         rows={3}
                         value={formData.excerpt} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white placeholder-slate-600"
                     ></textarea>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">Content (HTML allowed)</label>
+                    <label className="text-sm font-bold text-slate-400">Content (HTML allowed)</label>
                     <textarea 
                         name="content" 
                         required
                         rows={15}
                         value={formData.content} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm"
+                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm text-white placeholder-slate-600"
                     ></textarea>
                 </div>
 
-                <div className="pt-4 border-t border-gray-50 flex justify-end gap-3">
-                    <Link href="/admin/blogs" className="px-6 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+                    <Link href="/admin/blogs" className="px-6 py-2 border border-white/10 text-slate-400 font-bold rounded-lg hover:bg-slate-800 transition-colors">
                         Cancel
                     </Link>
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:bg-gray-400"
+                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/30 disabled:opacity-50"
                     >
                         {saving ? 'Saving...' : 'Save Changes'}
                     </button>

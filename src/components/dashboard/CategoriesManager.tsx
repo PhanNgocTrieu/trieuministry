@@ -151,24 +151,24 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
     const expenseCats = categories.filter(c => c.type === 'expense');
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8 pb-20">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-2xl font-bold text-white">
                         {scope === 'personal' ? 'My Categories' : 'Ministry Categories'}
                     </h1>
-                    <p className="text-gray-500">Manage income and expense categories.</p>
+                    <p className="text-slate-400">Manage income and expense categories.</p>
                 </div>
                 <div className="flex gap-3">
                     <button 
                          onClick={() => router.back()}
-                         className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-bold"
+                         className="px-4 py-2 text-slate-300 bg-slate-800 border border-white/10 rounded-lg hover:bg-slate-700 font-bold transition-colors"
                     >
                         Back
                     </button>
                     <button 
                         onClick={handleOpenCreate}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold flex items-center gap-2"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-bold flex items-center gap-2 transition-colors"
                     >
                         <i className="fas fa-plus"></i> New Category
                     </button>
@@ -176,27 +176,27 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
             </div>
 
             {loading ? (
-                <div className="text-center py-12 text-gray-500">Loading categories...</div>
+                <div className="text-center py-12 text-slate-500">Loading categories...</div>
             ) : (
                 <>
                     {categories.length === 0 ? (
-                        <p className="text-gray-400 italic text-sm text-center py-12">No categories found. Create a new one to get started.</p>
+                        <p className="text-slate-500 italic text-sm text-center py-12">No categories found. Create a new one to get started.</p>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {categories.map(cat => (
-                                <div key={cat.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between group">
+                                <div key={cat.id} className="bg-slate-900 p-4 rounded-xl border border-white/5 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
                                     <div className="flex items-center gap-3">
                                         <div 
                                             className="w-4 h-4 rounded-full" 
                                             style={{ backgroundColor: cat.color }}
                                         ></div>
-                                        <span className="font-bold text-gray-800">{cat.name}</span>
+                                        <span className="font-bold text-white">{cat.name}</span>
                                     </div>
                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleOpenEdit(cat)} className="text-gray-400 hover:text-blue-600">
+                                        <button onClick={() => handleOpenEdit(cat)} className="text-slate-500 hover:text-blue-400">
                                             <i className="fas fa-pen"></i>
                                         </button>
-                                        <button onClick={() => handleDelete(cat.id, cat.name)} className="text-gray-400 hover:text-red-600">
+                                        <button onClick={() => handleDelete(cat.id, cat.name)} className="text-slate-500 hover:text-red-400">
                                             <i className="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -209,20 +209,20 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
 
             {/* Edit/Create Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 animate-fade-in-up">
-                        <h2 className="text-xl font-bold mb-6">
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-slate-900 rounded-2xl w-full max-w-md p-6 border border-white/10 animate-fade-in-up shadow-2xl">
+                        <h2 className="text-xl font-bold mb-6 text-white">
                             {editId ? 'Edit Category' : 'New Category'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Name</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-1">Name</label>
                                 <input
                                     type="text"
                                     required
                                     value={formName}
                                     onChange={e => setFormName(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 text-white outline-none"
                                     placeholder="e.g. Food, Salary"
                                 />
                             </div>
@@ -230,7 +230,7 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
                             {/* Type selection removed as per user request */}
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Color</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-1">Color</label>
                                 <div className="flex flex-wrap gap-2">
                                     {[
                                         '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#6366F1', 
@@ -241,7 +241,7 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
                                             type="button"
                                             onClick={() => setFormColor(color)}
                                             className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                                                formColor === color ? 'border-gray-900 scale-110' : 'border-transparent'
+                                                formColor === color ? 'border-white scale-110' : 'border-transparent'
                                             }`}
                                             style={{ backgroundColor: color }}
                                         />
@@ -250,22 +250,22 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
                                         type="color" 
                                         value={formColor}
                                         onChange={e => setFormColor(e.target.value)}
-                                        className="w-8 h-8 rounded-full overflow-hidden border-0 p-0"
+                                        className="w-8 h-8 rounded-full overflow-hidden border-0 p-0 cursor-pointer"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg"
+                                    className="px-4 py-2 text-slate-400 font-bold hover:bg-slate-800 rounded-lg transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700"
+                                    className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-500 transition-colors"
                                 >
                                     Save
                                 </button>
@@ -274,8 +274,6 @@ export default function CategoriesManager({ basePath, scope }: CategoriesManager
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 }

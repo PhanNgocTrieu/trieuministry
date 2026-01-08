@@ -108,19 +108,19 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
     const inProgressGoals = filteredGoals.filter(g => g.status === 'in_progress').length;
     const completionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Loading goals...</div>;
+    if (loading) return <div className="p-8 text-center text-slate-400">Loading goals...</div>;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-20">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Goals & Monitoring</h1>
-                    <p className="text-gray-500">Track your personal yearly goals and milestones.</p>
+                    <h1 className="text-2xl font-bold text-white">Goals & Monitoring</h1>
+                    <p className="text-slate-400">Track your personal yearly goals and milestones.</p>
                 </div>
                 <Link 
                     href={`${basePath}/create`} 
-                    className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-sm font-bold flex items-center justify-center gap-2"
+                    className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-500 shadow-lg shadow-blue-500/20 font-bold flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95"
                 >
                     <i className="fas fa-plus"></i> New Goal
                 </Link>
@@ -128,32 +128,32 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm">
-                    <p className="text-xs text-gray-400 font-bold uppercase">Total Goals</p>
-                    <p className="text-3xl font-extrabold text-blue-600 mt-2">{totalGoals}</p>
+                <div className="bg-slate-900 p-6 rounded-xl border border-white/5 shadow-lg group hover:border-blue-500/30 transition-colors">
+                    <p className="text-xs text-slate-500 font-bold uppercase group-hover:text-blue-400 transition-colors">Total Goals</p>
+                    <p className="text-3xl font-extrabold text-white mt-2">{totalGoals}</p>
                 </div>
-                <div className="bg-white p-6 rounded-xl border border-green-100 shadow-sm">
-                    <p className="text-xs text-gray-400 font-bold uppercase">Completed</p>
-                    <p className="text-3xl font-extrabold text-green-600 mt-2">{completedGoals}</p>
+                <div className="bg-slate-900 p-6 rounded-xl border border-white/5 shadow-lg group hover:border-green-500/30 transition-colors">
+                    <p className="text-xs text-slate-500 font-bold uppercase group-hover:text-green-400 transition-colors">Completed</p>
+                    <p className="text-3xl font-extrabold text-green-400 mt-2">{completedGoals}</p>
                 </div>
-                 <div className="bg-white p-6 rounded-xl border border-yellow-100 shadow-sm">
-                    <p className="text-xs text-gray-400 font-bold uppercase">In Progress</p>
-                    <p className="text-3xl font-extrabold text-yellow-600 mt-2">{inProgressGoals}</p>
+                 <div className="bg-slate-900 p-6 rounded-xl border border-white/5 shadow-lg group hover:border-yellow-500/30 transition-colors">
+                    <p className="text-xs text-slate-500 font-bold uppercase group-hover:text-yellow-400 transition-colors">In Progress</p>
+                    <p className="text-3xl font-extrabold text-yellow-400 mt-2">{inProgressGoals}</p>
                 </div>
-                <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm">
-                    <p className="text-xs text-gray-400 font-bold uppercase">Success Rate</p>
-                    <p className="text-3xl font-extrabold text-purple-600 mt-2">{completionRate}%</p>
+                <div className="bg-slate-900 p-6 rounded-xl border border-white/5 shadow-lg group hover:border-purple-500/30 transition-colors">
+                    <p className="text-xs text-slate-500 font-bold uppercase group-hover:text-purple-400 transition-colors">Success Rate</p>
+                    <p className="text-3xl font-extrabold text-purple-400 mt-2">{completionRate}%</p>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-wrap gap-4 items-center">
+            <div className="bg-slate-900 p-4 rounded-xl border border-white/5 shadow-lg flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-500">Year:</span>
+                    <span className="text-sm font-bold text-slate-400">Year:</span>
                     <select 
                         value={selectedYear} 
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                        className="bg-slate-800 border-white/10 text-white rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 outline-none border"
                     >
                         <option value={0}>All Years</option>
                         {[2024, 2025, 2026, 2027].map(year => (
@@ -162,14 +162,14 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
                     </select>
                 </div>
 
-                <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
+                <div className="h-6 w-px bg-white/10 hidden md:block"></div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-500">Status:</span>
+                    <span className="text-sm font-bold text-slate-400">Status:</span>
                     <select 
                         value={filterStatus} 
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                        className="bg-slate-800 border-white/10 text-white rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 outline-none border"
                     >
                         <option value="all">All Status</option>
                         <option value="planned">Planned</option>
@@ -180,11 +180,11 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-500">Priority:</span>
+                    <span className="text-sm font-bold text-slate-400">Priority:</span>
                     <select 
                         value={filterPriority} 
                         onChange={(e) => setFilterPriority(e.target.value)}
-                        className="border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                        className="bg-slate-800 border-white/10 text-white rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 outline-none border"
                     >
                         <option value="all">All Priorities</option>
                         <option value="high">High</option>
@@ -208,12 +208,12 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i className="fas fa-bullseye text-gray-300 text-3xl"></i>
+                <div className="text-center py-20 bg-slate-900 rounded-xl border-2 border-dashed border-white/10">
+                    <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i className="fas fa-bullseye text-slate-500 text-3xl"></i>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">No goals found</h3>
-                    <p className="text-gray-500">Adjust filters or create your first goal for {selectedYear}.</p>
+                    <h3 className="text-lg font-bold text-white">No goals found</h3>
+                    <p className="text-slate-500 mt-2">Adjust filters or create your first goal for {selectedYear}.</p>
                 </div>
             )}
         </div>

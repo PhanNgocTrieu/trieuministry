@@ -26,9 +26,9 @@ interface Goal {
 
 const PriorityBadge = ({ priority }: { priority: string }) => {
     const colors = {
-        high: 'bg-red-100 text-red-700 border-red-200',
-        medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-        low: 'bg-green-100 text-green-700 border-green-200'
+        high: 'bg-red-500/10 text-red-400 border-red-500/20',
+        medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+        low: 'bg-green-500/10 text-green-400 border-green-500/20'
     };
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider border ${colors[priority as keyof typeof colors] || colors.low}`}>
@@ -39,10 +39,10 @@ const PriorityBadge = ({ priority }: { priority: string }) => {
 
 const StatusBadge = ({ status }: { status: string }) => {
     const colors = {
-        planned: 'bg-gray-100 text-gray-600',
-        in_progress: 'bg-blue-100 text-blue-600',
-        completed: 'bg-green-100 text-green-600',
-        on_hold: 'bg-orange-100 text-orange-600'
+        planned: 'bg-slate-700 text-slate-300',
+        in_progress: 'bg-blue-500/20 text-blue-400',
+        completed: 'bg-green-500/20 text-green-400',
+        on_hold: 'bg-orange-500/20 text-orange-400'
     };
     return (
         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${colors[status as keyof typeof colors] || colors.planned}`}>
@@ -50,8 +50,6 @@ const StatusBadge = ({ status }: { status: string }) => {
         </span>
     );
 };
-
-// ... (interfaces kept same)
 
 interface GoalCardProps {
     goal: Goal;
@@ -130,8 +128,8 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
                         onClick={handleSimpleToggle}
                         className={`w-full mt-4 py-3 rounded-xl border flex items-center justify-center gap-2 transition-all group ${
                             goal.isCompleted 
-                            ? 'bg-green-50 border-green-200 text-green-700' 
-                            : 'bg-white border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600'
+                            ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                            : 'bg-slate-800 border-white/10 text-slate-400 hover:border-blue-500/50 hover:text-blue-400'
                         }`}
                     >
                         <i className={`fas ${goal.isCompleted ? 'fa-check-circle text-lg' : 'fa-circle text-lg'}`}></i>
@@ -142,38 +140,38 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
             case 'milestone':
                  return (
                     <div className="mt-4 space-y-2">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Milestones</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Milestones</p>
                         {goal.milestones?.map((ms, idx) => (
                             <div 
                                 key={idx} 
                                 onClick={() => handleMilestoneToggle(idx)}
-                                className="flex items-start gap-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group"
+                                className="flex items-start gap-3 p-2 rounded-lg cursor-pointer hover:bg-slate-800 transition-colors group"
                             >
                                 <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
                                     ms.isCompleted 
-                                    ? 'bg-blue-500 border-blue-500 text-white' 
-                                    : 'border-gray-300 text-transparent group-hover:border-blue-400'
+                                    ? 'bg-blue-600 border-blue-600 text-white' 
+                                    : 'border-slate-600 text-transparent group-hover:border-blue-400'
                                 }`}>
                                     <i className="fas fa-check text-xs"></i>
                                 </div>
-                                <span className={`text-sm flex-1 leading-snug ${ms.isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                                <span className={`text-sm flex-1 leading-snug ${ms.isCompleted ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
                                     {ms.title}
                                 </span>
                             </div>
                         ))}
-                        {goal.milestones?.length === 0 && <p className="text-xs text-gray-400 italic">No milestones defined.</p>}
+                        {goal.milestones?.length === 0 && <p className="text-xs text-slate-500 italic">No milestones defined.</p>}
                     </div>
                 );
 
             case 'savings':
             case 'target':
                 return (
-                    <div className="mt-4 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="mt-4 bg-slate-800/50 rounded-xl p-3 border border-white/5">
                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-bold text-gray-500 uppercase">Current Progress</span>
+                            <span className="text-xs font-bold text-slate-500 uppercase">Current Progress</span>
                             <button 
                                 onClick={() => setIsEditingValue(!isEditingValue)}
-                                className="text-xs text-blue-600 font-bold hover:underline"
+                                className="text-xs text-blue-400 font-bold hover:text-blue-300 hover:underline"
                             >
                                 {isEditingValue ? 'Cancel' : 'Update'}
                             </button>
@@ -185,22 +183,22 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
                                     type="number" 
                                     value={tempValue}
                                     onChange={(e) => setTempValue(e.target.value)}
-                                    className="w-full px-3 py-2 text-sm font-bold bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none shadow-sm transition-all"
+                                    className="w-full px-3 py-2 text-sm font-bold bg-slate-700 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 text-white outline-none shadow-sm transition-all"
                                     placeholder="Value"
                                 />
                                 <button 
                                     onClick={handleValueSave}
-                                    className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-bold text-sm"
+                                    className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-500 font-bold text-sm"
                                 >
                                     Save
                                 </button>
                             </div>
                         ) : (
                             <div className="flex items-baseline gap-1">
-                                <span className="text-2xl font-bold text-gray-900">
+                                <span className="text-2xl font-bold text-white">
                                     {goal.type === 'savings' ? formatCurrency(goal.currentValue || 0) : goal.currentValue || 0}
                                 </span>
-                                <span className="text-sm text-gray-500 font-medium">
+                                <span className="text-sm text-slate-500 font-medium">
                                     / {goal.type === 'savings' ? formatCurrency(goal.targetValue || 0) : `${goal.targetValue} ${goal.unit || ''}`}
                                 </span>
                             </div>
@@ -214,14 +212,14 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full hover:shadow-md transition-shadow">
+        <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 flex flex-col h-full hover:border-white/20 transition-all hover:shadow-xl hover:shadow-slate-900/50">
             {/* Header */}
             <div className="flex justify-between items-start mb-4">
                 <div className="flex gap-2 flex-wrap">
                     <PriorityBadge priority={goal.priority} />
                     <StatusBadge status={goal.status} />
                     {goal.type && goal.type !== 'milestone' && (
-                        <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider border bg-gray-50 text-gray-500 border-gray-200">
+                        <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider border bg-slate-800 text-slate-400 border-white/10">
                             {goal.type}
                         </span>
                     )}
@@ -229,13 +227,13 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
                 <div className="flex gap-2">
                     <Link 
                         href={`${basePath}/create?id=${goal.id}`} 
-                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
                     >
                         <i className="fas fa-edit"></i>
                     </Link>
                     <button 
                         onClick={() => onDelete(goal.id)} 
-                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                     >
                         <i className="fas fa-trash"></i>
                     </button>
@@ -243,20 +241,20 @@ export default function GoalCard({ goal, onDelete, onUpdate, basePath }: GoalCar
             </div>
 
             {/* Content */}
-            <h3 className="text-lg font-bold text-gray-900 mb-2 leading-tight">{goal.title}</h3>
-            {goal.description && <p className="text-sm text-gray-500 mb-4 line-clamp-2">{goal.description}</p>}
+            <h3 className="text-lg font-bold text-white mb-2 leading-tight">{goal.title}</h3>
+            {goal.description && <p className="text-sm text-slate-400 mb-4 line-clamp-2">{goal.description}</p>}
 
             {/* Progress Bar (Always Show) */}
             <div className="mt-auto">
-                <div className="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
                     <span>Progress</span>
                     <span>{Math.round(goal.progress || 0)}%</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2">
+                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden mb-2">
                     <div 
                         className={`h-full rounded-full transition-all duration-500 ${
                             goal.progress === 100 ? 'bg-green-500' : 
-                            goal.progress > 50 ? 'bg-blue-500' : 'bg-blue-400'
+                            goal.progress > 50 ? 'bg-blue-500' : 'bg-blue-600'
                         }`}
                         style={{ width: `${goal.progress || 0}%` }}
                     ></div>

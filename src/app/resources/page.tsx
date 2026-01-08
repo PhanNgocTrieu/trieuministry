@@ -38,14 +38,14 @@ interface BlogPost {
                 <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-sm ${
+                    className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-lg ${
                         activeTab === item.id
-                            ? 'bg-blue-600 text-white shadow-blue-200 shadow-lg scale-105'
-                            : 'bg-white text-gray-500 hover:bg-white hover:text-blue-600 hover:shadow-md'
+                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-purple-900/30 scale-105'
+                            : 'bg-slate-900/50 text-slate-400 hover:bg-slate-800 hover:text-white hover:shadow-xl border border-white/5'
                     }`}
                 >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        activeTab === item.id ? 'bg-white/20' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50'
+                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-800 text-slate-500 group-hover:bg-slate-700'
                     }`}>
                         <i className={`${item.icon} text-lg`}></i>
                     </div>
@@ -66,10 +66,10 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
     const isBlog = item.type === 'blog';
     
     return (
-        <Link href={href} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 flex flex-col h-full">
+        <Link href={href} className="group bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-900/20 hover:-translate-y-1 transition-all duration-300 border border-white/5 flex flex-col h-full hover:border-purple-500/30">
             {/* Show cover image only if NOT a blog */}
             {!isBlog && (
-                <div className="relative h-48 bg-gray-100 overflow-hidden">
+                <div className="relative h-48 bg-slate-800 overflow-hidden">
                     {item.coverImage && !item.coverImage.includes('placehold') ? (
                         <Image 
                             src={item.coverImage} 
@@ -79,11 +79,11 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-200 text-4xl">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
                             <i className={`fas ${icon}`}></i>
                         </div>
                     )}
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-700 shadow-sm flex items-center gap-1">
+                    <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-300 shadow-sm flex items-center gap-1 border border-white/10">
                         <i className={`fas ${icon} text-[10px]`}></i> {item.category}
                     </div>
                 </div>
@@ -93,21 +93,21 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
                 {/* For blogs, we might want a small category badge since image is gone */}
                 {isBlog && (
                      <div className="mb-2">
-                        <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-blue-500/20">
                             <i className="fas fa-pen-nib text-[10px]"></i> {t('resources.tabs.blogs')}
                         </span>
                      </div>
                 )}
 
-                <h3 className={`text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors ${isBlog ? 'text-xl' : ''}`}>
+                <h3 className={`text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-purple-400 transition-colors ${isBlog ? 'text-xl' : ''}`}>
                     {item.title}
                 </h3>
-                <p className="text-gray-500 text-xs line-clamp-3 mb-4 flex-grow">
+                <p className="text-slate-400 text-xs line-clamp-3 mb-4 flex-grow">
                     {item.description}
                 </p>
-                <div className="pt-4 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
                     <span>{item.date}</span>
-                    <span className="font-semibold text-gray-900">{item.author}</span>
+                    <span className="font-semibold text-slate-300">{item.author}</span>
                 </div>
             </div>
         </Link>
@@ -118,11 +118,11 @@ const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string,
     const { t } = useLanguage();
     return (
         <div className="flex items-center justify-between mb-6 mt-2">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <i className={`fas ${icon} text-blue-500`}></i> {title}
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <i className={`fas ${icon} text-purple-500`}></i> {title}
             </h2>
             {onSeeAll && (
-                <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                <button onClick={onSeeAll} className="text-sm font-bold text-blue-400 hover:text-blue-300 hover:underline">
                     {t('resources.sections.view_all')}
                 </button>
             )}
@@ -185,7 +185,7 @@ export default function ResourcesDashboard() {
     }, []);
 
     const renderContent = () => {
-        if (loading) return <div className="p-12 text-center text-gray-400">{t('resources.loading')}</div>;
+        if (loading) return <div className="p-12 text-center text-slate-500">{t('resources.loading')}</div>;
 
         if (activeTab === 'all') {
             return (
@@ -229,15 +229,15 @@ export default function ResourcesDashboard() {
             <div>
                  <div className="mb-8 flex items-end justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-                        <p className="text-gray-500 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
+                        <h1 className="text-3xl font-bold text-white">{title}</h1>
+                        <p className="text-slate-400 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
                     </div>
                     
                      {/* Write Button (Only visible for 'blogs' tab if logged in) */}
                     {(activeTab === 'blogs') && user && (
                         <button 
                             onClick={() => setShowCreateModal(true)}
-                            className="hidden md:flex bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-600 transition-all shadow-lg items-center gap-2"
+                            className="hidden md:flex bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-all shadow-lg items-center gap-2 shadow-purple-900/20"
                         >
                             <i className="fas fa-pen-nib"></i> {t('resources.write_blog')}
                         </button>
@@ -251,17 +251,17 @@ export default function ResourcesDashboard() {
     };
 
     return (
-        <main className="bg-gray-50 min-h-screen pb-20 font-sans">
+        <main className="bg-slate-950 min-h-screen pb-20 font-sans">
              {/* Mobile Tab Select */}
-            <div className="lg:hidden bg-white border-b border-gray-200 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-sm">
+            <div className="lg:hidden bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-lg">
                 {['all', 'blogs', 'documents', 'songs'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`inline-block px-4 py-2 rounded-full text-sm font-bold mr-2 ${
                             activeTab === tab 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-purple-600 text-white' 
+                            : 'bg-slate-800 text-slate-400'
                         }`}
                     >
                         {t(`resources.tabs.${tab}`)}
@@ -272,13 +272,13 @@ export default function ResourcesDashboard() {
             <div className="container container-custom pb-20" style={{ paddingTop: '40px' }}>
                 {/* Header Section */}
                 <div className="max-w-4xl mb-12 md:mb-16">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
                         {t('resources.title') || 'Resources'}
                     </h1>
-                     <p className="text-xl text-gray-500 leading-relaxed max-w-3xl">
+                     <p className="text-xl text-slate-400 leading-relaxed max-w-3xl">
                         {t('resources.subtitle') || 'Explore our collection of spiritual resources including blogs, documents, and songs.'}
                     </p>
-                    <div className="mt-8 h-1 w-20 bg-blue-600 rounded-full"></div>
+                    <div className="mt-8 h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -300,7 +300,7 @@ export default function ResourcesDashboard() {
             {user && (
                  <button 
                     onClick={() => setShowCreateModal(true)}
-                    className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 text-xl hover:bg-blue-700 transition-colors"
+                    className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 text-xl hover:scale-110 transition-transform shadow-purple-900/40"
                  >
                      <i className="fas fa-pen"></i>
                  </button>

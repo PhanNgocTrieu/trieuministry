@@ -140,27 +140,27 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
         }
     };
 
-    if (fetchingCats) return <div className="p-8 text-center text-gray-500">Loading form...</div>;
+    if (fetchingCats) return <div className="p-8 text-center text-slate-500">Loading form...</div>;
 
     return (
         <div className="max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            <h1 className="text-2xl font-bold text-white mb-6">
                 {editId ? 'Edit Transaction' : 'New Transaction'}
             </h1>
 
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl space-y-8">
+            <form onSubmit={handleSubmit} className="bg-slate-900 p-8 rounded-2xl border border-white/5 shadow-xl space-y-8">
                 
                 {/* Scope Selection Removed as per request - defaulting to personal/individual management */}
                 
                 {/* Type Toggle */}
-                <div className="flex p-1.5 bg-gray-100 rounded-xl">
+                <div className="flex p-1.5 bg-slate-800 rounded-xl border border-white/5">
                     <button
                         type="button"
                         onClick={() => { setType('expense'); setCategoryId(''); }}
                         className={`flex-1 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                             type === 'expense' 
-                            ? 'bg-white text-red-600 shadow-sm' 
-                            : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-slate-700 text-red-500 shadow-sm border border-white/10' 
+                            : 'text-slate-500 hover:text-slate-300'
                         }`}
                     >
                         <i className="fas fa-minus-circle"></i> Expense
@@ -170,8 +170,8 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                         onClick={() => { setType('income'); setCategoryId(''); }}
                         className={`flex-1 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                             type === 'income' 
-                            ? 'bg-white text-green-600 shadow-sm' 
-                            : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-slate-700 text-green-500 shadow-sm border border-white/10' 
+                            : 'text-slate-500 hover:text-slate-300'
                         }`}
                     >
                         <i className="fas fa-plus-circle"></i> Income
@@ -180,7 +180,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
 
                 {/* Amount */}
                 <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Amount (VND)</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Amount (VND)</label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span className={`text-xl font-bold ${type === 'expense' ? 'text-red-500' : 'text-green-500'}`}>₫</span>
@@ -191,7 +191,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                             required
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="w-full pl-10 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-xl font-bold text-gray-900"
+                            className="w-full pl-10 pr-4 py-4 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-xl font-bold text-white outline-none"
                             placeholder="0"
                         />
                     </div>
@@ -200,22 +200,22 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                 {/* Date & Category */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Date</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Date</label>
                         <input 
                             type="date" 
                             required
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-gray-900"
+                            className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white outline-none"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Category</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Category</label>
                         <div className="relative">
                             <select 
                                 value={categoryId}
                                 onChange={(e) => setCategoryId(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-gray-900 appearance-none"
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white appearance-none outline-none"
                                 required
                             >
                                 <option value="" disabled>Select Category</option>
@@ -223,20 +223,20 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-500">
+                            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-500">
                                 <i className="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
                         <div className="mt-2 text-right">
                              <a 
                                 href={`${basePath}/categories`}
-                                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center justify-end gap-1"
+                                className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center justify-end gap-1"
                             >
                                 <i className="fas fa-plus"></i> New Category
                             </a>
                         </div>
                          {filteredCategories.length === 0 && (
-                            <p className="text-xs text-red-500 mt-1 font-medium">
+                            <p className="text-xs text-red-400 mt-1 font-medium">
                                 <i className="fas fa-exclamation-triangle mr-1"></i>
                                 No categories found. Please add one.
                             </p>
@@ -246,12 +246,12 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
 
                 {/* Description */}
                 <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Description</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Description</label>
                     <textarea 
                         rows={3}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-gray-900 resize-none"
+                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white resize-none outline-none placeholder:text-slate-600"
                         placeholder="Transaction details..."
                     />
                 </div>
@@ -261,7 +261,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                     <button 
                         type="button"
                         onClick={() => router.back()}
-                        className="px-6 py-3 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition-colors"
+                        className="px-6 py-3 rounded-xl text-slate-400 font-bold hover:bg-slate-800 transition-colors"
                     >
                         Cancel
                     </button>
@@ -270,8 +270,8 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                         disabled={loading || filteredCategories.length === 0}
                         className={`px-8 py-3 rounded-xl text-white font-bold shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 ${
                             type === 'expense'
-                            ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-red-200'
-                            : 'bg-gradient-to-r from-green-500 to-green-600 shadow-green-200'
+                            ? 'bg-gradient-to-r from-red-600 to-red-700 shadow-red-500/20'
+                            : 'bg-gradient-to-r from-green-600 to-green-700 shadow-green-500/20'
                         }`}
                     >
                         {loading ? 'Saving...' : 'Save Transaction'}

@@ -29,7 +29,6 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     const { user, isAdmin, isVolunteer } = useAuth();
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
     const { showAlert, showConfirm } = useModal();
 
     // Create Modal State
@@ -225,16 +224,16 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
         <div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
                         {mode === 'personal' ? (
-                            <><i className="fas fa-praying-hands text-blue-600"></i> My Prayers</>
+                            <><i className="fas fa-praying-hands text-blue-400"></i> My Prayers</>
                         ) : mode === 'admin' ? (
-                            <><i className="fas fa-tasks text-blue-600"></i> Manage All Prayers</>
+                            <><i className="fas fa-tasks text-blue-400"></i> Manage All Prayers</>
                         ) : (
-                            <><i className="fas fa-users text-blue-600"></i> Community Prayers</>
+                            <><i className="fas fa-users text-blue-400"></i> Community Prayers</>
                         )}
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">
+                    <p className="text-slate-400 text-sm mt-1">
                         {mode === 'personal' ? 'Track your personal prayer requests.' : 'View and manage prayer requests.'}
                     </p>
                 </div>
@@ -246,7 +245,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                         setNewPrayerScope('community');
                         setIsCreateOpen(true);
                     }}
-                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-sm font-bold flex items-center gap-2"
+                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-900/20 font-bold flex items-center gap-2"
                 >
                     <i className="fas fa-plus"></i> New Request
                 </button>
@@ -254,18 +253,18 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
 
             {/* Create Modal */}
             {isCreateOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in-up">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">{editId ? 'Edit Prayer Request' : 'New Prayer Request'}</h3>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                    <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in-up border border-white/10">
+                        <h3 className="text-xl font-bold text-white mb-4">{editId ? 'Edit Prayer Request' : 'New Prayer Request'}</h3>
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">My Request</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">My Request</label>
                                 <textarea 
                                     rows={4}
                                     required
                                     value={newPrayerContent}
                                     onChange={(e) => setNewPrayerContent(e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-white placeholder:text-slate-500"
                                     placeholder="Share what you need prayer for..."
                                 />
                                 <label className="flex items-center gap-2 mt-2 cursor-pointer">
@@ -273,9 +272,9 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                         type="checkbox" 
                                         checked={includeSignature}
                                         onChange={(e) => setIncludeSignature(e.target.checked)}
-                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                        className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500 bg-slate-800 border-white/10"
                                     />
-                                    <span className="text-sm text-gray-500">Sign my name in the request</span>
+                                    <span className="text-sm text-slate-400">Sign my name in the request</span>
                                 </label>
                             </div>
                             
@@ -283,41 +282,41 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                             {/* Visibility - Admin Only */}
                             {isAdmin && (
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Visibility</label>
-                                    <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Visibility</label>
+                                    <div className="flex gap-2 bg-slate-800 p-1 rounded-lg border border-white/5">
                                         <button
                                             type="button"
                                             onClick={() => setNewPrayerScope('personal')}
-                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'personal' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'personal' ? 'bg-slate-700 shadow-sm text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
                                         >
                                             Personal (Private)
                                         </button>
                                          <button
                                             type="button"
                                             onClick={() => setNewPrayerScope('community')}
-                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'community' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500'}`}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'community' ? 'bg-slate-700 shadow-sm text-green-400' : 'text-slate-500 hover:text-slate-300'}`}
                                         >
                                             Community (Public)
                                         </button>
                                     </div>
-                                    <p className="text-xs text-gray-400 mt-2">
+                                    <p className="text-xs text-slate-500 mt-2">
                                         {newPrayerScope === 'personal' ? 'Only you and the ministry team can see this.' : 'Everyone in the community can see and pray for this.'}
                                     </p>
                                 </div>
                             )}
 
-                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                                 <button 
                                     type="button"
                                     onClick={handleCloseModal}
-                                    className="px-4 py-2 rounded-lg text-gray-600 font-bold hover:bg-gray-100 transition-colors"
+                                    className="px-4 py-2 rounded-lg text-slate-400 font-bold hover:bg-slate-800 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
                                     disabled={creating}
-                                    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
+                                    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all"
                                 >
                                     {creating ? 'Saving...' : (editId ? 'Update Request' : 'Send Request')}
                                 </button>
@@ -330,10 +329,10 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
             {loading ? (
                  <TableSkeleton cols={5} />
             ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table className="w-full text-sm text-left text-slate-400">
+                            <thead className="text-xs text-slate-400 uppercase bg-slate-800/50 border-b border-white/5">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">User</th>
                                     <th scope="col" className="px-6 py-3 w-1/3">Content</th>
@@ -343,36 +342,36 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                     <th scope="col" className="px-6 py-3">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-white/5">
                                 {prayers.map((prayer) => (
-                                    <tr key={prayer.id} className="bg-white border-b hover:bg-gray-50">
+                                    <tr key={prayer.id} className="bg-slate-900 hover:bg-slate-800/30 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${prayer.scope === 'personal' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${prayer.scope === 'personal' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                                                     {prayer.userName ? prayer.userName.charAt(0).toUpperCase() : '?'}
                                                 </div>
-                                                <span className="font-medium text-gray-900">{prayer.userName || 'Anonymous'}</span>
+                                                <span className="font-medium text-white">{prayer.userName || 'Anonymous'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="line-clamp-2 text-gray-900">{prayer.content}</p>
+                                            <p className="line-clamp-2 text-slate-300">{prayer.content}</p>
                                             {prayer.prayerCount > 0 && (
-                                                <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium mt-1">
+                                                <span className="inline-flex items-center gap-1 text-xs text-blue-400 font-medium mt-1">
                                                     <i className="fas fa-praying-hands"></i> {prayer.prayerCount} prayers
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
                                             {prayer.scope === 'community' ? (
-                                                <span className="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700">
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-green-500/10 text-green-400 border border-green-500/20">
                                                     Community
                                                 </span>
                                             ) : prayer.scope === 'personal' ? (
-                                                <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-600">
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-slate-700 text-slate-300 border border-white/5">
                                                     Personal
                                                 </span>
                                             ) : (
-                                                <span className="text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-600 animate-pulse">
+                                                <span className="text-xs font-bold px-2 py-1 rounded bg-red-500/10 text-red-400 animate-pulse border border-red-500/20">
                                                     Unknown
                                                 </span>
                                             )}
@@ -385,14 +384,14 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                                 value={prayer.status}
                                                 onChange={(e) => handleStatusChange(prayer.id, e.target.value as any)}
                                                 className={`text-xs font-bold px-2 py-1 rounded border-0 cursor-pointer ${
-                                                    prayer.status === 'answered' ? 'bg-green-100 text-green-800' : 
-                                                    prayer.status === 'prayed' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
+                                                    prayer.status === 'answered' ? 'bg-green-500/10 text-green-400' : 
+                                                    prayer.status === 'prayed' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-slate-800 text-slate-300'
                                                 }`}
                                                 disabled={!(isAdmin || isVolunteer || prayer.userId === user?.uid)}
                                             >
-                                                <option value="pending">Pending</option>
-                                                <option value="prayed">Prayed</option>
-                                                <option value="answered">Answered</option>
+                                                <option value="pending" className="text-black">Pending</option>
+                                                <option value="prayed" className="text-black">Prayed</option>
+                                                <option value="answered" className="text-black">Answered</option>
                                             </select>
                                         </td>
                                         <td className="px-6 py-4">
@@ -400,14 +399,14 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                                <div className="flex items-center gap-2">
                                                    <button 
                                                         onClick={() => handleEdit(prayer)}
-                                                        className="text-blue-600 hover:text-blue-800 font-medium p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        className="text-blue-400 hover:text-blue-300 font-medium p-2 hover:bg-blue-500/10 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >
                                                         <i className="fas fa-edit"></i>
                                                    </button>
                                                    <button 
                                                         onClick={() => handleDelete(prayer.id)}
-                                                        className="text-red-600 hover:text-red-800 font-medium p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="text-red-400 hover:text-red-300 font-medium p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                                                         title="Delete"
                                                     >
                                                         <i className="fas fa-trash"></i>
@@ -419,9 +418,9 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                 ))}
                                 {prayers.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                                             <div className="flex flex-col items-center justify-center gap-3">
-                                                <i className="fas fa-inbox text-2xl text-gray-300"></i>
+                                                <i className="fas fa-inbox text-2xl text-slate-700"></i>
                                                 <p>No prayers found.</p>
                                             </div>
                                         </td>
@@ -432,8 +431,6 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 }

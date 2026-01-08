@@ -124,20 +124,20 @@ export default function DonationRequestsPage() {
         <AdminGuard>
             <div className="space-y-6">
                 <div>
-                     <h1 className="text-2xl font-bold text-gray-900">Ministry Appeals (Donation Requests)</h1>
-                     <p className="text-gray-500">Manage fundraising requests submitted by users.</p>
+                     <h1 className="text-2xl font-bold text-white">Ministry Appeals (Donation Requests)</h1>
+                     <p className="text-slate-400">Manage fundraising requests submitted by users.</p>
                 </div>
 
                 {loading ? (
                      <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-700 border-t-blue-500"></div>
                      </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500">
+                                    <tr className="bg-slate-800/50 border-b border-white/5 text-xs uppercase text-slate-400">
                                         <th className="px-6 py-4 font-bold">Request Details</th>
                                         <th className="px-6 py-4 font-bold">Submitter</th>
                                         <th className="px-6 py-4 font-bold">Progress</th>
@@ -145,36 +145,36 @@ export default function DonationRequestsPage() {
                                         <th className="px-6 py-4 font-bold text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-white/5">
                                     {requests.length > 0 ? (
                                         requests.map((req) => (
-                                            <tr key={req.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={req.id} className="hover:bg-slate-800/30 transition-colors">
                                                 <td className="px-6 py-4">
-                                                    <div className="font-bold text-gray-900">{req.title}</div>
-                                                    <div className="text-xs text-gray-400 mt-1 line-clamp-1">{req.content}</div>
-                                                    <div className="text-xs text-gray-400 mt-1">{formatDate(req.createdAt)}</div>
+                                                    <div className="font-bold text-white">{req.title}</div>
+                                                    <div className="text-xs text-slate-400 mt-1 line-clamp-1">{req.content}</div>
+                                                    <div className="text-xs text-slate-500 mt-1">{formatDate(req.createdAt)}</div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="font-bold text-sm">{req.name}</div>
-                                                    <div className="text-xs text-gray-500">{req.phone}</div>
+                                                    <div className="font-bold text-sm text-white">{req.name}</div>
+                                                    <div className="text-xs text-slate-400">{req.phone}</div>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm">
                                                     <div className="space-y-1 min-w-[150px]">
                                                         <div className="flex justify-between text-xs">
-                                                            <span className="text-gray-500">Raised:</span>
-                                                            <span className="font-bold font-mono">
+                                                            <span className="text-slate-500">Raised:</span>
+                                                            <span className="font-bold font-mono text-green-400">
                                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(req.currentAmount || 0)}
                                                             </span>
                                                         </div>
-                                                        <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5 border border-white/5">
                                                             <div 
-                                                                className="bg-blue-600 h-1.5 rounded-full" 
+                                                                className="bg-blue-500 h-1.5 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
                                                                 style={{ width: `${Math.min(100, ((req.currentAmount || 0) / parseInt(req.target || '1')) * 100)}%` }}
                                                             ></div>
                                                         </div>
                                                         <div className="flex justify-between text-xs">
-                                                            <span className="text-gray-500">Target:</span>
-                                                            <span className="font-mono text-gray-700">
+                                                            <span className="text-slate-500">Target:</span>
+                                                            <span className="font-mono text-slate-400">
                                                                 {req.target ? parseInt(req.target).toLocaleString() : 'N/A'}
                                                             </span>
                                                         </div>
@@ -185,31 +185,31 @@ export default function DonationRequestsPage() {
                                                                     setEditingAmount(req.id);
                                                                     setNewAmount(req.currentAmount || 0);
                                                                 }}
-                                                                className="text-xs text-blue-600 hover:text-blue-800 font-bold mt-1"
+                                                                className="text-xs text-blue-400 hover:text-blue-300 font-bold mt-1"
                                                             >
                                                                 Update Amount
                                                             </button>
                                                         )}
 
                                                         {editingAmount === req.id && (
-                                                            <div className="absolute z-10 bg-white p-4 shadow-xl border border-gray-200 rounded-lg mt-2 min-w-[250px]">
-                                                                <h4 className="text-xs font-bold uppercase mb-2">Update Raised Amount</h4>
+                                                            <div className="absolute z-10 bg-slate-800 p-4 shadow-xl border border-white/10 rounded-lg mt-2 min-w-[250px]">
+                                                                <h4 className="text-xs font-bold uppercase mb-2 text-white">Update Raised Amount</h4>
                                                                 <input 
                                                                     type="number" 
                                                                     value={newAmount}
                                                                     onChange={(e) => setNewAmount(parseInt(e.target.value) || 0)}
-                                                                    className="w-full border border-gray-300 rounded px-2 py-1 text-sm mb-2"
+                                                                    className="w-full border border-white/10 bg-slate-900 text-white rounded px-2 py-1 text-sm mb-2 focus:ring-2 focus:ring-blue-500 outline-none"
                                                                 />
                                                                 <div className="flex gap-2 justify-end">
                                                                     <button 
                                                                         onClick={() => setEditingAmount(null)}
-                                                                        className="text-xs text-gray-500 hover:text-gray-700"
+                                                                        className="text-xs text-slate-400 hover:text-slate-200"
                                                                     >
                                                                         Cancel
                                                                     </button>
                                                                     <button 
                                                                         onClick={() => handleUpdateAmount(req.id, parseInt(req.target))}
-                                                                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                                                                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500"
                                                                     >
                                                                         Save
                                                                     </button>
@@ -219,11 +219,11 @@ export default function DonationRequestsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize
-                                                        ${req.status === 'published' ? 'bg-green-100 text-green-700' : 
-                                                          req.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                          req.status === 'completed' ? 'bg-blue-100 text-blue-700' :
-                                                          'bg-red-100 text-red-700'}`}>
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border 
+                                                        ${req.status === 'published' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
+                                                          req.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                                                          req.status === 'completed' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                          'bg-red-500/10 text-red-400 border-red-500/20'}`}>
                                                         {req.status}
                                                     </span>
                                                 </td>
@@ -232,14 +232,14 @@ export default function DonationRequestsPage() {
                                                         {req.status === 'pending' && (
                                                             <button 
                                                                 onClick={() => handleApproveClick(req)}
-                                                                className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors"
+                                                                className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors shadow-lg shadow-green-900/20"
                                                             >
                                                                 Approve
                                                             </button>
                                                         )}
                                                         <button 
                                                             onClick={() => handleRejectClick(req.id)}
-                                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                                             title="Delete / Reject"
                                                         >
                                                             <i className="fas fa-trash-alt"></i>
@@ -250,7 +250,7 @@ export default function DonationRequestsPage() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                                            <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                                                 <i className="fas fa-inbox text-4xl mb-3 opacity-20"></i>
                                                 <p>No donation requests found.</p>
                                             </td>

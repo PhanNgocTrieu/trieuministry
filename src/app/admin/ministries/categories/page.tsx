@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useModal } from "@/context/ModalContext";
 import AdminGuard from "@/components/admin/AdminGuard";
@@ -129,12 +129,8 @@ export default function MinistryCategoriesPage() {
             };
 
             if (editId) {
-                // If ID changes (because name changed), we might want to handle that, but for simplicity here we just update fields
-                // ACTUALLY, if we use ID as slug, we can't easily rename ID. So we'll just update the name field.
                 await updateDoc(doc(db, "ministry_categories", editId), data);
             } else {
-                // Check if exists
-                // We use setDoc to ensure idempotency if user tries to adding same category again
                 await setDoc(doc(db, "ministry_categories", id), {
                     ...data,
                     createdAt: serverTimestamp()
@@ -173,22 +169,22 @@ export default function MinistryCategoriesPage() {
 
     return (
         <AdminGuard>
-            <div className="max-w-4xl mx-auto space-y-8 mb-20">
+            <div className="max-w-4xl mx-auto space-y-8 mb-20 text-white">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Ministry Categories</h1>
-                        <p className="text-gray-500">Manage categories for ministries.</p>
+                        <h1 className="text-2xl font-bold text-white">Ministry Categories</h1>
+                        <p className="text-slate-400">Manage categories for ministries.</p>
                     </div>
                     <div className="flex gap-3">
                          <Link 
                             href="/admin/ministries"
-                            className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-bold flex items-center gap-2"
+                            className="px-4 py-2 text-slate-400 bg-slate-900 border border-white/10 rounded-lg hover:text-white hover:bg-slate-800 font-bold flex items-center gap-2 transition-colors"
                         >
                             <i className="fas fa-arrow-left"></i> Back
                         </Link>
                         <button 
                             onClick={handleOpenCreate}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold flex items-center gap-2"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-bold flex items-center gap-2 shadow-lg shadow-blue-900/20"
                         >
                             <i className="fas fa-plus"></i> New Category
                         </button>
@@ -196,15 +192,15 @@ export default function MinistryCategoriesPage() {
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-12 text-gray-500">Loading categories...</div>
+                    <div className="text-center py-12 text-slate-500">Loading categories...</div>
                 ) : (
                     <>
                         {categories.length === 0 ? (
-                            <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300">
-                                <p className="text-gray-500 mb-4">No categories found.</p>
+                            <div className="text-center py-16 bg-slate-900 rounded-xl border border-dashed border-white/10">
+                                <p className="text-slate-500 mb-4">No categories found.</p>
                                 <button 
                                     onClick={handleOpenCreate}
-                                    className="px-4 py-2 bg-blue-50 text-blue-600 font-bold rounded-lg hover:bg-blue-100"
+                                    className="px-4 py-2 bg-blue-500/10 text-blue-400 font-bold rounded-lg hover:bg-blue-500/20 border border-blue-500/20"
                                 >
                                     Create First Category
                                 </button>
@@ -212,18 +208,18 @@ export default function MinistryCategoriesPage() {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {categories.map(cat => (
-                                    <div key={cat.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between group">
+                                    <div key={cat.id} className="bg-slate-900 p-4 rounded-xl border border-white/5 shadow-lg flex items-center justify-between group hover:border-white/10 transition-colors">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
                                                  <i className="fas fa-tag"></i>
                                             </div>
-                                            <span className="font-bold text-gray-800">{cat.name}</span>
+                                            <span className="font-bold text-white">{cat.name}</span>
                                         </div>
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleOpenEdit(cat)} className="text-gray-400 hover:text-blue-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-50">
+                                            <button onClick={() => handleOpenEdit(cat)} className="text-slate-500 hover:text-blue-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-500/10 transition-colors">
                                                 <i className="fas fa-pen"></i>
                                             </button>
-                                            <button onClick={() => handleDelete(cat.id, cat.name)} className="text-gray-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                                            <button onClick={() => handleDelete(cat.id, cat.name)} className="text-slate-500 hover:text-red-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500/10 transition-colors">
                                                 <i className="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -236,38 +232,38 @@ export default function MinistryCategoriesPage() {
 
                 {/* Edit/Create Modal */}
                 {isModalOpen && (
-                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl w-full max-w-md p-6 animate-fade-in-up shadow-2xl">
-                            <h2 className="text-xl font-bold mb-6">
+                    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                        <div className="bg-slate-900 rounded-2xl w-full max-w-md p-6 animate-fade-in-up shadow-2xl border border-white/10">
+                            <h2 className="text-xl font-bold mb-6 text-white">
                                 {editId ? 'Edit Category' : 'New Category'}
                             </h2>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Name</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-1">Name</label>
                                     <input
                                         type="text"
                                         required
                                         value={formName}
                                         onChange={e => setFormName(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold text-gray-800"
+                                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold text-white placeholder-slate-600 outline-none transition-all"
                                         placeholder="e.g. Media Team"
                                         autoFocus
                                     />
-                                    <p className="text-xs text-gray-400 mt-1">This will appear in category suggestions.</p>
+                                    <p className="text-xs text-slate-500 mt-1">This will appear in category suggestions.</p>
                                 </div>
                                 
-                                <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 mt-6">
+                                <div className="flex justify-end gap-3 pt-6 border-t border-white/10 mt-6">
                                     <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-colors"
+                                        className="px-4 py-2 text-slate-400 font-bold hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-all transform active:scale-95 disabled:opacity-50"
+                                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-500 shadow-lg shadow-blue-900/50 transition-all transform active:scale-95 disabled:opacity-50"
                                     >
                                         {submitting ? 'Saving...' : 'Save Category'}
                                     </button>

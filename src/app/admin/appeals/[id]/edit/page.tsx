@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -170,55 +168,55 @@ export default function EditAppealPage() {
         <AdminGuard>
             <div className="max-w-5xl mx-auto pb-20">
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/admin/appeals" className="text-gray-500 hover:text-gray-700">
+                    <Link href="/admin/appeals" className="text-slate-400 hover:text-white transition-colors">
                         <i className="fas fa-arrow-left"></i> Back
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Edit Appeal Letter</h1>
-                        <p className="text-sm text-gray-500">ID: {id}</p>
+                        <h1 className="text-3xl font-bold text-white">Edit Appeal Letter</h1>
+                        <p className="text-sm text-slate-400">ID: {id}</p>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* 1. Basic Info */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">1</span>
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg flex items-center justify-center text-sm">1</span>
                             General Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Title (Vietnamese)</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Title (Vietnamese)</label>
                                     <input 
                                         type="text" 
                                         name="title" 
                                         required
                                         value={formData.title} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg"
+                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-white"
                                         placeholder="e.g. Ca Ngợi Chúa Giáng Sinh 2024"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Title (English)</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Title (English)</label>
                                     <input 
                                         type="text" 
                                         name="titleEn" 
                                         value={formData.titleEn} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg"
+                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-white"
                                         placeholder="e.g. Christmas Charity Appeal 2024"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Status</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Status</label>
                                 <select 
                                     name="status" 
                                     value={formData.status} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                 >
                                     <option value="published">Published</option>
                                     <option value="draft">Draft</option>
@@ -226,8 +224,8 @@ export default function EditAppealPage() {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Cover Image</label>
-                                <div className="border border-gray-200 rounded-xl p-2">
+                                <label className="block text-sm font-bold text-slate-400 mb-2">Cover Image</label>
+                                <div className="border border-white/10 rounded-xl p-2 bg-slate-800/50">
                                     {formData.coverImage ? (
                                         <div className="relative group">
                                             <img src={formData.coverImage} alt="Cover" className="w-full h-32 object-cover rounded-lg" />
@@ -250,16 +248,16 @@ export default function EditAppealPage() {
 
 
                     {/* 3. Ministry Sections (Simplified - No Images) */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-sm">2</span>
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <span className="w-8 h-8 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg flex items-center justify-center text-sm">2</span>
                                 Ministry Highlights / Details
                             </h2>
                             <button 
                                 type="button" 
                                 onClick={addMinistrySection}
-                                className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold hover:bg-indigo-100 transition-colors text-sm"
+                                className="px-4 py-2 bg-slate-800 text-slate-300 border border-white/10 rounded-lg font-bold hover:bg-slate-700 hover:text-white transition-colors text-sm"
                             >
                                 <i className="fas fa-plus mr-2"></i> Add Section
                             </button>
@@ -267,12 +265,12 @@ export default function EditAppealPage() {
                         
                         <div className="space-y-6">
                             {formData.ministrySections.map((section, index) => (
-                                <div key={section.id} className="border border-gray-200 rounded-xl p-6 relative bg-gray-50/50">
+                                <div key={section.id} className="border border-white/10 rounded-xl p-6 relative bg-slate-800/30">
                                     <div className="absolute top-4 right-4">
                                         <button 
                                             type="button"
                                             onClick={() => removeMinistrySection(section.id)}
-                                            className="text-gray-400 hover:text-red-500 transition-colors"
+                                            className="text-slate-500 hover:text-red-400 transition-colors"
                                             title="Remove Section"
                                         >
                                             <i className="fas fa-trash"></i>
@@ -282,22 +280,22 @@ export default function EditAppealPage() {
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Section Title (VI)</label>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Section Title (VI)</label>
                                                 <input 
                                                     type="text" 
                                                     value={section.title}
                                                     onChange={(e) => updateMinistrySection(section.id, 'title', e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                                                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-slate-600"
                                                     placeholder="Tiêu đề tiếng Việt"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Section Title (EN)</label>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Section Title (EN)</label>
                                                 <input 
                                                     type="text" 
                                                     value={section.titleEn || ''}
                                                     onChange={(e) => updateMinistrySection(section.id, 'titleEn', e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                                                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-slate-600"
                                                     placeholder="English Title"
                                                 />
                                             </div>
@@ -305,8 +303,8 @@ export default function EditAppealPage() {
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description (VI)</label>
-                                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description (VI)</label>
+                                                <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
                                                     <RichTextEditor 
                                                         value={section.description} 
                                                         onChange={(html) => updateMinistrySection(section.id, 'description', html)} 
@@ -315,8 +313,8 @@ export default function EditAppealPage() {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description (EN)</label>
-                                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description (EN)</label>
+                                                <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
                                                     <RichTextEditor 
                                                         value={section.descriptionEn || ''} 
                                                         onChange={(html) => updateMinistrySection(section.id, 'descriptionEn', html)} 
@@ -332,17 +330,17 @@ export default function EditAppealPage() {
                     </div>
 
                     {/* 4. Fundraising Section (No Images) */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-sm">3</span>
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg flex items-center justify-center text-sm">3</span>
                             Fundraising & Financial Reports (Gây quỹ)
                         </h2>
                         
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Fundraising Description (VI)</label>
-                                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Fundraising Description (VI)</label>
+                                    <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
                                         <RichTextEditor 
                                             value={formData.fundraisingDescription} 
                                             onChange={(html) => setFormData({...formData, fundraisingDescription: html})} 
@@ -351,8 +349,8 @@ export default function EditAppealPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Fundraising Description (EN)</label>
-                                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Fundraising Description (EN)</label>
+                                    <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
                                         <RichTextEditor 
                                             value={formData.fundraisingDescriptionEn} 
                                             onChange={(html) => setFormData({...formData, fundraisingDescriptionEn: html})} 
@@ -365,48 +363,48 @@ export default function EditAppealPage() {
                             
                             
                             {/* NEW: Fundraising Goal & Currency */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-6">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Currency</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Currency</label>
                                     <select 
                                         name="currency" 
                                         value={formData.currency} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                     >
                                         <option value="VND">VND (Vietnamese Dong)</option>
                                         <option value="USD">USD (US Dollar)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Target Goal</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Target Goal</label>
                                     <input 
                                         type="number" 
                                         name="target" 
                                         value={formData.target} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Amount Raised (So Far)</label>
+                                    <label className="block text-sm font-bold text-slate-400 mb-2">Amount Raised (So Far)</label>
                                     <input 
                                         type="number" 
                                         name="currentAmount" 
                                         value={formData.currentAmount} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
                                     />
                                 </div>
                             </div>
                             
                             {/* NEW: Financial Reports Gallery */}
-                            <div className="border-t border-gray-100 pt-6">
-                                <label className="block text-sm font-bold text-gray-700 mb-4">Financial Reports Gallery (Báo cáo tài chính)</label>
+                            <div className="border-t border-white/10 pt-6">
+                                <label className="block text-sm font-bold text-slate-400 mb-4">Financial Reports Gallery (Báo cáo tài chính)</label>
                                 
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                     {formData.fundraisingImages.map((img, idx) => (
-                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-slate-800">
                                             <img src={img} alt={`Report ${idx + 1}`} className="w-full h-full object-cover" />
                                             <button
                                                 type="button"
@@ -437,22 +435,22 @@ export default function EditAppealPage() {
                                         />
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-400">Upload multiple images for monthly expense reports.</p>
+                                <p className="text-xs text-slate-500">Upload multiple images for monthly expense reports.</p>
                             </div>
                         </div>
 
 
                     {/* 5. PDF Attachments */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center text-sm">4</span>
+                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg flex items-center justify-center text-sm">4</span>
                             PDF Attachments (Downloadable Files)
                         </h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                 <label className="block text-sm font-bold text-gray-700 mb-2">Vietnamese PDF</label>
-                                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                 <label className="block text-sm font-bold text-slate-400 mb-2">Vietnamese PDF</label>
+                                 <div className="p-4 bg-slate-800 rounded-xl border border-white/10">
                                     <FileUploader 
                                         onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrl: url}))} 
                                         folder="appeals_pdfs" 
@@ -462,8 +460,8 @@ export default function EditAppealPage() {
                                  </div>
                             </div>
                             <div>
-                                 <label className="block text-sm font-bold text-gray-700 mb-2">English PDF</label>
-                                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                 <label className="block text-sm font-bold text-slate-400 mb-2">English PDF</label>
+                                 <div className="p-4 bg-slate-800 rounded-xl border border-white/10">
                                     <FileUploader 
                                         onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrlEn: url}))} 
                                         folder="appeals_pdfs" 
@@ -479,14 +477,14 @@ export default function EditAppealPage() {
                     <div className="flex justify-end gap-4 pt-4">
                         <Link 
                             href="/admin/appeals"
-                            className="px-8 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-bold transition-colors"
+                            className="px-8 py-3 border border-white/10 text-slate-400 rounded-xl hover:bg-slate-800 font-bold transition-colors"
                         >
                             Cancel
                         </Link>
                         <button 
                             type="submit" 
                             disabled={saving}
-                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold shadow-lg shadow-blue-200 disabled:opacity-50 flex items-center gap-2 transform active:scale-95 transition-all"
+                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 font-bold shadow-lg shadow-blue-900/50 disabled:opacity-50 flex items-center gap-2 transform active:scale-95 transition-all"
                         >
                             {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
                             Save Changes

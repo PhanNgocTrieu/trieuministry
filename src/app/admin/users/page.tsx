@@ -71,7 +71,7 @@ export default function UsersManagementPage() {
                 delete next[uid];
                 return next;
             });
-             showAlert("Success", "User role updated successfully!");
+            showAlert("Success", "User role updated successfully!");
         } catch (error) {
             console.error("Error updating role:", error);
             showAlert("Error", "Failed to update role");
@@ -159,7 +159,7 @@ export default function UsersManagementPage() {
         return (
             <div>
                  <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+                    <h1 className="text-2xl font-bold text-white">User Management</h1>
                 </div>
                 <TableSkeleton cols={4} />
             </div>
@@ -171,16 +171,16 @@ export default function UsersManagementPage() {
         <div>
 
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-                <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                <h1 className="text-2xl font-bold text-white">User Management</h1>
+                <span className="bg-blue-500/10 text-blue-400 text-sm font-medium px-2.5 py-0.5 rounded border border-blue-500/20">
                     Total: {users.length}
                 </span>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <table className="w-full text-sm text-left text-slate-400">
+                        <thead className="text-xs text-slate-400 uppercase bg-slate-800/50 border-b border-white/5">
                             <tr>
                                 <th scope="col" className="px-6 py-3">User</th>
                                 <th scope="col" className="px-6 py-3">Role</th>
@@ -189,11 +189,11 @@ export default function UsersManagementPage() {
                                 <th scope="col" className="px-6 py-3">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-white/5">
                             {users.map((user) => (
-                                <tr key={user.uid} className="bg-white border-b hover:bg-gray-50">
+                                <tr key={user.uid} className="bg-slate-900 border-b border-white/5 hover:bg-slate-800/30 transition-colors">
                                     <td className="px-6 py-4 flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 relative flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 relative flex-shrink-0">
                                             {user.photoURL ? (
                                                 <Image 
                                                     src={user.photoURL} 
@@ -209,13 +209,13 @@ export default function UsersManagementPage() {
                                             )}
                                         </div>
                                         <div>
-                                            <div className="font-bold text-gray-900">{user.displayName || 'Unknown'}</div>
-                                            <div className="text-xs text-gray-500">{user.email}</div>
+                                            <div className="font-bold text-white">{user.displayName || 'Unknown'}</div>
+                                            <div className="text-xs text-slate-500">{user.email}</div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         {(user.email === 'pntrieu200799@gmail.com' || user.email === 'phantrieu580@gmail.com') ? (
-                                            <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded border border-purple-200">
+                                            <span className="bg-purple-500/10 text-purple-400 text-xs font-bold px-2 py-1 rounded border border-purple-500/20">
                                                 <i className="fas fa-lock mr-1"></i> Root Admin
                                             </span>
                                         ) : (
@@ -225,14 +225,14 @@ export default function UsersManagementPage() {
                                                     onChange={(e) => handleRoleSelect(user.uid, e.target.value)}
                                                     disabled={saving === user.uid}
                                                     className={`text-xs font-bold px-2 py-1 rounded border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${
-                                                        (pendingChanges[user.uid] || user.role) === 'admin' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                                                        (pendingChanges[user.uid] || user.role) === 'volunteer' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                        'bg-gray-50 text-gray-700 border-gray-200'
+                                                        (pendingChanges[user.uid] || user.role) === 'admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                        (pendingChanges[user.uid] || user.role) === 'volunteer' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                                        'bg-slate-800 text-slate-300 border-white/10'
                                                     }`}
                                                 >
-                                                    <option value="user">User</option>
-                                                    <option value="volunteer">Volunteer</option>
-                                                    <option value="admin">Admin</option>
+                                                    <option value="user" className="text-black">User</option>
+                                                    <option value="volunteer" className="text-black">Volunteer</option>
+                                                    <option value="admin" className="text-black">Admin</option>
                                                 </select>
                                                 
                                                 {/* Show Save Button if there's a pending change */}
@@ -240,7 +240,7 @@ export default function UsersManagementPage() {
                                                     <button
                                                         onClick={() => saveRoleChange(user.uid)}
                                                         disabled={saving === user.uid}
-                                                        className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700 transition-colors shadow-sm"
+                                                        className="bg-blue-600 text-white p-1 rounded hover:bg-blue-500 transition-colors shadow-lg shadow-blue-900/20"
                                                         title="Save Role Change"
                                                     >
                                                         {saving === user.uid ? (
@@ -256,29 +256,29 @@ export default function UsersManagementPage() {
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1 items-start">
                                             {user.emailVerified ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" title="Verified via Email Link">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20" title="Verified via Email Link">
                                                     <i className="fas fa-envelope mr-1"></i> Email Verified
                                                 </span>
                                             ) : user.adminVerified ? (
                                                 <div className="flex items-center gap-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Manually Verified by Admin">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20" title="Manually Verified by Admin">
                                                         <i className="fas fa-user-check mr-1"></i> Admin Verified
                                                     </span>
                                                     <button 
                                                         onClick={() => handleVerifyToggle(user.uid, true)}
-                                                        className="text-red-500 hover:text-red-700 text-xs underline"
+                                                        className="text-red-400 hover:text-red-300 text-xs underline"
                                                     >
                                                         Revoke
                                                     </button>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
                                                         <i className="fas fa-hourglass-half mr-1"></i> Pending
                                                     </span>
                                                     <button 
                                                         onClick={() => handleVerifyToggle(user.uid, false)}
-                                                        className="text-blue-600 hover:text-blue-800 text-xs underline"
+                                                        className="text-blue-400 hover:text-blue-300 text-xs underline"
                                                     >
                                                         Verify
                                                     </button>
@@ -292,14 +292,14 @@ export default function UsersManagementPage() {
                                     <td className="px-6 py-4 flex gap-3">
                                         <button 
                                             onClick={() => handleResetPassword(user.email)}
-                                            className="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                                            className="text-blue-400 hover:text-blue-300 font-medium text-xs border border-blue-500/30 px-2 py-1 rounded hover:bg-blue-500/10 transition-colors"
                                             title="Send Password Reset Email"
                                         >
                                             <i className="fas fa-key margin-right-1"></i> Reset Pass
                                         </button>
                                         <button 
                                             onClick={() => handleDeleteUser(user.uid)}
-                                            className="text-red-500 hover:text-red-700 ml-2"
+                                            className="text-red-400 hover:text-red-300 ml-2 hover:bg-red-500/10 p-1 rounded transition-colors"
                                             title="Delete User Data"
                                         >
                                             <i className="fas fa-trash"></i>
@@ -309,7 +309,7 @@ export default function UsersManagementPage() {
                             ))}
                             {users.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
                                         No users found.
                                     </td>
                                 </tr>

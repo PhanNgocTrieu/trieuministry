@@ -99,21 +99,21 @@ export default function AdminUserAppealsPage() {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Ministry Appeals (User Requests)</h1>
-                        <p className="text-gray-500">Manage donation requests submitted by users.</p>
+                        <h1 className="text-2xl font-bold text-white">Ministry Appeals (User Requests)</h1>
+                        <p className="text-slate-400">Manage donation requests submitted by users.</p>
                     </div>
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex border-b border-gray-200">
+                <div className="flex border-b border-white/10">
                     {['all', 'pending', 'published', 'rejected'].map((status) => (
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
                             className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors capitalize ${
                                 filter === status 
-                                ? 'border-blue-600 text-blue-600' 
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-blue-500 text-blue-400' 
+                                : 'border-transparent text-slate-500 hover:text-slate-300'
                             }`}
                         >
                             {status}
@@ -123,15 +123,15 @@ export default function AdminUserAppealsPage() {
 
                 {loading ? (
                      <div className="text-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
-                        <p className="mt-2 text-gray-500">Loading requests...</p>
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-700 border-t-blue-500"></div>
+                        <p className="mt-2 text-slate-500">Loading requests...</p>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-slate-900 rounded-xl shadow-lg border border-white/5 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500">
+                                    <tr className="bg-slate-800/50 border-b border-white/5 text-xs uppercase text-slate-400">
                                         <th className="px-6 py-4 font-bold">User / Title</th>
                                         <th className="px-6 py-4 font-bold">Progress (Raised / Target)</th>
                                         <th className="px-6 py-4 font-bold">Status</th>
@@ -139,27 +139,27 @@ export default function AdminUserAppealsPage() {
                                         <th className="px-6 py-4 font-bold text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-white/5">
                                     {filteredAppeals.length > 0 ? (
                                         filteredAppeals.map((appeal) => (
-                                            <tr key={appeal.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={appeal.id} className="hover:bg-slate-800/30 transition-colors">
                                                 <td className="px-6 py-4">
-                                                    <div className="font-bold text-gray-900">{appeal.title || 'No Title'}</div>
-                                                    <div className="text-xs text-gray-400">by {appeal.name || 'Anonymous'}</div>
+                                                    <div className="font-bold text-white">{appeal.title || 'No Title'}</div>
+                                                    <div className="text-xs text-slate-500">by {appeal.name || 'Anonymous'}</div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="space-y-1 min-w-[200px]">
                                                         <div className="flex justify-between text-xs mb-1">
-                                                            <span className="font-bold text-blue-600">
+                                                            <span className="font-bold text-blue-400">
                                                                 {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(appeal.currentAmount || 0)}
                                                             </span>
-                                                            <span className="text-gray-500">
+                                                            <span className="text-slate-500">
                                                                 / {new Intl.NumberFormat(appeal.currency === 'USD' ? 'en-US' : 'vi-VN', { style: 'currency', currency: appeal.currency || 'VND' }).format(Number(appeal.target) || 0)}
                                                             </span>
                                                         </div>
-                                                        <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                                        <div className="w-full bg-slate-800 rounded-full h-1.5">
                                                             <div 
-                                                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-500" 
+                                                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(37,99,235,0.5)]" 
                                                                 style={{ width: `${Math.min(100, ((appeal.currentAmount || 0) / (Number(appeal.target) || 1)) * 100)}%` }}
                                                             ></div>
                                                         </div>
@@ -169,10 +169,10 @@ export default function AdminUserAppealsPage() {
                                                     <select
                                                         value={appeal.status}
                                                         onChange={(e) => handleStatusChange(appeal.id, e.target.value)}
-                                                        className={`text-xs font-bold px-2 py-1 rounded border outline-none ${
-                                                            appeal.status === 'published' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                            appeal.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                                                            'bg-gray-50 text-gray-600 border-gray-200'
+                                                        className={`text-xs font-bold px-2 py-1 rounded border outline-none cursor-pointer ${
+                                                            appeal.status === 'published' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                                            appeal.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                                                            'bg-slate-800 text-slate-400 border-slate-700'
                                                         }`}
                                                     >
                                                         <option value="pending">Pending</option>
@@ -181,21 +181,21 @@ export default function AdminUserAppealsPage() {
                                                         <option value="draft">Draft</option>
                                                     </select>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500">
+                                                <td className="px-6 py-4 text-sm text-slate-400">
                                                     {formatDate(appeal.createdAt)}
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
                                                     <div className="flex justify-end gap-2">
                                                         <Link 
                                                             href={`/admin/user-appeals/${appeal.id}/edit`}
-                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                            className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                                                             title="Edit Details"
                                                         >
                                                             <i className="fas fa-edit"></i>
                                                         </Link>
                                                         <button 
                                                             onClick={() => handleDeleteClick(appeal.id)}
-                                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                                             title="Delete"
                                                         >
                                                             <i className="fas fa-trash-alt"></i>
@@ -206,8 +206,8 @@ export default function AdminUserAppealsPage() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
-                                                <i className="fas fa-inbox text-4xl mb-3 opacity-20"></i>
+                                            <td colSpan={5} className="px-6 py-12 text-center text-slate-600">
+                                                <i className="fas fa-inbox text-4xl mb-3 opacity-50"></i>
                                                 <p>No ministry appeals found.</p>
                                             </td>
                                         </tr>

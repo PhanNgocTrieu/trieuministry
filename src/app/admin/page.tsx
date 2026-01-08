@@ -132,60 +132,60 @@ export default function AdminDashboardPage() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
+            <h1 className="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Card 1 */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-blue-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
                             <i className={`fas ${isAdmin || isVolunteer ? 'fa-users' : 'fa-hand-holding-heart'}`}></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900 mt-auto">
-                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card1}
+                    <div className="text-3xl font-bold text-white mt-auto">
+                        {loading ? <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div> : stats.card1}
                     </div>
                 </div>
 
                 {/* Card 2 - Prayers Breakdown */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 col-span-1 md:col-span-2 lg:col-span-1">
+                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 col-span-1 md:col-span-2 lg:col-span-1 backdrop-blur-sm hover:border-orange-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center border border-orange-500/20">
                             <i className="fas fa-praying-hands"></i>
                         </div>
                     </div>
                     <div className="flex items-end gap-3 mb-4">
-                        <div className="text-3xl font-bold text-gray-900">
-                            {loading ? <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div> : stats.card2}
+                        <div className="text-3xl font-bold text-white">
+                            {loading ? <div className="h-9 w-16 bg-slate-800 rounded animate-pulse"></div> : stats.card2}
                         </div>
-                        <span className="text-sm text-gray-500 mb-1">Total</span>
+                        <span className="text-sm text-slate-500 mb-1">Total</span>
                     </div>
                     
                     {/* Breakdown Stats */}
                     {!loading && (
-                        <div className="grid grid-cols-3 gap-2 border-t border-gray-50 pt-3 text-center">
+                        <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3 text-center">
                             <div>
-                                <div className="text-xs text-gray-400 font-bold uppercase mb-1">Public</div>
-                                <div className="text-lg font-bold text-green-600">{stats.prayersBreakdown.community}</div>
+                                <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">Public</div>
+                                <div className="text-base font-bold text-green-400">{stats.prayersBreakdown.community}</div>
                             </div>
-                            <div className="border-l border-gray-100">
-                                <div className="text-xs text-gray-400 font-bold uppercase mb-1">Private</div>
-                                <div className="text-lg font-bold text-blue-600">{stats.prayersBreakdown.personal}</div>
+                            <div className="border-l border-white/5">
+                                <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">Private</div>
+                                <div className="text-base font-bold text-blue-400">{stats.prayersBreakdown.personal}</div>
                             </div>
                             {/* Check for discrepancy */}
                             {(stats.card2 - (stats.prayersBreakdown.community + stats.prayersBreakdown.personal)) > 0 ? (
-                                <div className="border-l border-gray-100">
-                                    <div className="text-xs text-gray-400 font-bold uppercase mb-1">Other</div>
-                                    <div className="text-lg font-bold text-gray-400">
+                                <div className="border-l border-white/5">
+                                    <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">Other</div>
+                                    <div className="text-base font-bold text-slate-400">
                                         {stats.card2 - (stats.prayersBreakdown.community + stats.prayersBreakdown.personal)}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="border-l border-gray-100">
-                                    <div className="text-xs text-gray-400 font-bold uppercase mb-1">Answered</div>
-                                    <div className="text-lg font-bold text-yellow-600">{stats.prayersBreakdown.answered}</div>
+                                <div className="border-l border-white/5">
+                                    <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">Answered</div>
+                                    <div className="text-base font-bold text-yellow-500">{stats.prayersBreakdown.answered}</div>
                                 </div>
                             )}
                         </div>
@@ -193,63 +193,63 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-purple-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
                             <i className="fas fa-blog"></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900 mt-auto">
-                        {loading ? <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div> : stats.card3}
+                    <div className="text-3xl font-bold text-white mt-auto">
+                        {loading ? <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div> : stats.card3}
                     </div>
                 </div>
 
                 {/* Card 4 - Visits (Static) */}
-                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+                 <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-green-500/30 transition-colors">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Visits</h3>
-                        <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center">
+                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">Visits</h3>
+                        <div className="w-10 h-10 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center border border-green-500/20">
                             <i className="fas fa-chart-line"></i>
                         </div>
                     </div>
-                     <div className="text-3xl font-bold text-gray-900">
+                     <div className="text-3xl font-bold text-white">
                         {loading ? (
-                            <div className="h-9 w-24 bg-gray-200 rounded animate-pulse"></div>
+                            <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div>
                         ) : ( 
                             stats.visits.toLocaleString() 
                         )}
                      </div>
-                     <p className="text-emerald-600 text-sm mt-2 font-medium">
+                     <p className="text-emerald-400 text-sm mt-2 font-medium">
                         <i className="fas fa-arrow-up mr-1"></i>
                         Live Tracking
                      </p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="bg-slate-900/50 rounded-xl shadow-lg border border-white/5 p-6 backdrop-blur-sm">
+                <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      {(isAdmin || isVolunteer) && (
                         <>
-                            <a href="/admin/appeals" className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-100 transition-colors group">
+                            <a href="/admin/appeals" className="block p-4 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-envelope-open-text"></i>
                                     </div>
-                                    <span className="font-bold text-blue-800">Appeal Letters</span>
+                                    <span className="font-bold text-blue-300">Appeal Letters</span>
                                 </div>
-                                <p className="text-sm text-blue-600">Manage support appeals</p>
+                                <p className="text-sm text-slate-400 group-hover:text-blue-200 transaction-colors">Manage support appeals</p>
                             </a>
                             
-                            <a href="/admin/sponsors" className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-100 transition-colors group">
+                            <a href="/admin/sponsors" className="block p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl border border-purple-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-hand-holding-usd"></i>
                                     </div>
-                                    <span className="font-bold text-purple-800">Sponsors</span>
+                                    <span className="font-bold text-purple-300">Sponsors</span>
                                 </div>
-                                <p className="text-sm text-purple-600">Manage commitments</p>
+                                <p className="text-sm text-slate-400 group-hover:text-purple-200 transition-colors">Manage commitments</p>
                             </a>
                         </>
                      )}
@@ -257,21 +257,21 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
+            <div className="bg-slate-900/50 rounded-xl shadow-lg border border-white/5 p-6 mt-6 backdrop-blur-sm">
+                <h3 className="text-lg font-bold text-white mb-4">Recent Activity</h3>
                 {activities.length === 0 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-slate-500 py-8">
                         No recent activity found.
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-white/5">
                         {activities.map((activity, index) => (
                             <div key={index} className="py-4 flex items-start gap-4">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-                                    ${activity.type === 'prayer' ? 'bg-orange-100 text-orange-600' : 
-                                      activity.type === 'blog' ? 'bg-purple-100 text-purple-600' :
-                                      activity.type === 'appeal' ? 'bg-blue-100 text-blue-600' :
-                                      'bg-gray-100 text-gray-600'}`}>
+                                    ${activity.type === 'prayer' ? 'bg-orange-500/10 text-orange-400' : 
+                                      activity.type === 'blog' ? 'bg-purple-500/10 text-purple-400' :
+                                      activity.type === 'appeal' ? 'bg-blue-500/10 text-blue-400' :
+                                      'bg-slate-700/50 text-slate-400'}`}>
                                     <i className={`fas 
                                         ${activity.type === 'prayer' ? 'fa-praying-hands' : 
                                           activity.type === 'blog' ? 'fa-blog' :
@@ -279,14 +279,14 @@ export default function AdminDashboardPage() {
                                           'fa-info-circle'}`}></i>
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-gray-900 font-medium">{activity.description}</p>
+                                    <p className="text-slate-200 font-medium">{activity.description}</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-xs text-gray-500">{timeAgo(activity.timestamp)}</span>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full capitalize
-                                            ${activity.action === 'create' ? 'bg-green-100 text-green-700' :
-                                              activity.action === 'update' ? 'bg-blue-100 text-blue-700' :
-                                              activity.action === 'delete' ? 'bg-red-100 text-red-700' :
-                                              'bg-gray-100 text-gray-700'}`}>
+                                        <span className="text-xs text-slate-500">{timeAgo(activity.timestamp)}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize font-bold border
+                                            ${activity.action === 'create' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                              activity.action === 'update' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                              activity.action === 'delete' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                              'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
                                             {activity.action}
                                         </span>
                                     </div>
