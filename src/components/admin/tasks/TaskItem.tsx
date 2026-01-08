@@ -23,9 +23,9 @@ export default function TaskItem({
 }: TaskItemProps) {
     
     const priorityColors = {
-        high: 'bg-red-100 text-red-700 border-red-200',
-        medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-        low: 'bg-green-100 text-green-700 border-green-200'
+        high: 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
+        medium: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+        low: 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30'
     };
 
     const now = Date.now();
@@ -40,8 +40,8 @@ export default function TaskItem({
 
     return (
         <div className={`
-            group bg-white border rounded-xl p-4 transition-all hover:shadow-md
-            ${task.isCompleted ? 'bg-gray-50 border-gray-100' : 'border-gray-200'}
+            group bg-white dark:bg-slate-900 border rounded-xl p-4 transition-all hover:shadow-md
+            ${task.isCompleted ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5' : 'border-slate-200 dark:border-white/10 hover:border-blue-500/30 dark:hover:border-blue-500/30'}
             ${isOverdue ? 'border-l-4 border-l-red-500' : ''}
         `}>
             {/* Header: Priority & Category */}
@@ -50,11 +50,11 @@ export default function TaskItem({
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${priorityColors[task.priority]}`}>
                         {task.priority}
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-blue-50 text-blue-600 border-blue-100">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20">
                         {task.category}
                     </span>
                     {task.receiveFrom && (
-                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-purple-50 text-purple-600 border-purple-100 flex items-center gap-1">
+                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-500/20 flex items-center gap-1">
                             <i className="fas fa-user-tag text-[8px]"></i> {task.receiveFrom}
                         </span>
                     )}
@@ -64,14 +64,14 @@ export default function TaskItem({
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                             onClick={() => onEdit(task)}
-                            className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                            className="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded transition-all"
                             title="Edit"
                         >
                             <i className="fas fa-edit text-xs"></i>
                         </button>
                         <button 
                             onDoubleClick={() => onDelete(task.id)} // Double click to delete
-                            className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
+                            className="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-all"
                             title="Double click to Delete"
                         >
                             <i className="fas fa-trash text-xs"></i>
@@ -82,16 +82,16 @@ export default function TaskItem({
 
             {/* Content */}
             <div className="mb-3">
-                <p className={`text-sm font-medium leading-relaxed ${task.isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                <p className={`text-sm font-medium leading-relaxed ${task.isCompleted ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
                     {task.content}
                 </p>
             </div>
 
             {/* Footer: Date & Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
-                <div className="flex items-center gap-3 text-xs text-gray-500">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-white/5 mt-2">
+                <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                     {task.deadline && (
-                        <span className={`flex items-center gap-1.5 ${isOverdue || isUrgent ? 'text-red-600 font-bold bg-red-50 px-2 py-1 rounded' : 'bg-gray-50 px-2 py-1 rounded'}`}>
+                        <span className={`flex items-center gap-1.5 ${isOverdue || isUrgent ? 'text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded' : 'bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded'}`}>
                             <i className={`far ${isOverdue || isUrgent ? 'fa-bell' : 'fa-clock'}`}></i>
                             {formatDate(task.deadline)}
                             {isOverdue && <span className="text-[10px] uppercase ml-1">(Overdue)</span>}
@@ -105,7 +105,7 @@ export default function TaskItem({
                          {task.isCompleted && onArchive && (
                              <button
                                 onClick={() => onArchive(task)}
-                                className="px-3 py-1.5 text-xs font-bold text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors flex items-center gap-1"
+                                className="px-3 py-1.5 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 rounded-lg transition-colors flex items-center gap-1"
                              >
                                  <i className="fas fa-archive"></i> Archive
                              </button>
@@ -114,8 +114,8 @@ export default function TaskItem({
                             onClick={() => onToggleComplete(task)}
                             className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 border ${
                                 task.isCompleted 
-                                ? 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200' // State: Completed -> can undo
-                                : 'bg-white text-gray-600 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200 shadow-sm' // State: Active -> can complete
+                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:bg-green-50 dark:hover:bg-green-500/10 hover:text-green-600 dark:hover:text-green-400 hover:border-green-200 dark:hover:border-green-500/20' // State: Completed -> can undo
+                                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-green-50 dark:hover:bg-green-500/10 hover:text-green-600 dark:hover:text-green-400 hover:border-green-200 dark:hover:border-green-500/20 shadow-sm' // State: Active -> can complete
                             }`}
                         >
                             <i className={`fas ${task.isCompleted ? 'fa-undo' : 'fa-check'}`}></i>
@@ -123,7 +123,7 @@ export default function TaskItem({
                         </button>
                     </div>
                 ) : (
-                    <span className="text-xs text-gray-400 italic">
+                    <span className="text-xs text-slate-400 dark:text-slate-500 italic">
                          Archived {task.archivedAt ? formatDate(task.archivedAt) : ''}
                     </span>
                 )}

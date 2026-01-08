@@ -47,23 +47,23 @@ export default function TaskReport() {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Controls */}
-            <div className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between shadow-sm">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
-                    <div className="bg-purple-100 p-2 rounded-lg text-purple-600">
+                    <div className="bg-purple-100 dark:bg-purple-500/20 p-2 rounded-lg text-purple-600 dark:text-purple-400">
                          <i className="fas fa-archive text-xl"></i>
                     </div>
                     <div>
-                        <h2 className="font-bold text-gray-800">Archived Tasks Report</h2>
-                        <p className="text-xs text-gray-500">View finished tasks by month to release active memory.</p>
+                        <h2 className="font-bold text-slate-900 dark:text-white">Archived Tasks Report</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">View finished tasks by month to release active memory.</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <label className="text-sm font-bold text-gray-600">Select Month:</label>
+                    <label className="text-sm font-bold text-slate-600 dark:text-slate-400">Select Month:</label>
                     <input 
                         type="month" 
                         value={month}
                         onChange={(e) => setMonth(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
                     />
                 </div>
             </div>
@@ -85,14 +85,14 @@ export default function TaskReport() {
                             onEdit={() => {}} 
                         />
                     ))}
-                    <div className="text-center text-xs text-gray-400 mt-4">
+                    <div className="text-center text-xs text-slate-400 mt-4">
                         Total {tasks.length} tasks archived in {format(new Date(month), 'MMMM yyyy')}
                     </div>
                 </div>
             ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <i className="fas fa-box-open text-4xl text-gray-300 mb-3"></i>
-                    <p className="text-gray-500 font-medium">No archived tasks found for {month}</p>
+                <div className="text-center py-12 bg-slate-50 dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+                    <i className="fas fa-box-open text-4xl text-slate-300 dark:text-slate-700 mb-3"></i>
+                    <p className="text-slate-500 font-medium">No archived tasks found for {month}</p>
                 </div>
             )}
         </div>
