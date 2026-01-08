@@ -1,18 +1,25 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #020617; /* slate-950 */
-  --foreground: #e2e8f0; /* slate-200 */
+  /* Light Mode Variables (Premium) */
+  --background: #f8fafc; /* slate-50 base */
+  --foreground: #1e293b; /* slate-800 - softer than pure black */
   --primary-color: #a855f7; /* purple-500 */
   --secondary-color: #3b82f6; /* blue-500 */
   --accent-color: #f43f5e; /* rose-500 */
-  --text-dark: #f8fafc; /* slate-50 */
-  --text-light: #94a3b8; /* slate-400 */
-  --bg-light: #0f172a; /* slate-900 */
-  --bg-gray: #1e293b; /* slate-800 */
-  --border-color: #334155; /* slate-700 */
+  --text-dark: #1e293b; /* slate-800 */
+  --text-light: #64748b; /* slate-500 */
+  --bg-light: #ffffff;
+  --bg-gray: #f1f5f9; /* slate-100 */
+  --border-color: #e2e8f0; /* slate-200 */
   --font-heading: var(--font-inter), sans-serif;
   --font-body: var(--font-inter), sans-serif;
+  
+  /* Premium Shadow Variables */
+  --shadow-color: 220 3% 15%;
+  --shadow-strength: 1%;
 }
 
 @theme inline {
@@ -20,15 +27,25 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary-color);
   --color-secondary: var(--secondary-color);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #e2e8f0;
-  }
+/* Dark Mode Overrides */
+/* Tailwind v4 supports darkMode using CSS variables under strict conditions or via the class strategy */
+/* Since we are using a class 'dark' on html, we define override variables here */
+:root.dark {
+  /* Dark Mode Overrides (Deep & Rich) */
+  --background: #020617; /* slate-950 */
+  --foreground: #f1f5f9; /* slate-100 */
+  --text-dark: #f8fafc; /* slate-50 */
+  --text-light: #94a3b8; /* slate-400 */
+  --bg-light: #0f172a; /* slate-900 */
+  --bg-gray: #1e293b; /* slate-800 */
+  --border-color: #1e293b; /* slate-800 */
+  
+  --shadow-color: 220 40% 2%;
+  --shadow-strength: 25%;
 }
 
 body {
@@ -38,6 +55,7 @@ body {
   padding-top: 76px;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Scrollbar */
@@ -45,10 +63,10 @@ body {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--border-color);
   border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -145,34 +163,41 @@ body.modal-open {
   overflow: hidden !important;
 }
 
-/* Custom Utilities for Glassmorphism */
+/* Glassmorphism Utilities */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 4px 6px -1px rgba(var(--shadow-color) / calc(var(--shadow-strength) + 9%)),
+    0 2px 4px -2px rgba(var(--shadow-color) / calc(var(--shadow-strength) + 9%));
 }
 
-/* Bootstrap-like utilities overrides for Dark Theme */
-.bg-white {
-  background-color: #1e293b !important;
-} /* slate-800 */
-.bg-light {
-  background-color: #0f172a !important;
-} /* slate-900 */
-.text-dark {
-  color: #f8fafc !important;
-} /* slate-50 */
-.text-muted {
-  color: #94a3b8 !important;
-} /* slate-400 */
-.border-light {
-  border-color: #334155 !important;
-} /* slate-700 */
-.card {
-  background-color: #1e293b;
-  border-color: #334155;
-  color: #e2e8f0;
+:root.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
+
+/* Premium Shadows */
+.shadow-premium {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+.shadow-premium-hover:hover {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.01),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  transform: translateY(-2px);
+}
+
+/* Legacy Overrides Cleaned Up - we use classes directly now */
+/* No more !important overrides mapping .bg-white to slate-800 */
 
 /* Animations */
 @keyframes fadeIn {

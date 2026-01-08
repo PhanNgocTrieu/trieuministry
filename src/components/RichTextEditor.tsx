@@ -116,7 +116,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     }, [value]);
 
     return (
-        <div className={`border rounded-2xl overflow-hidden bg-white transition-all shadow-sm ${isFocused ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200'}`}>
+        <div className={`border rounded-2xl overflow-hidden bg-white dark:bg-slate-950 transition-all shadow-sm ${isFocused ? 'border-blue-500 ring-2 ring-blue-100 dark:ring-blue-900/30' : 'border-slate-200 dark:border-slate-700'}`}>
             {/* Hidden Inputs */}
             <input 
                 type="file" 
@@ -134,16 +134,16 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
             />
 
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b border-gray-100 select-none">
+            <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 select-none">
                 <ToolbarButton icon="fa-undo" onClick={() => execCommand('undo')} title="Undo" />
                 <ToolbarButton icon="fa-redo" onClick={() => execCommand('redo')} title="Redo" />
                 
-                <div className="w-px h-4 bg-gray-300 mx-1"></div>
+                <div className="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-1"></div>
 
                 {/* Font Size */}
                 <select 
                     onChange={(e) => execCommand('fontSize', e.target.value)}
-                    className="h-8 text-sm border-gray-200 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 text-gray-600 font-medium px-1"
+                    className="h-8 text-sm border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-blue-500 focus:border-blue-500 text-slate-700 dark:text-slate-300 font-medium px-1 outline-none"
                     defaultValue="3"
                 >
                     <option value="1">Small</option>
@@ -192,7 +192,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                 `}</style>
                 <div 
                     ref={editorRef}
-                    className="editor-content p-4 min-h-[400px] outline-none text-gray-700 leading-relaxed"
+                    className="editor-content p-4 min-h-[400px] outline-none text-slate-700 dark:text-slate-300 leading-relaxed bg-white dark:bg-slate-950"
                     contentEditable
                     onInput={(e) => {
                         onChange(e.currentTarget.innerHTML);
@@ -206,7 +206,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                 />
                 
                 {placeholder && !value && (
-                    <div className="absolute top-4 left-4 text-gray-400 pointer-events-none select-none">
+                    <div className="absolute top-4 left-4 text-slate-400 dark:text-slate-600 pointer-events-none select-none">
                         {placeholder}
                     </div>
                 )}
@@ -221,7 +221,7 @@ const ToolbarButton = ({ icon, label, onClick, title, textInfo, isActive = false
         type="button"
         onMouseDown={(e) => { e.preventDefault(); onClick(); }} // Prevent focus loss
         className={`p-2 rounded-lg transition-all flex items-center gap-1 min-w-[32px] justify-center relative group ${
-            isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+            isActive ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10'
         }`}
         title={title}
     >

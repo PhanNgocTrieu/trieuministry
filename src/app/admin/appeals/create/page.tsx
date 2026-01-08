@@ -137,52 +137,55 @@ export default function CreateAppealPage() {
         <AdminGuard>
             <div className="max-w-5xl mx-auto pb-20">
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/admin/appeals" className="text-slate-400 hover:text-white transition-colors">
+                    <Link href="/admin/appeals" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                         <i className="fas fa-arrow-left"></i> Back
                     </Link>
-                    <h1 className="text-3xl font-bold text-white">Create New Appeal Letter</h1>
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Create New Appeal</h1>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Draft a new ministry appeal letter</p>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* 1. Basic Info */}
-                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg flex items-center justify-center text-sm">1</span>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-lg flex items-center justify-center text-sm">1</span>
                             General Information
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Title (Vietnamese)</label>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Title (Vietnamese)</label>
                                     <input 
                                         type="text" 
                                         name="title" 
                                         required
                                         value={formData.title} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-white placeholder-slate-600"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-slate-900 dark:text-white"
                                         placeholder="e.g. Ca Ngợi Chúa Giáng Sinh 2024"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Title (English)</label>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Title (English)</label>
                                     <input 
                                         type="text" 
                                         name="titleEn" 
                                         value={formData.titleEn} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-white placeholder-slate-600"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-slate-900 dark:text-white"
                                         placeholder="e.g. Christmas Charity Appeal 2024"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-slate-400 mb-2">Status</label>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Status</label>
                                 <select 
                                     name="status" 
                                     value={formData.status} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                                 >
                                     <option value="published">Published</option>
                                     <option value="draft">Draft</option>
@@ -190,8 +193,8 @@ export default function CreateAppealPage() {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-slate-400 mb-2">Cover Image</label>
-                                <div className="border border-white/10 rounded-xl p-2 bg-slate-800/50">
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Cover Image</label>
+                                <div className="border border-slate-200 dark:border-white/10 rounded-xl p-2 bg-slate-50 dark:bg-slate-800/50">
                                     {formData.coverImage ? (
                                         <div className="relative group">
                                             <img src={formData.coverImage} alt="Cover" className="w-full h-32 object-cover rounded-lg" />
@@ -208,44 +211,41 @@ export default function CreateAppealPage() {
                                     )}
                                 </div>
                             </div>
-                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-200 dark:border-white/10 pt-6">
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Target Amount (VND)</label>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Target Goal</label>
                                     <input 
                                         type="number" 
                                         name="target" 
                                         value={formData.target} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600"
-                                        placeholder="e.g. 10000000"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Current Amount (VND)</label>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Amount Raised (So Far)</label>
                                     <input 
                                         type="number" 
                                         name="currentAmount" 
                                         value={formData.currentAmount} 
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-600"
-                                        placeholder="e.g. 0"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* 2. Ministry Sections (Simplified - No Images) */}
-                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-white/5 p-8">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <span className="w-8 h-8 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg flex items-center justify-center text-sm">2</span>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span className="w-8 h-8 bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 rounded-lg flex items-center justify-center text-sm">2</span>
                                 Ministry Highlights / Details
                             </h2>
                             <button 
                                 type="button" 
                                 onClick={addMinistrySection}
-                                className="px-4 py-2 bg-slate-800 text-slate-300 border border-white/10 rounded-lg font-bold hover:bg-slate-700 hover:text-white transition-colors text-sm"
+                                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors text-sm"
                             >
                                 <i className="fas fa-plus mr-2"></i> Add Section
                             </button>
@@ -253,12 +253,12 @@ export default function CreateAppealPage() {
                         
                         <div className="space-y-6">
                             {formData.ministrySections.map((section, index) => (
-                                <div key={section.id} className="border border-white/10 rounded-xl p-6 relative bg-slate-800/30">
+                                <div key={section.id} className="border border-slate-200 dark:border-white/10 rounded-xl p-6 relative bg-slate-50 dark:bg-slate-800/30">
                                     <div className="absolute top-4 right-4">
                                         <button 
                                             type="button"
                                             onClick={() => removeMinistrySection(section.id)}
-                                            className="text-slate-500 hover:text-red-400 transition-colors"
+                                            className="text-slate-400 hover:text-red-500 transition-colors"
                                             title="Remove Section"
                                         >
                                             <i className="fas fa-trash"></i>
@@ -273,7 +273,7 @@ export default function CreateAppealPage() {
                                                     type="text" 
                                                     value={section.title}
                                                     onChange={(e) => updateMinistrySection(section.id, 'title', e.target.value)}
-                                                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-slate-600"
+                                                    className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600"
                                                     placeholder="Tiêu đề tiếng Việt"
                                                 />
                                             </div>
@@ -283,7 +283,7 @@ export default function CreateAppealPage() {
                                                     type="text" 
                                                     value={section.titleEn || ''}
                                                     onChange={(e) => updateMinistrySection(section.id, 'titleEn', e.target.value)}
-                                                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-slate-600"
+                                                    className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600"
                                                     placeholder="English Title"
                                                 />
                                             </div>
@@ -292,7 +292,7 @@ export default function CreateAppealPage() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description (VI)</label>
-                                                <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
+                                                <div className="bg-white rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden text-black">
                                                     <RichTextEditor 
                                                         value={section.description} 
                                                         onChange={(html) => updateMinistrySection(section.id, 'description', html)} 
@@ -318,17 +318,17 @@ export default function CreateAppealPage() {
                     </div>
 
                     {/* 3. Fundraising Section (Images) */}
-                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg flex items-center justify-center text-sm">3</span>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-lg flex items-center justify-center text-sm">3</span>
                             Fundraising & Financial Reports (Gây quỹ)
                         </h2>
                         
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Fundraising Description (VI)</label>
-                                    <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Fundraising Description (VI)</label>
+                                    <div className="bg-white rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden text-black">
                                         <RichTextEditor 
                                             value={formData.fundraisingDescription} 
                                             onChange={(html) => setFormData({...formData, fundraisingDescription: html})} 
@@ -337,8 +337,8 @@ export default function CreateAppealPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-400 mb-2">Fundraising Description (EN)</label>
-                                    <div className="bg-white rounded-lg border border-white/10 overflow-hidden text-black">
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Fundraising Description (EN)</label>
+                                    <div className="bg-white rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden text-black">
                                         <RichTextEditor 
                                             value={formData.fundraisingDescriptionEn} 
                                             onChange={(html) => setFormData({...formData, fundraisingDescriptionEn: html})} 
@@ -350,12 +350,12 @@ export default function CreateAppealPage() {
                             </div>
                             
                             {/* NEW: Financial Reports Gallery */}
-                            <div className="border-t border-white/10 pt-6">
-                                <label className="block text-sm font-bold text-slate-400 mb-4">Financial Reports Gallery (Báo cáo tài chính)</label>
+                            <div className="border-t border-slate-200 dark:border-white/10 pt-6">
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-4">Financial Reports Gallery (Báo cáo tài chính)</label>
                                 
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                     {formData.fundraisingImages.map((img, idx) => (
-                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-slate-800">
+                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-800">
                                             <img src={img} alt={`Report ${idx + 1}`} className="w-full h-full object-cover" />
                                             <button
                                                 type="button"
@@ -392,16 +392,16 @@ export default function CreateAppealPage() {
 
 
                     {/* 4. PDF Attachments */}
-                    <div className="bg-slate-900 rounded-2xl shadow-lg border border-white/5 p-8">
-                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg flex items-center justify-center text-sm">4</span>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-white/5 p-8">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span className="w-8 h-8 bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 rounded-lg flex items-center justify-center text-sm">4</span>
                             PDF Attachments (Downloadable Files)
                         </h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                 <label className="block text-sm font-bold text-slate-400 mb-2">Vietnamese PDF</label>
-                                 <div className="p-4 bg-slate-800 rounded-xl border border-white/10">
+                                 <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Vietnamese PDF</label>
+                                 <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-white/10">
                                     <FileUploader 
                                         onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrl: url}))} 
                                         folder="appeals_pdfs" 
@@ -411,8 +411,8 @@ export default function CreateAppealPage() {
                                  </div>
                             </div>
                             <div>
-                                 <label className="block text-sm font-bold text-slate-400 mb-2">English PDF</label>
-                                 <div className="p-4 bg-slate-800 rounded-xl border border-white/10">
+                                 <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">English PDF</label>
+                                 <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-white/10">
                                     <FileUploader 
                                         onFileUploaded={(url) => setFormData(prev => ({...prev, pdfUrlEn: url}))} 
                                         folder="appeals_pdfs" 
@@ -428,7 +428,7 @@ export default function CreateAppealPage() {
                     <div className="flex justify-end gap-4 pt-4">
                         <Link 
                             href="/admin/appeals"
-                            className="px-8 py-3 border border-white/10 text-slate-400 rounded-xl hover:bg-slate-800 font-bold transition-colors"
+                            className="px-8 py-3 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-colors"
                         >
                             Cancel
                         </Link>

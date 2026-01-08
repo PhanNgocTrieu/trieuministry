@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "./providers";
+import { ThemeProvider } from "@/context/ThemeContext";
 import VisitTracker from "@/components/VisitTracker";
 
 const inter = Inter({ 
@@ -34,14 +35,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Providers>
-          <Navbar />
-          <VisitTracker />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
+        <ThemeProvider>
+          <Providers>
+            <Navbar />
+            <VisitTracker />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

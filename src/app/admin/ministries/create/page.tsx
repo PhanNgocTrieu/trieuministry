@@ -151,25 +151,25 @@ export default function CreateMinistryPage() {
                 <Link href={returnUrl} className="text-slate-400 hover:text-white transition-colors">
                     <i className="fas fa-arrow-left"></i> Back
                 </Link>
-                <h1 className="text-2xl font-bold text-white">Add New Ministry</h1>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Add New Ministry</h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 space-y-6">
                 
                 {/* Language Tabs */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
                     <div className="flex gap-2">
                         <button 
                             type="button" 
                             onClick={() => setActiveTab('en')}
-                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-800'}`}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                         >
                             <span className="mr-2">🇺🇸</span> English (Source)
                         </button>
                         <button 
                             type="button" 
                             onClick={() => setActiveTab('vi')}
-                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'vi' ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-800'}`}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'vi' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                         >
                             <span className="mr-2">🇻🇳</span> Vietnamese
                         </button>
@@ -178,7 +178,7 @@ export default function CreateMinistryPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-bold text-slate-400">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">
                             Ministry Title <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span>
                         </label>
                         <input 
@@ -188,13 +188,13 @@ export default function CreateMinistryPage() {
                             // @ts-ignore
                             value={formData[`title_${activeTab}`]} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
                             placeholder={activeTab === 'en' ? "e.g. Youth Mentorship Program" : "Ví dụ: Chương trình Cố vấn Thanh niên"}
                         />
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                         <label className="text-sm font-bold text-slate-400">Category</label>
+                         <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Category</label>
                          {/* Category Logic (Same as before) */}
                          <div className="flex gap-2">
                             {isCustomCategory ? (
@@ -204,7 +204,7 @@ export default function CreateMinistryPage() {
                                     required
                                     value={formData.category} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 bg-slate-800 border border-blue-500/30 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500/5 text-white"
+                                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-blue-500/30 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500/5 text-slate-900 dark:text-white"
                                     placeholder="Type new category name..."
                                 />
                             ) : (
@@ -220,13 +220,13 @@ export default function CreateMinistryPage() {
                                             handleChange(e);
                                         }
                                     }}
-                                    className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                                 >
                                     <option value="">Select a category...</option>
                                     {categories.map((cat, idx) => (
                                         <option key={idx} value={cat}>{cat}</option>
                                     ))}
-                                    <option value="__NEW__" className="font-bold text-blue-400">+ Create New Category</option>
+                                    <option value="__NEW__" className="font-bold text-blue-600 dark:text-blue-400">+ Create New Category</option>
                                 </select>
                             )}
                              <button
@@ -235,7 +235,7 @@ export default function CreateMinistryPage() {
                                     setIsCustomCategory(!isCustomCategory);
                                     if (!isCustomCategory) setFormData(prev => ({ ...prev, category: '' }));
                                 }}
-                                className="px-3 py-2 border border-white/10 rounded-lg hover:bg-slate-800 text-slate-400"
+                                className="px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
                             >
                                 <i className={`fas ${isCustomCategory ? 'fa-list' : 'fa-plus'}`}></i>
                             </button>
@@ -245,8 +245,8 @@ export default function CreateMinistryPage() {
 
                 {/* Single Image Section */}
                 <div className="space-y-4">
-                    <label className="text-sm font-bold text-slate-400">Cover Image</label>
-                    <div className="border border-white/10 rounded-lg p-6 bg-slate-800/50">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Cover Image</label>
+                    <div className="border border-slate-200 dark:border-white/10 rounded-lg p-6 bg-slate-50 dark:bg-slate-800/50">
                         {coverImage ? (
                             <div className="relative group max-w-md mx-auto">
                                 <img src={coverImage} alt="Cover" className="w-full h-auto rounded-lg shadow-md" />
@@ -274,7 +274,7 @@ export default function CreateMinistryPage() {
                 </div>
 
                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-400">Description <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span></label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Description <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span></label>
                     <textarea 
                         name={`description_${activeTab}`} 
                         required
@@ -282,14 +282,14 @@ export default function CreateMinistryPage() {
                         // @ts-ignore
                         value={formData[`description_${activeTab}`]} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                        className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
                         placeholder={activeTab === 'en' ? "Describe the ministry works..." : "Mô tả công việc của mục vụ..."}
                     ></textarea>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-400 flex items-center gap-2">
-                        <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 p-1 rounded"><i className="fas fa-pray"></i></span>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400 flex items-center gap-2">
+                        <span className="bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 p-1 rounded"><i className="fas fa-pray"></i></span>
                         Prayer Needs <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span>
                     </label>
                     <textarea 
@@ -298,19 +298,19 @@ export default function CreateMinistryPage() {
                         // @ts-ignore
                         value={formData[`prayerNeeds_${activeTab}`]} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-slate-800 border border-orange-500/20 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 text-white bg-orange-500/5 placeholder-slate-600"
+                        className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-orange-500/20 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 text-slate-900 dark:text-white bg-orange-500/5 placeholder-slate-600"
                         placeholder={activeTab === 'en' ? "List specific prayer needs..." : "Liệt kê các nhu cầu cầu nguyện cụ thể..."}
                     ></textarea>
                 </div>
 
-                <div className="border-t border-white/10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="border-t border-slate-200 dark:border-white/10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">Status</label>
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Status</label>
                         <select 
                             name="status" 
                             value={formData.status} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                         >
                             <option value="active">Active</option>
                             <option value="on-hold">On Hold</option>
@@ -319,12 +319,12 @@ export default function CreateMinistryPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">Visibility</label>
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Visibility</label>
                         <select 
                             name="visibility" 
                             value={formData.visibility} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                         >
                             <option value="public">Public (Everyone)</option>
                             <option value="private">Private (Admin Only)</option>
@@ -335,7 +335,7 @@ export default function CreateMinistryPage() {
 
                 {formData.visibility === 'shared' && (
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">
                             Share with (Emails) <span className="text-slate-500 font-normal">- comma separated</span>
                         </label>
                         <textarea 
@@ -343,14 +343,14 @@ export default function CreateMinistryPage() {
                             rows={2}
                             value={formData.sharedWith} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                             placeholder="user1@example.com, user2@example.com"
                         ></textarea>
                     </div>
                 )}
                 
-                <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-                    <Link href={returnUrl} className="px-6 py-2 border border-white/10 text-slate-400 font-bold rounded-lg hover:bg-slate-800 transition-colors">
+                <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex justify-end gap-3">
+                    <Link href={returnUrl} className="px-6 py-2 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         Cancel
                     </Link>
                     <button 

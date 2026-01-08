@@ -132,33 +132,33 @@ export default function AdminDashboardPage() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Dashboard Overview</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Card 1 */}
-                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-blue-500/30 transition-colors">
+                <div className="bg-white dark:bg-slate-900/50 p-6 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-blue-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                        <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(1)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/20">
                             <i className={`fas ${isAdmin || isVolunteer ? 'fa-users' : 'fa-hand-holding-heart'}`}></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-white mt-auto">
-                        {loading ? <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div> : stats.card1}
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white mt-auto">
+                        {loading ? <div className="h-9 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.card1}
                     </div>
                 </div>
 
                 {/* Card 2 - Prayers Breakdown */}
-                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 col-span-1 md:col-span-2 lg:col-span-1 backdrop-blur-sm hover:border-orange-500/30 transition-colors">
+                <div className="bg-white dark:bg-slate-900/50 p-6 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 col-span-1 md:col-span-2 lg:col-span-1 backdrop-blur-sm hover:border-orange-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center border border-orange-500/20">
+                        <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(2)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-500/20">
                             <i className="fas fa-praying-hands"></i>
                         </div>
                     </div>
                     <div className="flex items-end gap-3 mb-4">
-                        <div className="text-3xl font-bold text-white">
-                            {loading ? <div className="h-9 w-16 bg-slate-800 rounded animate-pulse"></div> : stats.card2}
+                        <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                            {loading ? <div className="h-9 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.card2}
                         </div>
                         <span className="text-sm text-slate-500 mb-1">Total</span>
                     </div>
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
                             ) : (
                                 <div className="border-l border-white/5">
                                     <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">Answered</div>
-                                    <div className="text-base font-bold text-yellow-500">{stats.prayersBreakdown.answered}</div>
+                                    <div className="text-base font-bold text-yellow-600 dark:text-yellow-500">{stats.prayersBreakdown.answered}</div>
                                 </div>
                             )}
                         </div>
@@ -193,27 +193,27 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-purple-500/30 transition-colors">
+                <div className="bg-white dark:bg-slate-900/50 p-6 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-purple-500/30 transition-colors">
                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
-                         <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
+                        <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">{getCardTitle(3)}</h3>
+                         <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/20">
                             <i className="fas fa-blog"></i>
                         </div>
                     </div>
-                    <div className="text-3xl font-bold text-white mt-auto">
-                        {loading ? <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div> : stats.card3}
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white mt-auto">
+                        {loading ? <div className="h-9 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div> : stats.card3}
                     </div>
                 </div>
 
                 {/* Card 4 - Visits (Static) */}
-                 <div className="bg-slate-900/50 p-6 rounded-xl shadow-lg border border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-green-500/30 transition-colors">
+                 <div className="bg-white dark:bg-slate-900/50 p-6 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 flex flex-col h-full backdrop-blur-sm hover:border-green-500/30 transition-colors">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">Visits</h3>
-                        <div className="w-10 h-10 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center border border-green-500/20">
+                        <h3 className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Visits</h3>
+                        <div className="w-10 h-10 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center border border-green-500/20">
                             <i className="fas fa-chart-line"></i>
                         </div>
                     </div>
-                     <div className="text-3xl font-bold text-white">
+                     <div className="text-3xl font-bold text-slate-900 dark:text-white">
                         {loading ? (
                             <div className="h-9 w-24 bg-slate-800 rounded animate-pulse"></div>
                         ) : ( 
@@ -227,29 +227,39 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            <div className="bg-slate-900/50 rounded-xl shadow-lg border border-white/5 p-6 backdrop-blur-sm">
-                <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
+            <div className="bg-white dark:bg-slate-900/50 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 backdrop-blur-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      {(isAdmin || isVolunteer) && (
                         <>
                             <a href="/admin/appeals" className="block p-4 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-envelope-open-text"></i>
                                     </div>
-                                    <span className="font-bold text-blue-300">Appeal Letters</span>
+                                    <span className="font-bold text-blue-700 dark:text-blue-300">Appeal Letters</span>
                                 </div>
-                                <p className="text-sm text-slate-400 group-hover:text-blue-200 transaction-colors">Manage support appeals</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-200 transaction-colors">Manage support appeals</p>
                             </a>
                             
                             <a href="/admin/sponsors" className="block p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl border border-purple-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-hand-holding-usd"></i>
                                     </div>
-                                    <span className="font-bold text-purple-300">Sponsors</span>
+                                    <span className="font-bold text-purple-700 dark:text-purple-300">Sponsors</span>
                                 </div>
-                                <p className="text-sm text-slate-400 group-hover:text-purple-200 transition-colors">Manage commitments</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-200 transition-colors">Manage commitments</p>
+                            </a>
+
+                            <a href="/admin/ministries" className="block p-4 bg-orange-500/10 hover:bg-orange-500/20 rounded-xl border border-orange-500/20 transition-all group">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <i className="fas fa-church"></i>
+                                    </div>
+                                    <span className="font-bold text-orange-700 dark:text-orange-300">Intercessory</span>
+                                </div>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-200 transition-colors">Manage ministries</p>
                             </a>
                         </>
                      )}
@@ -257,8 +267,8 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            <div className="bg-slate-900/50 rounded-xl shadow-lg border border-white/5 p-6 mt-6 backdrop-blur-sm">
-                <h3 className="text-lg font-bold text-white mb-4">Recent Activity</h3>
+            <div className="bg-white dark:bg-slate-900/50 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 mt-6 backdrop-blur-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Recent Activity</h3>
                 {activities.length === 0 ? (
                     <div className="text-center text-slate-500 py-8">
                         No recent activity found.
@@ -271,7 +281,7 @@ export default function AdminDashboardPage() {
                                     ${activity.type === 'prayer' ? 'bg-orange-500/10 text-orange-400' : 
                                       activity.type === 'blog' ? 'bg-purple-500/10 text-purple-400' :
                                       activity.type === 'appeal' ? 'bg-blue-500/10 text-blue-400' :
-                                      'bg-slate-700/50 text-slate-400'}`}>
+                                      'bg-slate-100 dark:bg-slate-700/50 text-slate-400'}`}>
                                     <i className={`fas 
                                         ${activity.type === 'prayer' ? 'fa-praying-hands' : 
                                           activity.type === 'blog' ? 'fa-blog' :
@@ -279,7 +289,7 @@ export default function AdminDashboardPage() {
                                           'fa-info-circle'}`}></i>
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-slate-200 font-medium">{activity.description}</p>
+                                    <p className="text-slate-700 dark:text-slate-200 font-medium">{activity.description}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="text-xs text-slate-500">{timeAgo(activity.timestamp)}</span>
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize font-bold border

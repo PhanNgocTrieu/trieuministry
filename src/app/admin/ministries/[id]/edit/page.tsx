@@ -201,27 +201,27 @@ export default function EditMinistryPage() {
                     <i className="fas fa-arrow-left"></i> Back
                 </Link>
                 <div className="flex-1">
-                     <h1 className="text-2xl font-bold text-white">Edit Ministry</h1>
+                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Edit Ministry</h1>
                      <p className="text-xs text-slate-500">ID: {id}</p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-slate-900 rounded-xl shadow-lg border border-white/5 p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 space-y-6">
                 
                 {/* Language Tabs */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
                     <div className="flex gap-2">
                         <button 
                             type="button" 
                             onClick={() => setActiveTab('en')}
-                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-800'}`}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                         >
                             <span className="mr-2">🇺🇸</span> English
                         </button>
                         <button 
                             type="button" 
                             onClick={() => setActiveTab('vi')}
-                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'vi' ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-800'}`}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'vi' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                         >
                             <span className="mr-2">🇻🇳</span> Vietnamese
                         </button>
@@ -230,7 +230,7 @@ export default function EditMinistryPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-bold text-slate-400">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">
                             Ministry Title <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span>
                         </label>
                         <input 
@@ -240,11 +240,11 @@ export default function EditMinistryPage() {
                             // @ts-ignore
                             value={formData[`title_${activeTab}`]} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
                         />
                     </div>
                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-bold text-slate-400">Category</label>
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Category</label>
                         <div className="flex gap-2">
                             {isCustomCategory ? (
                                 <input 
@@ -253,7 +253,7 @@ export default function EditMinistryPage() {
                                     required
                                     value={formData.category} 
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 bg-slate-800 border border-blue-500/30 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500/5 text-white"
+                                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-blue-500/30 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-blue-500/5 text-slate-900 dark:text-white"
                                     placeholder="Type new category name..."
                                 />
                             ) : (
@@ -269,13 +269,13 @@ export default function EditMinistryPage() {
                                             handleChange(e);
                                         }
                                     }}
-                                    className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                                 >
                                     <option value="">Select a category...</option>
                                     {categories.map((cat, idx) => (
                                         <option key={idx} value={cat}>{cat}</option>
                                     ))}
-                                    <option value="__NEW__" className="font-bold text-blue-400">+ Create New Category</option>
+                                    <option value="__NEW__" className="font-bold text-blue-600 dark:text-blue-400">+ Create New Category</option>
                                 </select>
                             )}
                             
@@ -285,7 +285,7 @@ export default function EditMinistryPage() {
                                     setIsCustomCategory(!isCustomCategory);
                                     if (!isCustomCategory) setFormData(prev => ({ ...prev, category: '' }));
                                 }}
-                                className="px-3 py-2 border border-white/10 rounded-lg hover:bg-slate-800 text-slate-400"
+                                className="px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
                                 title={isCustomCategory ? "Select Existing" : "Create New"}
                             >
                                 <i className={`fas ${isCustomCategory ? 'fa-list' : 'fa-plus'}`}></i>
@@ -296,8 +296,8 @@ export default function EditMinistryPage() {
 
                 {/* Single Image Section */}
                 <div className="space-y-4">
-                    <label className="text-sm font-bold text-slate-400">Cover Image</label>
-                    <div className="border border-white/10 rounded-lg p-6 bg-slate-800/50">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Cover Image</label>
+                    <div className="border border-slate-200 dark:border-white/10 rounded-lg p-6 bg-slate-50 dark:bg-slate-800/50">
                         {coverImage ? (
                             <div className="relative group max-w-md mx-auto">
                                 <img src={coverImage} alt="Cover" className="w-full h-auto rounded-lg shadow-md" />
@@ -327,12 +327,12 @@ export default function EditMinistryPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">Status</label>
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Status</label>
                         <select 
                             name="status" 
                             value={formData.status} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                         >
                             <option value="active">Active</option>
                             <option value="on-hold">On Hold</option>
@@ -341,12 +341,12 @@ export default function EditMinistryPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">Visibility</label>
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Visibility</label>
                         <select 
                             name="visibility" 
                             value={formData.visibility} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                         >
                             <option value="public">Public (Everyone)</option>
                             <option value="private">Private (Admin Only)</option>
@@ -357,7 +357,7 @@ export default function EditMinistryPage() {
 
                 {formData.visibility === 'shared' && (
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-400">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">
                             Share with (Emails) <span className="text-slate-500 font-normal">- comma separated</span>
                         </label>
                         <textarea 
@@ -365,7 +365,7 @@ export default function EditMinistryPage() {
                             rows={2}
                             value={formData.sharedWith} 
                             onChange={handleChange}
-                            className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                            className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
                             placeholder="user1@example.com, user2@example.com"
                         ></textarea>
                     </div>

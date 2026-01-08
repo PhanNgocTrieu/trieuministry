@@ -41,11 +41,11 @@ interface BlogPost {
                     className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-lg ${
                         activeTab === item.id
                             ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-purple-900/30 scale-105'
-                            : 'bg-slate-900/50 text-slate-400 hover:bg-slate-800 hover:text-white hover:shadow-xl border border-white/5'
+                            : 'bg-white/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white hover:shadow-xl border border-slate-200 dark:border-white/5'
                     }`}
                 >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-800 text-slate-500 group-hover:bg-slate-700'
+                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
                     }`}>
                         <i className={`${item.icon} text-lg`}></i>
                     </div>
@@ -66,10 +66,10 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
     const isBlog = item.type === 'blog';
     
     return (
-        <Link href={href} className="group bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-900/20 hover:-translate-y-1 transition-all duration-300 border border-white/5 flex flex-col h-full hover:border-purple-500/30">
+        <Link href={href} className="group bg-white dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-900/20 hover:-translate-y-1 transition-all duration-300 border border-slate-100 dark:border-white/5 flex flex-col h-full hover:border-purple-500/30">
             {/* Show cover image only if NOT a blog */}
             {!isBlog && (
-                <div className="relative h-48 bg-slate-800 overflow-hidden">
+                <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
                     {item.coverImage && !item.coverImage.includes('placehold') ? (
                         <Image 
                             src={item.coverImage} 
@@ -79,11 +79,11 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-400 dark:text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
                             <i className={`fas ${icon}`}></i>
                         </div>
                     )}
-                    <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-300 shadow-sm flex items-center gap-1 border border-white/10">
+                    <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm flex items-center gap-1 border border-slate-200 dark:border-white/10">
                         <i className={`fas ${icon} text-[10px]`}></i> {item.category}
                     </div>
                 </div>
@@ -99,15 +99,15 @@ const ResourceCard = ({ item }: { item: ResourceItem }) => {
                      </div>
                 )}
 
-                <h3 className={`text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-purple-400 transition-colors ${isBlog ? 'text-xl' : ''}`}>
+                <h3 className={`text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${isBlog ? 'text-xl' : ''}`}>
                     {item.title}
                 </h3>
-                <p className="text-slate-400 text-xs line-clamp-3 mb-4 flex-grow">
+                <p className="text-slate-500 dark:text-slate-400 text-xs line-clamp-3 mb-4 flex-grow">
                     {item.description}
                 </p>
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500">
                     <span>{item.date}</span>
-                    <span className="font-semibold text-slate-300">{item.author}</span>
+                    <span className="font-semibold text-slate-600 dark:text-slate-300">{item.author}</span>
                 </div>
             </div>
         </Link>
@@ -118,11 +118,11 @@ const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string,
     const { t } = useLanguage();
     return (
         <div className="flex items-center justify-between mb-6 mt-2">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i className={`fas ${icon} text-purple-500`}></i> {title}
             </h2>
             {onSeeAll && (
-                <button onClick={onSeeAll} className="text-sm font-bold text-blue-400 hover:text-blue-300 hover:underline">
+                <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline">
                     {t('resources.sections.view_all')}
                 </button>
             )}
@@ -229,8 +229,8 @@ export default function ResourcesDashboard() {
             <div>
                  <div className="mb-8 flex items-end justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">{title}</h1>
-                        <p className="text-slate-400 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{title}</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
                     </div>
                     
                      {/* Write Button (Only visible for 'blogs' tab if logged in) */}
@@ -251,7 +251,7 @@ export default function ResourcesDashboard() {
     };
 
     return (
-        <main className="bg-slate-950 min-h-screen pb-20 font-sans">
+        <main className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-20 font-sans transition-colors duration-300">
              {/* Mobile Tab Select */}
             <div className="lg:hidden bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-lg">
                 {['all', 'blogs', 'documents', 'songs'].map(tab => (
@@ -261,7 +261,7 @@ export default function ResourcesDashboard() {
                         className={`inline-block px-4 py-2 rounded-full text-sm font-bold mr-2 ${
                             activeTab === tab 
                             ? 'bg-purple-600 text-white' 
-                            : 'bg-slate-800 text-slate-400'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                         }`}
                     >
                         {t(`resources.tabs.${tab}`)}
@@ -272,10 +272,10 @@ export default function ResourcesDashboard() {
             <div className="container container-custom pb-20" style={{ paddingTop: '40px' }}>
                 {/* Header Section */}
                 <div className="max-w-4xl mb-12 md:mb-16">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
                         {t('resources.title') || 'Resources'}
                     </h1>
-                     <p className="text-xl text-slate-400 leading-relaxed max-w-3xl">
+                     <p className="text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
                         {t('resources.subtitle') || 'Explore our collection of spiritual resources including blogs, documents, and songs.'}
                     </p>
                     <div className="mt-8 h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>

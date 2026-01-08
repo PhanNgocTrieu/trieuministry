@@ -11,7 +11,7 @@ export default function DashboardPage() {
     }, [router]);
 
     return (
-        <div className="flex items-center justify-center h-full text-gray-400">
+        <div className="flex items-center justify-center h-full text-slate-600 dark:text-slate-400">
             <i className="fas fa-spinner fa-spin mr-2"></i> Loading Dashboard...
         </div>
     );

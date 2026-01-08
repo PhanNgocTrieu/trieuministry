@@ -123,7 +123,7 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
 
 
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                     {mode === 'personal' ? 'My Blogs' : mode === 'approve' ? 'Pending Approval' : 'Blog Management'}
                 </h1>
                 <div className="flex gap-3">
@@ -135,9 +135,9 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden overflow-x-auto">
+                <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                    <thead className="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-800/50">
                         <tr>
                             <th scope="col" className="px-6 py-3">Title</th>
                             <th scope="col" className="px-6 py-3">Author</th>
@@ -146,12 +146,12 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
                             <th scope="col" className="px-6 py-3">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-200 dark:divide-white/5">
                         {posts.map((post) => (
-                            <tr key={post.id} className={`border-b hover:bg-gray-50 ${post.status === 'pending' ? 'bg-yellow-50/50' : 'bg-white'}`}>
-                                <td className="px-6 py-4 font-medium text-gray-900">
+                            <tr key={post.id} className={`border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-slate-800/30 ${post.status === 'pending' ? 'bg-yellow-50/50 dark:bg-yellow-900/10' : 'bg-white dark:bg-transparent'}`}>
+                                <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                                     {post.title}
-                                    <div className="text-xs text-gray-400 font-normal">{post.slug}</div>
+                                    <div className="text-xs text-slate-400 font-normal">{post.slug}</div>
                                 </td>
                                 <td className="px-6 py-4">{post.author}</td>
                                 <td className="px-6 py-4">{post.date}</td>
@@ -193,7 +193,7 @@ export default function BlogsManager({ mode, basePath }: BlogsManagerProps) {
                     </tbody>
                 </table>
                  {posts.length === 0 && (
-                    <div className="p-8 text-center text-gray-500">
+                    <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                         No blogs found.
                     </div>
                 )}

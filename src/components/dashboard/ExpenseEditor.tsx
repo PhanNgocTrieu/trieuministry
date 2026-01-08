@@ -144,23 +144,23 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
 
     return (
         <div className="max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold text-white mb-6">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                 {editId ? 'Edit Transaction' : 'New Transaction'}
             </h1>
 
-            <form onSubmit={handleSubmit} className="bg-slate-900 p-8 rounded-2xl border border-white/5 shadow-xl space-y-8">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xl space-y-8">
                 
                 {/* Scope Selection Removed as per request - defaulting to personal/individual management */}
                 
                 {/* Type Toggle */}
-                <div className="flex p-1.5 bg-slate-800 rounded-xl border border-white/5">
+                <div className="flex p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-white/5">
                     <button
                         type="button"
                         onClick={() => { setType('expense'); setCategoryId(''); }}
                         className={`flex-1 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                             type === 'expense' 
-                            ? 'bg-slate-700 text-red-500 shadow-sm border border-white/10' 
-                            : 'text-slate-500 hover:text-slate-300'
+                            ? 'bg-white dark:bg-slate-700 text-red-600 dark:text-red-500 shadow-sm border border-slate-200 dark:border-white/10' 
+                            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
                         <i className="fas fa-minus-circle"></i> Expense
@@ -170,8 +170,8 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                         onClick={() => { setType('income'); setCategoryId(''); }}
                         className={`flex-1 py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                             type === 'income' 
-                            ? 'bg-slate-700 text-green-500 shadow-sm border border-white/10' 
-                            : 'text-slate-500 hover:text-slate-300'
+                            ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-500 shadow-sm border border-slate-200 dark:border-white/10' 
+                            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
                         <i className="fas fa-plus-circle"></i> Income
@@ -191,7 +191,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                             required
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="w-full pl-10 pr-4 py-4 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-xl font-bold text-white outline-none"
+                            className="w-full pl-10 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-xl font-bold text-slate-900 dark:text-white outline-none"
                             placeholder="0"
                         />
                     </div>
@@ -206,7 +206,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                             required
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white outline-none"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white outline-none"
                         />
                     </div>
                     <div>
@@ -215,7 +215,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                             <select 
                                 value={categoryId}
                                 onChange={(e) => setCategoryId(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white appearance-none outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white appearance-none outline-none"
                                 required
                             >
                                 <option value="" disabled>Select Category</option>
@@ -251,7 +251,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                         rows={3}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-white resize-none outline-none placeholder:text-slate-600"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white resize-none outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600"
                         placeholder="Transaction details..."
                     />
                 </div>
@@ -261,7 +261,7 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                     <button 
                         type="button"
                         onClick={() => router.back()}
-                        className="px-6 py-3 rounded-xl text-slate-400 font-bold hover:bg-slate-800 transition-colors"
+                        className="px-6 py-3 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 font-bold dark:hover:bg-slate-800 transition-colors"
                     >
                         Cancel
                     </button>

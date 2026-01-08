@@ -150,24 +150,25 @@ export default function MinistryPage() {
   };
 
   return (
-    <main className="bg-slate-950 min-h-screen font-sans selection:bg-purple-500/30 text-slate-200">
+    <main className="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans selection:bg-purple-500/30 text-slate-900 dark:text-slate-200 transaction-colors duration-300">
       
       {/* SECTION 1: MINISTRY UPDATES */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background Gradients */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"></div>
+      <section className="relative pt-32 pb-20 overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+        {/* Background Gradients (Premium) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(at_top_left,_var(--tw-gradient-stops))] from-purple-100/40 via-blue-50/20 to-transparent dark:hidden opacity-100"></div>
+            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-600/20 dark:bg-purple-600/10 rounded-full blur-[120px] animate-pulse"></div>
             <div className="absolute top-[20%] left-[-10%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]"></div>
         </div>
 
         <div className="container container-custom relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
                 <div>
-                    <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Our Work & Mission</span>
-                    <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Our Work & Mission</span>
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                         {t('nav.ministry')}
                     </h1>
-                    <p className="text-xl text-slate-400 mt-4 max-w-2xl leading-relaxed">
+                    <p className="text-xl text-slate-600 dark:text-slate-400 mt-4 max-w-2xl leading-relaxed">
                          {t('ministry.hero.subtitle')}
                     </p>
                 </div>
@@ -185,7 +186,7 @@ export default function MinistryPage() {
                        <div key={category}>
                            <div className="flex items-center gap-4 mb-10">
                               <div className="h-8 w-1.5 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
-                              <h2 className="text-3xl font-bold text-white tracking-tight">{category}</h2>
+                               <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{category}</h2>
                            </div>
 
                            <div className="grid grid-cols-1 gap-10">
@@ -196,7 +197,7 @@ export default function MinistryPage() {
                                    const prayerNeeds = getLocalized(ministry, 'prayerNeeds');
 
                                    return (
-                                   <div key={ministry.id} className="relative bg-slate-900/40 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-500 flex flex-col group">
+                                   <div key={ministry.id} className="relative glass-panel rounded-3xl overflow-hidden hover:border-purple-500/30 hover:shadow-premium-hover transition-all duration-500 flex flex-col group shadow-premium dark:shadow-none dark:bg-slate-900/40 dark:border-white/10">
                                        <div className={`flex flex-col ${displayImage ? 'md:flex-row' : ''}`}>
                                            {displayImage && (
                                                <div className="md:w-5/12 bg-slate-800 relative min-h-[300px] overflow-hidden">
@@ -211,7 +212,7 @@ export default function MinistryPage() {
                                            <div className={`p-8 md:p-10 flex flex-col ${displayImage ? 'md:w-7/12' : 'w-full'}`}>
                                                <div className="mb-6">
                                                    <div className="flex justify-between items-start gap-4">
-                                                       <h3 className="text-3xl font-bold text-white leading-tight">{title}</h3>
+                                                       <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight">{title}</h3>
                                                        <div className="flex items-center gap-2 shrink-0">
                                                            {ministry.status !== 'active' && (
                                                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
@@ -234,23 +235,23 @@ export default function MinistryPage() {
                                                       {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
                                                    </div>
                                                </div>
-                                               <div className="prose prose-invert max-w-none text-slate-300 whitespace-pre-line leading-relaxed flex-grow">
-                                                   {description}
-                                               </div>
+                                                <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed flex-grow">
+                                                    {description}
+                                                </div>
                                            </div>
                                        </div>
-                                       {prayerNeeds && (
-                                           <div className="bg-slate-900/50 border-t border-white/5 p-6 md:p-8">
+                                        {prayerNeeds && (
+                                            <div className="bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-white/5 p-6 md:p-8 backdrop-blur-sm">
                                                <div className="flex items-start gap-5">
                                                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0 mt-1 border border-orange-500/20">
                                                        <i className="fas fa-pray"></i>
                                                    </div>
-                                                   <div>
-                                                       <h4 className="font-bold text-base text-white mb-2">Prayer Needs</h4>
-                                                       <div className="text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
-                                                           {prayerNeeds}
-                                                       </div>
-                                                   </div>
+                                                    <div>
+                                                        <h4 className="font-bold text-base text-slate-900 dark:text-white mb-2">Prayer Needs</h4>
+                                                        <div className="text-slate-600 dark:text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
+                                                            {prayerNeeds}
+                                                        </div>
+                                                    </div>
                                                </div>
                                            </div>
                                        )}

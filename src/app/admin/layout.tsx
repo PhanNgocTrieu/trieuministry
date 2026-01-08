@@ -11,13 +11,13 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     const { logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white';
+    const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-white';
     
     const handleLinkClick = () => setIsSidebarOpen(false);
 
     return (
         <RoleGuard requireRole="admin">
-            <div className="min-h-screen bg-slate-950 flex">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
                 {/* Mobile Overlay */}
                 {isSidebarOpen && (
                     <div 
@@ -28,15 +28,15 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
                 {/* Sidebar */}
                 <aside className={`
-                    fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-white/5 text-white flex flex-col
+                    fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/5 text-slate-600 dark:text-white flex flex-col
                     transform transition-transform duration-300 ease-in-out
                     lg:static lg:translate-x-0 lg:z-0
                     ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
                 `}>
-                    <div className="p-6 border-b border-white/5 flex items-center justify-between gap-2">
+                    <div className="p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between gap-2">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-xl text-purple-500"></i>
-                             <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Admin Panel</span>
+                             <i className="fas fa-user-shield text-xl text-purple-600 dark:text-purple-500"></i>
+                             <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">Admin Panel</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(false)}
@@ -48,7 +48,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                     
                     <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
                         
-                        <Link href="/admin" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/admin' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                        <Link href="/admin" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/admin' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-white'}`}>
                             <i className="fas fa-th-large w-5 text-center"></i>
                             Dashboard
                         </Link>
@@ -136,10 +136,10 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
                     </nav>
 
-                    <div className="p-4 border-t border-white/5">
+                    <div className="p-4 border-t border-slate-200 dark:border-white/5">
                         <button 
                             onClick={() => logout()}
-                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 w-full transition-colors border border-transparent hover:border-red-500/20"
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 w-full transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-500/20"
                         >
                             <i className="fas fa-sign-out-alt w-5 text-center"></i>
                             Logout
@@ -148,15 +148,15 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-950">
-                    <header className="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-30 sticky top-0 border-b border-white/5">
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 dark:bg-slate-950">
+                    <header className="lg:hidden bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-4 flex justify-between items-center shadow-md z-30 sticky top-0 border-b border-slate-200 dark:border-white/5">
                          <div className="flex items-center gap-2">
-                             <i className="fas fa-user-shield text-purple-500"></i>
+                             <i className="fas fa-user-shield text-purple-600 dark:text-purple-500"></i>
                              <span className="font-bold">Admin Panel</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 text-slate-300 hover:text-white focus:outline-none"
+                            className="p-2 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-white focus:outline-none"
                          >
                              <i className="fas fa-bars text-xl"></i>
                          </button>

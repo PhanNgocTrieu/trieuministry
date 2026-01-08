@@ -149,21 +149,24 @@ export default function PrayersPage() {
   };
 
   return (
-    <main className="bg-slate-950 min-h-screen">
+    <main className="bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors duration-300">
       {/* Hero Section */}
-      <section className="bg-slate-900 py-16 lg:py-20 border-b border-white/5 relative overflow-hidden">
-         <div className="absolute inset-0 bg-slate-950/50 z-0"></div>
-         <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px]"></div>
+      <section className="bg-slate-50 dark:bg-slate-900 py-16 lg:py-20 border-b border-slate-200 dark:border-white/5 relative overflow-hidden transition-colors duration-500">
+         {/* Premium Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-purple-50/20 to-transparent dark:hidden opacity-100"></div>
+        <div className="absolute inset-0 bg-white/50 dark:bg-slate-950/50 z-0"></div>
+        
+         <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] animate-pulse"></div>
          <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px]"></div>
 
          <div className="container container-custom relative z-10">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                <div className="lg:w-7/12">
-                   <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-white flex items-center gap-3">
-                      <i className="fas fa-praying-hands text-purple-500"></i>
+                   <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-3">
+                      <i className="fas fa-praying-hands text-purple-600 dark:text-purple-500"></i>
                       {t('prayers.hero.title')}
                    </h1>
-                   <p className="text-xl text-slate-300 max-w-2xl">
+                   <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl">
                       {t('prayers.hero.subtitle')}
                    </p>
                </div>
@@ -181,27 +184,27 @@ export default function PrayersPage() {
       </section>
 
       {/* Call for Donation for Ministries */}
-      <section className="bg-slate-900 border-b border-white/5 py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-600/10 opacity-20"></div>
+      <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/5 py-12 relative overflow-hidden transition-colors duration-300">
+        <div className="absolute inset-0 bg-blue-50/50 dark:bg-blue-600/10 opacity-20"></div>
         <div className="container container-custom relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
              <div className="lg:w-2/3">
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 flex items-center gap-3 text-white">
-                    <i className="fas fa-hand-holding-heart text-yellow-400"></i>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 flex items-center gap-3 text-slate-900 dark:text-white">
+                    <i className="fas fa-hand-holding-heart text-yellow-500 dark:text-yellow-400"></i>
                     Support Our Ministries
                 </h2>
-                <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
                     Join us in spreading God's love. Your generous donations help us maintain our ministries, support those in need, and continue our mission. Every contribution makes a difference.
                 </p>
                 <div className="bg-slate-800/50 rounded-xl p-4 border border-blue-500/20 backdrop-blur-sm inline-block">
                     <p className="text-sm text-blue-300 font-bold uppercase tracking-wider mb-2">Direct Bank Transfer</p>
                     <div className="flex flex-col md:flex-row gap-6">
                         <div>
-                            <span className="block text-xs text-slate-400">Bank Name</span>
-                            <span className="font-bold text-white text-lg">MB Bank</span>
+                            <span className="block text-xs text-slate-500 dark:text-slate-400">Bank Name</span>
+                            <span className="font-bold text-slate-900 dark:text-white text-lg">MB Bank</span>
                         </div>
                         <div>
-                            <span className="block text-xs text-slate-400">Account Number</span>
+                            <span className="block text-xs text-slate-500 dark:text-slate-400">Account Number</span>
                             <div className="flex items-center gap-2">
                                 <span className="font-mono font-bold text-white text-xl">0974210249</span>
                                 <button onClick={() => {navigator.clipboard.writeText('0974210249'); showAlert('Info', 'Copied!');}} className="text-blue-400 hover:text-white transition-colors">
@@ -210,14 +213,14 @@ export default function PrayersPage() {
                             </div>
                         </div>
                         <div>
-                            <span className="block text-xs text-slate-400">Account Name</span>
-                            <span className="font-bold text-white text-lg">PHAN NGOC TRIEU</span>
+                            <span className="block text-xs text-slate-500 dark:text-slate-400">Account Name</span>
+                            <span className="font-bold text-slate-900 dark:text-white text-lg">PHAN NGOC TRIEU</span>
                         </div>
                     </div>
                 </div>
              </div>
              <div className="lg:w-1/3 text-center">
-                 <button onClick={() => router.push('/donate')} className="px-8 py-4 bg-slate-800 text-white border border-white/10 hover:border-purple-500 hover:text-purple-300 font-bold rounded-full shadow-lg transition-all hover:-translate-y-1">
+                 <button onClick={() => router.push('/donate')} className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-300 font-bold rounded-full shadow-lg transition-all hover:-translate-y-1">
                      View Donation Details <i className="fas fa-arrow-right ml-2"></i>
                  </button>
              </div>
@@ -226,39 +229,39 @@ export default function PrayersPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-slate-950">
+      <section className="py-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
           <div className="container container-custom">
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Total */}
-                <div className="bg-slate-900/50 p-6 rounded-2xl shadow-lg border border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center text-3xl border border-blue-500/20">
+                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
+                    <div className="w-16 h-16 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-3xl border border-blue-500/20">
                        <i className="fas fa-list"></i>
                     </div>
                     <div>
-                       <h3 className="text-4xl font-bold text-white">{stats.total}</h3>
-                       <p className="text-slate-400 font-medium">{t('prayers.stats.total')}</p>
+                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.total}</h3>
+                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.total')}</p>
                     </div>
                 </div>
 
                 {/* Answered */}
-                <div className="bg-slate-900/50 p-6 rounded-2xl shadow-lg border border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-green-500/10 text-green-400 rounded-2xl flex items-center justify-center text-3xl border border-green-500/20">
+                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
+                    <div className="w-16 h-16 bg-green-500/10 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center text-3xl border border-green-500/20">
                        <i className="fas fa-check-circle"></i>
                     </div>
                     <div>
-                       <h3 className="text-4xl font-bold text-white">{stats.answered}</h3>
-                       <p className="text-slate-400 font-medium">{t('prayers.stats.answered')}</p>
+                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.answered}</h3>
+                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.answered')}</p>
                     </div>
                 </div>
 
                 {/* Pending */}
-                <div className="bg-slate-900/50 p-6 rounded-2xl shadow-lg border border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-yellow-500/10 text-yellow-400 rounded-2xl flex items-center justify-center text-3xl border border-yellow-500/20">
+                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
+                    <div className="w-16 h-16 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-2xl flex items-center justify-center text-3xl border border-yellow-500/20">
                        <i className="fas fa-clock"></i>
                     </div>
                     <div>
-                       <h3 className="text-4xl font-bold text-white">{stats.pending}</h3>
-                       <p className="text-slate-400 font-medium">{t('prayers.stats.pending')}</p>
+                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.pending}</h3>
+                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.pending')}</p>
                     </div>
                 </div>
              </div>
@@ -269,14 +272,14 @@ export default function PrayersPage() {
       <section className="pb-20">
          <div className="container container-custom">
             {/* Filter Bar */}
-            <div className="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/5 mb-8 sticky top-[72px] z-20">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 mb-8 sticky top-[72px] z-20 transition-colors duration-300">
                <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
                   <div className="relative w-full md:w-96">
                      <span className="absolute left-3 top-2.5 text-slate-400"><i className="fas fa-search"></i></span>
                      <input 
                         type="text" 
                         placeholder={t('prayers.list.search_placeholder')}
-                        className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-500"
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-400 dark:placeholder-slate-500 transition-colors"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                      />
@@ -287,7 +290,7 @@ export default function PrayersPage() {
                          <button
                             key={status}
                             onClick={() => setFilter(status)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter === status ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'}`}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter === status ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'}`}
                          >
                             {t(`prayers.status.${status}`) || status}
                          </button>
@@ -304,21 +307,21 @@ export default function PrayersPage() {
                 {filteredPrayers.map((prayer) => (
                     <div 
                         key={prayer.id} 
-                        className={`bg-slate-900/50 rounded-2xl shadow-lg p-6 border-l-4 hover:-translate-y-1 transition-all duration-300 relative group backdrop-blur-sm
-                            ${prayer.status === 'answered' ? 'border-green-500' : 
-                            prayer.status === 'prayed' ? 'border-yellow-500' : 'border-slate-700'}
+                        className={`glass-panel dark:bg-slate-900/50 rounded-2xl shadow-premium dark:shadow-none p-6 border-l-4 hover:-translate-y-1 transition-all duration-300 relative group backdrop-blur-sm border-t border-r border-b border-white/50 dark:border-white/5
+                            ${prayer.status === 'answered' ? 'border-l-green-500' : 
+                            prayer.status === 'prayed' ? 'border-l-yellow-500' : 'border-l-slate-400 dark:border-l-slate-700'}
                         `}
                     >
                         {/* Badge */}
                         <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border
-                            ${prayer.status === 'answered' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
-                            prayer.status === 'prayed' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20'}
+                            ${prayer.status === 'answered' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' : 
+                            prayer.status === 'prayed' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20' : 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20'}
                         `}>
                             {t(`prayers.status.${prayer.status}`)}
                         </span>
 
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 font-bold overflow-hidden border border-white/5">
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold overflow-hidden border border-slate-200 dark:border-white/5">
                                 {prayer.author === 'Anonymous' ? (
                                     <i className="fas fa-user"></i>
                                 ) : (
@@ -326,14 +329,14 @@ export default function PrayersPage() {
                                 )}
                             </div>
                             <div>
-                                <h5 className="font-bold text-slate-200 text-sm">{prayer.author}</h5>
+                                <h5 className="font-bold text-slate-900 dark:text-slate-200 text-sm">{prayer.author}</h5>
                                 <span className="text-xs text-slate-500 flex items-center gap-1">
                                     <i className="far fa-calendar-alt"></i> {prayer.date}
                                 </span>
                             </div>
                         </div>
 
-                        <p className="text-slate-300 mb-6 min-h-[80px] leading-relaxed">
+                        <p className="text-slate-600 dark:text-slate-300 mb-6 min-h-[80px] leading-relaxed">
                             {prayer.content}
                         </p>
                         
@@ -344,9 +347,9 @@ export default function PrayersPage() {
                             </div>
                         )}
 
-                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                        <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between">
                             <span className="text-slate-500 text-sm font-semibold flex items-center gap-1">
-                                <i className="fas fa-bookmark text-slate-600"></i> {prayer.category || 'General'}
+                                <i className="fas fa-bookmark text-slate-400 dark:text-slate-600"></i> {prayer.category || 'General'}
                             </span>
                             
                             <button 
