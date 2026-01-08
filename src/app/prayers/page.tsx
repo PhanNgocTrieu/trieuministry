@@ -196,25 +196,28 @@ export default function PrayersPage() {
                 <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
                     Join us in spreading God's love. Your generous donations help us maintain our ministries, support those in need, and continue our mission. Every contribution makes a difference.
                 </p>
-                <div className="bg-slate-800/50 rounded-xl p-4 border border-blue-500/20 backdrop-blur-sm inline-block">
-                    <p className="text-sm text-blue-300 font-bold uppercase tracking-wider mb-2">Direct Bank Transfer</p>
-                    <div className="flex flex-col md:flex-row gap-6">
-                        <div>
-                            <span className="block text-xs text-slate-500 dark:text-slate-400">Bank Name</span>
-                            <span className="font-bold text-slate-900 dark:text-white text-lg">MB Bank</span>
-                        </div>
-                        <div>
-                            <span className="block text-xs text-slate-500 dark:text-slate-400">Account Number</span>
-                            <div className="flex items-center gap-2">
-                                <span className="font-mono font-bold text-white text-xl">0974210249</span>
-                                <button onClick={() => {navigator.clipboard.writeText('0974210249'); showAlert('Info', 'Copied!');}} className="text-blue-400 hover:text-white transition-colors">
-                                    <i className="fas fa-copy"></i>
-                                </button>
+                <div className="bg-white/80 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-blue-500/20 backdrop-blur-md shadow-xl dark:shadow-none inline-block relative overflow-hidden group text-left">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 opacity-100 transition-opacity"></div>
+                    <div className="relative z-10">
+                        <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i className="fas fa-university"></i> Direct Bank Transfer
+                        </p>
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                            <div>
+                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Bank</span>
+                                <span className="font-black text-slate-900 dark:text-white text-xl tracking-tight">MB Bank</span>
                             </div>
-                        </div>
-                        <div>
-                            <span className="block text-xs text-slate-500 dark:text-slate-400">Account Name</span>
-                            <span className="font-bold text-slate-900 dark:text-white text-lg">PHAN NGOC TRIEU</span>
+                            <div>
+                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Account Number</span>
+                                <div className="flex items-center gap-2 group/copy cursor-pointer" onClick={() => {navigator.clipboard.writeText('0974210249'); showAlert('Info', 'Copied!');}}>
+                                    <span className="font-mono font-bold text-slate-800 dark:text-white text-xl group-hover/copy:text-blue-600 dark:group-hover/copy:text-blue-400 transition-colors">0974 210 249</span>
+                                    <i className="fas fa-copy text-slate-400 group-hover/copy:text-blue-500 transition-colors"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Account Name</span>
+                                <span className="font-bold text-slate-800 dark:text-white text-lg">PHAN NGOC TRIEU</span>
+                            </div>
                         </div>
                     </div>
                 </div>

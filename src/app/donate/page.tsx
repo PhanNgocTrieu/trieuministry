@@ -111,53 +111,59 @@ export default function DonatePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Bank Info */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg p-8 transform transition hover:-translate-y-1 hover:shadow-xl duration-300 border border-transparent dark:border-white/5 glass-panel">
-               <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
-                  <i className="fas fa-university mr-3 text-blue-600 dark:text-blue-400"></i>
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8 transform transition hover:-translate-y-1 duration-500 border border-slate-100 dark:border-white/5 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+               
+               <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-8 flex items-center relative z-10">
+                  <span className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 border border-blue-200 dark:border-blue-500/20">
+                    <i className="fas fa-university"></i>
+                  </span>
                   {t('donate.bank.title')}
                </h3>
 
-               <div className="space-y-6">
-                  <div>
-                    <label className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">{t('donate.bank.bank_label')}</label>
+               <div className="space-y-6 relative z-10">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-white/5">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">{t('donate.bank.bank_label')}</label>
                     <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 bg-gray-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-gray-500 dark:text-slate-400">
+                       <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm border border-slate-200 dark:border-white/5">
                           <i className="fas fa-landmark text-xl"></i>
                        </div>
                        <div>
-                          <h5 className="font-bold text-xl text-gray-800 dark:text-white">MB Bank</h5>
-                          <span className="text-gray-500 dark:text-slate-400 text-sm">Ngân hàng Quân đội</span>
+                          <h5 className="font-bold text-xl text-slate-900 dark:text-white">MB Bank</h5>
+                          <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">Ngân hàng Quân đội</span>
                        </div>
                     </div>
                   </div>
 
                   <div>
-                     <label className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">{t('donate.bank.account_number_label')}</label>
-                     <div className="flex bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden border border-gray-200 dark:border-white/10">
+                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block ml-1">{t('donate.bank.account_number_label')}</label>
+                     <div className="flex bg-slate-50 dark:bg-slate-800/50 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group/input focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
                         <input 
                            type="text" 
                            readOnly 
                            value="0974210249" 
-                           className="flex-1 bg-transparent px-4 py-3 font-mono text-xl font-bold text-gray-800 dark:text-white focus:outline-none" 
+                           className="flex-1 bg-transparent px-4 py-3 font-mono text-xl font-bold text-slate-800 dark:text-white focus:outline-none tracking-wider" 
                         />
                         <button 
                            onClick={() => copyToClipboard('0974210249', 'Copied account number!')}
-                           className="px-6 bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors"
+                           className="px-6 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors border-l border-slate-200 dark:border-white/10"
                         >
+                           <i className="fas fa-copy mr-2"></i>
                            {t('donate.bank.copy')}
                         </button>
                      </div>
                   </div>
 
-                  <div>
-                     <label className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">{t('donate.bank.account_name_label')}</label>
-                     <h4 className="text-2xl font-bold text-gray-800 dark:text-white">PHAN NGOC TRIEU</h4>
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-white/5">
+                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 block">{t('donate.bank.account_name_label')}</label>
+                     <h4 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">PHAN NGOC TRIEU</h4>
                   </div>
 
                   <div>
-                      <label className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2 block">{t('donate.bank.content_label')}</label>
-                      <div className="bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-300 p-4 rounded-lg text-sm">
-                         <i className="fas fa-info-circle mr-2"></i> [Your Name] donate for TrieuMinistry
+                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 block ml-1">{t('donate.bank.content_label')}</label>
+                      <div className="bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm font-medium border border-blue-100 dark:border-blue-500/20 flex items-start gap-3">
+                         <i className="fas fa-info-circle mt-0.5 text-blue-500"></i>
+                         <span>[Your Name] donate for TrieuMinistry</span>
                       </div>
                   </div>
                </div>
