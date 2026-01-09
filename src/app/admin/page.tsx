@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getCountFromServer, orderBy, limit, getDocs, doc, getDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from "@/context/AuthContext";
 import { ActivityLog } from '@/lib/activity-logger';
+import Link from 'next/link';
 
 // Helper to format date relative
 const timeAgo = (date: Date) => {
@@ -232,7 +233,7 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      {(isAdmin || isVolunteer) && (
                         <>
-                            <a href="/admin/appeals" className="block p-4 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all group">
+                            <Link href="/admin/appeals" className="block p-4 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-envelope-open-text"></i>
@@ -240,9 +241,9 @@ export default function AdminDashboardPage() {
                                     <span className="font-bold text-blue-700 dark:text-blue-300">Appeal Letters</span>
                                 </div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-200 transaction-colors">Manage support appeals</p>
-                            </a>
+                            </Link>
                             
-                            <a href="/admin/sponsors" className="block p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl border border-purple-500/20 transition-all group">
+                            <Link href="/admin/sponsors" className="block p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl border border-purple-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-hand-holding-usd"></i>
@@ -250,9 +251,9 @@ export default function AdminDashboardPage() {
                                     <span className="font-bold text-purple-700 dark:text-purple-300">Sponsors</span>
                                 </div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-200 transition-colors">Manage commitments</p>
-                            </a>
+                            </Link>
 
-                            <a href="/admin/ministries" className="block p-4 bg-orange-500/10 hover:bg-orange-500/20 rounded-xl border border-orange-500/20 transition-all group">
+                            <Link href="/admin/ministries/intercessory" className="block p-4 bg-orange-500/10 hover:bg-orange-500/20 rounded-xl border border-orange-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <i className="fas fa-church"></i>
@@ -260,7 +261,7 @@ export default function AdminDashboardPage() {
                                     <span className="font-bold text-orange-700 dark:text-orange-300">Intercessory</span>
                                 </div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-200 transition-colors">Manage ministries</p>
-                            </a>
+                            </Link>
                         </>
                      )}
                      {/* Add more quick actions later */}

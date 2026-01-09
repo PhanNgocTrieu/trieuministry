@@ -27,8 +27,8 @@ export default function DisciplinePage() {
     const [logs, setLogs] = useState<DisciplineLog[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Inputs for today
-    const [scripture, setScripture] = useState("");
+// Inputs for today (removed)
+    // const [scripture, setScripture] = useState("");
 
     // Identify if today is logged
     const [todayLogs, setTodayLogs] = useState<{ [key in LogType]: boolean }>({
@@ -82,7 +82,7 @@ export default function DisciplinePage() {
             todaySnap.forEach(doc => {
                 const data = doc.data() as DisciplineLog;
                 todayStatus[data.type] = true;
-                if (data.type === 'scripture') setScripture(data.content || "");
+                // if (data.type === 'scripture') setScripture(data.content || "");
             });
             setTodayLogs(todayStatus);
 
@@ -307,34 +307,26 @@ export default function DisciplinePage() {
                         </Link>
                     </div>
 
+
                     {/* 3. Scripture Today */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-6 flex flex-col relative h-[500px] md:h-auto">
-                        <div className="flex items-center gap-3 mb-4 text-orange-500">
-                            <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-6 flex flex-col relative h-[200px] hover:shadow-xl hover:border-orange-500/30 transition-all group">
+                        <div className="flex items-center gap-3 mb-4 text-orange-500 justify-center">
+                            <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 mb-2 text-2xl group-hover:scale-110 transition-transform">
                                 <i className="fas fa-book-open"></i>
                             </div>
-                            <h4 className="font-bold text-lg text-slate-900 dark:text-white">Scripture Today</h4>
                         </div>
-                        <div className="flex-1 mb-4">
-                            <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Passage / Reading</label>
-                            <input 
-                                type="text"
-                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg p-3 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-slate-400 dark:placeholder:text-slate-600"
-                                placeholder="e.g. John 3:16, Psalm 23"
-                                value={scripture}
-                                onChange={(e) => setScripture(e.target.value)}
-                            />
-                            <p className="text-xs text-slate-500 mt-2">Create your own schedule or follow a plan.</p>
-                        </div>
+                        <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-4 text-center">Scripture Today</h4>
+                        
                         <button 
-                            onClick={() => handleLog('scripture', scripture)}
+                            onClick={() => handleLog('scripture', "Read")}
+                            disabled={todayLogs.scripture}
                             className={`w-full py-2 rounded-lg font-bold transition-colors mt-auto ${
                                 todayLogs.scripture 
-                                    ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30' 
+                                    ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
                                     : 'bg-orange-600 text-white hover:bg-orange-500 shadow-lg shadow-orange-900/20'
                             }`}
                         >
-                             {todayLogs.scripture ? <span><i className="fas fa-check mr-2"></i> Updated</span> : "Update"}
+                             {todayLogs.scripture ? <span><i className="fas fa-check mr-2"></i> Completed</span> : "Mark as Read"}
                         </button>
                     </div>
 
