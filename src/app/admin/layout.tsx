@@ -10,10 +10,32 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     const pathname = usePathname();
     const { logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const mainContentRef = React.useRef<HTMLElement>(null);
+
+    React.useEffect(() => {
+        // Immediate scroll attempt
+        if (mainContentRef.current) {
+            mainContentRef.current.scrollTop = 0;
+        }
+
+        // Delayed scroll to handle async rendering/transitions
+        const timeoutId = setTimeout(() => {
+            if (mainContentRef.current) {
+                mainContentRef.current.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }, 100);
+
+        return () => clearTimeout(timeoutId);
+    }, [pathname]);
 
     const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-white';
     
-    const handleLinkClick = () => setIsSidebarOpen(false);
+    const handleLinkClick = () => {
+        setIsSidebarOpen(false);
+        if (mainContentRef.current) {
+            mainContentRef.current.scrollTop = 0;
+        }
+    };
 
     return (
         <RoleGuard requireRole="admin">
@@ -162,7 +184,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                          </button>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar">
+                    <main id="admin-main-content" ref={mainContentRef} className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar">
                         {children}
                     </main>
                 </div>

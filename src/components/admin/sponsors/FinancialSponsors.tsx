@@ -142,8 +142,15 @@ export default function FinancialSponsors() {
         if (!start) return [];
         
         const milestones: { key: string; label: string }[] = [];
-        const startDate = new Date(start);
-        const endDate = end ? new Date(end) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // Default 1 year if no end
+        
+        // Parse dates manually to avoid UTC timezone shifts causing "Dec 31" instead of "Jan 1"
+        const parseDate = (d: string) => {
+            const [y, m, da] = d.split('-').map(Number);
+            return new Date(y, m - 1, da);
+        };
+
+        const startDate = parseDate(start);
+        const endDate = end ? parseDate(end) : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
 
         let current = new Date(startDate);
         // Reset to first day of month for consistent keys
