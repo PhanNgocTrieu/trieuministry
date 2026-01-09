@@ -2,23 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { format } from 'date-fns';
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import AdminGuard from '@/components/admin/AdminGuard';
 import TaskItem from '@/components/admin/tasks/TaskItem';
 import TaskFormModal from '@/components/admin/tasks/TaskFormModal';
-import TaskReport from '@/components/admin/tasks/TaskReport';
+import TaskStatsModal from '@/components/admin/tasks/TaskStatsModal';
 import { Task, TaskFormData } from '@/components/admin/tasks/types';
 import { useModal } from '@/context/ModalContext';
-import { batchArchiveTasks } from '@/components/admin/tasks/archiveActions';
 
 export default function AdminTasksPage() {
     const { user } = useAuth();
     const { showAlert, showConfirm } = useModal();
     
-    // View State: 'active' | 'report'
-    const [viewMode, setViewMode] = useState<'active' | 'report'>('active');
     const [sortBy, setSortBy] = useState<'default' | 'deadline' | 'priority' | 'newest'>('default');
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -26,6 +22,7 @@ export default function AdminTasksPage() {
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
     // --- Active Tasks Fetching ---
@@ -55,6 +52,7 @@ export default function AdminTasksPage() {
     // Derived State: Sorted Tasks
     const sortedTasks = React.useMemo(() => {
         const sorted = [...tasks];
+        // Only sort pending tasks primarily. Completed tasks can be sorted by completedAt or just same logic.
         sorted.sort((a, b) => {
             if (sortBy === 'default') {
                 // 1. Incomplete first
@@ -86,6 +84,9 @@ export default function AdminTasksPage() {
         });
         return sorted;
     }, [tasks, sortBy]);
+
+    const pendingTasks = sortedTasks.filter(t => !t.isCompleted);
+    const completedTasks = sortedTasks.filter(t => t.isCompleted);
 
     // --- Actions ---
 
@@ -135,174 +136,132 @@ export default function AdminTasksPage() {
         showConfirm('Delete Task', 'Are you sure you want to permanently delete this task?', async () => {
             try {
                 await deleteDoc(doc(db, 'tasks', id));
-                showAlert('Deleted', 'Task deleted temporarily'); // 'temporarily' logic? No, just deleted.
+                showAlert('Deleted', 'Task deleted');
             } catch (err) {
                 console.error(err);
             }
         });
     };
 
-    const handleArchive = async (task: Task) => {
-        showConfirm('Archive Task', 'Move this task to archive? It will be removed from this list.', async () => {
-            try {
-                // 1. Add to task_archives
-                const archiveRef = doc(collection(db, 'task_archives')); // New ID
-                const archiveData = {
-                    ...task,
-                    archivedAt: serverTimestamp(),
-                    archivedMonth: format(new Date(), 'yyyy-MM') // Current month
-                };
-                // Remove id from spread if we want new ID, or use same ID?
-                // Let's use same ID for consistency if we ever want to restore.
-                await setDoc(doc(db, 'task_archives', task.id), archiveData);
 
-                // 2. Delete from tasks
-                await deleteDoc(doc(db, 'tasks', task.id));
-
-                showAlert('Archived', 'Task moved to archive.');
-            } catch (err) {
-                console.error(err);
-                showAlert('Error', 'Failed to archive task');
-            }
-        });
-    };
-
-    const handleBatchArchive = async () => {
-        const completedTasks = tasks.filter(t => t.isCompleted);
-        if (completedTasks.length === 0) {
-            showAlert('Info', 'No completed tasks to archive.');
-            return;
-        }
-        try {
-            await batchArchiveTasks(completedTasks, showConfirm);
-            showAlert('Success', `Archived ${completedTasks.length} tasks.`);
-        } catch (error) {
-            // Error handled in helper
-        }
-    };
 
     return (
         <AdminGuard>
-            <div className="max-w-5xl mx-auto space-y-6 pb-20">
-                {/* Header & Tabs */}
+            <div className="max-w-5xl mx-auto space-y-8 pb-20">
+                {/* Header & Controls */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Task Management</h1>
                         <p className="text-sm text-slate-500 dark:text-slate-400">Manage your personal tasks and deadlines.</p>
                     </div>
                     
-                    <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg self-start border border-slate-200 dark:border-white/10">
+                    <div className="flex items-center gap-3">
                         <button
-                            onClick={() => setViewMode('active')}
-                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                                viewMode === 'active' 
-                                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200 dark:border-white/5' 
-                                : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                            }`}
+                            onClick={() => setIsStatsModalOpen(true)}
+                            className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2"
                         >
-                            <i className="fas fa-list-ul mr-2"></i> Active Tasks
+                            <i className="fas fa-chart-pie text-purple-500"></i> Export Stats
                         </button>
                         <button
-                            onClick={() => setViewMode('report')}
-                            className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                                viewMode === 'report' 
-                                ? 'bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 shadow-sm border border-slate-200 dark:border-white/5' 
-                                : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                            }`}
+                            onClick={() => {
+                                setEditingTask(undefined);
+                                setIsModalOpen(true);
+                            }}
+                            className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20 whitespace-nowrap"
                         >
-                            <i className="fas fa-archive mr-2"></i> Reports / Archive
+                            <i className="fas fa-plus"></i> Add New Task
                         </button>
                     </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="min-h-[500px]">
-                    {viewMode === 'active' ? (
-                        <>
-                            {/* Controls */}
-                            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                                <div className="flex items-center gap-4 flex-wrap">
-                                    <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-500 whitespace-nowrap">
-                                        {tasks.filter(t => !t.isCompleted).length} Pending
-                                    </span>
-                                    
-                                    {/* Sort Dropdown */}
-                                    <div className="flex items-center gap-2">
-                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-500"><i className="fas fa-sort"></i></label>
-                                        <select
-                                            value={sortBy}
-                                            onChange={(e) => setSortBy(e.target.value as any)}
-                                            className="px-2 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            <option value="default">Default (Smart)</option>
-                                            <option value="deadline">Deadline</option>
-                                            <option value="priority">Priority</option>
-                                            <option value="newest">Newest</option>
-                                        </select>
-                                    </div>
+                <div className="min-h-[500px] space-y-8">
+                    
+                    {/* Controls Row */}
+                    <div className="flex items-center justify-between">
+                         <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
+                            In Progress
+                            <span className="bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full">
+                                {pendingTasks.length}
+                            </span>
+                        </h2>
 
-                                    {tasks.some(t => t.isCompleted) && (
-                                        <button 
-                                            onClick={handleBatchArchive}
-                                            className="px-3 py-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 rounded-lg transition-colors flex items-center gap-1 border border-purple-200 dark:border-purple-500/20"
-                                        >
-                                            <i className="fas fa-boxes"></i> Archive Completed
-                                        </button>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        setEditingTask(undefined);
+                        <div className="flex items-center gap-2">
+                            <label className="text-xs font-bold text-slate-500 dark:text-slate-500"><i className="fas fa-sort"></i></label>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                                className="px-2 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="default">Smart Sort</option>
+                                <option value="deadline">Deadline</option>
+                                <option value="priority">Priority</option>
+                                <option value="newest">Newest</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Pending List */}
+                    {loading ? (
+                        <div className="space-y-4">
+                            {[1,2,3].map(i => (
+                                <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse"></div>
+                            ))}
+                        </div>
+                    ) : pendingTasks.length > 0 ? (
+                        <div className="space-y-3">
+                            {pendingTasks.map(task => (
+                                <TaskItem
+                                    key={task.id}
+                                    task={task}
+                                    onToggleComplete={handleToggleComplete}
+                                    onDelete={handleDelete}
+                                    onEdit={(t) => {
+                                        setEditingTask(t);
                                         setIsModalOpen(true);
                                     }}
-                                    className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20 whitespace-nowrap"
-                                >
-                                    <i className="fas fa-plus"></i> Add New Task
-                                </button>
-                            </div>
-
-                            {/* Active List */}
-                            {loading ? (
-                                <div className="space-y-4">
-                                    {[1,2,3].map(i => (
-                                        <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse"></div>
-                                    ))}
-                                </div>
-                            ) : sortedTasks.length > 0 ? (
-                                <div className="space-y-3">
-                                    {sortedTasks.map(task => (
-                                        <TaskItem
-                                            key={task.id}
-                                            task={task}
-                                            onToggleComplete={handleToggleComplete}
-                                            onDelete={handleDelete}
-                                            onEdit={(t) => {
-                                                setEditingTask(t);
-                                                setIsModalOpen(true);
-                                            }}
-                                            onArchive={handleArchive}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
-                                    <i className="fas fa-clipboard-check text-4xl text-slate-300 dark:text-slate-700 mb-4"></i>
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Caught Up!</h3>
-                                    <p className="text-slate-500 dark:text-slate-500 max-w-xs mx-auto mt-2">
-                                        You have no pending tasks. Enjoy your day or add a new task to get started.
-                                    </p>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="mt-6 text-blue-600 dark:text-blue-400 font-bold hover:underline"
-                                    >
-                                        Create a task now
-                                    </button>
-                                </div>
-                            )}
-                        </>
+                                />
+                            ))}
+                        </div>
                     ) : (
-                        <TaskReport />
+                        <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+                            <i className="fas fa-clipboard-check text-4xl text-slate-300 dark:text-slate-700 mb-4"></i>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Caught Up!</h3>
+                            <p className="text-slate-500 dark:text-slate-500 max-w-xs mx-auto mt-2">
+                                You have no pending tasks. Enjoy your day!
+                            </p>
+                        </div>
                     )}
+
+
+                    {/* Completed Section (if any) */}
+                    {completedTasks.length > 0 && (
+                        <div className="animate-in fade-in duration-500">
+                             <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4 mt-8 opacity-70">
+                                <span className="w-2 h-6 bg-green-500 rounded-full grayscale opacity-50"></span>
+                                Completed
+                                <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs px-2 py-0.5 rounded-full">
+                                    {completedTasks.length}
+                                </span>
+                            </h2>
+                            <div className="space-y-3 opacity-60 hover:opacity-100 transition-opacity duration-300">
+                                {completedTasks.map(task => (
+                                    <TaskItem
+                                        key={task.id}
+                                        task={task}
+                                        onToggleComplete={handleToggleComplete}
+                                        onDelete={handleDelete}
+                                        onEdit={(t) => {
+                                            setEditingTask(t);
+                                            setIsModalOpen(true);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
             </div>
@@ -312,6 +271,12 @@ export default function AdminTasksPage() {
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={editingTask ? handleUpdateTask : handleCreateTask}
                 initialData={editingTask}
+            />
+
+            <TaskStatsModal 
+                isOpen={isStatsModalOpen}
+                onClose={() => setIsStatsModalOpen(false)}
+                tasks={tasks}
             />
         </AdminGuard>
     );

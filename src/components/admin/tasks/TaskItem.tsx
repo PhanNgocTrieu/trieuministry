@@ -9,7 +9,6 @@ interface TaskItemProps {
     onToggleComplete: (task: Task) => void;
     onDelete: (id: string) => void;
     onEdit: (task: Task) => void;
-    onArchive?: (task: Task) => void; // Optional: specific archive action
     isReadOnly?: boolean; // For reports
 }
 
@@ -18,7 +17,6 @@ export default function TaskItem({
     onToggleComplete, 
     onDelete, 
     onEdit, 
-    onArchive,
     isReadOnly = false 
 }: TaskItemProps) {
     
@@ -102,14 +100,6 @@ export default function TaskItem({
 
                 {!isReadOnly ? (
                     <div className="flex items-center gap-2">
-                         {task.isCompleted && onArchive && (
-                             <button
-                                onClick={() => onArchive(task)}
-                                className="px-3 py-1.5 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 rounded-lg transition-colors flex items-center gap-1"
-                             >
-                                 <i className="fas fa-archive"></i> Archive
-                             </button>
-                         )}
                         <button 
                             onClick={() => onToggleComplete(task)}
                             className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 border ${
@@ -124,7 +114,7 @@ export default function TaskItem({
                     </div>
                 ) : (
                     <span className="text-xs text-slate-400 dark:text-slate-500 italic">
-                         Archived {task.archivedAt ? formatDate(task.archivedAt) : ''}
+                         {task.completedAt ? `Completed ${formatDate(task.completedAt)}` : ''}
                     </span>
                 )}
             </div>
