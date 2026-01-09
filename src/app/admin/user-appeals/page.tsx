@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AdminGuard from '@/components/admin/AdminGuard';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Appeal {
     id: string;
@@ -60,6 +61,7 @@ export default function AdminUserAppealsPage() {
     const handleStatusChange = async (id: string, newStatus: string) => {
         try {
             await updateDoc(doc(db, "appeals", id), { status: newStatus });
+            await logActivity('appeal', 'update', `Updated user appeal status to ${newStatus}`);
         } catch (error) {
             console.error("Error updating status:", error);
             showAlert("Error", "Failed to update status");
@@ -73,6 +75,7 @@ export default function AdminUserAppealsPage() {
             async () => {
                 try {
                     await deleteDoc(doc(db, "appeals", id));
+                    await logActivity('appeal', 'delete', 'Deleted a user appeal request');
                     showAlert("Success", "Request deleted successfully.");
                 } catch (error) {
                     console.error("Error deleting appeal:", error);

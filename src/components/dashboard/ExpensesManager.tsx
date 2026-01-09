@@ -8,6 +8,7 @@ import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, Timestam
 import ConfirmModal from '@/components/admin/ConfirmModal';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/AuthContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Transaction {
     id: string;
@@ -149,6 +150,7 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
     const confirmDelete = async () => {
         if (deleteModal.id) {
             await deleteDoc(doc(db, "expenses", deleteModal.id));
+            await logActivity('expense', 'delete', `Deleted expense transaction: ${deleteModal.name}`);
             setDeleteModal({ isOpen: false, id: '', name: '' });
         }
     };
@@ -223,7 +225,9 @@ export default function ExpensesManager({ basePath, hideCategories = false, scop
                 status: 'published'
             };
 
+
             await setDoc(doc(db, "financial_reports", reportId), reportData);
+            await logActivity('expense', 'update', `Published financial report for ${month}/${year}`);
             setAlertModal({
                 isOpen: true,
                 title: 'Success',

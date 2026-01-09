@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { Task, TaskFormData } from './types';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, Timestamp } from 'firebase/firestore';
+import { logActivity } from '@/lib/activity-logger';
 
 interface TaskFormModalProps {
     isOpen: boolean;
@@ -83,6 +84,13 @@ export default function TaskFormModal({ isOpen, onClose, onSubmit, initialData }
                 dataToSubmit.deadline = null;
             }
             await onSubmit(dataToSubmit);
+            
+            if (initialData) {
+                await logActivity('task', 'update', `Updated task: "${dataToSubmit.content.substring(0, 20)}..."`);
+            } else {
+                await logActivity('task', 'create', `Created new task: "${dataToSubmit.content.substring(0, 20)}..."`);
+            }
+
             onClose();
         } catch (error) {
             console.error(error);

@@ -8,6 +8,7 @@ import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
 import { useModal } from "@/context/ModalContext";
 import AdminGuard from "@/components/admin/AdminGuard";
+import { logActivity } from '@/lib/activity-logger';
 
 interface MinistryImage {
   url: string;
@@ -180,6 +181,8 @@ export default function EditMinistryPage() {
                 coverImage: coverImage, 
                 updatedAt: serverTimestamp()
             });
+
+            await logActivity('ministry', 'update', `Updated ministry project: ${formData.title_en || formData.title_vi}`);
 
             showAlert("Success", "Ministry updated successfully!");
             router.push("/admin/ministries");

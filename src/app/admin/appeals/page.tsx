@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AdminGuard from '@/components/admin/AdminGuard';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Appeal {
     id: string;
@@ -47,6 +48,7 @@ export default function AdminAppealsPage() {
             async () => {
                 try {
                     await deleteDoc(doc(db, "appeals", id));
+                    await logActivity('appeal', 'delete', 'Deleted an official appeal letter');
                     showAlert("Success", "Appeal deleted successfully.");
                 } catch (error) {
                     console.error("Error deleting appeal:", error);

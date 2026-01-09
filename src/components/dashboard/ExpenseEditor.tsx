@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, serverTimestamp, Timestamp, query, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface ExpenseCategory {
     id: string;
@@ -125,11 +126,13 @@ export default function ExpenseEditor({ basePath, defaultScope = 'personal' }: E
                     ...transactionData,
                     updatedAt: serverTimestamp()
                 });
+                await logActivity('expense', 'update', `Updated ${type}: ${parseFloat(amount).toLocaleString()} VND - ${description || 'No description'}`);
             } else {
                 await addDoc(collection(db, "expenses"), {
                     ...transactionData,
                     createdAt: serverTimestamp()
                 });
+                await logActivity('expense', 'create', `Created new ${type}: ${parseFloat(amount).toLocaleString()} VND - ${description || 'No description'}`);
             }
             router.back(); 
         } catch (error) {

@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import ImageUploader from "@/components/ImageUploader";
 import AdminGuard from "@/components/admin/AdminGuard";
 import { useModal } from "@/context/ModalContext";
+import { logActivity } from '@/lib/activity-logger';
 
 interface MinistryImage {
   url: string;
@@ -133,6 +134,8 @@ export default function CreateMinistryPage() {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
+
+            await logActivity('ministry', 'create', `Created new ministry: ${formData.title_en || formData.title_vi}`);
 
             showAlert("Success", "Ministry added successfully!");
             router.push(returnUrl);

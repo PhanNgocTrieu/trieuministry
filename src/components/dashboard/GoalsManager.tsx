@@ -7,6 +7,7 @@ import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc, updateDo
 import GoalCard from '@/components/admin/GoalCard';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Goal {
     id: string;
@@ -79,6 +80,7 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
             "Are you sure you want to delete this goal?",
             async () => {
                  await deleteDoc(doc(db, "goals", id));
+                 await logActivity('goal', 'delete', 'Deleted a goal');
                  showAlert("Success", "Goal deleted successfully.");
             },
             true
@@ -88,6 +90,7 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
     const handleUpdateGoal = async (id: string, data: Partial<Goal>) => {
         try {
             await updateDoc(doc(db, "goals", id), data);
+            await logActivity('goal', 'update', 'Updated goal progress/details');
         } catch (error) {
             console.error("Error updating goal:", error);
             showAlert("Error", "Failed to update goal progress");

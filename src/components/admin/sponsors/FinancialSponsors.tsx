@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, deleteDoc, Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Sponsor {
     id: string;
@@ -84,11 +85,13 @@ export default function FinancialSponsors() {
 
             if (editingId) {
                 await updateDoc(doc(db, "sponsors", editingId), data);
+                await logActivity('sponsor', 'update', `Updated sponsor: ${data.fullName}`);
             } else {
                 await addDoc(collection(db, "sponsors"), {
                     ...data,
                     createdAt: Timestamp.now()
                 });
+                await logActivity('sponsor', 'create', `Added new sponsor: ${data.fullName} (${data.amount.toLocaleString()} VND)`);
             }
             
             setIsModalOpen(false);
@@ -121,6 +124,7 @@ export default function FinancialSponsors() {
             "Are you sure you want to delete this commitment?",
             async () => {
                 await deleteDoc(doc(db, "sponsors", id));
+                await logActivity('sponsor', 'delete', 'Deleted a sponsor commitment');
             },
             true
         );
@@ -132,6 +136,7 @@ export default function FinancialSponsors() {
                 isCompleted: newStatus,
                 updatedAt: Timestamp.now()
             });
+            await logActivity('sponsor', 'update', `Marked sponsor status as ${newStatus ? 'completed' : 'active'}`);
         } catch (error) {
             console.error("Error updating status:", error);
         }
@@ -206,6 +211,8 @@ export default function FinancialSponsors() {
                 completedMilestones: newCompleted,
                 updatedAt: Timestamp.now()
             });
+            const action = newCompleted.length > (sponsor.completedMilestones?.length || 0) ? 'marked' : 'unmarked';
+            await logActivity('sponsor', 'update', `Sponsor ${sponsor.fullName}: ${action} milestone ${milestoneKey}`);
         } catch (error) {
             console.error("Error updating milestone:", error);
         }

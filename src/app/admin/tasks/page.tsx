@@ -10,6 +10,7 @@ import TaskFormModal from '@/components/admin/tasks/TaskFormModal';
 import TaskStatsModal from '@/components/admin/tasks/TaskStatsModal';
 import { Task, TaskFormData } from '@/components/admin/tasks/types';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 export default function AdminTasksPage() {
     const { user } = useAuth();
@@ -127,6 +128,7 @@ export default function AdminTasksPage() {
                 isCompleted: !task.isCompleted,
                 completedAt: !task.isCompleted ? serverTimestamp() : null
             });
+            await logActivity('task', 'update', `Task "${task.content.substring(0, 20)}..." marked as ${!task.isCompleted ? 'completed' : 'incomplete'}`);
         } catch (err) {
             console.error(err);
         }
@@ -136,6 +138,7 @@ export default function AdminTasksPage() {
         showConfirm('Delete Task', 'Are you sure you want to permanently delete this task?', async () => {
             try {
                 await deleteDoc(doc(db, 'tasks', id));
+                await logActivity('task', 'delete', 'Deleted a task');
                 showAlert('Deleted', 'Task deleted');
             } catch (err) {
                 console.error(err);

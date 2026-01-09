@@ -6,6 +6,7 @@ import { collection, getDocs, deleteDoc, doc, updateDoc, orderBy, query } from "
 import Link from "next/link";
 import TableSkeleton from "@/components/admin/TableSkeleton";
 import { useModal } from "@/context/ModalContext";
+import { logActivity } from '@/lib/activity-logger';
 
 interface Ministry {
     id: string;
@@ -52,6 +53,7 @@ export default function AdminMinistriesPage() {
                 try {
                     await deleteDoc(doc(db, "ministries", id));
                     setMinistries(ministries.filter(p => p.id !== id));
+                    await logActivity('ministry', 'delete', 'Deleted a ministry project');
                     showAlert("Success", "Ministry deleted successfully.");
                 } catch (error) {
                     console.error("Error deleting ministry:", error);
@@ -66,6 +68,7 @@ export default function AdminMinistriesPage() {
         try {
             await updateDoc(doc(db, "ministries", id), { status: newStatus });
             setMinistries(ministries.map(a => a.id === id ? { ...a, status: newStatus as any } : a));
+            await logActivity('ministry', 'update', `Updated ministry status to ${newStatus}`);
         } catch (error) {
             console.error("Error updating status:", error);
             showAlert("Error", "Failed to update status");

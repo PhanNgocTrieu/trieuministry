@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
+import { logActivity } from '@/lib/activity-logger';
 
 interface Milestone {
     id: string;
@@ -149,11 +150,13 @@ export default function GoalEditor({ basePath }: GoalEditorProps) {
         try {
             if (editId) {
                 await updateDoc(doc(db, "goals", editId), goalData);
+                await logActivity('goal', 'update', `Updated goal: ${title}`);
             } else {
                 await addDoc(collection(db, "goals"), {
                     ...goalData,
                     createdAt: serverTimestamp()
                 });
+                await logActivity('goal', 'create', `Created new goal: ${title}`);
             }
             router.push(basePath);
         } catch (error) {
