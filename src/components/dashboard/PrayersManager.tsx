@@ -7,6 +7,7 @@ import TableSkeleton from "@/components/admin/TableSkeleton";
 import { useAuth } from "@/context/AuthContext";
 import { useModal } from "@/context/ModalContext";
 import { logActivity } from "@/lib/activity-logger";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface PrayerData {
     id: string;
@@ -14,8 +15,11 @@ interface PrayerData {
     userName: string;
     userAvatar?: string;
     content: string;
-    status: 'pending' | 'prayed' | 'answered';
+    title?: string;
+    action?: string;
+    status: 'pending' | 'prayed' | 'answered' | 'not_prayed';
     createdAt: any;
+    updatedAt?: any;
     prayerCount: number;
     type?: string; 
     scope?: 'personal' | 'community';
@@ -30,14 +34,20 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     const [prayers, setPrayers] = useState<PrayerData[]>([]);
     const [loading, setLoading] = useState(true);
     const { showAlert, showConfirm } = useModal();
+    const { t } = useLanguage(); // Ensure you have useLanguage hook if using 't'
 
-    // Create Modal State
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [newPrayerContent, setNewPrayerContent] = useState("");
-    const [newPrayerScope, setNewPrayerScope] = useState<'personal' | 'community'>('community'); // Default to community (public)
-    const [includeSignature, setIncludeSignature] = useState(true);
+    // Unified State
+    const [isOpen, setIsOpen] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
-    const [creating, setCreating] = useState(false);
+    
+    // Form State
+    const [editContent, setEditContent] = useState("");
+    const [editTitle, setEditTitle] = useState("");
+    const [editAction, setEditAction] = useState("");
+    const [viewType, setViewType] = useState<'personal' | 'community'>('community');
+    const [showName, setShowName] = useState(true);
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchPrayers = async () => {
         if (!user) return;
@@ -91,96 +101,61 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
         }
     }, [user, mode]);
 
-    const handleCreate = async (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !newPrayerContent.trim()) return;
-        setCreating(true);
+        if (!user || !editContent.trim()) return;
+        setIsSubmitting(true);
 
         try {
+            const prayerData: Partial<PrayerData> = {
+                content: editContent,
+                title: editTitle,
+                action: editAction,
+                type: viewType,
+                scope: viewType, // Keep legacy scope in sync
+                userName: showName ? (user.displayName || user.email?.split('@')[0] || 'Anonymous') : 'Anonymous',
+                userAvatar: showName ? (user.photoURL || '') : '',
+                userId: user.uid,
+                updatedAt: serverTimestamp(),
+                status: editAction ? 'answered' : (editId ? undefined : 'not_prayed')
+            };
+
+            // Remove undefined fields
+            Object.keys(prayerData).forEach(key => prayerData[key as keyof typeof prayerData] === undefined && delete prayerData[key as keyof typeof prayerData]);
+
             if (editId) {
-                // Update existing
-                // Calculate final content with or without signature
-                const signature = `\n\n- ${user.displayName || user.email?.split('@')[0] || 'Anonymous'}`;
-                let finalContent = newPrayerContent;
-
-                if (includeSignature) {
-                    if (!finalContent.includes(signature)) {
-                        finalContent += signature;
-                    }
-                } else {
-                    if (finalContent.includes(signature)) {
-                        finalContent = finalContent.replace(signature, "");
-                    }
-                }
-
-                await updateDoc(doc(db, "prayers", editId), {
-                    content: finalContent,
-                    scope: newPrayerScope,
-                    type: newPrayerScope, // Ensure type stays in sync
-                    updatedAt: serverTimestamp()
-                });
+                await updateDoc(doc(db, "prayers", editId), prayerData);
                 await logActivity(
                     'prayer',
                     'update',
-                    `Updated prayer request: ${finalContent.substring(0, 30)}${finalContent.length > 30 ? '...' : ''}`,
-                    { prayerId: editId, scope: newPrayerScope }
+                    `Updated prayer request: ${editContent.substring(0, 30)}...`,
+                    { prayerId: editId, scope: viewType }
                 );
                 showAlert("Success", "Prayer request updated.");
             } else {
-                // Create new
                 await addDoc(collection(db, "prayers"), {
-                    userId: user.uid,
-                    userName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
-                    name: user.displayName || user.email?.split('@')[0] || 'Anonymous', // Add legacy 'name' field
-                    userAvatar: user.photoURL || '',
-                    content: (includeSignature && !editId) 
-                        ? `${newPrayerContent}\n\n- ${user.displayName || user.email?.split('@')[0] || 'Anonymous'}`
-                        : newPrayerContent,
-                    status: 'pending',
-                    createdAt: serverTimestamp(),
+                    ...prayerData,
+                    status: editAction ? 'answered' : 'not_prayed',
                     prayerCount: 0,
-                    scope: newPrayerScope,
-                    type: newPrayerScope // Legacy compatibility
+                    createdAt: serverTimestamp()
                 });
                 await logActivity(
                     'prayer',
                     'create',
-                    `New (Manager) ${newPrayerScope} prayer request: ${newPrayerContent.substring(0, 30)}${newPrayerContent.length > 30 ? '...' : ''}`,
-                    { userId: user.uid, scope: newPrayerScope }
+                    `New (Manager) ${viewType} prayer request`,
+                    { userId: user.uid, scope: viewType }
                 );
                 showAlert("Success", "Prayer request created.");
             }
             
-            setNewPrayerContent("");
-            setEditId(null);
-            setIncludeSignature(true); // Reset to default
-            setIsCreateOpen(false);
-            fetchPrayers(); // Refresh
+            closeModal();
+            fetchPrayers();
         } catch (error) {
             console.error(error);
-            showAlert("Error", editId ? "Error updating prayer" : "Error creating prayer request");
+            showAlert("Error", "Failed to save prayer request");
         } finally {
-            setCreating(false);
+            setIsSubmitting(false);
         }
-    };
-
-    const handleEdit = (prayer: PrayerData) => {
-        setNewPrayerContent(prayer.content);
-        setNewPrayerScope(prayer.scope || 'personal');
-        
-        // Detect if signature exists
-        const signature = `\n\n- ${user?.displayName || user?.email?.split('@')[0] || 'Anonymous'}`;
-        setIncludeSignature(prayer.content.includes(signature));
-        
-        setEditId(prayer.id);
-        setIsCreateOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsCreateOpen(false);
-        setEditId(null);
-        setNewPrayerContent("");
-        setNewPrayerScope('community');
     };
 
     const handleDelete = (id: string) => {
@@ -207,17 +182,39 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
     const handleStatusChange = async (id: string, newStatus: 'pending' | 'prayed' | 'answered') => {
         try {
             await updateDoc(doc(db, "prayers", id), { status: newStatus });
-            await logActivity(
-                'prayer',
-                'update',
-                `Prayer status updated to ${newStatus}`,
-                { prayerId: id, newStatus }
-            );
             setPrayers(prayers.map(p => p.id === id ? { ...p, status: newStatus } : p));
         } catch (error) {
             console.error("Error updating status:", error);
             showAlert("Error", "Failed to update status");
         }
+    };
+
+    const openNew = () => {
+        setEditId(null);
+        setEditContent("");
+        setEditTitle("");
+        setEditAction("");
+        setViewType('community');
+        setShowName(true);
+        setIsOpen(true);
+    };
+
+    const openEdit = (prayer: PrayerData) => {
+        setEditId(prayer.id);
+        setEditContent(prayer.content);
+        setEditTitle(prayer.title || "");
+        setEditAction(prayer.action || ""); // Fix: handle undefined action
+        setViewType((prayer.type as 'personal' | 'community') || (prayer.scope as 'personal' | 'community') || 'personal');
+        setShowName(prayer.userName !== 'Anonymous');
+        setIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsOpen(false);
+        setEditId(null);
+        setEditContent("");
+        setEditTitle("");
+        setEditAction("");
     };
 
     return (
@@ -237,88 +234,134 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                         {mode === 'personal' ? 'Track your personal prayer requests.' : 'View and manage prayer requests.'}
                     </p>
                 </div>
-                {/* Add Button (only for personal or admin/volunteer if they want to post) */}
                 <button 
-                    onClick={() => {
-                        setEditId(null);
-                        setNewPrayerContent("");
-                        setNewPrayerScope('community');
-                        setIsCreateOpen(true);
-                    }}
+                    onClick={openNew}
                     className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-900/20 font-bold flex items-center gap-2"
                 >
                     <i className="fas fa-plus"></i> New Request
                 </button>
             </div>
 
-            {/* Create Modal */}
-            {isCreateOpen && (
+            {/* Create/Edit Modal */}
+            {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in-up border border-slate-200 dark:border-white/10">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{editId ? 'Edit Prayer Request' : 'New Prayer Request'}</h3>
-                        <form onSubmit={handleCreate} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">My Request</label>
-                                <textarea 
-                                    rows={4}
-                                    required
-                                    value={newPrayerContent}
-                                    onChange={(e) => setNewPrayerContent(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                                    placeholder="Share what you need prayer for..."
-                                />
-                                <label className="flex items-center gap-2 mt-2 cursor-pointer">
-                                    <input 
-                                        type="checkbox" 
-                                        checked={includeSignature}
-                                        onChange={(e) => setIncludeSignature(e.target.checked)}
-                                        className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-white/10"
-                                    />
-                                    <span className="text-sm text-slate-500 dark:text-slate-400">Sign my name in the request</span>
-                                </label>
-                            </div>
-                            
-                            
-                            {/* Visibility - Admin Only */}
-                            {isAdmin && (
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in-up border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                        <div className="p-6 border-b border-slate-200 dark:border-white/10">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{editId ? 'Edit Prayer Request' : 'New Prayer Request'}</h3>
+                        </div>
+                        
+                        <form onSubmit={handleSave}>
+                            <div className="p-6 space-y-4">
+                                {/* Title Field */}
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Visibility</label>
-                                    <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-white/5">
-                                        <button
-                                            type="button"
-                                            onClick={() => setNewPrayerScope('personal')}
-                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'personal' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                                        >
-                                            Personal (Private)
-                                        </button>
-                                         <button
-                                            type="button"
-                                            onClick={() => setNewPrayerScope('community')}
-                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${newPrayerScope === 'community' ? 'bg-white dark:bg-slate-700 shadow-sm text-green-600 dark:text-green-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                                        >
-                                            Community (Public)
-                                        </button>
-                                    </div>
-                                    <p className="text-xs text-slate-500 mt-2">
-                                        {newPrayerScope === 'personal' ? 'Only you and the ministry team can see this.' : 'Everyone in the community can see and pray for this.'}
-                                    </p>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Title <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all placeholder:text-slate-400"
+                                        placeholder="e.g., Healing for my family"
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                        required
+                                    />
                                 </div>
-                            )}
 
-                            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                                {/* Content Field */}
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Request Details <span className="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all placeholder:text-slate-400"
+                                        placeholder="Share what you need prayer for..."
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                {/* Answer Field (Only for editing) */}
+                                {editId && (
+                                    <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-xl border border-green-100 dark:border-green-900/20">
+                                        <label className="block text-sm font-bold text-green-800 dark:text-green-400 mb-1">
+                                            <i className="fas fa-bolt mr-2"></i>God's Answer / Testimony
+                                        </label>
+                                        <textarea
+                                            className="w-full bg-white dark:bg-slate-950 border border-green-200 dark:border-green-800/30 text-slate-900 dark:text-white rounded-xl px-4 py-3 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-green-500 transition-all placeholder:text-slate-400"
+                                            placeholder="Share how God has answered this prayer..."
+                                            value={editAction}
+                                            onChange={(e) => setEditAction(e.target.value)}
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="showName"
+                                        checked={showName}
+                                        onChange={(e) => setShowName(e.target.checked)}
+                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-purple-600 focus:ring-purple-500 bg-slate-100 dark:bg-slate-800"
+                                    />
+                                    <label htmlFor="showName" className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                                        Sign my name in the request
+                                    </label>
+                                </div>
+
+                                {isAdmin && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                                            Visibility
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-white/5">
+                                            <button
+                                                type="button"
+                                                className={`py-2 px-4 rounded-lg text-sm font-bold transition-all ${
+                                                    viewType === 'personal'
+                                                        ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                }`}
+                                                onClick={() => setViewType('personal')}
+                                            >
+                                                Personal
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`py-2 px-4 rounded-lg text-sm font-bold transition-all ${
+                                                    viewType === 'community'
+                                                        ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm'
+                                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                }`}
+                                                onClick={() => setViewType('community')}
+                                            >
+                                                Community
+                                            </button>
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-2 ml-1">
+                                            {viewType === 'personal' 
+                                                ? 'Only you and the ministry team can see this.' 
+                                                : 'Everyone in the community can see and pray for this.'}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-6 border-t border-slate-100 dark:border-white/5 flex gap-3 justify-end bg-slate-50/50 dark:bg-slate-900/50 rounded-b-2xl">
                                 <button 
                                     type="button"
-                                    onClick={handleCloseModal}
-                                    className="px-4 py-2 rounded-lg text-slate-400 font-bold hover:bg-slate-800 transition-colors"
+                                    onClick={closeModal}
+                                    className="px-5 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
-                                    disabled={creating}
-                                    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all"
+                                    disabled={isSubmitting || !editContent.trim()}
+                                    className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
-                                    {creating ? 'Saving...' : (editId ? 'Update Request' : 'Send Request')}
+                                    {isSubmitting && <i className="fas fa-spinner fa-spin"></i>}
+                                    {editId ? 'Update Request' : 'Post Request'}
                                 </button>
                             </div>
                         </form>
@@ -354,9 +397,15 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
+                                            <p className="font-bold text-slate-800 dark:text-white mb-1 line-clamp-1">{prayer.title || 'Untitled'}</p>
                                             <p className="line-clamp-2 text-slate-600 dark:text-slate-300">{prayer.content}</p>
+                                            {prayer.action && (
+                                                <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-green-600 dark:text-green-400 mt-1 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
+                                                    <i className="fas fa-check-circle"></i> Answered
+                                                </span>
+                                            )}
                                             {prayer.prayerCount > 0 && (
-                                                <span className="inline-flex items-center gap-1 text-xs text-blue-400 font-medium mt-1">
+                                                <span className="inline-flex items-center gap-1 text-xs text-blue-400 font-medium mt-1 ml-2">
                                                     <i className="fas fa-praying-hands"></i> {prayer.prayerCount} prayers
                                                 </span>
                                             )}
@@ -399,7 +448,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                            {(isAdmin || prayer.userId === user?.uid) ? (
                                                <div className="flex items-center gap-2">
                                                    <button 
-                                                        onClick={() => handleEdit(prayer)}
+                                                        onClick={() => openEdit(prayer)}
                                                         className="text-blue-400 hover:text-blue-300 font-medium p-2 hover:bg-blue-500/10 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >
