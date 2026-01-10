@@ -12,6 +12,7 @@ type Prayer = {
   id: string;
   author: string;
   userId?: string; // Optional for migration/guest
+  title?: string;
   content: string;
   date: string;
   status: 'not_prayed' | 'prayed' | 'answered';
@@ -36,10 +37,16 @@ export default function PrayersPage() {
   // Real Data State
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Selection State
+  const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   // Form State
+  const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState('General');
+  const [newAction, setNewAction] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -53,6 +60,7 @@ export default function PrayersPage() {
           id: doc.id,
           author: data.userName || 'Unknown',
           userId: data.userId,
+          title: data.title,
           content: data.content,
           date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'N/A',
           status: data.status || 'not_prayed',
@@ -69,14 +77,11 @@ export default function PrayersPage() {
     return () => unsubscribe();
   }, []);
 
-
   // Derived Statistics
-  // Filter out personal prayers first for statistics and listing
   const communityPrayers = prayers.filter(p => p.type !== 'personal');
 
   const stats = {
     total: communityPrayers.length,
-    answered: communityPrayers.filter(p => p.status === 'answered').length,
     pending: communityPrayers.filter(p => p.status === 'not_prayed' || p.status === 'prayed').length
   };
 
@@ -84,9 +89,19 @@ export default function PrayersPage() {
   const filteredPrayers = communityPrayers.filter(prayer => {
      const matchesFilter = filter === 'all' || prayer.status === filter;
      const matchesSearch = prayer.content.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           prayer.author.toLowerCase().includes(searchTerm.toLowerCase());
+                           prayer.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (prayer.title && prayer.title.toLowerCase().includes(searchTerm.toLowerCase()));
      return matchesFilter && matchesSearch;
   });
+
+  // Auto-select first item on load or filter change if nothing selected
+  useEffect(() => {
+    if (!selectedPrayerId && filteredPrayers.length > 0) {
+        setSelectedPrayerId(filteredPrayers[0].id);
+    }
+  }, [filteredPrayers, selectedPrayerId]);
+
+  const selectedPrayer = filteredPrayers.find(p => p.id === selectedPrayerId) || filteredPrayers[0];
 
   const handleAddClick = () => {
       if (!user) {
@@ -105,7 +120,7 @@ export default function PrayersPage() {
 
   const handleAddPrayer = async (e: React.FormEvent) => {
      e.preventDefault();
-     if (!user || !newContent.trim()) return;
+     if (!user || !newContent.trim() || !newTitle.trim()) return;
 
      setIsSubmitting(true);
      try {
@@ -113,16 +128,19 @@ export default function PrayersPage() {
             userId: user.uid,
             userName: user.displayName || 'Anonymous',
             userAvatar: user.photoURL || '',
+            title: newTitle,
             content: newContent,
             category: newCategory,
-            status: 'not_prayed',
+            action: newAction,
+            status: newAction ? 'answered' : 'not_prayed',
             prayerCount: 0,
             createdAt: serverTimestamp()
         });
         
+        setNewTitle('');
         setNewContent('');
+        setNewAction('');
         setShowModal(false);
-        // Alert handled by UI, list auto updates via onSnapshot
         showAlert("Success", "Prayer request submitted successfully.");
      } catch (error) {
          console.error("Error adding prayer", error);
@@ -133,7 +151,6 @@ export default function PrayersPage() {
   };
 
   const handlePrayClick = async (id: string, currentStatus: string) => {
-     // Optimistic update could go here, but let's rely on fast Firestore
      try {
          const prayerRef = doc(db, 'prayers', id);
          const updates: any = {
@@ -148,32 +165,47 @@ export default function PrayersPage() {
      }
   };
 
+  const handlePrayerSelect = (id: string) => {
+      setSelectedPrayerId(id);
+      // On mobile, show detail modal/view
+      if (window.innerWidth < 1024) {
+          setShowMobileDetail(true);
+      }
+  };
+
   return (
-    <main className="bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors duration-300">
+    <main className="bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors duration-300 flex flex-col">
       {/* Hero Section */}
-      <section className="bg-slate-50 dark:bg-slate-900 py-16 lg:py-20 border-b border-slate-200 dark:border-white/5 relative overflow-hidden transition-colors duration-500">
+      <section className="bg-slate-50 dark:bg-slate-900 py-12 border-b border-slate-200 dark:border-white/5 relative overflow-hidden transition-colors duration-500 shrink-0">
          {/* Premium Background */}
         <div className="absolute inset-0 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-purple-50/20 to-transparent dark:hidden opacity-100"></div>
         <div className="absolute inset-0 bg-white/50 dark:bg-slate-950/50 z-0"></div>
         
-         <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] animate-pulse"></div>
-         <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px]"></div>
-
          <div className="container container-custom relative z-10">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-               <div className="lg:w-7/12">
-                   <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-3">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+               <div className="md:w-7/12">
+                   <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-3">
                       <i className="fas fa-praying-hands text-purple-600 dark:text-purple-500"></i>
                       {t('prayers.hero.title')}
                    </h1>
-                   <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl">
+                   <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl">
                       {t('prayers.hero.subtitle')}
                    </p>
                </div>
-               <div className="lg:w-auto">
+               <div className="md:w-auto flex gap-4">
+                   <div className="flex gap-4 mr-4 border-r border-slate-200 dark:border-white/10 pr-6">
+                       <div className="text-center">
+                           <span className="block text-2xl font-bold text-slate-900 dark:text-white">{stats.total}</span>
+                           <span className="text-xs text-slate-500 uppercase font-bold">Total</span>
+                       </div>
+                       <div className="text-center">
+                           <span className="block text-2xl font-bold text-slate-900 dark:text-white">{stats.pending}</span>
+                           <span className="text-xs text-slate-500 uppercase font-bold">Pending</span>
+                       </div>
+                   </div>
                    <button 
                       onClick={handleAddClick}
-                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:scale-105 text-white rounded-full font-bold shadow-lg shadow-purple-900/20 transition-all flex items-center gap-3"
+                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:scale-105 text-white rounded-full font-bold shadow-lg shadow-purple-900/20 transition-all flex items-center gap-2"
                    >
                       <i className="fas fa-plus"></i>
                       {t('prayers.hero.btn_add')}
@@ -183,205 +215,239 @@ export default function PrayersPage() {
          </div>
       </section>
 
-      {/* Call for Donation for Ministries */}
-      <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/5 py-12 relative overflow-hidden transition-colors duration-300">
-        <div className="absolute inset-0 bg-blue-50/50 dark:bg-blue-600/10 opacity-20"></div>
-        <div className="container container-custom relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-             <div className="lg:w-2/3">
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 flex items-center gap-3 text-slate-900 dark:text-white">
-                    <i className="fas fa-hand-holding-heart text-yellow-500 dark:text-yellow-400"></i>
-                    Support Our Ministries
-                </h2>
-                <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                    Join us in spreading God's love. Your generous donations help us maintain our ministries, support those in need, and continue our mission. Every contribution makes a difference.
-                </p>
-                <div className="bg-white/80 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-blue-500/20 backdrop-blur-md shadow-xl dark:shadow-none inline-block relative overflow-hidden group text-left">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 opacity-100 transition-opacity"></div>
-                    <div className="relative z-10">
-                        <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <i className="fas fa-university"></i> Direct Bank Transfer
-                        </p>
-                        <div className="flex flex-col md:flex-row gap-8 items-start">
-                            <div>
-                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Bank</span>
-                                <span className="font-black text-slate-900 dark:text-white text-xl tracking-tight">MB Bank</span>
+      {/* Main Content - Master Detail Layout */}
+      <section className="flex-1 py-8 overflow-hidden h-full">
+         <div className="container container-custom h-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+                
+                {/* LEFT COLUMN: LIST VIEW */}
+                <div className="lg:col-span-5 flex flex-col h-full lg:max-h-[calc(100vh-350px)]">
+                    {/* Search & Filters */}
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-white/5 mb-4 shrink-0">
+                        <div className="relative mb-3">
+                            <span className="absolute left-3 top-2.5 text-slate-400"><i className="fas fa-search"></i></span>
+                            <input 
+                                type="text" 
+                                placeholder={t('prayers.list.search_placeholder')}
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-400 dark:placeholder-slate-500 transition-colors"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                            {['all', 'not_prayed', 'prayed', 'answered'].map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => setFilter(status)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${filter === status ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                                >
+                                    {t(`prayers.status.${status}`) || status}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Scrollable List */}
+                    <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+                        {loading ? (
+                            <div className="text-center py-10 text-slate-500">Loading...</div>
+                        ) : filteredPrayers.length === 0 ? (
+                            <div className="text-center py-10 text-slate-500">
+                                <i className="fas fa-search text-3xl mb-2 opacity-30"></i>
+                                <p>No prayers found.</p>
                             </div>
-                            <div>
-                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Account Number</span>
-                                <div className="flex items-center gap-2 group/copy cursor-pointer" onClick={() => {navigator.clipboard.writeText('0974210249'); showAlert('Info', 'Copied!');}}>
-                                    <span className="font-mono font-bold text-slate-800 dark:text-white text-xl group-hover/copy:text-blue-600 dark:group-hover/copy:text-blue-400 transition-colors">0974 210 249</span>
-                                    <i className="fas fa-copy text-slate-400 group-hover/copy:text-blue-500 transition-colors"></i>
+                        ) : (
+                            filteredPrayers.map((prayer) => (
+                                <div 
+                                    key={prayer.id}
+                                    onClick={() => handlePrayerSelect(prayer.id)}
+                                    className={`p-4 rounded-xl border transition-all cursor-pointer group ${
+                                        selectedPrayerId === prayer.id 
+                                            ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-500 ring-1 ring-purple-500/20' 
+                                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-white/5 hover:border-purple-300 dark:hover:border-purple-700'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                                {prayer.author.charAt(0)}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <h4 className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">{prayer.title || 'Untitled Prayer'}</h4>
+                                                <span className="text-xs text-slate-500 dark:text-slate-400">{prayer.author}</span>
+                                            </div>
+                                        </div>
+                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                                            prayer.status === 'answered' ? 'text-green-600 dark:text-green-400 bg-green-500/5 border-green-500/10' :
+                                            prayer.status === 'prayed' ? 'text-yellow-600 dark:text-yellow-400 bg-yellow-500/5 border-yellow-500/10' :
+                                            'text-slate-500 bg-slate-500/5 border-slate-500/10'
+                                        }`}>
+                                            {t(`prayers.status.${prayer.status}`)}
+                                        </span>
+                                    </div>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-2 font-medium pl-10">
+                                        {prayer.content}
+                                    </p>
+                                    <div className="flex justify-between items-center pl-10">
+                                        <span className="text-xs text-slate-400">{prayer.date}</span>
+                                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                                            <i className="fas fa-praying-hands text-purple-500"></i> {prayer.prayerCount}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* RIGHT COLUMN: DETAIL VIEW (Desktop) */}
+                <div className="hidden lg:flex lg:col-span-7 flex-col h-full lg:max-h-[calc(100vh-350px)]">
+                    {selectedPrayer ? (
+                         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-white/5 h-full overflow-hidden flex flex-col animate-in fade-in slide-in-from-right-4 duration-300 key-{selectedPrayer.id}">
+                            
+                            {/* Detailed Header */}
+                            <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/20 shrink-0">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shrink-0">
+                                            {selectedPrayer.author.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                                                {selectedPrayer.title || 'Untitled Prayer'}
+                                            </h2>
+                                            <div className="flex items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
+                                                <span className="font-semibold text-slate-700 dark:text-slate-300">{selectedPrayer.author}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                                                <span className="flex items-center gap-1">
+                                                    <i className="far fa-calendar-alt"></i> {selectedPrayer.date}
+                                                </span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                                                <span className="flex items-center gap-1 font-medium text-purple-600 dark:text-purple-400">
+                                                    <i className="fas fa-bookmark"></i> {selectedPrayer.category || 'General'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 text-center min-w-[80px]">
+                                        <div className="text-2xl font-bold text-slate-900 dark:text-white">{selectedPrayer.prayerCount}</div>
+                                        <div className="text-[10px] uppercase font-bold text-slate-500">Prayers</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1">Account Name</span>
-                                <span className="font-bold text-slate-800 dark:text-white text-lg">PHAN NGOC TRIEU</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             </div>
-             <div className="lg:w-1/3 text-center">
-                 <button onClick={() => router.push('/donate')} className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-300 font-bold rounded-full shadow-lg transition-all hover:-translate-y-1">
-                     View Donation Details <i className="fas fa-arrow-right ml-2"></i>
-                 </button>
-             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="py-12 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-          <div className="container container-custom">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Total */}
-                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-3xl border border-blue-500/20">
-                       <i className="fas fa-list"></i>
-                    </div>
-                    <div>
-                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.total}</h3>
-                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.total')}</p>
-                    </div>
-                </div>
+                            {/* Detailed Content */}
+                            <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
+                                <div className="prose dark:prose-invert max-w-none">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Prayer Request</h3>
+                                    <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line">
+                                        {selectedPrayer.content}
+                                    </p>
+                                </div>
 
-                {/* Answered */}
-                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-green-500/10 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center text-3xl border border-green-500/20">
-                       <i className="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.answered}</h3>
-                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.answered')}</p>
-                    </div>
-                </div>
-
-                {/* Pending */}
-                <div className="glass-panel dark:bg-slate-900/50 p-6 rounded-2xl shadow-premium dark:shadow-none border border-slate-200 dark:border-white/5 flex items-center gap-6 backdrop-blur-sm">
-                    <div className="w-16 h-16 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-2xl flex items-center justify-center text-3xl border border-yellow-500/20">
-                       <i className="fas fa-clock"></i>
-                    </div>
-                    <div>
-                       <h3 className="text-4xl font-bold text-slate-900 dark:text-white">{stats.pending}</h3>
-                       <p className="text-slate-500 dark:text-slate-400 font-medium">{t('prayers.stats.pending')}</p>
-                    </div>
-                </div>
-             </div>
-          </div>
-      </section>
-      
-      {/* Filters & List */}
-      <section className="pb-20">
-         <div className="container container-custom">
-            {/* Filter Bar */}
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 mb-8 sticky top-[72px] z-20 transition-colors duration-300">
-               <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-                  <div className="relative w-full md:w-96">
-                     <span className="absolute left-3 top-2.5 text-slate-400"><i className="fas fa-search"></i></span>
-                     <input 
-                        type="text" 
-                        placeholder={t('prayers.list.search_placeholder')}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-400 dark:placeholder-slate-500 transition-colors"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                     />
-                  </div>
-                  
-                  <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-                      {['all', 'not_prayed', 'prayed', 'answered'].map(status => (
-                         <button
-                            key={status}
-                            onClick={() => setFilter(status)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter === status ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'}`}
-                         >
-                            {t(`prayers.status.${status}`) || status}
-                         </button>
-                      ))}
-                  </div>
-               </div>
-            </div>
-
-            {/* List */}
-            {loading ? (
-                <div className="text-center py-20 text-slate-500">Loading prayers...</div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPrayers.map((prayer) => (
-                    <div 
-                        key={prayer.id} 
-                        className={`glass-panel dark:bg-slate-900/50 rounded-2xl shadow-premium dark:shadow-none p-6 border-l-4 hover:-translate-y-1 transition-all duration-300 relative group backdrop-blur-sm border-t border-r border-b border-white/50 dark:border-white/5
-                            ${prayer.status === 'answered' ? 'border-l-green-500' : 
-                            prayer.status === 'prayed' ? 'border-l-yellow-500' : 'border-l-slate-400 dark:border-l-slate-700'}
-                        `}
-                    >
-                        {/* Badge */}
-                        <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border
-                            ${prayer.status === 'answered' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' : 
-                            prayer.status === 'prayed' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20' : 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20'}
-                        `}>
-                            {t(`prayers.status.${prayer.status}`)}
-                        </span>
-
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold overflow-hidden border border-slate-200 dark:border-white/5">
-                                {prayer.author === 'Anonymous' ? (
-                                    <i className="fas fa-user"></i>
-                                ) : (
-                                    <span className="text-xs uppercase">{prayer.author.charAt(0)}</span>
+                                {selectedPrayer.action && (
+                                    <div className="mt-8 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-xl p-5 animate-in zoom-in-95 duration-500">
+                                        <h4 className="flex items-center gap-2 font-bold text-green-700 dark:text-green-400 mb-2">
+                                            <i className="fas fa-bolt"></i> God's Answer
+                                        </h4>
+                                        <p className="text-green-800 dark:text-green-300">
+                                            {selectedPrayer.action}
+                                        </p>
+                                    </div>
                                 )}
                             </div>
-                            <div>
-                                <h5 className="font-bold text-slate-900 dark:text-slate-200 text-sm">{prayer.author}</h5>
-                                <span className="text-xs text-slate-500 flex items-center gap-1">
-                                    <i className="far fa-calendar-alt"></i> {prayer.date}
-                                </span>
-                            </div>
-                        </div>
 
-                        <p className="text-slate-600 dark:text-slate-300 mb-6 min-h-[80px] leading-relaxed">
-                            {prayer.content}
-                        </p>
-                        
-                        {prayer.action && (
-                            <div className="mb-4 bg-green-500/5 border border-green-500/20 p-3 rounded-lg text-sm text-green-300">
-                                <strong className="block mb-1 text-green-400"><i className="fas fa-bolt mr-1"></i> God's Action:</strong>
-                                {prayer.action}
+                            {/* Detailed Footer Actions */}
+                            <div className="p-6 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-950 flex justify-between items-center shrink-0">
+                                <div className="flex gap-2">
+                                    <button 
+                                        className="w-10 h-10 rounded-full flex items-center justify-center border border-slate-200 dark:border-white/10 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                                        title="Share"
+                                    >
+                                        <i className="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                                <button 
+                                    onClick={() => handlePrayClick(selectedPrayer.id, selectedPrayer.status)}
+                                    className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-600/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                >
+                                    <i className="fas fa-praying-hands"></i>
+                                    {selectedPrayer.status === 'not_prayed' ? 'I Will Pray' : 'Pray Again'}
+                                </button>
                             </div>
-                        )}
 
-                        <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between">
-                            <span className="text-slate-500 text-sm font-semibold flex items-center gap-1">
-                                <i className="fas fa-bookmark text-slate-400 dark:text-slate-600"></i> {prayer.category || 'General'}
-                            </span>
-                            
-                            <button 
-                                onClick={() => handlePrayClick(prayer.id, prayer.status)}
-                                className="group/btn flex items-center gap-2 text-blue-400 font-bold text-sm bg-blue-500/10 px-4 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-all hover:scale-105 border border-blue-500/20 hover:border-blue-500"
-                            >
-                                <i className="fas fa-praying-hands group-hover/btn:animate-pulse"></i>
-                                Pray ({prayer.prayerCount})
-                            </button>
+                         </div>
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400 border border-dashed border-slate-200 dark:border-white/5 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+                            <i className="fas fa-praying-hands text-4xl mb-4 opacity-50"></i>
+                            <p>Select a prayer request to view details</p>
                         </div>
-                    </div>
-                ))}
+                    )}
                 </div>
-            )}
 
-            {!loading && filteredPrayers.length === 0 && (
-               <div className="text-center py-20">
-                  <div className="text-slate-700 text-6xl mb-4"><i className="fas fa-clock"></i></div>
-                  <p className="text-slate-500">No prayer requests found matching your filters.</p>
-               </div>
-            )}
+            </div>
          </div>
       </section>
 
-      {/* Modal */}
+      {/* Mobile Detail Modal */}
+      {showMobileDetail && selectedPrayer && (
+          <div className="fixed inset-0 z-[60] lg:hidden flex flex-col bg-white dark:bg-slate-950 animate-in slide-in-from-bottom duration-300">
+              <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center gap-3">
+                  <button onClick={() => setShowMobileDetail(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                      <i className="fas fa-arrow-left"></i>
+                  </button>
+                  <h3 className="font-bold text-lg">Prayer Details</h3>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                            {selectedPrayer.author.charAt(0)}
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                                {selectedPrayer.title || 'Untitled Prayer'}
+                            </h2>
+                            <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                <span className="font-semibold block">{selectedPrayer.author}</span>
+                                <span className="text-xs opacity-70"><i className="far fa-calendar-alt mr-1"></i> {selectedPrayer.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="prose dark:prose-invert max-w-none mb-8">
+                        <p className="text-lg leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200">
+                            {selectedPrayer.content}
+                        </p>
+                    </div>
+
+                    {selectedPrayer.action && (
+                        <div className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-xl p-5 mb-8">
+                            <h4 className="font-bold text-green-700 dark:text-green-400 mb-2">
+                                <i className="fas fa-bolt mr-2"></i> God's Answer
+                            </h4>
+                            <p className="text-green-800 dark:text-green-300">
+                                {selectedPrayer.action}
+                            </p>
+                        </div>
+                    )}
+              </div>
+              <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900 pb-8">
+                   <button 
+                        onClick={() => handlePrayClick(selectedPrayer.id, selectedPrayer.status)}
+                        className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                    >
+                        <i className="fas fa-praying-hands"></i>
+                        Pray ({selectedPrayer.prayerCount})
+                    </button>
+              </div>
+          </div>
+      )}
+
+      {/* Modal Form */}
       {showModal && (
          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 border border-white/10">
-               <div className="p-6 border-b border-white/5 flex justify-between items-center">
+            <div className="bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 border border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+               <div className="p-6 border-b border-white/5 flex justify-between items-center sticky top-0 bg-slate-900 z-10">
                   <h5 className="text-xl font-bold text-purple-400 flex items-center gap-2">
                      <i className="fas fa-praying-hands"></i>
                      {t('prayers.modal.add_title')}
@@ -391,19 +457,23 @@ export default function PrayersPage() {
                   </button>
                </div>
                
-               <form onSubmit={handleAddPrayer} className="p-6">
-                  {/* Note: Author is taken from logged in user automatically */}
-                  <div className="mb-4">
-                     <label className="block text-sm font-bold text-slate-300 mb-1">Your Name</label>
+               <form onSubmit={handleAddPrayer} className="p-6 space-y-4">
+                  
+                  {/* Title Field */}
+                  <div>
+                     <label className="block text-sm font-bold text-slate-300 mb-1">Title <span className="text-red-500">*</span></label>
                      <input 
                         type="text" 
-                        className="w-full border border-slate-700 bg-slate-950 text-slate-400 rounded-lg px-4 py-2 opacity-70" 
-                        value={user?.displayName || 'Anonymous'} 
-                        disabled 
+                        className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none placeholder-slate-600" 
+                        placeholder="e.g., Healing for my mother" 
+                        required
+                        value={newTitle}
+                        onChange={(e) => setNewTitle(e.target.value)}
                      />
-                     <p className="text-xs text-slate-500 mt-1">Taken from your account profile.</p>
                   </div>
-                   <div className="mb-4">
+
+                  {/* Category Field */}
+                  <div>
                      <label className="block text-sm font-bold text-slate-300 mb-1">Category</label>
                      <select 
                         className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
@@ -418,8 +488,10 @@ export default function PrayersPage() {
                         <option value="Spiritual">Spiritual</option>
                      </select>
                   </div>
-                  <div className="mb-6">
-                     <label className="block text-sm font-bold text-slate-300 mb-1">{t('prayers.form.content_label')}</label>
+
+                  {/* Content Field */}
+                  <div>
+                     <label className="block text-sm font-bold text-slate-300 mb-1">{t('prayers.form.content_label')} <span className="text-red-500">*</span></label>
                      <textarea 
                         rows={4} 
                         className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none placeholder-slate-600" 
@@ -429,8 +501,26 @@ export default function PrayersPage() {
                         onChange={(e) => setNewContent(e.target.value)}
                      ></textarea>
                   </div>
+
+                  {/* Answer Field */}
+                  <div>
+                     <label className="block text-sm font-bold text-slate-300 mb-1">God's Answer / Testimony (Optional)</label>
+                     <textarea 
+                        rows={3} 
+                        className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none placeholder-slate-600" 
+                        placeholder="Share how God has answered this prayer..." 
+                        value={newAction}
+                        onChange={(e) => setNewAction(e.target.value)}
+                     ></textarea>
+                     <p className="text-xs text-slate-500 mt-1">If filled, the prayer status will automatically be set to "Answered".</p>
+                  </div>
                   
-                  <div className="flex justify-end gap-3">
+                  {/* Submitter Info */}
+                  <div className="pt-2 border-t border-white/5">
+                     <p className="text-xs text-slate-500">Posting as: <span className="text-slate-300 font-bold">{user?.displayName || 'Anonymous'}</span></p>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-2">
                      <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 text-slate-400 font-bold hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Cancel</button>
                      <button 
                         type="submit" 

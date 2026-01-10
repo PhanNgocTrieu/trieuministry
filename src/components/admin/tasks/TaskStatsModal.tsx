@@ -62,48 +62,55 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                
-                {/* Header */}
-                <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-purple-600 p-2 rounded-lg text-white">
-                            <i className="fas fa-chart-pie text-xl"></i>
+        <>
+            <style type="text/css" media="print">
+                {`
+                  @page { size: auto; margin: 0mm; } 
+                  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                `}
+            </style>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 print:p-0 print:bg-white print:absolute print:inset-0 print:z-[9999] print:block">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:h-auto print:overflow-visible">
+                    
+                    {/* Header */}
+                    <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0 print:bg-slate-50 print:dark:bg-slate-800/50">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-purple-600 p-2 rounded-lg text-white print:bg-purple-600 print:text-white">
+                                <i className="fas fa-chart-pie text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 className="font-bold text-lg text-slate-900 dark:text-white print:text-slate-900 print:dark:text-white">
+                                    Task Statistics Report
+                                </h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 print:text-slate-500 print:dark:text-slate-400">
+                                    Yearly overview and performance metrics ({year})
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="font-bold text-lg text-slate-900 dark:text-white">
-                                Task Statistics Report
-                            </h2>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Yearly overview and performance metrics
-                            </p>
+                        <div className="flex items-center gap-3 print:hidden">
+                             <select 
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                            >
+                                {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                                    <option key={y} value={y}>{y}</option>
+                                ))}
+                            </select>
+                            <button 
+                                onClick={() => window.print()} 
+                                className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 font-bold text-sm transition-colors"
+                            >
+                                <i className="fas fa-print mr-2"></i> Print
+                            </button>
+                            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                         <select 
-                            value={year}
-                            onChange={(e) => setYear(e.target.value)}
-                            className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                            {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                                <option key={y} value={y}>{y}</option>
-                            ))}
-                        </select>
-                        <button 
-                            onClick={() => window.print()} 
-                            className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 font-bold text-sm transition-colors print:hidden"
-                        >
-                            <i className="fas fa-print mr-2"></i> Print
-                        </button>
-                        <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-                            <i className="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                </div>
 
-                {/* Scrollable Content */}
-                <div className="p-8 overflow-y-auto custom-scrollbar bg-slate-50/50 dark:bg-[#0B1120]">
+                    {/* Scrollable Content */}
+                    <div className="p-8 overflow-y-auto custom-scrollbar bg-slate-50/50 dark:bg-[#0B1120] print:overflow-visible print:bg-slate-50/50 print:dark:bg-[#0B1120]">
                     <div className="space-y-8">
                         
                         {/* Summary Cards */}
@@ -354,5 +361,6 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
                 </div>
             </div>
         </div>
+        </>
     );
 }
