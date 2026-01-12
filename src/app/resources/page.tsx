@@ -5,21 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
-import { ResourceItem, mockDocuments, mockSongs } from '@/data/mockResources';
+import { ResourceItem, mockDocuments, mockSongs, mockPosts, mockTestimonies } from '@/data/mockResources';
 import { useLanguage } from '@/context/LanguageContext'; // Added import
 
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  author: string;
-  date: string;
-  status: 'approved' | 'pending';
-  category: string;
-  excerpt: string;
-  content: string;
-  tags: string[];
-}
+
 
 // --- Components ---
 
@@ -27,7 +16,8 @@ interface BlogPost {
     const { t } = useLanguage(); 
     const menuItems = [
         { id: 'all', label: t('resources.tabs.all'), icon: 'fas fa-th-large' },
-        { id: 'blogs', label: t('resources.tabs.blogs'), icon: 'fas fa-pen-nib' },
+        { id: 'posts', label: t('resources.tabs.posts') || 'Posts', icon: 'fas fa-newspaper' },
+        { id: 'testimonies', label: t('resources.tabs.testimonies') || 'Testimonies', icon: 'fas fa-comment-medical' },
         { id: 'documents', label: t('resources.tabs.documents'), icon: 'fas fa-file-pdf' },
         { id: 'songs', label: t('resources.tabs.songs'), icon: 'fas fa-music' },
     ];
@@ -132,7 +122,6 @@ const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string,
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import CreateBlogModal from '@/components/CreateBlogModal';
 
 // ... (keep imports)
 
@@ -145,44 +134,9 @@ export default function ResourcesDashboard() {
     const router = useRouter();
     const { t } = useLanguage(); // Use hook
     const [activeTab, setActiveTab] = useState('all');
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [blogs, setBlogs] = useState<ResourceItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    const fetchBlogs = async () => {
-        try {
-            const q = query(
-                collection(db, "blogs"), 
-                where("status", "==", "approved"),
-                orderBy("date", "desc")
-            );
-            const snapshot = await getDocs(q);
-            const blogList: ResourceItem[] = snapshot.docs.map(doc => {
-                const data = doc.data() as BlogPost;
-                return {
-                    id: doc.id,
-                    slug: data.slug,
-                    title: data.title,
-                    category: data.category,
-                    description: data.excerpt, 
-                    coverImage: '', 
-                    date: data.date,
-                    author: data.author,
-                    type: 'blog'
-                };
-            });
-            setBlogs(blogList);
-        } catch (err) {
-            console.error("Failed to fetch blogs", err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    // Fetch Blogs from Firestore
-    useEffect(() => {
-        fetchBlogs();
-    }, []);
 
     const renderContent = () => {
         if (loading) return <div className="p-12 text-center text-slate-500">{t('resources.loading')}</div>;
@@ -192,10 +146,21 @@ export default function ResourcesDashboard() {
                 <div className="space-y-12">
                      {/* ... (keep existing structure) ... */}
                     {/* Blogs Section */}
+
+
+                    {/* Posts Section */}
                     <section>
-                        <SectionHeader title={t('resources.sections.latest_blogs')} icon="fa-pen-nib" onSeeAll={() => setActiveTab('blogs')} />
+                        <SectionHeader title={t('resources.sections.posts') || 'Posts'} icon="fa-newspaper" onSeeAll={() => setActiveTab('posts')} />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {blogs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                            {mockPosts.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                        </div>
+                    </section>
+
+                    {/* Testimonies Section */}
+                    <section>
+                        <SectionHeader title={t('resources.sections.testimonies') || 'Testimonies'} icon="fa-comment-medical" onSeeAll={() => setActiveTab('testimonies')} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {mockTestimonies.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
                         </div>
                     </section>
 
@@ -221,7 +186,8 @@ export default function ResourcesDashboard() {
         // Specific Tab Views
         let items: ResourceItem[] = [];
         let title = '';
-        if (activeTab === 'blogs') { items = blogs; title = t('resources.tabs.blogs'); }
+        if (activeTab === 'posts') { items = mockPosts; title = t('resources.tabs.posts') || 'Posts'; }
+        if (activeTab === 'testimonies') { items = mockTestimonies; title = t('resources.tabs.testimonies') || 'Testimonies'; }
         if (activeTab === 'documents') { items = mockDocuments; title = t('resources.tabs.documents'); }
         if (activeTab === 'songs') { items = mockSongs; title = t('resources.tabs.songs'); }
 
@@ -234,14 +200,7 @@ export default function ResourcesDashboard() {
                     </div>
                     
                      {/* Write Button (Only visible for 'blogs' tab if logged in) */}
-                    {(activeTab === 'blogs') && user && (
-                        <button 
-                            onClick={() => setShowCreateModal(true)}
-                            className="hidden md:flex bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-all shadow-lg items-center gap-2 shadow-purple-900/20"
-                        >
-                            <i className="fas fa-pen-nib"></i> {t('resources.write_blog')}
-                        </button>
-                    )}
+
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {items.map(item => <ResourceCard key={item.id} item={item} />)}
@@ -254,7 +213,7 @@ export default function ResourcesDashboard() {
         <main className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-20 font-sans transition-colors duration-300">
              {/* Mobile Tab Select */}
             <div className="lg:hidden bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-lg">
-                {['all', 'blogs', 'documents', 'songs'].map(tab => (
+                {['all', 'posts', 'testimonies', 'documents', 'songs'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -296,26 +255,7 @@ export default function ResourcesDashboard() {
                 </div>
             </div>
 
-            {/* FAB for Mobile (Only visible if logged in) */}
-            {user && (
-                 <button 
-                    onClick={() => setShowCreateModal(true)}
-                    className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 text-xl hover:scale-110 transition-transform shadow-purple-900/40"
-                 >
-                     <i className="fas fa-pen"></i>
-                 </button>
-             )}
 
-             {/* Create Blog Modal */}
-             <CreateBlogModal 
-                isOpen={showCreateModal} 
-                onClose={() => setShowCreateModal(false)}
-                onSuccess={() => {
-                    fetchBlogs(); // Refresh list
-                    // Optionally switch to 'blogs' tab if not already
-                    if (activeTab === 'all') setActiveTab('blogs');
-                }}
-             />
         </main>
     );
 }

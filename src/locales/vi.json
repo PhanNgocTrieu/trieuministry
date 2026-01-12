@@ -237,12 +237,16 @@
         "sidebar_title": "Thư viện",
         "tabs": {
             "all": "Tất cả",
+            "posts": "Bài đăng",
+            "testimonies": "Lời chứng",
             "blogs": "Bài viết",
             "documents": "Tài liệu",
             "songs": "Thánh ca"
         },
         "sections": {
             "latest_blogs": "Bài viết mới nhất",
+            "posts": "Bài đăng",
+            "testimonies": "Lời chứng",
             "documents": "Tài liệu",
             "songs": "Thánh ca dịch",
             "view_all": "Xem tất cả"

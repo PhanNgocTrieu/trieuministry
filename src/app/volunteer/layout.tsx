@@ -66,10 +66,7 @@ export default function VolunteerDashboardLayout({ children }: { children: React
 
                         <div className="px-4 py-2 mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Management</div>
 
-                        <Link href="/volunteer/blogs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/blogs')}`}>
-                            <i className="fas fa-blog w-5 text-center"></i>
-                            Approve Blogs
-                        </Link>
+
                     </nav>
 
                     <div className="p-4 border-t border-gray-800">

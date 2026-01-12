@@ -237,12 +237,16 @@
         "sidebar_title": "Library",
         "tabs": {
             "all": "All Resources",
+            "posts": "Posts",
+            "testimonies": "Testimonies",
             "blogs": "Blogs",
             "documents": "Documents",
             "songs": "Translated Songs"
         },
         "sections": {
             "latest_blogs": "Latest Blogs",
+            "posts": "Posts",
+            "testimonies": "Testimonies",
             "documents": "Documents",
             "songs": "Translated Songs",
             "view_all": "View All"
