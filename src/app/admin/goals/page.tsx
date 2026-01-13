@@ -1,7 +1,7 @@
 "use client";
 
-import GoalsManager from "@/components/dashboard/GoalsManager";
+import AdminGoalsList from "@/components/admin/goals/AdminGoalsList";
 
 export default function AdminGoalsPage() {
-    return <GoalsManager basePath="/admin/goals" />;
+    return <AdminGoalsList />;
 }

@@ -67,7 +67,7 @@ export default function MyAppealsPage() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">My Appeals</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">My Appeals</h1>
                 <p className="text-gray-500">Track the status of your fundraising requests.</p>
             </div>
 

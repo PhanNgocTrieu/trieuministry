@@ -17,7 +17,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
 
     return (
         <RoleGuard requireRole="user">
-            <div className="min-h-screen bg-gray-100 flex">
+            <div className="min-h-screen bg-gray-100 dark:bg-slate-950 flex">
                 {/* Mobile Overlay */}
                 {isSidebarOpen && (
                     <div 
