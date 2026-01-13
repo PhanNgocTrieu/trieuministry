@@ -342,9 +342,9 @@ export default function MinistryPage() {
                           <h3 className="text-xl font-bold text-white">Personal Requests</h3>
                       </div>
                       
-                      <div className="flex-1 space-y-4">
+                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
                           {personalPrayers.length > 0 ? (
-                              personalPrayers.slice(0, 5).map(prayer => (
+                              personalPrayers.map(prayer => (
                                   <div key={prayer.id} className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors">
                                       <p className="text-slate-300 font-medium leading-relaxed">"{prayer.name}"</p>
                                       <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
@@ -369,9 +369,9 @@ export default function MinistryPage() {
                           <h3 className="text-xl font-bold text-white">Ministry Requests</h3>
                       </div>
                       
-                      <div className="flex-1 space-y-4">
+                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
                           {ministryPrayers.length > 0 ? (
-                               ministryPrayers.slice(0, 5).map(prayer => (
+                               ministryPrayers.map(prayer => (
                                   <div key={prayer.id} className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors">
                                       <p className="text-slate-300 font-medium leading-relaxed">"{prayer.name}"</p>
                                       <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
@@ -395,9 +395,9 @@ export default function MinistryPage() {
                           <h3 className="text-xl font-bold text-white">Intercessory Focus</h3>
                       </div>
                       
-                      <div className="flex-1 space-y-4">
+                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
                           {intercessionTargets.length > 0 ? (
-                               intercessionTargets.slice(0, 3).map(target => (
+                               intercessionTargets.map(target => (
                                   <div 
                                     key={target.id} 
                                     onClick={() => setSelectedTarget(target)}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AdminGuard from '@/components/admin/AdminGuard';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, orderBy, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, orderBy, doc, updateDoc, deleteDoc, setDoc, increment } from 'firebase/firestore';
 import { useModal } from '@/context/ModalContext';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -163,9 +163,24 @@ export default function IntercessoryPage() {
 
     const handlePray = async (id: string) => {
         if (!user) return;
-        showAlert("Prayer Logged", "Your intercession has been recorded.");
 
         try {
+            // 1. Update Database
+            const targetRef = doc(db, 'intercession_targets', id);
+            await updateDoc(targetRef, {
+                prayerCount: increment(1)
+            });
+
+            // 2. Update Local State
+            setTargets(prev => prev.map(t => 
+                t.id === id 
+                ? { ...t, prayerCount: (t.prayerCount || 0) + 1 } 
+                : t
+            ));
+
+            showAlert("Prayer Logged", "Your intercession has been recorded.");
+
+            // 3. Log Personal Discipline
             const todayStr = format(new Date(), 'yyyy-MM-dd');
             const docId = `${user.uid}_${todayStr}_intercession`;
             await setDoc(doc(db, 'discipline_logs', docId), {
@@ -175,8 +190,10 @@ export default function IntercessoryPage() {
                 completed: true,
                 updatedAt: serverTimestamp()
             }, { merge: true });
+
         } catch (error) {
-            console.error("Error logging discipline:", error);
+            console.error("Error logging prayer:", error);
+            showAlert("Error", "Failed to log prayer");
         }
     };
 
