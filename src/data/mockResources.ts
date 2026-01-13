@@ -84,36 +84,8 @@ export const mockSongs: ResourceItem[] = [
     }
 ];
 
-export const mockPosts: ResourceItem[] = [
-    {
-        id: 'post-1',
-        slug: 'monthly-announcement-jan',
-        title: 'Monthly Ministry Update - January',
-        category: 'Announcement',
-        description: 'Key updates and events happening this month in our ministry.',
-        coverImage: 'https://placehold.co/600x400/png?text=Announce',
-        date: '2024-01-05',
-        author: 'Admin',
-        type: 'post',
-        fileUrl: '#',
-        size: '1.2 MB'
-    }
-];
+export const mockPosts: ResourceItem[] = [];
 
-export const mockTestimonies: ResourceItem[] = [
-    {
-        id: 'test-1',
-        slug: 'healing-testimony',
-        title: 'God Healed My Family',
-        category: 'Healing',
-        description: 'A powerful testimony of how God restored health and faith to our family during a difficult season.',
-        coverImage: 'https://placehold.co/600x400/png?text=Testimony',
-        date: '2024-01-10',
-        author: 'Member',
-        type: 'testimony',
-        fileUrl: '#',
-        size: '500 KB'
-    }
-];
+export const mockTestimonies: ResourceItem[] = [];
 
 export const allMockResources = [...mockDocuments, ...mockSongs, ...mockPosts, ...mockTestimonies];
