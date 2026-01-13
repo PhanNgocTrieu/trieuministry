@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, orderBy, doc, updateDoc, deleteDoc, setDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, orderBy, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { useModal } from '@/context/ModalContext';
 import { format } from 'date-fns';
 
@@ -11,15 +11,13 @@ interface Target {
     id: string;
     userId: string;
     name: string;
-    title?: string;
     description?: string;
-    commitmentTime?: string;
-    prayerCount?: number;
+    category?: string;
     status: 'active' | 'answered';
     createdAt: any;
 }
 
-export default function IntercessoryList() {
+export default function MinistryPrayerList() {
     const { user } = useAuth();
     const { showAlert, showConfirm } = useModal();
     const [targets, setTargets] = useState<Target[]>([]);
@@ -33,9 +31,8 @@ export default function IntercessoryList() {
 
     // Form Stats
     const [name, setName] = useState("");
-    const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [commitmentTime, setCommitmentTime] = useState("");
+    const [category, setCategory] = useState("");
 
     useEffect(() => {
         if (user) {
@@ -59,7 +56,7 @@ export default function IntercessoryList() {
         setLoading(true);
         try {
             const q = query(
-                collection(db, 'intercession_targets'),
+                collection(db, 'ministry_prayer_targets'),
                 where('userId', '==', user.uid),
                 orderBy('createdAt', 'desc')
             );
@@ -69,6 +66,7 @@ export default function IntercessoryList() {
                 fetched.push({ id: doc.id, ...doc.data() } as Target);
             });
             setTargets(fetched);
+            // Initial selection logic handled by useEffect
         } catch (error) {
             console.error("Error fetching items:", error);
         } finally {
@@ -89,7 +87,7 @@ export default function IntercessoryList() {
             const lowerTerm = searchTerm.toLowerCase();
             filtered = filtered.filter(t => 
                 t.name.toLowerCase().includes(lowerTerm) || 
-                t.title?.toLowerCase().includes(lowerTerm) ||
+                t.category?.toLowerCase().includes(lowerTerm) ||
                 t.description?.toLowerCase().includes(lowerTerm)
             );
         }
@@ -102,25 +100,22 @@ export default function IntercessoryList() {
         setViewMode('view');
         // Reset form just in case
         setName("");
-        setTitle("");
         setDescription("");
-        setCommitmentTime("");
+        setCategory("");
     };
 
     const handleCreateNew = () => {
         setSelectedId(null);
         setName("");
-        setTitle("");
         setDescription("");
-        setCommitmentTime("");
+        setCategory("");
         setViewMode('create');
     };
 
     const handleEdit = (target: Target) => {
         setName(target.name);
-        setTitle(target.title || "");
         setDescription(target.description || "");
-        setCommitmentTime(target.commitmentTime || "");
+        setCategory(target.category || "");
         setViewMode('edit');
     };
 
@@ -142,41 +137,37 @@ export default function IntercessoryList() {
         if (!user || !name.trim()) return;
 
         try {
-            const payload = {
-                userId: user.uid,
-                name: name.trim(),
-                title: title.trim(),
-                description: description.trim(),
-                commitmentTime: commitmentTime.trim(),
-                status: 'active' as const,
-            };
-
             if (viewMode === 'edit' && selectedId) {
                 // Update
-                const docRef = doc(db, 'intercession_targets', selectedId);
+                const docRef = doc(db, 'ministry_prayer_targets', selectedId);
                 await updateDoc(docRef, {
                     name: name.trim(),
-                    title: title.trim(),
                     description: description.trim(),
-                    commitmentTime: commitmentTime.trim(),
+                    category: category.trim(),
                     updatedAt: serverTimestamp()
                 });
 
-                setTargets(targets.map(t => t.id === selectedId ? { ...t, name, title, description, commitmentTime } : t));
-                showAlert("Success", "Intercession target updated.");
+                setTargets(targets.map(t => t.id === selectedId ? { ...t, name, description, category } : t));
+                showAlert("Success", "Ministry prayer updated.");
                 setViewMode('view');
             } else if (viewMode === 'create') {
                 // Create
-                const docRef = await addDoc(collection(db, 'intercession_targets'), {
-                    ...payload,
-                    createdAt: serverTimestamp(),
-                    prayerCount: 0
+                const docRef = await addDoc(collection(db, 'ministry_prayer_targets'), {
+                    userId: user.uid,
+                    name: name.trim(),
+                    description: description.trim(),
+                    category: category.trim(),
+                    status: 'active',
+                    createdAt: serverTimestamp()
                 });
 
                 const newTarget: Target = {
                     id: docRef.id,
-                    ...payload,
-                    prayerCount: 0,
+                    userId: user.uid,
+                    name: name.trim(),
+                    description: description.trim(),
+                    category: category.trim(),
+                    status: 'active',
                     createdAt: { seconds: Date.now() / 1000 }
                 };
                 
@@ -184,7 +175,7 @@ export default function IntercessoryList() {
                 setTargets(newTargets);
                 setSelectedId(newTarget.id);
                 setViewMode('view');
-                showAlert("Success", "Added to intercession list.");
+                showAlert("Success", "Added to ministry prayer list.");
             }
         } catch (error) {
             console.error("Error saving item:", error);
@@ -197,7 +188,7 @@ export default function IntercessoryList() {
         setTargets(targets.map(t => t.id === id ? { ...t, status: newStatus } : t));
 
         try {
-            await updateDoc(doc(db, 'intercession_targets', id), { status: newStatus });
+            await updateDoc(doc(db, 'ministry_prayer_targets', id), { status: newStatus });
         } catch (error) {
             console.error("Error updating status:", error);
             showAlert("Error", "Failed to update status");
@@ -212,7 +203,7 @@ export default function IntercessoryList() {
             "Are you sure you want to delete this item?",
             async () => {
                 try {
-                    await deleteDoc(doc(db, 'intercession_targets', id));
+                    await deleteDoc(doc(db, 'ministry_prayer_targets', id));
                     const newTargets = targets.filter(t => t.id !== id);
                     setTargets(newTargets);
                     
@@ -235,31 +226,20 @@ export default function IntercessoryList() {
 
     const handlePray = async (id: string | null) => {
         if (!user || !id) return;
-        
-        // Optimistic update for prayer count
-        setTargets(targets.map(t => t.id === id ? { ...t, prayerCount: (t.prayerCount || 0) + 1 } : t));
-        showAlert("Prayer Logged", "Your intercession has been recorded.");
+        showAlert("Prayer Logged", "Your ministry prayer has been recorded for today.");
 
         try {
-            // 1. Update Target Prayer Count
-            const targetRef = doc(db, 'intercession_targets', id);
-            await updateDoc(targetRef, {
-                prayerCount: increment(1)
-            });
-
-            // 2. Log Discipline
             const todayStr = format(new Date(), 'yyyy-MM-dd');
-            const docId = `${user.uid}_${todayStr}_intercession`;
+            const docId = `${user.uid}_${todayStr}_ministry_prayer`;
             await setDoc(doc(db, 'discipline_logs', docId), {
                 userId: user.uid,
                 date: todayStr,
-                type: 'intercession',
+                type: 'ministry_prayer',
                 completed: true,
                 updatedAt: serverTimestamp()
             }, { merge: true });
         } catch (error) {
             console.error("Error logging discipline:", error);
-            // Revert optimistic update on error if needed, but low priority
         }
     };
 
@@ -274,11 +254,11 @@ export default function IntercessoryList() {
                 {/* Header / Search */}
                 <div className="p-4 border-b border-slate-200 dark:border-white/10 space-y-3">
                      <div className="flex justify-between items-center">
-                        <h2 className="font-bold text-slate-700 dark:text-slate-200">Intercession List</h2>
+                        <h2 className="font-bold text-slate-700 dark:text-slate-200">Ministry Requests</h2>
                         <button 
                             onClick={handleCreateNew}
-                            className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center hover:bg-purple-600 transition-colors shadow-lg shadow-purple-900/20"
-                            title="Add New Target"
+                            className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 transition-colors shadow-lg shadow-blue-900/20"
+                            title="Add New Request"
                         >
                             <i className="fas fa-plus"></i>
                         </button>
@@ -288,23 +268,23 @@ export default function IntercessoryList() {
                         <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input 
                             type="text" 
-                            placeholder="Search people..." 
+                            placeholder="Search requests..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                     </div>
 
                     <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-lg">
                          <button 
                             onClick={() => setFilterStatus('active')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'active' ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'active' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                         >
                             Active
                         </button>
                          <button 
                             onClick={() => setFilterStatus('answered')}
-                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'answered' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${filterStatus === 'answered' ? 'bg-white dark:bg-slate-700 text-yellow-600 dark:text-yellow-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                         >
                             Answered
                         </button>
@@ -323,7 +303,7 @@ export default function IntercessoryList() {
                         <div className="p-8 text-center text-slate-500 text-sm">Loading...</div>
                     ) : visibleTargets.length === 0 ? (
                         <div className="p-8 text-center text-slate-500 text-sm italic">
-                            {searchTerm ? "No matches found." : "No intercession targets."}
+                            {searchTerm ? "No matches found." : "No ministry requests."}
                         </div>
                     ) : (
                         visibleTargets.map(target => (
@@ -332,7 +312,7 @@ export default function IntercessoryList() {
                                 onClick={() => handleSelect(target.id)}
                                 className={`p-4 border-b border-slate-100 dark:border-white/5 cursor-pointer transition-all hover:bg-white dark:hover:bg-slate-900 ${
                                     selectedId === target.id 
-                                        ? 'bg-white dark:bg-slate-900 border-l-4 border-l-purple-500 shadow-sm' 
+                                        ? 'bg-white dark:bg-slate-900 border-l-4 border-l-blue-500 shadow-sm' 
                                         : 'bg-transparent border-l-4 border-l-transparent text-slate-600 dark:text-slate-400'
                                 }`}
                             >
@@ -341,23 +321,16 @@ export default function IntercessoryList() {
                                         {target.name}
                                     </h3>
                                     {target.status === 'answered' && (
-                                        <i className="fas fa-check-circle text-green-500 text-xs" title="Answered"></i>
+                                        <i className="fas fa-check-circle text-yellow-500 text-xs" title="Answered"></i>
                                     )}
                                 </div>
                                 <div className="flex justify-between items-center">
                                      <p className="text-xs text-slate-500 line-clamp-1 flex-1 mr-2 opacity-80">
-                                        {target.title || "General Intercession"}
+                                        {target.category || "General"}
                                      </p>
-                                     <div className="flex items-center gap-2">
-                                         {target.prayerCount ? (
-                                             <span className="text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded-full">
-                                                <i className="fas fa-fire mr-1"></i>{target.prayerCount}
-                                             </span>
-                                         ) : null}
-                                         <span className="text-[10px] text-slate-400 whitespace-nowrap">
-                                            {target.createdAt?.seconds ? new Date(target.createdAt.seconds * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''}
-                                        </span>
-                                     </div>
+                                     <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                                        {target.createdAt?.seconds ? new Date(target.createdAt.seconds * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''}
+                                     </span>
                                 </div>
                             </div>
                         ))
@@ -370,12 +343,12 @@ export default function IntercessoryList() {
                 {viewMode === 'create' ? (
                      // CREATE FORM
                     <div className="flex-1 flex flex-col h-full animate-fadeIn">
-                        <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10">
+                        <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-blue-50/50 dark:bg-blue-900/10">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <i className="fas fa-plus-circle text-purple-500"></i> New Intercession Target
+                                    <i className="fas fa-plus-circle text-blue-500"></i> New Ministry Request
                                 </h2>
-                                <p className="text-sm text-slate-500">Add someone or a group to pray for.</p>
+                                <p className="text-sm text-slate-500">Track a new area for prayer.</p>
                             </div>
                             <button onClick={handleCancelForm} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                 <i className="fas fa-times text-xl"></i>
@@ -384,46 +357,34 @@ export default function IntercessoryList() {
                         <div className="flex-1 overflow-y-auto p-6 md:p-10">
                              <form id="create-form" onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
                                 <div>
-                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Person / Group Name</label>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Request Title</label>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        placeholder="Who are we praying for?"
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-lg font-bold"
+                                        placeholder="e.g. Youth Camp Prep"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-bold"
                                         autoFocus
                                     />
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Topic / Title</label>
-                                        <input
-                                            type="text"
-                                            value={title}
-                                            onChange={(e) => setTitle(e.target.value)}
-                                            placeholder="e.g. Health, Wisdom"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Commitment</label>
-                                        <input
-                                            type="text"
-                                            value={commitmentTime}
-                                            onChange={(e) => setCommitmentTime(e.target.value)}
-                                            placeholder="e.g. Weekly, Daily"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                                        />
-                                    </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Category</label>
+                                    <input
+                                        type="text"
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        placeholder="e.g. Outreach, Event, Leadership"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Detailed Request</label>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Details & Context</label>
                                     <textarea
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="Specific needs and context..."
+                                        placeholder="Specific needs, deadlines, or goals..."
                                         rows={6}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none leading-relaxed"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none leading-relaxed"
                                     ></textarea>
                                 </div>
                              </form>
@@ -436,19 +397,19 @@ export default function IntercessoryList() {
                                 type="submit" 
                                 form="create-form"
                                 disabled={!name.trim()}
-                                className="px-8 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 shadow-lg shadow-purple-900/20 disabled:opacity-50 disabled:shadow-none"
+                                className="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:shadow-none"
                             >
-                                Save Target
+                                Save Request
                             </button>
                         </div>
                     </div>
                 ) : viewMode === 'edit' && selectedTarget ? (
                     // EDIT FORM
                     <div className="flex-1 flex flex-col h-full animate-fadeIn">
-                        <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-purple-50/50 dark:bg-purple-900/10">
+                        <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-blue-50/50 dark:bg-blue-900/10">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <i className="fas fa-edit text-purple-500"></i> Editing Target
+                                    <i className="fas fa-edit text-blue-500"></i> Editing Request
                                 </h2>
                             </div>
                             <button onClick={handleCancelForm} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -458,46 +419,34 @@ export default function IntercessoryList() {
                          <div className="flex-1 overflow-y-auto p-6 md:p-10">
                              <form id="edit-form" onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
                                 <div>
-                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Person / Group Name</label>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Request Title</label>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        placeholder="Who are we praying for?"
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none text-lg font-bold"
+                                        placeholder="e.g. Youth Camp Prep"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-bold"
                                         autoFocus
                                     />
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Topic / Title</label>
-                                        <input
-                                            type="text"
-                                            value={title}
-                                            onChange={(e) => setTitle(e.target.value)}
-                                            placeholder="e.g. Health, Wisdom"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Commitment</label>
-                                        <input
-                                            type="text"
-                                            value={commitmentTime}
-                                            onChange={(e) => setCommitmentTime(e.target.value)}
-                                            placeholder="e.g. Weekly, Daily"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none"
-                                        />
-                                    </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Category</label>
+                                    <input
+                                        type="text"
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        placeholder="e.g. Outreach, Event, Leadership"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Detailed Request</label>
+                                    <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Details & Context</label>
                                     <textarea
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="Specific needs and context..."
+                                        placeholder="Specific needs, deadlines, or goals..."
                                         rows={6}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none resize-none leading-relaxed"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none leading-relaxed"
                                     ></textarea>
                                 </div>
                              </form>
@@ -510,9 +459,9 @@ export default function IntercessoryList() {
                                 type="submit" 
                                 form="edit-form"
                                 disabled={!name.trim()}
-                                className="px-8 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 shadow-lg shadow-purple-900/20 disabled:opacity-50 disabled:shadow-none"
+                                className="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-900/20 disabled:opacity-50 disabled:shadow-none"
                             >
-                                Update Target
+                                Update Request
                             </button>
                         </div>
                     </div>
@@ -525,42 +474,32 @@ export default function IntercessoryList() {
                                 <div className="flex items-center gap-3 mb-2">
                                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border ${
                                         selectedTarget.status === 'answered'
-                                            ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20'
-                                            : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+                                            ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20'
+                                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
                                     }`}>
                                         {selectedTarget.status}
                                     </span>
-                                    {selectedTarget.title && (
+                                    {selectedTarget.category && (
                                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-                                            {selectedTarget.title}
+                                            {selectedTarget.category}
                                          </span>
                                     )}
                                 </div>
                                 <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
                                     {selectedTarget.name}
                                 </h1>
-                                <div className="flex flex-wrap items-center gap-4 mt-3">
-                                    <p className="text-sm text-slate-500 flex items-center gap-2">
-                                        <i className="far fa-calendar-alt"></i>
-                                        Added on {selectedTarget.createdAt?.seconds ? new Date(selectedTarget.createdAt.seconds * 1000).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently'}
-                                    </p>
-                                    {selectedTarget.commitmentTime && (
-                                        <p className="text-sm text-purple-600 dark:text-purple-400 font-bold flex items-center gap-2 bg-purple-50 dark:bg-purple-900/10 px-2 py-0.5 rounded-md">
-                                            <i className="fas fa-clock"></i> {selectedTarget.commitmentTime}
-                                        </p>
-                                    )}
-                                    <p className="text-sm text-slate-500 flex items-center gap-2">
-                                         <i className="fas fa-fire text-orange-500"></i> {selectedTarget.prayerCount || 0} times prayed
-                                    </p>
-                                </div>
+                                <p className="text-sm text-slate-500 mt-2 flex items-center gap-2">
+                                    <i className="far fa-calendar-alt"></i>
+                                    Added on {selectedTarget.createdAt?.seconds ? new Date(selectedTarget.createdAt.seconds * 1000).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently'}
+                                </p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button 
                                     onClick={() => handleUpdateStatus(selectedTarget.id, selectedTarget.status)}
                                     className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
                                         selectedTarget.status === 'answered'
-                                            ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20'
-                                            : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/10 hover:text-green-500 hover:border-green-500'
+                                            ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20'
+                                            : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/10 hover:text-blue-500 hover:border-blue-500'
                                     }`}
                                     title={selectedTarget.status === 'active' ? "Mark Answered" : "Mark Active"}
                                 >
@@ -568,7 +507,7 @@ export default function IntercessoryList() {
                                 </button>
                                 <button 
                                     onClick={() => handleEdit(selectedTarget)}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-purple-500 hover:border-purple-500 transition-all"
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-all"
                                     title="Edit"
                                 >
                                     <i className="fas fa-edit"></i>
@@ -596,7 +535,7 @@ export default function IntercessoryList() {
                                     <p>No additional details provided.</p>
                                     <button 
                                         onClick={() => handleEdit(selectedTarget)}
-                                        className="text-purple-500 hover:underline mt-2 text-sm"
+                                        className="text-blue-500 hover:underline mt-2 text-sm"
                                     >
                                         Add details
                                     </button>
@@ -604,11 +543,11 @@ export default function IntercessoryList() {
                             )}
 
                              {selectedTarget.status === 'answered' && (
-                                <div className="mt-8 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-500/20 rounded-xl p-4 flex items-start gap-4">
-                                    <i className="fas fa-star text-green-500 mt-1"></i>
+                                <div className="mt-8 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-500/20 rounded-xl p-4 flex items-start gap-4">
+                                    <i className="fas fa-star text-yellow-500 mt-1"></i>
                                     <div>
-                                        <h4 className="font-bold text-green-800 dark:text-green-400 text-sm">Praise God!</h4>
-                                        <p className="text-green-700 dark:text-green-300/80 text-sm mt-1">This prayer has been marked as answered. Remember to give thanks!</p>
+                                        <h4 className="font-bold text-yellow-800 dark:text-yellow-400 text-sm">Praise God!</h4>
+                                        <p className="text-yellow-700 dark:text-yellow-300/80 text-sm mt-1">This prayer has been marked as answered. Remember to give thanks!</p>
                                     </div>
                                 </div>
                             )}
@@ -617,12 +556,12 @@ export default function IntercessoryList() {
                         {/* Footer Action */}
                          <div className="p-6 border-t border-slate-100 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-slate-900">
                              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest hidden md:block">
-                                 {selectedTarget.status === 'active' ? 'Keep Interceding' : 'Answered Prayer'}
+                                 {selectedTarget.status === 'active' ? 'Keep Praying' : 'Answered Prayer'}
                              </span>
                              {selectedTarget.status === 'active' && (
                                  <button 
                                     onClick={() => handlePray(selectedTarget.id)}
-                                    className="w-full md:w-auto px-8 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                    className="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
                                     <i className="fas fa-praying-hands"></i>
                                     I Prayed Today
@@ -634,15 +573,15 @@ export default function IntercessoryList() {
                     // EMPTY STATE
                     <div className="flex-1 flex flex-col items-center justify-center text-center p-10 opacity-50">
                          <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 text-slate-300 dark:text-slate-600">
-                             <i className="fas fa-hand-holding-heart text-4xl"></i>
+                             <i className="fas fa-church text-4xl"></i>
                          </div>
-                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Intercession Room</h3>
-                         <p className="text-slate-500 max-w-sm">Select an intercession target to view details or add a new one.</p>
+                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Ministry Prayer Space</h3>
+                         <p className="text-slate-500 max-w-sm">Select a ministry request to view details or add a new one.</p>
                          <button 
                             onClick={handleCreateNew}
-                            className="mt-6 px-6 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700"
+                            className="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700"
                         >
-                            Create New Target
+                            Create New Request
                         </button>
                     </div>
                 )}

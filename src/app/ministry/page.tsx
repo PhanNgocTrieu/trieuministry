@@ -49,6 +49,20 @@ interface IntercessionTarget {
   createdAt: any;
 }
 
+
+
+interface PrayerItem {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  status: 'active' | 'answered';
+  createdAt: any;
+}
+
+
+
+
 export default function MinistryPage() {
   const { t, language } = useLanguage();
   const { user, isAdmin } = useAuth();
@@ -57,6 +71,8 @@ export default function MinistryPage() {
   // Data States
   const [ministries, setMinistries] = useState<Ministry[]>([]);
   const [intercessionTargets, setIntercessionTargets] = useState<IntercessionTarget[]>([]);
+  const [personalPrayers, setPersonalPrayers] = useState<PrayerItem[]>([]);
+  const [ministryPrayers, setMinistryPrayers] = useState<PrayerItem[]>([]);
   const [selectedTarget, setSelectedTarget] = useState<IntercessionTarget | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -78,6 +94,28 @@ export default function MinistryPage() {
       setIntercessionTargets(list);
     });
 
+    // Fetch Ministry Prayers
+    const qMinistryPrayers = query(collection(db, "ministry_prayer_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
+    const unsubscribeMinistryPrayers = onSnapshot(qMinistryPrayers, (snapshot) => {
+      const list: PrayerItem[] = [];
+      snapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() } as PrayerItem);
+      });
+      setMinistryPrayers(list);
+    });
+
+    // Fetch Personal Prayers (Assuming Admin's are public or this feature is for Admin to share his heart)
+    // NOTE: In a multi-user app, we would tag these as 'public' or filter by Admin ID. 
+    // For now, we fetch all active ones assuming single-tenant/admin content creator context.
+    const qPersonalPrayers = query(collection(db, "personal_prayer_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
+    const unsubscribePersonalPrayers = onSnapshot(qPersonalPrayers, (snapshot) => {
+        const list: PrayerItem[] = [];
+        snapshot.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() } as PrayerItem);
+        });
+        setPersonalPrayers(list);
+    });
+
     // Fetch Ministries
     const qMinistries = query(collection(db, "ministries"), orderBy("createdAt", "desc"));
     const unsubscribeMinistries = onSnapshot(qMinistries, (snapshot) => {
@@ -92,6 +130,8 @@ export default function MinistryPage() {
     return () => {
       unsubscribeMinistries();
       unsubscribeIntercession();
+      unsubscribeMinistryPrayers();
+      unsubscribePersonalPrayers();
     };
   }, []);
 
@@ -274,75 +314,113 @@ export default function MinistryPage() {
         </div>
       </section>
 
-      {/* SECTION 2: INTERCESSORY PRAYER */}
-      <section className="bg-slate-950 py-24 text-white relative border-t border-white/5">
-          {/* Subtle separator glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+      {/* SECTION 2: PRAYERS (3 Columns) */}
+      <section id="prayers" className="bg-slate-950 py-24 text-white relative border-t border-white/5">
+           {/* Background Effects */}
+           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full pointer-events-none"></div>
 
           <div className="container container-custom relative z-10">
-             <div className="max-w-4xl mb-16">
-                 <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Join Us In Prayer</span>
-                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                     Intercessory Focus
-                 </h2>
-                 <p className="text-xl text-slate-400 max-w-2xl leading-relaxed">
-                     We are standing in the gap for these specific needs. Click a card to read more and pray.
-                 </p>
-                 <div className="mt-8 h-1 w-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-             </div>
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                  <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Join Us In Prayer</span>
+                  <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
+                      Prayer Wall
+                  </h2>
+                  <p className="text-xl text-slate-400 leading-relaxed">
+                      "For where two or three gather in my name, there am I with them." (Matthew 18:20)
+                  </p>
+              </div>
 
-             {intercessionTargets.length > 0 ? (
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                     {intercessionTargets.map(target => {
-                         const targetName = getLocalized(target, 'name');
-                         return (
-                         <div 
-                             key={target.id} 
-                             onClick={() => setSelectedTarget(target)}
-                             className="bg-slate-900/60 backdrop-blur-sm p-6 rounded-3xl border border-white/5 hover:bg-slate-800 hover:border-purple-500/50 transition-all group cursor-pointer active:scale-95 shadow-lg shadow-black/20"
-                         >
-                             {/* Commitment Time Badge */}
-                             {target.commitmentTime && (
-                                 <div className="absolute top-0 right-0 bg-slate-800/90 px-3 py-1.5 rounded-bl-2xl border-l border-b border-white/5 flex items-center gap-2 backdrop-blur-md">
-                                     <i className="fas fa-clock text-purple-400 text-xs"></i>
-                                     <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wide">{target.commitmentTime}</span>
-                                 </div>
-                             )}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  
+                  {/* Column 1: Personal Requests */}
+                  <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-green-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
+                      <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20">
+                              <i className="fas fa-user-circle"></i>
+                          </div>
+                          <h3 className="text-xl font-bold text-white">Personal Requests</h3>
+                      </div>
+                      
+                      <div className="flex-1 space-y-4">
+                          {personalPrayers.length > 0 ? (
+                              personalPrayers.slice(0, 5).map(prayer => (
+                                  <div key={prayer.id} className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors">
+                                      <p className="text-slate-300 font-medium leading-relaxed">"{prayer.name}"</p>
+                                      <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
+                                          <i className="fas fa-clock"></i>
+                                          {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
+                                      </div>
+                                  </div>
+                              ))
+                          ) : (
+                              <div className="text-center py-10 text-slate-600 italic">No personal requests shared yet.</div>
+                          )}
+                      </div>
+                      {/* View More Button? */}
+                  </div>
 
-                             <div className="flex items-start gap-4 mt-2">
-                                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-110 group-hover:from-purple-600 group-hover:to-blue-600 group-hover:text-white transition-all duration-300 border border-white/5 group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-purple-500/30">
-                                     <i className="fas fa-praying-hands text-xl"></i>
-                                 </div>
-                                 <div className="flex-1">
-                                     {/* Name / Group */}
-                                     <h4 className="text-lg font-bold text-white mb-1 leading-tight group-hover:text-purple-300 transition-colors">{targetName}</h4>
-                                     
-                                     {/* Title / Topic */}
-                                     {target.title && (
-                                         <p className="text-slate-400 font-medium text-sm mb-3">{target.title}</p>
-                                     )}
+                  {/* Column 2: Ministry Requests */}
+                   <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-blue-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
+                      <div className="flex items-center gap-3 mb-6">
+                           <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                              <i className="fas fa-church"></i>
+                          </div>
+                          <h3 className="text-xl font-bold text-white">Ministry Requests</h3>
+                      </div>
+                      
+                      <div className="flex-1 space-y-4">
+                          {ministryPrayers.length > 0 ? (
+                               ministryPrayers.slice(0, 5).map(prayer => (
+                                  <div key={prayer.id} className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors">
+                                      <p className="text-slate-300 font-medium leading-relaxed">"{prayer.name}"</p>
+                                      <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
+                                          <i className="fas fa-clock"></i>
+                                          {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
+                                      </div>
+                                  </div>
+                              ))
+                          ) : (
+                               <div className="text-center py-10 text-slate-600 italic">No ministry requests shared yet.</div>
+                          )}
+                      </div>
+                  </div>
 
-                                     <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-white/5">
-                                         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-purple-400 transition-colors">
-                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-purple-400 transition-colors"></span>
-                                             Read Request
-                                         </div>
-                                         <div className="flex items-center gap-1.5 text-slate-400 bg-slate-800/50 px-2 py-1 rounded-md">
-                                             <span className="text-xs font-bold text-white">{target.prayerCount || 0}</span>
-                                             <span className="text-[10px] uppercase font-bold text-slate-500">prayers</span>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         );
-                     })}
-                 </div>
-             ) : (
-                 <div className="text-center py-16 border border-dashed border-slate-800 rounded-3xl bg-slate-900/30">
-                     <p className="text-slate-500">No active intercession targets at the moment.</p>
-                 </div>
-             )}
+                  {/* Column 3: Intercessory Focus */}
+                   <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-purple-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
+                      <div className="flex items-center gap-3 mb-6">
+                           <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+                              <i className="fas fa-praying-hands"></i>
+                          </div>
+                          <h3 className="text-xl font-bold text-white">Intercessory Focus</h3>
+                      </div>
+                      
+                      <div className="flex-1 space-y-4">
+                          {intercessionTargets.length > 0 ? (
+                               intercessionTargets.slice(0, 3).map(target => (
+                                  <div 
+                                    key={target.id} 
+                                    onClick={() => setSelectedTarget(target)}
+                                    className="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-white/5 cursor-pointer hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-500/30 transition-all group"
+                                  >
+                                      <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors mb-1">{getLocalized(target, 'name')}</h4>
+                                      {target.title && <p className="text-xs text-slate-400 line-clamp-1 mb-3">{target.title}</p>}
+                                      
+                                      <div className="flex items-center justify-between text-xs pt-3 border-t border-white/5">
+                                           <span className="text-slate-500 flex items-center gap-1">
+                                               <i className="fas fa-users"></i> {target.prayerCount || 0}
+                                           </span>
+                                           <span className="text-purple-400 font-bold uppercase text-[10px] tracking-wider">Pray Now &rarr;</span>
+                                      </div>
+                                  </div>
+                              ))
+                          ) : (
+                               <div className="text-center py-10 text-slate-600 italic">No intercessory targets active.</div>
+                          )}
+                      </div>
+                  </div>
+
+              </div>
           </div>
       </section>
 
