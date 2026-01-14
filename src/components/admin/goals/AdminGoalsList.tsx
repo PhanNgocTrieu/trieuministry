@@ -100,13 +100,7 @@ export default function AdminGoalsList() {
         return () => unsubscribe();
     }, [user]);
 
-    // Auto-select first item logic
-    useEffect(() => {
-        if (!selectedId && goals.length > 0) {
-            const first = getFilteredGoals()[0];
-            if (first) setSelectedId(first.id);
-        }
-    }, [goals, activeTab, selectedYear]);
+
 
     const getFilteredGoals = () => {
         let filtered = goals;
@@ -257,7 +251,7 @@ export default function AdminGoalsList() {
     const statsData = getStatsData();
 
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-140px)] min-h-[600px] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-slate-900 animate-fade-in relative">
+        <div className="h-[calc(100dvh-140px)] min-h-[400px] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-slate-900 animate-fade-in relative flex flex-col">
             
             {/* STATS MODAL */}
             {showStatsModal && (
@@ -321,8 +315,206 @@ export default function AdminGoalsList() {
                 </div>
             )}
 
-            {/* LEFT SIDEBAR: LIST */}
-            <div className="w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-white/10 flex flex-col bg-slate-50 dark:bg-slate-950/50">
+            {/* DETAIL MODAL (Replaces Right Panel) */}
+            {selectedGoal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200 relative">
+                        
+                        {/* 1. Modal Header (Close Button) */}
+                         <div className="p-4 border-b border-slate-100 dark:border-white/5 flex justify-end items-center bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
+                            <button 
+                                onClick={() => setSelectedId(null)}
+                                className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                                title="Close"
+                            >
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        {/* Interactive Body */}
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-white dark:bg-slate-900 custom-scrollbar">
+                            
+                            {/* 2. Title & Actions Header */}
+                            <div className="flex flex-col md:flex-row gap-4 justify-between items-start mb-8">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <StatusBadge status={selectedGoal.status} />
+                                        <PriorityBadge priority={selectedGoal.priority || 'medium'} />
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                            {selectedGoal.year}
+                                        </span>
+                                    </div>
+                                    <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                                        {selectedGoal.title}
+                                    </h1>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Link 
+                                        href={`/admin/goals/create?id=${selectedGoal.id}`}
+                                        className="px-4 py-2 rounded-xl flex items-center gap-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-all font-bold text-sm"
+                                        title="Edit Details"
+                                    >
+                                        <i className="fas fa-edit"></i> Edit
+                                    </Link>
+                                    <button 
+                                        onClick={() => handleDelete(selectedGoal.id)}
+                                        className="px-4 py-2 rounded-xl flex items-center gap-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-red-500 hover:text-white transition-all font-bold text-sm"
+                                        title="Delete"
+                                    >
+                                        <i className="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 3. Overall Progress */}
+                            <div className="mb-8 p-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-white/5">
+                                <div className="flex justify-between items-end mb-3">
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Process</p>
+                                        <p className={`text-4xl font-black ${selectedGoal.progress === 100 ? 'text-green-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                                            {Math.round(selectedGoal.progress || 0)}%
+                                        </p>
+                                    </div>
+                                    {selectedGoal.status === 'completed' && (
+                                        <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-2">
+                                            <i className="fas fa-check-circle"></i> COMPLETED
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-3 overflow-hidden">
+                                    <div 
+                                        className={`h-full rounded-full transition-all duration-700 ${
+                                            selectedGoal.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
+                                        }`} 
+                                        style={{ width: `${selectedGoal.progress || 0}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            {/* 4. Description Content */}
+                            {selectedGoal.description && (
+                                <div className="mb-8">
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-3 flex items-center gap-2">
+                                        <i className="fas fa-align-left text-slate-400"></i> Description
+                                    </h3>
+                                    <div className="prose prose-slate dark:prose-invert max-w-none">
+                                        <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                                            {selectedGoal.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 5. Milestones & Updates (Type Specific) */}
+                            <div className="border-t border-slate-100 dark:border-white/5 pt-8">
+                                
+                                {/* MILESTONES */}
+                                {selectedGoal.type === 'milestone' && (
+                                    <div className="space-y-4">
+                                         <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-3 flex items-center gap-2">
+                                            <i className="fas fa-tasks text-slate-400"></i> Milestones Checklist
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {selectedGoal.milestones?.map((ms, idx) => (
+                                                <div 
+                                                    key={idx} 
+                                                    onClick={() => handleMilestoneToggle(selectedGoal, idx)}
+                                                    className="flex items-start gap-4 p-4 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800/20 hover:bg-white dark:hover:bg-slate-800 hover:shadow-lg transition-all border border-transparent hover:border-slate-100 dark:hover:border-white/5 group"
+                                                >
+                                                    <div className={`mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0 ${
+                                                        ms.isCompleted 
+                                                        ? 'bg-blue-600 border-blue-600 text-white' 
+                                                        : 'border-slate-300 dark:border-slate-600 text-transparent group-hover:border-blue-400'
+                                                    }`}>
+                                                        <i className="fas fa-check text-xs"></i>
+                                                    </div>
+                                                    <span className={`text-base font-medium transition-colors ${ms.isCompleted ? 'text-slate-400 dark:text-slate-500 line-through decoration-2' : 'text-slate-700 dark:text-slate-200'}`}>
+                                                        {ms.title}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                            {(!selectedGoal.milestones || selectedGoal.milestones.length === 0) && (
+                                                <p className="text-slate-400 italic text-sm">No milestones defined. Edit the goal to add list items.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* TARGET / SAVINGS */}
+                                {(selectedGoal.type === 'target' || selectedGoal.type === 'savings') && (
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-3 flex items-center gap-2">
+                                            <i className="fas fa-chart-line text-slate-400"></i> Current Value
+                                        </h3>
+                                        <div className="bg-slate-50 dark:bg-slate-800/20 p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-100 dark:border-white/5">
+                                            {isEditingValue ? (
+                                                <div className="w-full max-w-xs animate-in fade-in zoom-in duration-200">
+                                                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Update New Value</label>
+                                                    <div className="flex gap-2">
+                                                        <input 
+                                                            type="number" 
+                                                            value={tempValue}
+                                                            onChange={(e) => setTempValue(e.target.value)}
+                                                            className="w-full px-4 py-3 text-lg font-bold bg-white dark:bg-slate-700 border border-slate-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white outline-none"
+                                                            placeholder="Value"
+                                                            autoFocus
+                                                        />
+                                                        <button 
+                                                            onClick={() => handleValueSave(selectedGoal)}
+                                                            className="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-500 font-bold"
+                                                        >
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                    <button onClick={() => setIsEditingValue(false)} className="mt-3 text-sm text-slate-400 hover:text-slate-600">Cancel</button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <p className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
+                                                        {selectedGoal.type === 'savings' ? formatCurrency(selectedGoal.currentValue || 0) : selectedGoal.currentValue || 0}
+                                                    </p>
+                                                    <p className="text-xl text-slate-400 dark:text-slate-500 font-medium mb-6">
+                                                        of <span className="text-slate-600 dark:text-slate-300">{selectedGoal.type === 'savings' ? formatCurrency(selectedGoal.targetValue || 0) : `${selectedGoal.targetValue} ${selectedGoal.unit || ''}`}</span>
+                                                    </p>
+                                                    <button 
+                                                        onClick={() => setIsEditingValue(true)}
+                                                        className="px-6 py-2.5 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-white/10 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl font-bold transition-all shadow-sm"
+                                                    >
+                                                        Update Value
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* SIMPLE */}
+                                {selectedGoal.type === 'simple' && (
+                                    <div className="flex flex-col items-center justify-center py-6">
+                                        <button 
+                                            onClick={() => handleSimpleToggle(selectedGoal)}
+                                            className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 font-bold text-lg shadow-sm transition-all transform active:scale-95 ${
+                                                selectedGoal.isCompleted 
+                                                ? 'bg-green-500 text-white hover:bg-green-600' 
+                                                : 'bg-white dark:bg-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-white/10'
+                                            }`}
+                                        >
+                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedGoal.isCompleted ? 'border-white' : 'border-slate-400'}`}>
+                                                {selectedGoal.isCompleted && <i className="fas fa-check text-xs"></i>}
+                                            </div>
+                                            {selectedGoal.isCompleted ? 'Marked as Complete' : 'Mark as Complete'}
+                                        </button>
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MAIN LIST: FULL WIDTH */}
+            <div className="flex-1 flex flex-col min-h-0 bg-slate-50 dark:bg-slate-950/50">
                 {/* Header */}
                 <div className="p-4 border-b border-slate-200 dark:border-white/10 space-y-3">
                     <div className="flex justify-between items-center">
@@ -378,239 +570,55 @@ export default function AdminGoalsList() {
                 </div>
 
                 {/* List Items */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 min-h-0 overflow-y-scroll custom-scrollbar p-0 overscroll-y-contain">
                     {loading ? (
                         <div className="p-8 text-center text-slate-500 text-sm">Loading...</div>
                     ) : visibleGoals.length === 0 ? (
-                        <div className="p-8 text-center text-slate-500 text-sm italic">
+                        <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm italic">
+                            <i className="fas fa-clipboard-list text-4xl mb-3 text-slate-300 dark:text-slate-700"></i>
                             {searchTerm ? "No matches found." : activeTab === 'active' ? "No active goals." : "No completed goals."}
                         </div>
                     ) : (
-                        visibleGoals.map(goal => (
-                             <div 
-                                key={goal.id}
-                                onClick={() => setSelectedId(goal.id)}
-                                className={`p-4 border-b border-slate-100 dark:border-white/5 cursor-pointer transition-all hover:bg-white dark:hover:bg-slate-900 group ${
-                                    selectedId === goal.id 
-                                        ? 'bg-white dark:bg-slate-900 border-l-4 border-l-blue-500 shadow-sm' 
-                                        : 'bg-transparent border-l-4 border-l-transparent'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className={`font-bold text-sm line-clamp-1 flex-1 mr-2 ${selectedId === goal.id ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
-                                        {goal.title}
-                                    </h3>
-                                    {goal.status === 'completed' && <i className="fas fa-check-circle text-green-500 text-xs"></i>}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 divide-y md:divide-y-0 divide-slate-100 dark:divide-white/5">
+                            {visibleGoals.map(goal => (
+                                 <div 
+                                    key={goal.id}
+                                    onClick={() => setSelectedId(goal.id)}
+                                    className={`p-5 cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group border-b border-r border-slate-100 dark:border-white/5 ${
+                                        selectedId === goal.id 
+                                            ? 'bg-blue-50/50 dark:bg-blue-900/10' 
+                                            : 'bg-transparent'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <h3 className={`font-bold text-base line-clamp-1 flex-1 mr-2 ${selectedId === goal.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'}`}>
+                                            {goal.title}
+                                        </h3>
+                                        {goal.status === 'completed' && <i className="fas fa-check-circle text-green-500"></i>}
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center text-xs mb-3">
+                                         <div className="flex items-center gap-2">
+                                             <PriorityBadge priority={goal.priority || 'medium'} />
+                                             <span className="text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">{goal.year}</span>
+                                         </div>
+                                         <div className="flex items-center gap-1 font-bold text-slate-500">
+                                             <span>{Math.round(goal.progress || 0)}%</span>
+                                         </div>
+                                    </div>
+
+                                    {/* Mini Progress Bar */}
+                                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                        <div 
+                                            className={`h-full rounded-full ${goal.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`} 
+                                            style={{ width: `${goal.progress || 0}%` }}
+                                        ></div>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-center text-xs">
-                                     <div className="flex items-center gap-2">
-                                         <PriorityBadge priority={goal.priority || 'medium'} />
-                                         <span className="text-slate-400">{goal.year}</span>
-                                     </div>
-                                     <div className="flex items-center gap-1 font-bold text-slate-500">
-                                         <span>{Math.round(goal.progress || 0)}%</span>
-                                     </div>
-                                </div>
-                                {/* Mini Progress Bar */}
-                                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-2 overflow-hidden">
-                                    <div 
-                                        className={`h-full rounded-full ${goal.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`} 
-                                        style={{ width: `${goal.progress || 0}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
                 </div>
-            </div>
-
-            {/* RIGHT MAIN: DETAIL PANEL */}
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-slate-900 relative">
-                {selectedGoal ? (
-                    <div className="flex-1 flex flex-col h-full animate-fadeIn">
-                        {/* Detail Header */}
-                         <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-start bg-slate-50/50 dark:bg-slate-900/50">
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <StatusBadge status={selectedGoal.status} />
-                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                                        {selectedGoal.type}
-                                    </span>
-                                </div>
-                                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mb-2">
-                                    {selectedGoal.title}
-                                </h1>
-                                {selectedGoal.description && (
-                                    <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl">
-                                        {selectedGoal.description}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Link 
-                                    href={`/admin/goals/create?id=${selectedGoal.id}`}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-all"
-                                    title="Edit Details"
-                                >
-                                    <i className="fas fa-edit"></i>
-                                </Link>
-                                <button 
-                                    onClick={() => handleDelete(selectedGoal.id)}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-red-500 hover:border-red-500 transition-all"
-                                    title="Delete"
-                                >
-                                    <i className="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Interactive Body */}
-                        <div className="flex-1 overflow-y-auto p-6 md:p-10">
-                            
-                            {/* Progress Section */}
-                            <div className="bg-slate-50 dark:bg-slate-800/20 rounded-2xl p-6 border border-slate-100 dark:border-white/5 mb-8">
-                                <div className="flex justify-between items-end mb-2">
-                                    <div>
-                                        <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Overall Progress</p>
-                                        <p className={`text-4xl font-extrabold ${selectedGoal.progress === 100 ? 'text-green-500' : 'text-blue-600 dark:text-blue-400'}`}>
-                                            {Math.round(selectedGoal.progress || 0)}%
-                                        </p>
-                                    </div>
-                                    {selectedGoal.status === 'completed' && (
-                                        <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
-                                            <i className="fas fa-check-circle"></i> Completed
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-                                    <div 
-                                        className={`h-full rounded-full transition-all duration-700 ${
-                                            selectedGoal.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
-                                        }`} 
-                                        style={{ width: `${selectedGoal.progress || 0}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-
-                            {/* Type Specific Interactions */}
-                            
-                            {/* MILESTONES */}
-                            {selectedGoal.type === 'milestone' && (
-                                <div className="space-y-4">
-                                     <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                        <i className="fas fa-tasks text-blue-500"></i> Milestones
-                                    </h3>
-                                    <div className="space-y-2">
-                                        {selectedGoal.milestones?.map((ms, idx) => (
-                                            <div 
-                                                key={idx} 
-                                                onClick={() => handleMilestoneToggle(selectedGoal, idx)}
-                                                className="flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all group"
-                                            >
-                                                <div className={`mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${
-                                                    ms.isCompleted 
-                                                    ? 'bg-blue-600 border-blue-600 text-white' 
-                                                    : 'border-slate-300 dark:border-slate-600 text-transparent group-hover:border-blue-400'
-                                                }`}>
-                                                    <i className="fas fa-check text-xs"></i>
-                                                </div>
-                                                <span className={`text-base font-medium transition-colors ${ms.isCompleted ? 'text-slate-400 dark:text-slate-500 line-through decoration-2' : 'text-slate-700 dark:text-slate-200'}`}>
-                                                    {ms.title}
-                                                </span>
-                                            </div>
-                                        ))}
-                                        {(!selectedGoal.milestones || selectedGoal.milestones.length === 0) && (
-                                            <p className="text-slate-400 italic">No milestones defined. Edit the goal to add steps.</p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* TARGET / SAVINGS */}
-                            {(selectedGoal.type === 'target' || selectedGoal.type === 'savings') && (
-                                <div>
-                                    <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4">
-                                        <i className="fas fa-chart-line text-blue-500"></i> Current Achievement
-                                    </h3>
-                                    <div className="bg-slate-50 dark:bg-slate-800/30 p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-slate-100 dark:border-white/5">
-                                        {isEditingValue ? (
-                                            <div className="w-full max-w-xs animate-in fade-in zoom-in duration-200">
-                                                <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Update New Value</label>
-                                                <div className="flex gap-2">
-                                                    <input 
-                                                        type="number" 
-                                                        value={tempValue}
-                                                        onChange={(e) => setTempValue(e.target.value)}
-                                                        className="w-full px-4 py-3 text-lg font-bold bg-white dark:bg-slate-700 border border-slate-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white outline-none"
-                                                        placeholder="Value"
-                                                        autoFocus
-                                                    />
-                                                    <button 
-                                                        onClick={() => handleValueSave(selectedGoal)}
-                                                        className="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-500 font-bold"
-                                                    >
-                                                        Save
-                                                    </button>
-                                                </div>
-                                                <button onClick={() => setIsEditingValue(false)} className="mt-3 text-sm text-slate-400 hover:text-slate-600">Cancel</button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <p className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
-                                                    {selectedGoal.type === 'savings' ? formatCurrency(selectedGoal.currentValue || 0) : selectedGoal.currentValue || 0}
-                                                </p>
-                                                <p className="text-xl text-slate-400 dark:text-slate-500 font-medium mb-6">
-                                                    of <span className="text-slate-600 dark:text-slate-300">{selectedGoal.type === 'savings' ? formatCurrency(selectedGoal.targetValue || 0) : `${selectedGoal.targetValue} ${selectedGoal.unit || ''}`}</span>
-                                                </p>
-                                                <button 
-                                                    onClick={() => setIsEditingValue(true)}
-                                                    className="px-6 py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl font-bold transition-all"
-                                                >
-                                                    Update Progress
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* SIMPLE */}
-                            {selectedGoal.type === 'simple' && (
-                                <div className="flex flex-col items-center justify-center py-12">
-                                    <button 
-                                        onClick={() => handleSimpleToggle(selectedGoal)}
-                                        className={`w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
-                                            selectedGoal.isCompleted 
-                                            ? 'bg-green-500 text-white' 
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-300 hover:bg-white hover:text-green-500 border-4 border-slate-200 dark:border-slate-700'
-                                        }`}
-                                    >
-                                        <i className="fas fa-check"></i>
-                                    </button>
-                                    <p className="mt-6 text-xl font-bold text-slate-700 dark:text-slate-300">
-                                        {selectedGoal.isCompleted ? 'Goal Completed!' : 'Mark as Done'}
-                                    </p>
-                                </div>
-                            )}
-
-                        </div>
-                    </div>
-                ) : (
-                    // EMPTY STATE
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-10 opacity-50">
-                        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 text-slate-300 dark:text-slate-600">
-                            <i className="fas fa-bullseye text-4xl"></i>
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Select a Goal</h3>
-                        <p className="text-slate-500 max-w-sm">Choose a goal from the list to view details or update progress.</p>
-                        <Link 
-                            href="/admin/goals/create"
-                            className="mt-6 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700"
-                        >
-                            Create New Goal
-                        </Link>
-                    </div>
-                )}
             </div>
         </div>
     );

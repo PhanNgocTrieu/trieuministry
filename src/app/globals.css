@@ -16,7 +16,7 @@
   --border-color: #e2e8f0; /* slate-200 */
   --font-heading: var(--font-inter), sans-serif;
   --font-body: var(--font-inter), sans-serif;
-  
+
   /* Premium Shadow Variables */
   --shadow-color: 220 3% 15%;
   --shadow-strength: 1%;
@@ -43,7 +43,7 @@
   --bg-light: #0f172a; /* slate-900 */
   --bg-gray: #1e293b; /* slate-800 */
   --border-color: #1e293b; /* slate-800 */
-  
+
   --shadow-color: 220 40% 2%;
   --shadow-strength: 25%;
 }
@@ -73,6 +73,26 @@ body {
   background: var(--primary-color);
 }
 
+/* Custom Scrollbar Utility */
+/* Custom Scrollbar Utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px; /* Increased from 6px */
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #94a3b8; /* slate-400 solid for better visibility */
+  border-radius: 10px;
+  border: 2px solid transparent; /* adds padding around thumb */
+  background-clip: content-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* slate-500 on hover */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
 /* Utility Classes */
 .container-custom {
   max-width: 1200px;
@@ -169,8 +189,8 @@ body.modal-open {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 
-    0 4px 6px -1px rgba(var(--shadow-color) / calc(var(--shadow-strength) + 9%)),
+  box-shadow: 0 4px 6px -1px rgba(var(--shadow-color) /
+          calc(var(--shadow-strength) + 9%)),
     0 2px 4px -2px rgba(var(--shadow-color) / calc(var(--shadow-strength) + 9%));
 }
 
@@ -182,17 +202,13 @@ body.modal-open {
 
 /* Premium Shadows */
 .shadow-premium {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.02),
-    0 10px 15px -3px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
 .shadow-premium-hover:hover {
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.05),
-    0 8px 10px -6px rgba(0, 0, 0, 0.01),
-    0 0 0 1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.01), 0 0 0 1px rgba(0, 0, 0, 0.02);
   transform: translateY(-2px);
 }
 
