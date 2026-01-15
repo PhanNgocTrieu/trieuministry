@@ -10,6 +10,7 @@ import ConfirmModal from '@/components/admin/ConfirmModal';
 import { format } from 'date-fns';
 import WalletStats from './WalletStats';
 import WalletCompletionModal from './WalletCompletionModal';
+import FundraisingModal from './FundraisingModal';
 
 interface Wallet {
     id: string;
@@ -19,6 +20,8 @@ interface Wallet {
     type?: 'estimation' | 'management';
     exchangeRate: number;
     createdBy: string;
+    // currentFund removed/ignored as it's now derived from items
+    targetPeople?: number; // For Fundraising
 }
 
 interface WalletItem {
@@ -27,13 +30,15 @@ interface WalletItem {
     content: string;
     item: string;
     quantity: number;
+    unit?: string; // e.g. kg, box
+    unitPrice?: number; // New: Price per unit/person
     category?: string;
     pic?: string; // Person In Charge
     estimatedVND: number;
     estimatedUSD: number;
     actualVND: number;
     actualUSD: number;
-    type?: 'income' | 'expense'; // For Management Mode
+    type?: 'income' | 'expense'; // expense = Cost, income = Fund
     isCompleted: boolean;
     note: string;
 }
@@ -51,11 +56,14 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     
+    // Initial Form State
     const initialFormState = {
         date: new Date().toISOString().split('T')[0],
         content: '',
         item: '',
         quantity: 1,
+        unit: '',
+        unitPrice: 0,
         category: '',
         pic: '',
         estimatedVND: 0,
@@ -70,20 +78,29 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
     const isEstimation = wallet?.type === 'estimation';
 
     // Estimation Mode Stats
-    const totalEstVND = items.reduce((sum, i) => sum + (i.estimatedVND || 0), 0);
+    // Cost (Expense)
+    const totalEstVND = items
+        .filter(i => !i.type || i.type === 'expense')
+        .reduce((sum, i) => sum + (i.estimatedVND || 0), 0);
+    
+    // Available Funds (Income) - Derived from items now
+    const currentFund = items
+        .filter(i => i.type === 'income')
+        .reduce((sum, i) => sum + (i.estimatedVND || 0), 0); // Using estimatedVND for ease in Estimation Mode
+
     const totalEstUSD = items.reduce((sum, i) => sum + (i.estimatedUSD || 0), 0);
     
     // Management Mode Stats (Ledger)
     const totalIncomeVND = items.filter(i => i.type === 'income').reduce((sum, i) => sum + (i.actualVND || 0), 0);
-    const totalExpenseVND = items.filter(i => i.type === 'expense' || !i.type).reduce((sum, i) => sum + (i.actualVND || 0), 0); // Default to expense if type missing
+    const totalExpenseVND = items.filter(i => i.type === 'expense' || !i.type).reduce((sum, i) => sum + (i.actualVND || 0), 0);
     const balanceVND = totalIncomeVND - totalExpenseVND;
-    
-    // Legacy/Hybrid fallback (Total Valid Actuals) for stats pass-through if needed
-    const totalActVND = items.reduce((sum, i) => sum + (i.actualVND || 0), 0);
     
     const [deleteModal, setDeleteModal] = useState<{ id: string; isOpen: boolean }>({ id: '', isOpen: false });
     const [showStats, setShowStats] = useState(false);
     const [showComplete, setShowComplete] = useState(false);
+    
+    // Fundraising Modal State
+    const [showFundraising, setShowFundraising] = useState(false);
 
     // Dynamic Category Suggestion Logic
     const expenseCategories = useMemo(() => {
@@ -132,6 +149,11 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
 
         return () => unsubscribe();
     }, [walletId, user]);
+
+    // Derived Fundraising Stats for Banner
+    const targetPeople = wallet?.targetPeople || 1;
+    const remainingNeed = Math.max(0, totalEstVND - currentFund);
+    const perPersonTarget = targetPeople > 0 ? remainingNeed / targetPeople : 0;
 
     const handleBack = () => router.push(basePath);
 
@@ -182,10 +204,13 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             content: item.content || '',
             item: item.item || '',
             quantity: item.quantity || 1,
+            unit: item.unit || '',
+            unitPrice: item.unitPrice || 0,
             category: item.category || '',
             pic: item.pic || '',
             estimatedVND: item.estimatedVND || 0,
             actualVND: item.actualVND || 0,
+            // Fallback for estimation mode items that didn't have type before (assume expense)
             type: item.type || 'expense',
             isCompleted: item.isCompleted,
             note: item.note || ''
@@ -194,7 +219,17 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
         setIsAdding(true);
     };
 
-    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'estimatedVND' | 'actualVND') => {
+    // Auto-calculation logic
+    useEffect(() => {
+        if (isEstimation) {
+            // Only auto-calc if expense? Or for income too if they use unit price?
+            // Let's support it for both if they want.
+            const calculated = (formData.quantity || 0) * (formData.unitPrice || 0);
+            setFormData(prev => ({ ...prev, estimatedVND: calculated }));
+        }
+    }, [formData.quantity, formData.unitPrice, isEstimation]);
+
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'estimatedVND' | 'actualVND' | 'unitPrice') => {
         const rawValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-digit chars
         const numValue = rawValue ? parseInt(rawValue, 10) : 0;
         setFormData({ ...formData, [field]: numValue });
@@ -261,6 +296,14 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                     </div>
                 </div>
                 <div className="flex gap-2">
+                     {isEstimation && (
+                        <button 
+                            onClick={() => setShowFundraising(true)}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 shadow-sm"
+                        >
+                            <i className="fas fa-hand-holding-heart mr-2"></i> Fundraising
+                        </button>
+                     )}
                      <button 
                         onClick={() => setShowStats(true)}
                         className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
@@ -285,20 +328,24 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             </div>
 
             {/* Summary Banner */}
-            <div className={`grid gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm ${isEstimation ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-3'}`}>
+            <div className={`grid gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm ${isEstimation ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'}`}>
                 {isEstimation ? (
                     <>
                         <div className="text-center p-2">
-                            <p className="text-xs text-slate-500 font-bold uppercase">Est. Total (VND)</p>
+                            <p className="text-xs text-slate-500 font-bold uppercase">Total Estimate</p>
                             <p className="text-lg font-bold text-slate-900 dark:text-white">{totalEstVND.toLocaleString()} ₫</p>
                         </div>
                         <div className="text-center p-2 border-l border-slate-100 dark:border-white/5">
-                            <p className="text-xs text-slate-500 font-bold uppercase">Est. Total (USD)</p>
-                            <p className="text-lg font-bold text-slate-900 dark:text-white">${totalEstUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+                             <p className="text-xs text-green-500 font-bold uppercase">Available Funds</p>
+                             <p className="text-lg font-bold text-green-600 dark:text-green-400">{currentFund.toLocaleString()} ₫</p>
                         </div>
                          <div className="text-center p-2 border-l border-slate-100 dark:border-white/5">
-                            <p className="text-xs text-slate-500 font-bold uppercase text-blue-500">Items</p>
-                            <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{items.length}</p>
+                             <p className="text-xs text-red-500 font-bold uppercase">Need To Call</p>
+                             <p className="text-lg font-bold text-red-600 dark:text-red-400">{remainingNeed.toLocaleString()} ₫</p>
+                        </div>
+                        <div className="text-center p-2 border-l border-slate-100 dark:border-white/5">
+                             <p className="text-xs text-blue-500 font-bold uppercase">Per Person ({targetPeople})</p>
+                             <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{Math.ceil(perPersonTarget).toLocaleString()} ₫</p>
                         </div>
                     </>
                 ) : (
@@ -333,112 +380,183 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                              <i className="fas fa-times"></i>
                          </button>
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                         
-                         {/* Common: Date */}
-                         <div>
-                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
-                             <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" />
-                         </div>
-
-                         {/* Management: Income/Expense Selector */}
-                         {!isEstimation && (
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
-                                <div className="flex gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-white/10">
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({...formData, type: 'expense'})}
-                                        className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'expense' ? 'bg-red-50 text-red-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                                    >
-                                        Expense
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({...formData, type: 'income'})}
-                                        className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'income' ? 'bg-green-50 text-green-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                                    >
-                                        Income
-                                    </button>
-                                </div>
-                            </div>
-                         )}
-
-                         {/* Common: Category */}
-                         <div>
-                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
-                             <input 
-                                list={`category-list-${formData.type}`} 
-                                type="text" 
-                                value={formData.category} 
-                                onChange={e => setFormData({...formData, category: e.target.value})} 
-                                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                                placeholder="Select or type..." 
-                            />
-                             <datalist id="category-list-expense">
-                                 {expenseCategories.map(c => <option key={c} value={c} />)}
-                             </datalist>
-                             <datalist id="category-list-income">
-                                 {incomeCategories.map(c => <option key={c} value={c} />)}
-                             </datalist>
-                         </div>
-                         
-                         {/* Common: Person in Charge */}
-                         <div>
-                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Person in Charge</label>
-                             <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Who is responsible?" />
-                         </div>
-
-                         {/* Common: Content/Description */}
-                         <div className={!isEstimation ? "" : "md:col-span-1"}>
-                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{isEstimation ? 'Task Content' : 'Description'}</label>
-                             <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder={isEstimation ? "Describe the task..." : "Transaction description..."} />
-                         </div>
-                         
-                         {/* Estimation Only Fields */}
-                         {isEstimation && (
+                     <div className="space-y-4">
+                         {/* Estimation Mode Specific Layout */}
+                         {isEstimation ? (
                              <>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Item Name</label>
-                                    <input type="text" value={formData.item} onChange={e => setFormData({...formData, item: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Search item..." />
+                                 <div className="flex flex-col md:flex-row gap-4">
+                                     {/* Type Switcher */}
+                                     <div className="md:w-1/3 max-w-[300px]">
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                         <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm h-[42px]">
+                                             <button
+                                                 type="button"
+                                                 onClick={() => setFormData({...formData, type: 'expense'})}
+                                                 className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'expense' ? 'bg-red-50 text-red-600 shadow-sm ring-1 ring-red-100' : 'text-slate-400 hover:text-slate-600'}`}
+                                             >
+                                                 Est. Cost
+                                             </button>
+                                             <button
+                                                 type="button"
+                                                 onClick={() => setFormData({...formData, type: 'income'})}
+                                                 className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'income' ? 'bg-green-50 text-green-600 shadow-sm ring-1 ring-green-100' : 'text-slate-400 hover:text-slate-600'}`}
+                                             >
+                                                 Avail. Fund
+                                             </button>
+                                         </div>
+                                     </div>
+
+                                     {/* Content */}
+                                     <div className="flex-1">
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
+                                         <input 
+                                             type="text" 
+                                             required 
+                                             value={formData.content} 
+                                             onChange={e => setFormData({...formData, content: e.target.value})} 
+                                             className="w-full px-4 h-[42px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium" 
+                                             placeholder="What is this item?" 
+                                         />
+                                     </div>
+                                 </div>
+
+                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                     {/* Unit */}
+                                     <div>
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Unit</label>
+                                         <input 
+                                             type="text" 
+                                             value={formData.unit} 
+                                             onChange={e => setFormData({...formData, unit: e.target.value})} 
+                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-medium" 
+                                             placeholder="pcs..." 
+                                         />
+                                     </div>
+
+                                     {/* Quantity */}
+                                     <div>
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
+                                         <input 
+                                             type="number" 
+                                             value={formData.quantity === 0 ? '' : formData.quantity} 
+                                             onChange={e => {
+                                                 const val = parseFloat(e.target.value);
+                                                 setFormData({...formData, quantity: isNaN(val) ? 0 : val});
+                                             }} 
+                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                         />
+                                     </div>
+
+                                     {/* Price/Item */}
+                                     <div>
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Price/Item (VND)</label>
+                                         <input 
+                                             type="text" 
+                                             value={formData.unitPrice ? formData.unitPrice.toLocaleString() : ''} 
+                                             onChange={e => handleAmountChange(e, 'unitPrice')}
+                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                                             placeholder="0"
+                                         />
+                                     </div>
+
+                                     {/* Total */}
+                                     <div>
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Total {formData.type === 'income' ? 'Fund' : 'Est.'} (VND)</label>
+                                         <input 
+                                             type="text" 
+                                             value={formData.estimatedVND ? formData.estimatedVND.toLocaleString() : ''} 
+                                             readOnly
+                                             className={`w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none font-extrabold ${formData.type === 'income' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}
+                                             placeholder="0"
+                                         />
+                                     </div>
+                                 </div>
+                             </>
+                         ) : (
+                             // Management Mode Layout (Existing)
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                 {/* Date */}
+                                 <div>
+                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
+                                     <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" />
+                                 </div>
+
+                                 {/* Type Selector Management */}
+                                 <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                    <div className="flex gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-white/10">
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({...formData, type: 'expense'})}
+                                            className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'expense' ? 'bg-red-50 text-red-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                        >
+                                            Expense
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({...formData, type: 'income'})}
+                                            className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'income' ? 'bg-green-50 text-green-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                        >
+                                            Income
+                                        </button>
+                                    </div>
                                 </div>
-                                
+
+                                {/* Category */}
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
-                                    <input type="number" step="0.1" value={formData.quantity} onChange={e => setFormData({...formData, quantity: parseFloat(e.target.value)})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" />
-                                </div>
+                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
+                                     <input 
+                                        list={`category-list-${formData.type}`} 
+                                        type="text" 
+                                        value={formData.category} 
+                                        onChange={e => setFormData({...formData, category: e.target.value})} 
+                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
+                                        placeholder="Select or type..." 
+                                    />
+                                     <datalist id="category-list-expense">
+                                         {expenseCategories.map(c => <option key={c} value={c} />)}
+                                     </datalist>
+                                     <datalist id="category-list-income">
+                                         {incomeCategories.map(c => <option key={c} value={c} />)}
+                                     </datalist>
+                                 </div>
+                                 
+                                 {/* PIC */}
+                                 <div>
+                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Person in Charge</label>
+                                     <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Who is responsible?" />
+                                 </div>
+
+                                 {/* Content */}
+                                 <div className="md:col-span-2">
+                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                                     <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Transaction description..." />
+                                 </div>
                                 
+                                {/* Amount */}
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Est. Cost (VND)</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (VND)</label>
                                     <input 
                                         type="text" 
-                                        value={formData.estimatedVND ? formData.estimatedVND.toLocaleString() : ''} 
-                                        onChange={e => handleAmountChange(e, 'estimatedVND')}
+                                        value={formData.actualVND ? formData.actualVND.toLocaleString() : ''} 
+                                        onChange={e => handleAmountChange(e, 'actualVND')}
                                         className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
                                         placeholder="0"
                                     />
                                 </div>
-                            </>
-                         )}
-
-                         {/* Management Only Fields */}
-                         {!isEstimation && (
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (VND)</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.actualVND ? formData.actualVND.toLocaleString() : ''} 
-                                    onChange={e => handleAmountChange(e, 'actualVND')}
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="0"
-                                />
-                            </div>
+                             </div>
                          )}
 
                          {/* Common: Note */}
                          <div>
                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Note</label>
-                             <input type="text" value={formData.note} onChange={e => setFormData({...formData, note: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" />
+                             <input 
+                                type="text" 
+                                value={formData.note} 
+                                onChange={e => setFormData({...formData, note: e.target.value})} 
+                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                placeholder="Add a note (optional)..."
+                             />
                          </div>
                      </div>
                      <div className="flex justify-end pt-2">
@@ -453,55 +571,48 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                     <table className="w-full text-sm">
                         <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase text-xs">
                             <tr>
-                                <th className="px-4 py-3 text-left">Date</th>
-                                
                                 {isEstimation ? (
                                     <>
-                                        <th className="px-4 py-3 text-left">Category</th>
-                                        <th className="px-4 py-3 text-left">PIC</th>
                                         <th className="px-4 py-3 text-left">Content</th>
-                                        <th className="px-4 py-3 text-left">Item</th>
+                                        <th className="px-4 py-3 text-center">Unit</th>
                                         <th className="px-4 py-3 text-center">Qty</th>
-                                        <th className="px-4 py-3 text-right text-slate-500">Est. (VND)</th>
-                                        <th className="px-4 py-3 text-right text-slate-500">Est. ($)</th>
-                                        <th className="px-4 py-3 text-center">Status</th>
+                                        <th className="px-4 py-3 text-right text-slate-500">Total (VND)</th>
+                                        <th className="px-4 py-3 text-left">Note</th>
                                     </>
                                 ) : (
                                     <>
+                                        <th className="px-4 py-3 text-left">Date</th>
                                         <th className="px-4 py-3 text-center">Type</th>
                                         <th className="px-4 py-3 text-left">Category</th>
                                         <th className="px-4 py-3 text-left">PIC</th>
                                         <th className="px-4 py-3 text-left">Description</th>
                                         <th className="px-4 py-3 text-right">Amount (VND)</th>
+                                        <th className="px-4 py-3 text-left">Note</th>
                                     </>
                                 )}
-                                
-                                <th className="px-4 py-3 text-left">Note</th>
                                 <th className="px-4 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 dark:divide-white/5">
                              {items.map(item => (
                                  <tr key={item.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${item.isCompleted ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}>
-                                     <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{format(item.date.toDate(), 'dd/MM/yy')}</td>
                                      
                                      {isEstimation ? (
                                          <>
-                                            <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{item.category || '-'}</td>
-                                            <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">{item.pic || '-'}</td>
-                                            <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-[200px] truncate" title={item.content}>{item.content}</td>
-                                            <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{item.item}</td>
-                                            <td className="px-4 py-3 text-center font-mono">{item.quantity}</td>
-                                            <td className="px-4 py-3 text-right font-mono text-slate-500">{item.estimatedVND.toLocaleString()}</td>
-                                            <td className="px-4 py-3 text-right font-mono text-slate-500">${item.estimatedUSD.toFixed(2)}</td>
-                                            <td className="px-4 py-3 text-center">
-                                                <button onClick={() => toggleCompletion(item)} className={`text-xl ${item.isCompleted ? 'text-green-500' : 'text-slate-300 hover:text-green-500'} transition-colors`}>
-                                                    <i className={`fas ${item.isCompleted ? 'fa-check-circle' : 'fa-circle'}`}></i>
-                                                </button>
+                                            <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-[200px]" title={item.content}>
+                                                {item.type === 'income' && <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-green-100 text-green-700 font-bold mr-2 uppercase">Fund</span>}
+                                                {item.content}
                                             </td>
+                                            <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{item.unit || '-'}</td>
+                                            <td className="px-4 py-3 text-center font-mono">{item.quantity}</td>
+                                            <td className={`px-4 py-3 text-right font-bold ${item.type === 'income' ? 'text-green-600' : 'text-slate-900 dark:text-white'}`}>
+                                                {item.type === 'income' ? '+' : ''}{item.estimatedVND.toLocaleString()} ₫
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-500 text-xs max-w-[150px] truncate" title={item.note}>{item.note || '-'}</td>
                                          </>
                                      ) : (
                                         <>
+                                            <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{format(item.date.toDate(), 'dd/MM/yy')}</td>
                                             <td className="px-4 py-3 text-center">
                                                 {item.type === 'income' ? (
                                                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold uppercase">Income</span>
@@ -515,10 +626,10 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                                             <td className={`px-4 py-3 text-right font-bold font-mono ${item.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
                                                 {item.type === 'income' ? '+' : '-'}{item.actualVND.toLocaleString()}
                                             </td>
+                                            <td className="px-4 py-3 text-slate-500 text-xs max-w-[150px] truncate" title={item.note}>{item.note || '-'}</td>
                                         </>
                                      )}
 
-                                     <td className="px-4 py-3 text-slate-500 text-xs max-w-[150px] truncate" title={item.note}>{item.note || '-'}</td>
                                      <td className="px-4 py-3 text-right whitespace-nowrap">
                                          <button onClick={() => handleEdit(item)} className="text-blue-500 hover:text-blue-600 p-2"><i className="fas fa-pen"></i></button>
                                          <button onClick={() => setDeleteModal({ id: item.id, isOpen: true })} className="text-red-400 hover:text-red-500 p-2"><i className="fas fa-trash"></i></button>
@@ -554,6 +665,17 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                 onClose={() => setShowComplete(false)}
                 onConfirm={handleWalletConclusion}
                 walletTitle={wallet?.title || 'Wallet'}
+            />
+
+             {/* Fundraising Modal */}
+            <FundraisingModal 
+                isOpen={showFundraising}
+                onClose={() => setShowFundraising(false)}
+                walletId={walletId}
+                totalEstimate={totalEstVND}
+                availableFunds={currentFund}
+                initialTargetPeople={wallet?.targetPeople}
+                onUpdate={(newPeople) => setWallet(prev => prev ? ({ ...prev, targetPeople: newPeople}) : null)}
             />
         </div>
     );
