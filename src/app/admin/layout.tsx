@@ -107,6 +107,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                             My Appeals
                         </Link>
 
+                        <Link href="/admin/wallets" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/wallets')}`}>
+                            <i className="fas fa-briefcase w-5 text-center"></i>
+                            Wallets
+                        </Link>
+
                         <div className="px-4 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ministry Management</div>
 
                         <Link href="/admin/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>

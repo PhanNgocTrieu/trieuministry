@@ -59,6 +59,11 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                             Expenses
                         </Link>
 
+                        <Link href="/dashboard/wallets" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/dashboard/wallets')}`}>
+                            <i className="fas fa-briefcase w-5 text-center"></i>
+                            Wallets
+                        </Link>
+
                         <Link href="/dashboard/prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/dashboard/prayers')}`}>
                             <i className="fas fa-praying-hands w-5 text-center"></i>
                             My Prayers
