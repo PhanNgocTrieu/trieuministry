@@ -170,6 +170,18 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
         return options.filter(c => c.toLowerCase().includes(formData.category.toLowerCase()));
     }, [formData.type, formData.category, incomeCategories, expenseCategories]);
 
+    // Calculate Filtered Total
+    const filteredTotal = useMemo(() => {
+        return filteredItems.reduce((acc, item) => {
+            const amount = isEstimation ? (item.estimatedVND || 0) : (item.actualVND || 0);
+            if (item.type === 'income') {
+                return acc + amount;
+            } else {
+                return acc - amount;
+            }
+        }, 0);
+    }, [filteredItems, isEstimation]);
+
     useEffect(() => {
         if (!user || !walletId) return;
 
@@ -720,42 +732,54 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                 </form>
             )}
 
-            {/* Filter Tabs */}
-            <div className="flex gap-2 pb-2">
-                <button 
-                    onClick={() => setFilterType('all')}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'all' ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'}`}
-                >
-                    All
-                </button>
-                <button 
-                    onClick={() => setFilterType('income')}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'income' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-600 border-slate-200 hover:bg-green-50 dark:bg-slate-900 dark:text-green-500 dark:border-white/10 dark:hover:bg-green-900/20'}`}
-                >
-                    Income
-                </button>
-                <button 
-                    onClick={() => setFilterType('expense')}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-600 border-slate-200 hover:bg-red-50 dark:bg-slate-900 dark:text-red-500 dark:border-white/10 dark:hover:bg-red-900/20'}`}
-                >
-                    Expense
-                </button>
-                
-                {/* Benefactor Of FilterDropdown */}
-                {benefactorOfOptions.length > 0 && (
-                    <div className="ml-2">
-                        <select
-                            value={filterBenefactorOf}
-                            onChange={(e) => setFilterBenefactorOf(e.target.value)}
-                            className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                        >
-                            <option value="all">All Beneficiaries</option>
-                            {benefactorOfOptions.map(name => (
-                                <option key={name} value={name}>{name}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+            {/* Filter Tabs & Total */}
+            <div className="flex flex-col md:flex-row justify-between items-end md:items-center pb-2 gap-4">
+                <div className="flex gap-2 flex-wrap">
+                    <button 
+                        onClick={() => setFilterType('all')}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'all' ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'}`}
+                    >
+                        All
+                    </button>
+                    <button 
+                        onClick={() => setFilterType('income')}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'income' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-600 border-slate-200 hover:bg-green-50 dark:bg-slate-900 dark:text-green-500 dark:border-white/10 dark:hover:bg-green-900/20'}`}
+                    >
+                        Income
+                    </button>
+                    <button 
+                        onClick={() => setFilterType('expense')}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-600 border-slate-200 hover:bg-red-50 dark:bg-slate-900 dark:text-red-500 dark:border-white/10 dark:hover:bg-red-900/20'}`}
+                    >
+                        Expense
+                    </button>
+                    
+                    {/* Benefactor Of FilterDropdown */}
+                    {benefactorOfOptions.length > 0 && (
+                        <div className="ml-2">
+                            <select
+                                value={filterBenefactorOf}
+                                onChange={(e) => setFilterBenefactorOf(e.target.value)}
+                                className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                            >
+                                <option value="all">All Beneficiaries</option>
+                                {benefactorOfOptions.map(name => (
+                                    <option key={name} value={name}>{name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                </div>
+
+                {/* Filtered Total Display - DEBUG VERIFICATION */}
+                <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-lg border-2 border-blue-500 flex items-center gap-3 shadow-md" style={{ minWidth: '200px', display: 'flex', zIndex: 50 }}>
+                     <span className="text-xs font-bold text-blue-700 dark:text-blue-200 uppercase">
+                         {filterType === 'all' ? 'Current Balance' : filterType === 'income' ? 'Current Income' : 'Current Expense'}
+                     </span>
+                     <span className={`text-lg font-bold font-mono ${filteredTotal >= 0 ? 'text-blue-800 dark:text-white' : 'text-red-600 dark:text-red-300'}`}>
+                         {filteredTotal >= 0 ? '+' : ''}{filteredTotal?.toLocaleString() || '0'} ₫
+                     </span>
+                </div>
             </div>
 
             {/* Table */}

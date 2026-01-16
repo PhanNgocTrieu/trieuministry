@@ -30,36 +30,38 @@ export default function WalletStats({ isOpen, onClose, walletTitle, items, rate,
         return items.reduce((acc, item) => {
             // Filter by type
             if (isEstimation) {
-                // In estimation, everything is treated like 'expense' (cost) basically, 
-                // but if we ever added income estimation, this would need adjusting.
-                // For now, estimation just returns all items as one list.
-                // If targetType is income in estimation, return empty.
-                if (targetType === 'income') return acc; 
+                if (targetType === 'income') return acc;
             } else {
                  if (targetType === 'income' && item.type !== 'income') return acc;
                  if (targetType === 'expense' && (item.type === 'income')) return acc;
-                 // Handle 'undefined' type as expense for backward compatibility if needed, 
-                 // though we should strictly trust type now. 
-                 // If item.type is missing, we treated it as expense in total calculation.
                  if (targetType === 'expense' && !item.type) { /* allow */ }
                  if (targetType === 'income' && !item.type) return acc;
             }
 
             const key = item.category || "Uncategorized";
-            if (!acc[key]) acc[key] = { amount: 0, count: 0 };
+            if (!acc[key]) acc[key] = { amount: 0, count: 0, details: {} as Record<string, number> };
             
             const amount = isEstimation ? item.estimatedVND : item.actualVND;
-            acc[key].amount += amount || 0;
+            const val = amount || 0;
+            acc[key].amount += val;
             acc[key].count += 1;
+
+            // Collect details for Offering/Dâng hiến items (INCOME only usually, but generic enough)
+            const isOffering = key.toLowerCase().includes('offering') || key.toLowerCase().includes('dâng hiến');
+            if (isOffering && item.benefactorOf) {
+                 const subKey = item.benefactorOf;
+                 acc[key].details[subKey] = (acc[key].details[subKey] || 0) + val;
+            }
+
             return acc;
-        }, {} as Record<string, { amount: number, count: number }>);
+        }, {} as Record<string, { amount: number, count: number, details: Record<string, number> }>);
     };
 
     const incomeBreakdown = calculateBreakdown('income');
     const expenseBreakdown = calculateBreakdown('expense');
 
-    const sortAndMap = (breakdown: Record<string, { amount: number, count: number }>, total: number, colorBase: 'green' | 'red' | 'blue') => {
-        return (Object.entries(breakdown) as [string, { amount: number, count: number }][])
+    const sortAndMap = (breakdown: Record<string, { amount: number, count: number, details: Record<string, number> }>, total: number, colorBase: 'green' | 'red' | 'blue') => {
+        return (Object.entries(breakdown) as [string, { amount: number, count: number, details: Record<string, number> }][])
             .sort(([, a], [, b]) => b.amount - a.amount)
             .map(([name, stat]) => {
                 const percentage = total > 0 ? (stat.amount / total * 100) : 0;
@@ -168,6 +170,27 @@ export default function WalletStats({ isOpen, onClose, walletTitle, items, rate,
                                                 ></div>
                                             </div>
                                             <p className="text-right text-xs text-slate-400 mt-0.5">{item.percentage.toFixed(1)}%</p>
+                                            
+                                            {/* Detailed Breakdown for Offering */}
+                                            {item.details && Object.keys(item.details).length > 0 && (
+                                                <div className="mt-2 pl-4 ml-1 border-l-2 border-slate-100 dark:border-white/10">
+                                                    <p className="text-[10px] font-bold uppercase text-slate-400 mb-1">Via Beneficiaries</p>
+                                                    <div className="space-y-1">
+                                                        {Object.entries(item.details)
+                                                            .sort(([, a], [, b]) => b - a)
+                                                            .map(([subName, subAmount], i) => (
+                                                                <div key={i} className="flex justify-between text-xs items-center group">
+                                                                    <div className="flex items-center gap-1.5 overflow-hidden">
+                                                                         <div className={`w-1.5 h-1.5 rounded-full shrink-0`} style={{ backgroundColor: `hsl(${(subName.length * 40) % 360}, 70%, 50%)` }}></div>
+                                                                         <span className="text-slate-600 dark:text-slate-400 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{subName}</span>
+                                                                    </div>
+                                                                    <span className="font-mono text-slate-700 dark:text-slate-300">+{subAmount.toLocaleString()}</span>
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )) : <p className="text-slate-500 italic text-sm">No income data available.</p>}
                                 </div>
