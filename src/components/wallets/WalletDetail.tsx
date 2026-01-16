@@ -34,6 +34,7 @@ interface WalletItem {
     unitPrice?: number; // New: Price per unit/person
     category?: string;
     pic?: string; // Person In Charge
+    benefactorOf?: string; // New: Who is this benefactor for?
     estimatedVND: number;
     estimatedUSD: number;
     actualVND: number;
@@ -55,6 +56,14 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
     // Form State
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+
+    // Filter State
+    const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
+    const [filterBenefactorOf, setFilterBenefactorOf] = useState<string>('all');
+    
+    // Autocomplete State
+    const [showBenefactorSuggestions, setShowBenefactorSuggestions] = useState(false);
+    const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
     
     // Initial Form State
     const initialFormState = {
@@ -66,6 +75,7 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
         unitPrice: 0,
         category: '',
         pic: '',
+        benefactorOf: '',
         estimatedVND: 0,
         actualVND: 0,
         type: 'expense' as 'income' | 'expense',
@@ -102,6 +112,40 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
     // Fundraising Modal State
     const [showFundraising, setShowFundraising] = useState(false);
 
+    // Filter Items
+    const filteredItems = useMemo(() => {
+        let result = items;
+
+        // Filter by Type
+        if (filterType !== 'all') {
+            result = result.filter(item => {
+                const type = item.type || 'expense';
+                return type === filterType;
+            });
+        }
+
+        // Filter by Benefactor Of
+        if (filterBenefactorOf !== 'all') {
+            result = result.filter(item => item.benefactorOf === filterBenefactorOf);
+        }
+
+        return result;
+    }, [items, filterType, filterBenefactorOf]);
+
+    // Unique Benefactor Of Options
+    const benefactorOfOptions = useMemo(() => {
+        const unique = new Set(items.map(i => i.benefactorOf).filter((i): i is string => !!i));
+        return Array.from(unique).sort();
+    }, [items]);
+    
+    // Filtered Suggestions for Dropdown
+    const benefactorSuggestions = useMemo(() => {
+        if (!formData.benefactorOf) return benefactorOfOptions;
+        return benefactorOfOptions.filter(name => 
+            name.toLowerCase().includes(formData.benefactorOf.toLowerCase())
+        );
+    }, [benefactorOfOptions, formData.benefactorOf]);
+
     // Dynamic Category Suggestion Logic
     const expenseCategories = useMemo(() => {
         const defaults = ["Food", "Transport", "Utilities", "Housing", "Health", "Education", "Shopping", "Entertainment", "Other"];
@@ -118,6 +162,13 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             .map(i => i.category!);
         return Array.from(new Set([...defaults, ...fromHistory])).sort();
     }, [items]);
+
+    // Filtered Category Suggestions
+    const categorySuggestions = useMemo(() => {
+        const options = formData.type === 'income' ? incomeCategories : expenseCategories;
+        if (!formData.category) return options;
+        return options.filter(c => c.toLowerCase().includes(formData.category.toLowerCase()));
+    }, [formData.type, formData.category, incomeCategories, expenseCategories]);
 
     useEffect(() => {
         if (!user || !walletId) return;
@@ -208,6 +259,7 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             unitPrice: item.unitPrice || 0,
             category: item.category || '',
             pic: item.pic || '',
+            benefactorOf: item.benefactorOf || '',
             estimatedVND: item.estimatedVND || 0,
             actualVND: item.actualVND || 0,
             // Fallback for estimation mode items that didn't have type before (assume expense)
@@ -505,33 +557,92 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                                 {/* Category */}
                                 <div>
                                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
-                                     <input 
-                                        list={`category-list-${formData.type}`} 
-                                        type="text" 
-                                        value={formData.category} 
-                                        onChange={e => setFormData({...formData, category: e.target.value})} 
-                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                                        placeholder="Select or type..." 
-                                    />
-                                     <datalist id="category-list-expense">
-                                         {expenseCategories.map(c => <option key={c} value={c} />)}
-                                     </datalist>
-                                     <datalist id="category-list-income">
-                                         {incomeCategories.map(c => <option key={c} value={c} />)}
-                                     </datalist>
+                                     <div className="relative">
+                                         <input 
+                                            type="text" 
+                                            value={formData.category} 
+                                            onChange={e => setFormData({...formData, category: e.target.value})}
+                                            onFocus={() => setShowCategorySuggestions(true)}
+                                            onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 200)}
+                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
+                                            placeholder="Select or type..." 
+                                        />
+                                        {/* Custom Category Dropdown */}
+                                        {showCategorySuggestions && categorySuggestions.length > 0 && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                {categorySuggestions.map((cat, idx) => (
+                                                    <div 
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            setFormData({...formData, category: cat});
+                                                            setShowCategorySuggestions(false);
+                                                        }}
+                                                        className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                    >
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(cat.length * 50 + 120) % 360}, 60%, 50%)` }}>
+                                                            {cat.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span className="text-slate-700 dark:text-slate-200 font-medium">{cat}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                     </div>
                                  </div>
-                                 
-                                 {/* PIC */}
-                                 <div>
-                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Person in Charge</label>
-                                     <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Who is responsible?" />
-                                 </div>
+                                                                  {/* PIC / Benefactor */}
+                                  <div>
+                                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                          {formData.type === 'income' ? 'Person in Charge/Benefactor' : 'Person in Charge'}
+                                      </label>
+                                      <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder={formData.type === 'income' ? "Who donated?" : "Who is responsible?"} />
+                                  </div>
 
-                                 {/* Content */}
-                                 <div className="md:col-span-2">
-                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
-                                     <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Transaction description..." />
-                                 </div>
+                                  {/* Content */}
+                                  <div className="md:col-span-2">
+                                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                                      <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Transaction description..." />
+                                  </div>
+
+                                  {/* Benefactor Of (Only for Income) */}
+                                  {formData.type === 'income' && (
+                                     <div>
+                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">To Whom? (Của ai)</label>
+                                         <div className="relative">
+                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                                 <i className="fas fa-user-tag text-xs"></i>
+                                             </div>
+                                             <input 
+                                                 type="text" 
+                                                 value={formData.benefactorOf} 
+                                                 onChange={e => setFormData({...formData, benefactorOf: e.target.value})}
+                                                 onFocus={() => setShowBenefactorSuggestions(true)}
+                                                 onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
+                                                 className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
+                                                 placeholder="Select or type..." 
+                                             />
+                                             {/* Custom Dropdown */}
+                                             {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
+                                                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                    {benefactorSuggestions.map((name, idx) => (
+                                                        <div 
+                                                            key={idx}
+                                                            onClick={() => {
+                                                                setFormData({...formData, benefactorOf: name});
+                                                                setShowBenefactorSuggestions(false);
+                                                            }}
+                                                            className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                        >
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
+                                                                {name.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                             )}
+                                         </div>
+                                     </div>
+                                  )}
                                 
                                 {/* Amount */}
                                 <div>
@@ -550,13 +661,57 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                          {/* Common: Note */}
                          <div>
                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Note</label>
-                             <input 
-                                type="text" 
-                                value={formData.note} 
-                                onChange={e => setFormData({...formData, note: e.target.value})} 
-                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
-                                placeholder="Add a note (optional)..."
-                             />
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input 
+                                    type="text" 
+                                    value={formData.note} 
+                                    onChange={e => setFormData({...formData, note: e.target.value})} 
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                    placeholder="Add a note (optional)..."
+                                />
+                                {isEstimation && formData.type === 'income' && (
+                                     <>
+                                        <input 
+                                            type="text" 
+                                            value={formData.pic} 
+                                            onChange={e => setFormData({...formData, pic: e.target.value})} 
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                            placeholder="Benefactor (Ân nhân)..." 
+                                        />
+                                        <div className="relative">
+                                            <input 
+                                                type="text" 
+                                                value={formData.benefactorOf} 
+                                                onChange={e => setFormData({...formData, benefactorOf: e.target.value})} 
+                                                onFocus={() => setShowBenefactorSuggestions(true)}
+                                                onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                                placeholder="To whom? (Của ai)..." 
+                                            />
+                                            {/* Custom Dropdown */}
+                                             {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
+                                                <div className="absolute z-10 w-full bottom-full mb-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                    {benefactorSuggestions.map((name, idx) => (
+                                                        <div 
+                                                            key={idx}
+                                                            onClick={() => {
+                                                                setFormData({...formData, benefactorOf: name});
+                                                                setShowBenefactorSuggestions(false);
+                                                            }}
+                                                            className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                        >
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
+                                                                {name.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                             )}
+                                        </div>
+                                     </>
+                                )}
+                             </div>
                          </div>
                      </div>
                      <div className="flex justify-end pt-2">
@@ -564,6 +719,44 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                      </div>
                 </form>
             )}
+
+            {/* Filter Tabs */}
+            <div className="flex gap-2 pb-2">
+                <button 
+                    onClick={() => setFilterType('all')}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'all' ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'}`}
+                >
+                    All
+                </button>
+                <button 
+                    onClick={() => setFilterType('income')}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'income' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-600 border-slate-200 hover:bg-green-50 dark:bg-slate-900 dark:text-green-500 dark:border-white/10 dark:hover:bg-green-900/20'}`}
+                >
+                    Income
+                </button>
+                <button 
+                    onClick={() => setFilterType('expense')}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors border ${filterType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-600 border-slate-200 hover:bg-red-50 dark:bg-slate-900 dark:text-red-500 dark:border-white/10 dark:hover:bg-red-900/20'}`}
+                >
+                    Expense
+                </button>
+                
+                {/* Benefactor Of FilterDropdown */}
+                {benefactorOfOptions.length > 0 && (
+                    <div className="ml-2">
+                        <select
+                            value={filterBenefactorOf}
+                            onChange={(e) => setFilterBenefactorOf(e.target.value)}
+                            className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="all">All Beneficiaries</option>
+                            {benefactorOfOptions.map(name => (
+                                <option key={name} value={name}>{name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
 
             {/* Table */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 shadow-lg overflow-hidden">
@@ -594,7 +787,7 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 dark:divide-white/5">
-                             {items.map(item => (
+                             {filteredItems.map(item => (
                                  <tr key={item.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${item.isCompleted ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}>
                                      
                                      {isEstimation ? (
@@ -602,6 +795,16 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                                             <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-[200px]" title={item.content}>
                                                 {item.type === 'income' && <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-green-100 text-green-700 font-bold mr-2 uppercase">Fund</span>}
                                                 {item.content}
+                                                {(item.type === 'income' && (item.pic || item.benefactorOf)) && (
+                                                    <div className="text-xs text-green-600 font-normal mt-0.5 flex flex-col gap-0.5">
+                                                        {item.pic && (
+                                                            <span><i className="fas fa-hand-holding-heart mr-1"></i> {item.pic}</span>
+                                                        )}
+                                                        {item.benefactorOf && (
+                                                            <span><i className="fas fa-user-tag mr-1"></i> For: {item.benefactorOf}</span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-300">{item.unit || '-'}</td>
                                             <td className="px-4 py-3 text-center font-mono">{item.quantity}</td>
@@ -622,7 +825,15 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                                             </td>
                                             <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{item.category || '-'}</td>
                                             <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">{item.pic || '-'}</td>
-                                            <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-[300px] truncate" title={item.content}>{item.content}</td>
+                                            <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-[300px] truncate" title={item.content}>
+                                                {item.content}
+                                                {item.type === 'income' && (item.pic || item.benefactorOf) && (
+                                                    <div className="text-xs text-green-600 font-normal mt-0.5 flex flex-wrap gap-2">
+                                                        {item.pic && <span><i className="fas fa-hand-holding-heart mr-1"></i> {item.pic}</span>}
+                                                        {item.benefactorOf && <span><i className="fas fa-user-tag mr-1"></i> For: {item.benefactorOf}</span>}
+                                                    </div>
+                                                )}
+                                            </td>
                                             <td className={`px-4 py-3 text-right font-bold font-mono ${item.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
                                                 {item.type === 'income' ? '+' : '-'}{item.actualVND.toLocaleString()}
                                             </td>
