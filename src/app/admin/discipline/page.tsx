@@ -283,53 +283,46 @@ export default function DisciplinePage() {
                 {/* Entry Sections */}
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Today's Log: <span className="text-blue-600 dark:text-blue-400">{format(new Date(), 'EEEE, MMMM do')}</span></h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
-                    {/* 1. Personal Prayers Link */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-green-500/20 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-xl hover:border-green-500/30 transition-all group">
-                        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-4 text-2xl group-hover:scale-110 transition-transform">
-                            <i className="fas fa-praying-hands"></i>
-                        </div>
-                        <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Personal Prayers</h4>
-                        <Link href="/admin/ministries/personal" className="text-green-600 dark:text-green-500 font-bold hover:text-green-500 dark:hover:text-green-400 hover:underline">
-                            Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
-                        </Link>
-                    </div>
-
-                    {/* 2. Intercessory Link */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-purple-500/20 p-6 flex flex-col items-center justify-center text-center h-[200px] hover:shadow-xl hover:border-purple-500/30 transition-all group">
-                        <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 mb-4 text-2xl group-hover:scale-110 transition-transform">
-                            <i className="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Intercession</h4>
-                        <Link href="/admin/ministries/intercessory" className="text-purple-600 dark:text-purple-500 font-bold hover:text-purple-500 dark:hover:text-purple-400 hover:underline">
-                            Manage & Pray <i className="fas fa-arrow-right ml-1"></i>
-                        </Link>
-                    </div>
-
-
-                    {/* 3. Scripture Today */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-6 flex flex-col relative h-[200px] hover:shadow-xl hover:border-orange-500/30 transition-all group">
-                        <div className="flex items-center gap-3 mb-4 text-orange-500 justify-center">
-                            <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 mb-2 text-2xl group-hover:scale-110 transition-transform">
+                <div className="mt-8">
+                    {/* Scripture Today */}
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto">
+                        <div className="relative shrink-0">
+                             <div className="w-24 h-24 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 text-4xl group-hover:scale-110 transition-transform duration-500">
                                 <i className="fas fa-book-open"></i>
                             </div>
+                            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center text-white text-xs">
+                                <i className="fas fa-check"></i>
+                            </div>
                         </div>
-                        <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-4 text-center">Scripture Today</h4>
                         
-                        <button 
-                            onClick={() => handleLog('scripture', "Read")}
-                            disabled={todayLogs.scripture}
-                            className={`w-full py-2 rounded-lg font-bold transition-colors mt-auto ${
-                                todayLogs.scripture 
-                                    ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
-                                    : 'bg-orange-600 text-white hover:bg-orange-500 shadow-lg shadow-orange-900/20'
-                            }`}
-                        >
-                             {todayLogs.scripture ? <span><i className="fas fa-check mr-2"></i> Completed</span> : "Mark as Read"}
-                        </button>
+                        <div className="flex-1 text-center md:text-left">
+                            <h4 className="font-bold text-2xl text-slate-900 dark:text-white mb-2">Scripture Today</h4>
+                            <p className="text-slate-500 dark:text-slate-400 mb-4 text-lg">
+                                "Your word is a lamp for my feet, a light on my path." - Psalm 119:105
+                            </p>
+                            
+                            <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
+                                <button 
+                                    onClick={() => handleLog('scripture', "Read")}
+                                    disabled={todayLogs.scripture}
+                                    className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg ${
+                                        todayLogs.scripture 
+                                            ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
+                                            : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:scale-105 active:scale-95 shadow-orange-500/20'
+                                    }`}
+                                >
+                                     {todayLogs.scripture ? (
+                                         <><i className="fas fa-check-circle text-xl"></i> Completed Today</>
+                                     ) : (
+                                         <><i className="fas fa-book-reader"></i> Mark as Read</>
+                                     )}
+                                </button>
+                                <Link href="/admin/my-prayers" className="px-6 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+                                    Manage Prayers <i className="fas fa-arrow-right"></i>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </AdminGuard>

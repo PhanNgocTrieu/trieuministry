@@ -24,12 +24,14 @@ type Prayer = {
 };
 
 import { useModal } from '@/context/ModalContext';
+import IntercessoryList from '@/components/admin/prayer/IntercessoryList';
 
 export default function PrayersPage() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'community' | 'intercession'>('community');
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const { showAlert, showConfirm } = useModal();
@@ -212,13 +214,38 @@ export default function PrayersPage() {
                    </button>
                </div>
             </div>
+
+            {/* Tab Navigation */}
+            <div className="flex gap-6 mt-8 border-b border-slate-200 dark:border-white/10">
+                <button
+                    onClick={() => setActiveTab('community')}
+                    className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${
+                        activeTab === 'community'
+                            ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400'
+                            : 'text-slate-500 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
+                    }`}
+                >
+                    Community Prayers
+                </button>
+                <button
+                    onClick={() => setActiveTab('intercession')}
+                    className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${
+                        activeTab === 'intercession'
+                            ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400'
+                            : 'text-slate-500 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
+                    }`}
+                >
+                    My Intercession List
+                </button>
+            </div>
          </div>
       </section>
 
       {/* Main Content - Master Detail Layout */}
       <section className="flex-1 py-8 overflow-hidden h-full">
          <div className="container container-custom h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+            {activeTab === 'community' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
                 
                 {/* LEFT COLUMN: LIST VIEW */}
                 <div className="lg:col-span-5 flex flex-col h-full lg:max-h-[calc(100vh-350px)]">
@@ -386,6 +413,11 @@ export default function PrayersPage() {
                 </div>
 
             </div>
+            ) : (
+                <div className="h-full">
+                    <IntercessoryList />
+                </div>
+            )}
          </div>
       </section>
 

@@ -253,15 +253,6 @@ export default function AdminDashboardPage() {
                                 <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-200 transition-colors">Manage commitments</p>
                             </Link>
 
-                            <Link href="/admin/ministries/intercessory" className="block p-4 bg-orange-500/10 hover:bg-orange-500/20 rounded-xl border border-orange-500/20 transition-all group">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <i className="fas fa-church"></i>
-                                    </div>
-                                    <span className="font-bold text-orange-700 dark:text-orange-300">Intercessory</span>
-                                </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-200 transition-colors">Manage ministries</p>
-                            </Link>
                         </>
                      )}
                      {/* Add more quick actions later */}

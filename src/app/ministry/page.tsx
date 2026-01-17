@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, where, doc, updateDoc, increment, setDoc, serverTimestamp } from 'firebase/firestore';
-import { format } from 'date-fns';
-import { useModal } from '@/context/ModalContext';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 interface Ministry {
   id: string;
@@ -33,51 +31,12 @@ interface Ministry {
   createdAt: any;
 }
 
-interface IntercessionTarget {
-  id: string;
-  name: string;
-  title?: string;
-  description?: string;
-  commitmentTime?: string;
-  
-  // Bilingual (Legacy/Future Compat)
-  name_en?: string;
-  name_vi?: string;
-  
-  status: 'active' | 'answered';
-  prayerCount?: number;
-  createdAt: any;
-}
-
-
-
-interface PrayerItem {
-  id: string;
-  name: string;
-  description?: string;
-  category?: string;
-  status: 'active' | 'answered';
-  createdAt: any;
-  prayerCount?: number;
-}
-
-
-
-
 export default function MinistryPage() {
   const { t, language } = useLanguage();
   const { user, isAdmin } = useAuth();
-  const { showAlert } = useModal();
   
   // Data States
   const [ministries, setMinistries] = useState<Ministry[]>([]);
-  const [intercessionTargets, setIntercessionTargets] = useState<IntercessionTarget[]>([]);
-  const [personalPrayers, setPersonalPrayers] = useState<PrayerItem[]>([]);
-  const [ministryPrayers, setMinistryPrayers] = useState<PrayerItem[]>([]);
-  // Extended type for selection
-  type SelectedItem = (IntercessionTarget | PrayerItem) & { type: 'intercession' | 'personal' | 'ministry' };
-
-  const [selectedTarget, setSelectedTarget] = useState<SelectedItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Helper to get localized text with fallback
@@ -88,38 +47,6 @@ export default function MinistryPage() {
   };
 
   useEffect(() => {
-    // Fetch Intercession Targets (Active Only)
-    const qIntercession = query(collection(db, "intercession_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
-    const unsubscribeIntercession = onSnapshot(qIntercession, (snapshot) => {
-      const list: IntercessionTarget[] = [];
-      snapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() } as IntercessionTarget);
-      });
-      setIntercessionTargets(list);
-    });
-
-    // Fetch Ministry Prayers
-    const qMinistryPrayers = query(collection(db, "ministry_prayer_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
-    const unsubscribeMinistryPrayers = onSnapshot(qMinistryPrayers, (snapshot) => {
-      const list: PrayerItem[] = [];
-      snapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() } as PrayerItem);
-      });
-      setMinistryPrayers(list);
-    });
-
-    // Fetch Personal Prayers (Assuming Admin's are public or this feature is for Admin to share his heart)
-    // NOTE: In a multi-user app, we would tag these as 'public' or filter by Admin ID. 
-    // For now, we fetch all active ones assuming single-tenant/admin content creator context.
-    const qPersonalPrayers = query(collection(db, "personal_prayer_targets"), where("status", "==", "active"), orderBy("createdAt", "desc"));
-    const unsubscribePersonalPrayers = onSnapshot(qPersonalPrayers, (snapshot) => {
-        const list: PrayerItem[] = [];
-        snapshot.forEach((doc) => {
-          list.push({ id: doc.id, ...doc.data() } as PrayerItem);
-        });
-        setPersonalPrayers(list);
-    });
-
     // Fetch Ministries
     const qMinistries = query(collection(db, "ministries"), orderBy("createdAt", "desc"));
     const unsubscribeMinistries = onSnapshot(qMinistries, (snapshot) => {
@@ -133,9 +60,6 @@ export default function MinistryPage() {
 
     return () => {
       unsubscribeMinistries();
-      unsubscribeIntercession();
-      unsubscribeMinistryPrayers();
-      unsubscribePersonalPrayers();
     };
   }, []);
 
@@ -143,7 +67,7 @@ export default function MinistryPage() {
   const filteredMinistries = ministries.filter(m => {
     if (m.visibility === 'public') return true;
     if (isAdmin) return true; 
-    if (m.visibility === 'shared' && user?.email && m.sharedWith?.includes(user.email)) {
+    if (m.visibility === 'shared' && user?.email && m.sharedWith?.includes(user?.email)) {
         return true;
     }
     return false;
@@ -159,58 +83,6 @@ export default function MinistryPage() {
       groupedMinistries[cat].push(ministry);
   });
   const categories = Object.keys(groupedMinistries).sort();
-
-  const handlePray = async (target: SelectedItem) => {
-      try {
-          // 1. Increment Global Counter (Admin Only) - Now applies to ALL types
-          if (isAdmin) {
-              let collectionName = '';
-              switch (target.type) {
-                  case 'intercession': collectionName = 'intercession_targets'; break;
-                  case 'personal': collectionName = 'personal_prayer_targets'; break;
-                  case 'ministry': collectionName = 'ministry_prayer_targets'; break;
-              }
-
-              if (collectionName) {
-                  const targetRef = doc(db, collectionName, target.id);
-                  await updateDoc(targetRef, {
-                      prayerCount: increment(1)
-                  });
-              }
-          }
-
-          // 2. If User Logged In -> Update Discipline Calendar
-          if (user) {
-              const todayStr = format(new Date(), 'yyyy-MM-dd');
-              
-              // Map Ministry Page types to Discipline Page types
-              // 'personal' -> 'personal_prayer' (Green)
-              // 'ministry' & 'intercession' -> 'intercession' (Purple)
-              let disciplineType = 'intercession';
-              if (target.type === 'personal') {
-                  disciplineType = 'personal_prayer';
-              }
-
-              const logId = `${user.uid}_${todayStr}_${disciplineType}`;
-              
-              await setDoc(doc(db, "discipline_logs", logId), {
-                  userId: user.uid,
-                  date: todayStr,
-                  type: disciplineType,
-                  completed: true,
-                  updatedAt: serverTimestamp()
-              }, { merge: true });
-
-              const typeLabel = disciplineType === 'personal_prayer' ? 'Personal Prayer' : 'Intercession';
-              showAlert("Amen!", `You prayed for "${target.name}". Marked '${typeLabel}' in your calendar.`);
-          } else {
-             showAlert("Amen!", `Please login to track your prayer journey.`);
-          }
-
-      } catch (error) {
-          console.error("Error logging prayer:", error);
-      }
-  };
 
   return (
     <main className="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans selection:bg-purple-500/30 text-slate-900 dark:text-slate-200 transaction-colors duration-300">
@@ -303,21 +175,7 @@ export default function MinistryPage() {
                                                 </div>
                                            </div>
                                        </div>
-                                        {prayerNeeds && (
-                                            <div className="bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-white/5 p-6 md:p-8 backdrop-blur-sm">
-                                               <div className="flex items-start gap-5">
-                                                   <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0 mt-1 border border-orange-500/20">
-                                                       <i className="fas fa-pray"></i>
-                                                   </div>
-                                                    <div>
-                                                        <h4 className="font-bold text-base text-slate-900 dark:text-white mb-2">Prayer Needs</h4>
-                                                        <div className="text-slate-600 dark:text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
-                                                            {prayerNeeds}
-                                                        </div>
-                                                    </div>
-                                               </div>
-                                           </div>
-                                       )}
+
                                    </div>
                                    );
                                })}
@@ -336,239 +194,6 @@ export default function MinistryPage() {
             </div>
         </div>
       </section>
-
-      {/* SECTION 2: PRAYERS (3 Columns) */}
-      <section id="prayers" className="bg-slate-950 py-24 text-white relative border-t border-white/5">
-           {/* Background Effects */}
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
-           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full pointer-events-none"></div>
-
-          <div className="container container-custom relative z-10">
-              <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-purple-400 font-bold tracking-wider uppercase text-sm mb-2 block">Join Us In Prayer</span>
-                  <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
-                      Prayer Wall
-                  </h2>
-                  <p className="text-xl text-slate-400 leading-relaxed">
-                      "For where two or three gather in my name, there am I with them." (Matthew 18:20)
-                  </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  
-                  {/* Column 1: Personal Requests */}
-                  <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-green-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
-                      <div className="flex items-center gap-3 mb-6">
-                          <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20">
-                              <i className="fas fa-user-circle"></i>
-                          </div>
-                          <h3 className="text-xl font-bold text-white">Personal Requests</h3>
-                      </div>
-                      
-                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                          {personalPrayers.length > 0 ? (
-                              personalPrayers.map(prayer => (
-                                  <div 
-                                      key={prayer.id} 
-                                      onClick={() => setSelectedTarget({ ...prayer, type: 'personal' } as SelectedItem)}
-                                      className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors cursor-pointer group hover:border-green-500/30"
-                                  >
-                                      <p className="text-slate-300 font-medium leading-relaxed group-hover:text-white transition-colors">"{prayer.name}"</p>
-                                      <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
-                                          <div className="flex items-center gap-2">
-                                              <i className="fas fa-clock"></i>
-                                              {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
-                                          </div>
-                                          {prayer.prayerCount && prayer.prayerCount > 0 ? (
-                                              <span className="ml-auto text-green-400 flex items-center gap-1 font-bold">
-                                                  <i className="fas fa-praying-hands text-[10px]"></i> {prayer.prayerCount}
-                                              </span>
-                                          ) : null}
-                                      </div>
-                                  </div>
-                              ))
-                          ) : (
-                              <div className="text-center py-10 text-slate-600 italic">No personal requests shared yet.</div>
-                          )}
-                      </div>
-                      {/* View More Button? */}
-                  </div>
-
-                  {/* Column 2: Ministry Requests */}
-                   <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-blue-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
-                      <div className="flex items-center gap-3 mb-6">
-                           <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-                              <i className="fas fa-church"></i>
-                          </div>
-                          <h3 className="text-xl font-bold text-white">Ministry Requests</h3>
-                      </div>
-                      
-                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                          {ministryPrayers.length > 0 ? (
-                               ministryPrayers.map(prayer => (
-                                  <div 
-                                      key={prayer.id} 
-                                      onClick={() => setSelectedTarget({ ...prayer, type: 'ministry' } as SelectedItem)}
-                                      className="bg-slate-800/50 p-4 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors cursor-pointer group hover:border-blue-500/30"
-                                  >
-                                      <p className="text-slate-300 font-medium leading-relaxed group-hover:text-white transition-colors">"{prayer.name}"</p>
-                                      <div className="mt-2 text-xs text-slate-500 flex items-center gap-2">
-                                          <div className="flex items-center gap-2">
-                                              <i className="fas fa-clock"></i>
-                                              {prayer.createdAt?.seconds ? new Date(prayer.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
-                                          </div>
-                                          {prayer.prayerCount && prayer.prayerCount > 0 ? (
-                                              <span className="ml-auto text-blue-400 flex items-center gap-1 font-bold">
-                                                  <i className="fas fa-praying-hands text-[10px]"></i> {prayer.prayerCount}
-                                              </span>
-                                          ) : null}
-                                      </div>
-                                  </div>
-                              ))
-                          ) : (
-                               <div className="text-center py-10 text-slate-600 italic">No ministry requests shared yet.</div>
-                          )}
-                      </div>
-                  </div>
-
-                  {/* Column 3: Intercessory Focus */}
-                   <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 hover:border-purple-500/30 transition-all flex flex-col h-full bg-grid-white/[0.02]">
-                      <div className="flex items-center gap-3 mb-6">
-                           <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
-                              <i className="fas fa-praying-hands"></i>
-                          </div>
-                          <h3 className="text-xl font-bold text-white">Intercessory Focus</h3>
-                      </div>
-                      
-                      <div className="flex-1 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                          {intercessionTargets.length > 0 ? (
-                               intercessionTargets.map(target => (
-                                  <div 
-                                    key={target.id} 
-                                    onClick={() => setSelectedTarget({ ...target, type: 'intercession' } as SelectedItem)}
-                                    className="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-white/5 cursor-pointer hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-500/30 transition-all group"
-                                  >
-                                      <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors mb-1">{getLocalized(target, 'name')}</h4>
-                                      {target.title && <p className="text-xs text-slate-400 line-clamp-1 mb-3">{target.title}</p>}
-                                      
-                                      <div className="flex items-center justify-between text-xs pt-3 border-t border-white/5">
-                                           <span className="text-slate-500 flex items-center gap-1">
-                                               <i className="fas fa-users"></i> {target.prayerCount || 0}
-                                           </span>
-                                           <span className="text-purple-400 font-bold uppercase text-[10px] tracking-wider">Pray Now &rarr;</span>
-                                      </div>
-                                  </div>
-                              ))
-                          ) : (
-                               <div className="text-center py-10 text-slate-600 italic">No intercessory targets active.</div>
-                          )}
-                      </div>
-                  </div>
-
-              </div>
-          </div>
-      </section>
-      
-      {/* Detail Modal */}
-      {selectedTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setSelectedTarget(null)}></div>
-            <div className="bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-700 relative z-10 overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
-                
-                {/* Header */}
-                <div className="p-6 md:p-8 border-b border-white/10 bg-gradient-to-b from-slate-800 to-slate-900">
-                    <button 
-                        onClick={() => setSelectedTarget(null)}
-                        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all border border-white/5"
-                    >
-                        <i className="fas fa-times"></i>
-                    </button>
-
-                    <div className="flex gap-5">
-                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white shadow-xl shrink-0 ${
-                            selectedTarget.type === 'personal' ? 'from-green-600 to-teal-600 shadow-green-900/30' : 
-                            selectedTarget.type === 'ministry' ? 'from-blue-600 to-indigo-600 shadow-blue-900/30' : 
-                            'from-purple-600 to-fuchsia-600 shadow-purple-900/30'
-                        }`}>
-                            <i className={`fas text-2xl ${
-                                selectedTarget.type === 'personal' ? 'fa-user-circle' :
-                                selectedTarget.type === 'ministry' ? 'fa-church' :
-                                'fa-praying-hands'
-                            }`}></i>
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                                    selectedTarget.type === 'personal' ? 'text-green-300 bg-green-500/20 border-green-500/20' :
-                                    selectedTarget.type === 'ministry' ? 'text-blue-300 bg-blue-500/20 border-blue-500/20' :
-                                    'text-purple-300 bg-purple-500/20 border-purple-500/20'
-                                }`}>
-                                    {selectedTarget.type === 'personal' ? 'Personal Request' :
-                                     selectedTarget.type === 'ministry' ? 'Ministry Request' : 'Intercession Focus'}
-                                </span>
-                                {(selectedTarget as IntercessionTarget).commitmentTime && (
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 bg-slate-800 px-2 py-0.5 rounded border border-white/5">
-                                        <i className="fas fa-clock text-[9px]"></i> {(selectedTarget as IntercessionTarget).commitmentTime}
-                                    </span>
-                                )}
-                            </div>
-                            <h3 className="text-2xl font-bold text-white leading-tight">
-                                {selectedTarget.type === 'intercession' ? getLocalized(selectedTarget, 'name') : selectedTarget.name}
-                            </h3>
-                            {(selectedTarget as IntercessionTarget).title && <p className="text-lg text-purple-200 mt-1 font-medium">{(selectedTarget as IntercessionTarget).title}</p>}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar bg-slate-900">
-                    <div className="bg-slate-800/50 rounded-2xl p-6 border border-white/5 shadow-inner">
-                        <p className="whitespace-pre-line text-lg leading-relaxed text-slate-300">
-                            {selectedTarget.description || "No specific details provided. Please pray as led by the Spirit."}
-                        </p>
-                    </div>
-                    
-                    <div className="mt-8 flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5">
-                        <div className="text-slate-400 text-sm">
-                            Current Prayers: <span className="text-white font-bold ml-1">{selectedTarget.prayerCount || 0}</span>
-                        </div>
-                        <div className="text-slate-500 text-xs font-mono">
-                            Posted: {selectedTarget.createdAt?.seconds ? new Date(selectedTarget.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Footer / Actions */}
-                <div className="p-6 border-t border-white/10 bg-slate-800/50 flex justify-end gap-3 backdrop-blur-sm">
-                    <button 
-                        onClick={() => setSelectedTarget(null)}
-                        className="px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm"
-                    >
-                        Close
-                    </button>
-                    {isAdmin ? (
-                        <button 
-                            onClick={() => {
-                                handlePray(selectedTarget);
-                                setSelectedTarget(null);
-                            }}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 flex items-center gap-2 text-sm"
-                        >
-                            <i className="fas fa-check"></i> Pray & Log
-                        </button>
-                    ) : (
-                        <button 
-                             onClick={() => handlePray(selectedTarget)}
-                             className="px-6 py-3 bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-600 transition-all active:scale-95 flex items-center gap-2 text-sm border border-white/5"
-                        >
-                             <i className="fas fa-heart text-pink-500"></i> I Prayed
-                        </button>
-                    )}
-                </div>
-
-            </div>
-        </div>
-      )}
 
     </main>
   );
