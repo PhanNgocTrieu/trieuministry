@@ -375,7 +375,7 @@ export default function EditMinistryPage() {
                 )}
                 
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-400">Description <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span></label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Description <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span></label>
                     <textarea 
                         name={`description_${activeTab}`} 
                         required
@@ -383,14 +383,14 @@ export default function EditMinistryPage() {
                         // @ts-ignore
                         value={formData[`description_${activeTab}`]} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                        placeholder="Describe the ministry works..."
+                        className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
+                        placeholder={activeTab === 'en' ? "Describe the ministry works..." : "Mô tả công việc của mục vụ..."}
                     ></textarea>
                 </div>
 
                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-400 flex items-center gap-2">
-                        <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 p-1 rounded"><i className="fas fa-pray"></i></span>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-400 flex items-center gap-2">
+                        <span className="bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 p-1 rounded"><i className="fas fa-pray"></i></span>
                         Prayer Needs <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span>
                     </label>
                     <textarea 
@@ -399,8 +399,8 @@ export default function EditMinistryPage() {
                         // @ts-ignore
                         value={formData[`prayerNeeds_${activeTab}`]} 
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-slate-800 border border-orange-500/20 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 text-white bg-orange-500/5 placeholder-slate-600"
-                        placeholder="List the specific prayer needs for this ministry..."
+                        className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-orange-500/20 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 text-slate-900 dark:text-white bg-orange-500/5 placeholder-slate-600"
+                        placeholder={activeTab === 'en' ? "List specific prayer needs..." : "Liệt kê các nhu cầu cầu nguyện cụ thể..."}
                     ></textarea>
                 </div>
 

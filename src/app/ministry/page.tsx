@@ -173,6 +173,22 @@ export default function MinistryPage() {
                                                 <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed flex-grow">
                                                     {description}
                                                 </div>
+                                                
+                                                {prayerNeeds && (
+                                                    <div className="bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-white/5 p-6 md:p-8 backdrop-blur-sm mt-8 -mx-8 -mb-8 md:-mx-10 md:-mb-10">
+                                                       <div className="flex items-start gap-5">
+                                                           <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0 mt-1 border border-orange-500/20">
+                                                               <i className="fas fa-pray"></i>
+                                                           </div>
+                                                            <div>
+                                                                <h4 className="font-bold text-base text-slate-900 dark:text-white mb-2">Prayer Needs</h4>
+                                                                <div className="text-slate-600 dark:text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
+                                                                    {prayerNeeds}
+                                                                </div>
+                                                            </div>
+                                                       </div>
+                                                   </div>
+                                               )}
                                            </div>
                                        </div>
 
