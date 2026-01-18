@@ -435,302 +435,330 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                 )}
             </div>
 
-            {/* Form Area */}
             {isAdding && (
-                <form onSubmit={handleSaveItem} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-blue-200 dark:border-blue-500/30 animate-fade-in space-y-4">
-                     <div className="flex justify-between items-center mb-2">
-                         <h3 className="font-bold text-slate-900 dark:text-white">{editingId ? 'Edit Item' : 'Add New Item'}</h3>
-                         <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setFormData(initialFormState); }} className="text-slate-400 hover:text-slate-600">
-                             <i className="fas fa-times"></i>
-                         </button>
-                     </div>
-                     <div className="space-y-4">
-                         {/* Estimation Mode Specific Layout */}
-                         {isEstimation ? (
-                             <>
-                                 <div className="flex flex-col md:flex-row gap-4">
-                                     {/* Type Switcher */}
-                                     <div className="md:w-1/3 max-w-[300px]">
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
-                                         <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm h-[42px]">
-                                             <button
-                                                 type="button"
-                                                 onClick={() => setFormData({...formData, type: 'expense'})}
-                                                 className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'expense' ? 'bg-red-50 text-red-600 shadow-sm ring-1 ring-red-100' : 'text-slate-400 hover:text-slate-600'}`}
-                                             >
-                                                 Est. Cost
-                                             </button>
-                                             <button
-                                                 type="button"
-                                                 onClick={() => setFormData({...formData, type: 'income'})}
-                                                 className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'income' ? 'bg-green-50 text-green-600 shadow-sm ring-1 ring-green-100' : 'text-slate-400 hover:text-slate-600'}`}
-                                             >
-                                                 Avail. Fund
-                                             </button>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => setIsAdding(false)}>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-scale-in border border-slate-200 dark:border-white/10 flex flex-col" onClick={e => e.stopPropagation()}>
+                        <form onSubmit={handleSaveItem} className="flex flex-col h-full">
+                             <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 sticky top-0 z-10">
+                                 <div>
+                                     <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                         {editingId ? (
+                                             <><i className="fas fa-edit text-blue-500"></i> Edit Item</>
+                                         ) : (
+                                             <><i className="fas fa-plus-circle text-blue-500"></i> Add New Item</>
+                                         )}
+                                     </h3>
+                                 </div>
+                                 <button 
+                                    type="button" 
+                                    onClick={(e) => { 
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setIsAdding(false); 
+                                        setEditingId(null); 
+                                        setFormData(initialFormState); 
+                                    }} 
+                                    className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
+                                 >
+                                     <i className="fas fa-times"></i>
+                                 </button>
+                             </div>
+                             
+                             <div className="p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+                                 {/* Estimation Mode Specific Layout */}
+                                 {isEstimation ? (
+                                     <>
+                                         <div className="flex flex-col md:flex-row gap-4">
+                                             {/* Type Switcher */}
+                                             <div className="md:w-1/3 max-w-[300px]">
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                                 <div className="flex bg-slate-50 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm h-[42px]">
+                                                     <button
+                                                         type="button"
+                                                         onClick={() => setFormData({...formData, type: 'expense'})}
+                                                         className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'expense' ? 'bg-white dark:bg-slate-700 text-red-600 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                                                     >
+                                                         Est. Cost
+                                                     </button>
+                                                     <button
+                                                         type="button"
+                                                         onClick={() => setFormData({...formData, type: 'income'})}
+                                                         className={`flex-1 rounded-lg text-sm font-bold transition-all duration-200 ${formData.type === 'income' ? 'bg-white dark:bg-slate-700 text-green-600 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}
+                                                     >
+                                                         Avail. Fund
+                                                     </button>
+                                                 </div>
+                                             </div>
+
+                                             {/* Content */}
+                                             <div className="flex-1">
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
+                                                 <input 
+                                                     type="text" 
+                                                     required 
+                                                     value={formData.content} 
+                                                     onChange={e => setFormData({...formData, content: e.target.value})} 
+                                                     className="w-full px-4 h-[42px] rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium" 
+                                                     placeholder="What is this item?" 
+                                                 />
+                                             </div>
                                          </div>
-                                     </div>
 
-                                     {/* Content */}
-                                     <div className="flex-1">
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
-                                         <input 
-                                             type="text" 
-                                             required 
-                                             value={formData.content} 
-                                             onChange={e => setFormData({...formData, content: e.target.value})} 
-                                             className="w-full px-4 h-[42px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium" 
-                                             placeholder="What is this item?" 
-                                         />
-                                     </div>
-                                 </div>
+                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                             {/* Unit */}
+                                             <div>
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Unit</label>
+                                                 <input 
+                                                     type="text" 
+                                                     value={formData.unit} 
+                                                     onChange={e => setFormData({...formData, unit: e.target.value})} 
+                                                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none font-medium" 
+                                                     placeholder="pcs..." 
+                                                 />
+                                             </div>
 
-                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                     {/* Unit */}
-                                     <div>
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Unit</label>
-                                         <input 
-                                             type="text" 
-                                             value={formData.unit} 
-                                             onChange={e => setFormData({...formData, unit: e.target.value})} 
-                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-medium" 
-                                             placeholder="pcs..." 
-                                         />
-                                     </div>
+                                             {/* Quantity */}
+                                             <div>
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
+                                                 <input 
+                                                     type="number" 
+                                                     value={formData.quantity === 0 ? '' : formData.quantity} 
+                                                     onChange={e => {
+                                                         const val = parseFloat(e.target.value);
+                                                         setFormData({...formData, quantity: isNaN(val) ? 0 : val});
+                                                     }} 
+                                                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                                 />
+                                             </div>
 
-                                     {/* Quantity */}
-                                     <div>
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
-                                         <input 
-                                             type="number" 
-                                             value={formData.quantity === 0 ? '' : formData.quantity} 
-                                             onChange={e => {
-                                                 const val = parseFloat(e.target.value);
-                                                 setFormData({...formData, quantity: isNaN(val) ? 0 : val});
-                                             }} 
-                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                                         />
-                                     </div>
+                                             {/* Price/Item */}
+                                             <div>
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Price/Item (VND)</label>
+                                                 <input 
+                                                     type="text" 
+                                                     value={formData.unitPrice ? formData.unitPrice.toLocaleString() : ''} 
+                                                     onChange={e => handleAmountChange(e, 'unitPrice')}
+                                                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                                                     placeholder="0"
+                                                 />
+                                             </div>
 
-                                     {/* Price/Item */}
-                                     <div>
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Price/Item (VND)</label>
-                                         <input 
-                                             type="text" 
-                                             value={formData.unitPrice ? formData.unitPrice.toLocaleString() : ''} 
-                                             onChange={e => handleAmountChange(e, 'unitPrice')}
-                                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-bold"
-                                             placeholder="0"
-                                         />
-                                     </div>
+                                             {/* Total */}
+                                             <div>
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Total {formData.type === 'income' ? 'Fund' : 'Est.'} (VND)</label>
+                                                 <input 
+                                                     type="text" 
+                                                     value={formData.estimatedVND ? formData.estimatedVND.toLocaleString() : ''} 
+                                                     readOnly
+                                                     className={`w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none font-extrabold ${formData.type === 'income' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}
+                                                     placeholder="0"
+                                                 />
+                                             </div>
+                                         </div>
+                                     </>
+                                 ) : (
+                                     // Management Mode Layout (Existing)
+                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                         {/* Date */}
+                                         <div>
+                                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
+                                             <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" />
+                                         </div>
 
-                                     {/* Total */}
-                                     <div>
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Total {formData.type === 'income' ? 'Fund' : 'Est.'} (VND)</label>
-                                         <input 
-                                             type="text" 
-                                             value={formData.estimatedVND ? formData.estimatedVND.toLocaleString() : ''} 
-                                             readOnly
-                                             className={`w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-blue-500 outline-none font-extrabold ${formData.type === 'income' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}
-                                             placeholder="0"
-                                         />
-                                     </div>
-                                 </div>
-                             </>
-                         ) : (
-                             // Management Mode Layout (Existing)
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                 {/* Date */}
-                                 <div>
-                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
-                                     <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" />
-                                 </div>
-
-                                 {/* Type Selector Management */}
-                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
-                                    <div className="flex gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-white/10">
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({...formData, type: 'expense'})}
-                                            className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'expense' ? 'bg-red-50 text-red-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                                        >
-                                            Expense
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({...formData, type: 'income'})}
-                                            className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'income' ? 'bg-green-50 text-green-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                                        >
-                                            Income
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Category */}
-                                <div>
-                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
-                                     <div className="relative">
-                                         <input 
-                                            type="text" 
-                                            value={formData.category} 
-                                            onChange={e => setFormData({...formData, category: e.target.value})}
-                                            onFocus={() => setShowCategorySuggestions(true)}
-                                            onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 200)}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                                            placeholder="Select or type..." 
-                                        />
-                                        {/* Custom Category Dropdown */}
-                                        {showCategorySuggestions && categorySuggestions.length > 0 && (
-                                            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-                                                {categorySuggestions.map((cat, idx) => (
-                                                    <div 
-                                                        key={idx}
-                                                        onClick={() => {
-                                                            setFormData({...formData, category: cat});
-                                                            setShowCategorySuggestions(false);
-                                                        }}
-                                                        className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
-                                                    >
-                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(cat.length * 50 + 120) % 360}, 60%, 50%)` }}>
-                                                            {cat.charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <span className="text-slate-700 dark:text-slate-200 font-medium">{cat}</span>
-                                                    </div>
-                                                ))}
+                                         {/* Type Selector Management */}
+                                         <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                            <div className="flex gap-2 bg-slate-50 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-white/10">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({...formData, type: 'expense'})}
+                                                    className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'expense' ? 'bg-white dark:bg-slate-700 text-red-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                                >
+                                                    Expense
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({...formData, type: 'income'})}
+                                                    className={`flex-1 py-1.5 px-3 rounded-md text-sm font-bold transition-colors ${formData.type === 'income' ? 'bg-white dark:bg-slate-700 text-green-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                                >
+                                                    Income
+                                                </button>
                                             </div>
+                                        </div>
+
+                                        {/* Category */}
+                                        <div>
+                                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
+                                             <div className="relative">
+                                                 <input 
+                                                    type="text" 
+                                                    value={formData.category} 
+                                                    onChange={e => setFormData({...formData, category: e.target.value})}
+                                                    onFocus={() => setShowCategorySuggestions(true)}
+                                                    onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 200)}
+                                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                                                    placeholder="Select or type..." 
+                                                />
+                                                {/* Custom Category Dropdown */}
+                                                {showCategorySuggestions && categorySuggestions.length > 0 && (
+                                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                        {categorySuggestions.map((cat, idx) => (
+                                                            <div 
+                                                                key={idx}
+                                                                onClick={() => {
+                                                                    setFormData({...formData, category: cat});
+                                                                    setShowCategorySuggestions(false);
+                                                                }}
+                                                                className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                            >
+                                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(cat.length * 50 + 120) % 360}, 60%, 50%)` }}>
+                                                                    {cat.charAt(0).toUpperCase()}
+                                                                </div>
+                                                                <span className="text-slate-700 dark:text-slate-200 font-medium">{cat}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                             </div>
+                                         </div>
+                                                                          {/* PIC / Benefactor */}
+                                          <div>
+                                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                  {formData.type === 'income' ? 'Person in Charge/Benefactor' : 'Person in Charge'}
+                                              </label>
+                                              <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder={formData.type === 'income' ? "Who donated?" : "Who is responsible?"} />
+                                          </div>
+
+                                          {/* Content */}
+                                          <div className="md:col-span-2">
+                                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                                              <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Transaction description..." />
+                                          </div>
+
+                                          {/* Benefactor Of (Only for Income) */}
+                                          {formData.type === 'income' && (
+                                             <div>
+                                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">To Whom? (Của ai)</label>
+                                                 <div className="relative">
+                                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                                         <i className="fas fa-user-tag text-xs"></i>
+                                                     </div>
+                                                     <input 
+                                                         type="text" 
+                                                         value={formData.benefactorOf} 
+                                                         onChange={e => setFormData({...formData, benefactorOf: e.target.value})}
+                                                         onFocus={() => setShowBenefactorSuggestions(true)}
+                                                         onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
+                                                         className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" 
+                                                         placeholder="Select or type..." 
+                                                     />
+                                                     {/* Custom Dropdown */}
+                                                     {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
+                                                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                            {benefactorSuggestions.map((name, idx) => (
+                                                                <div 
+                                                                    key={idx}
+                                                                    onClick={() => {
+                                                                        setFormData({...formData, benefactorOf: name});
+                                                                        setShowBenefactorSuggestions(false);
+                                                                    }}
+                                                                    className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                                >
+                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
+                                                                        {name.charAt(0).toUpperCase()}
+                                                                    </div>
+                                                                    <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                     )}
+                                                 </div>
+                                             </div>
+                                          )}
+                                        
+                                        {/* Amount */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (VND)</label>
+                                            <input 
+                                                type="text" 
+                                                value={formData.actualVND ? formData.actualVND.toLocaleString() : ''} 
+                                                onChange={e => handleAmountChange(e, 'actualVND')}
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                     </div>
+                                 )}
+
+                                 {/* Common: Note */}
+                                 <div>
+                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Note</label>
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input 
+                                            type="text" 
+                                            value={formData.note} 
+                                            onChange={e => setFormData({...formData, note: e.target.value})} 
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                            placeholder="Add a note (optional)..."
+                                        />
+                                        {isEstimation && formData.type === 'income' && (
+                                             <>
+                                                <input 
+                                                    type="text" 
+                                                    value={formData.pic} 
+                                                    onChange={e => setFormData({...formData, pic: e.target.value})} 
+                                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                                    placeholder="Benefactor (Ân nhân)..." 
+                                                />
+                                                <div className="relative">
+                                                    <input 
+                                                        type="text" 
+                                                        value={formData.benefactorOf} 
+                                                        onChange={e => setFormData({...formData, benefactorOf: e.target.value})} 
+                                                        onFocus={() => setShowBenefactorSuggestions(true)}
+                                                        onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
+                                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
+                                                        placeholder="To whom? (Của ai)..." 
+                                                    />
+                                                    {/* Custom Dropdown */}
+                                                     {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
+                                                        <div className="absolute z-10 w-full bottom-full mb-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+                                                            {benefactorSuggestions.map((name, idx) => (
+                                                                <div 
+                                                                    key={idx}
+                                                                    onClick={() => {
+                                                                        setFormData({...formData, benefactorOf: name});
+                                                                        setShowBenefactorSuggestions(false);
+                                                                    }}
+                                                                    className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                                >
+                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
+                                                                        {name.charAt(0).toUpperCase()}
+                                                                    </div>
+                                                                    <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                     )}
+                                                </div>
+                                             </>
                                         )}
                                      </div>
                                  </div>
-                                                                  {/* PIC / Benefactor */}
-                                  <div>
-                                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                                          {formData.type === 'income' ? 'Person in Charge/Benefactor' : 'Person in Charge'}
-                                      </label>
-                                      <input type="text" value={formData.pic} onChange={e => setFormData({...formData, pic: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder={formData.type === 'income' ? "Who donated?" : "Who is responsible?"} />
-                                  </div>
-
-                                  {/* Content */}
-                                  <div className="md:col-span-2">
-                                      <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
-                                      <input type="text" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Transaction description..." />
-                                  </div>
-
-                                  {/* Benefactor Of (Only for Income) */}
-                                  {formData.type === 'income' && (
-                                     <div>
-                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">To Whom? (Của ai)</label>
-                                         <div className="relative">
-                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                                 <i className="fas fa-user-tag text-xs"></i>
-                                             </div>
-                                             <input 
-                                                 type="text" 
-                                                 value={formData.benefactorOf} 
-                                                 onChange={e => setFormData({...formData, benefactorOf: e.target.value})}
-                                                 onFocus={() => setShowBenefactorSuggestions(true)}
-                                                 onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
-                                                 className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none" 
-                                                 placeholder="Select or type..." 
-                                             />
-                                             {/* Custom Dropdown */}
-                                             {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
-                                                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-                                                    {benefactorSuggestions.map((name, idx) => (
-                                                        <div 
-                                                            key={idx}
-                                                            onClick={() => {
-                                                                setFormData({...formData, benefactorOf: name});
-                                                                setShowBenefactorSuggestions(false);
-                                                            }}
-                                                            className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
-                                                        >
-                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
-                                                                {name.charAt(0).toUpperCase()}
-                                                            </div>
-                                                            <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                             )}
-                                         </div>
-                                     </div>
-                                  )}
-                                
-                                {/* Amount */}
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (VND)</label>
-                                    <input 
-                                        type="text" 
-                                        value={formData.actualVND ? formData.actualVND.toLocaleString() : ''} 
-                                        onChange={e => handleAmountChange(e, 'actualVND')}
-                                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="0"
-                                    />
-                                </div>
                              </div>
-                         )}
-
-                         {/* Common: Note */}
-                         <div>
-                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Note</label>
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input 
-                                    type="text" 
-                                    value={formData.note} 
-                                    onChange={e => setFormData({...formData, note: e.target.value})} 
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
-                                    placeholder="Add a note (optional)..."
-                                />
-                                {isEstimation && formData.type === 'income' && (
-                                     <>
-                                        <input 
-                                            type="text" 
-                                            value={formData.pic} 
-                                            onChange={e => setFormData({...formData, pic: e.target.value})} 
-                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
-                                            placeholder="Benefactor (Ân nhân)..." 
-                                        />
-                                        <div className="relative">
-                                            <input 
-                                                type="text" 
-                                                value={formData.benefactorOf} 
-                                                onChange={e => setFormData({...formData, benefactorOf: e.target.value})} 
-                                                onFocus={() => setShowBenefactorSuggestions(true)}
-                                                onBlur={() => setTimeout(() => setShowBenefactorSuggestions(false), 200)}
-                                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400" 
-                                                placeholder="To whom? (Của ai)..." 
-                                            />
-                                            {/* Custom Dropdown */}
-                                             {showBenefactorSuggestions && benefactorSuggestions.length > 0 && (
-                                                <div className="absolute z-10 w-full bottom-full mb-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-white/10 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-                                                    {benefactorSuggestions.map((name, idx) => (
-                                                        <div 
-                                                            key={idx}
-                                                            onClick={() => {
-                                                                setFormData({...formData, benefactorOf: name});
-                                                                setShowBenefactorSuggestions(false);
-                                                            }}
-                                                            className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center gap-3 transition-colors"
-                                                        >
-                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0`} style={{ backgroundColor: `hsl(${(name.length * 40) % 360}, 70%, 50%)` }}>
-                                                                {name.charAt(0).toUpperCase()}
-                                                            </div>
-                                                            <span className="text-slate-700 dark:text-slate-200 font-medium">{name}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                             )}
-                                        </div>
-                                     </>
-                                )}
+                             <div className="flex justify-end gap-3 p-6 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 sticky bottom-0 z-10">
+                                 <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setFormData(initialFormState); }} className="px-6 py-2.5 border border-slate-200 dark:border-white/10 text-slate-500 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                     Cancel
+                                 </button>
+                                 <button type="submit" className="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all transform hover:scale-105 active:scale-95">
+                                     {editingId ? 'Update Item' : 'Save Item'}
+                                 </button>
                              </div>
-                         </div>
-                     </div>
-                     <div className="flex justify-end pt-2">
-                         <button type="submit" className="px-8 py-2 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-500">Save Item</button>
-                     </div>
-                </form>
+                        </form>
+                    </div>
+                </div>
             )}
+
 
             {/* Filter Tabs & Total */}
             <div className="flex flex-col md:flex-row justify-between items-end md:items-center pb-2 gap-4">
@@ -772,7 +800,7 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                 </div>
 
                 {/* Filtered Total Display - DEBUG VERIFICATION */}
-                <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-lg border-2 border-blue-500 flex items-center gap-3 shadow-md" style={{ minWidth: '200px', display: 'flex', zIndex: 50 }}>
+                <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-lg border-2 border-blue-500 flex items-center gap-3 shadow-md" style={{ minWidth: '200px', display: 'flex', zIndex: 10 }}>
                      <span className="text-xs font-bold text-blue-700 dark:text-blue-200 uppercase">
                          {filterType === 'all' ? 'Current Balance' : filterType === 'income' ? 'Current Income' : 'Current Expense'}
                      </span>
