@@ -147,7 +147,9 @@ export default function MinistryPage() {
                                            <div className={`p-8 md:p-10 flex flex-col ${displayImage ? 'md:w-7/12' : 'w-full'}`}>
                                                <div className="mb-6">
                                                    <div className="flex justify-between items-start gap-4">
-                                                       <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight">{title}</h3>
+                                                       <Link href={`/ministry/${ministry.id}`} className="group/title">
+                                                           <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight group-hover/title:text-purple-600 dark:group-hover/title:text-purple-400 transition-colors">{title}</h3>
+                                                       </Link>
                                                        <div className="flex items-center gap-2 shrink-0">
                                                            {ministry.status !== 'active' && (
                                                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
@@ -170,27 +172,23 @@ export default function MinistryPage() {
                                                       {ministry.createdAt?.seconds ? new Date(ministry.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
                                                    </div>
                                                </div>
-                                                <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed flex-grow">
-                                                    {description}
+                                                {/* Description Preview - Strip HTML and truncate */}
+                                                <div className="text-slate-600 dark:text-slate-300 leading-relaxed flex-grow mb-6">
+                                                    {description.replace(/<[^>]*>/g, '').substring(0, 250)}{description.length > 250 ? '...' : ''}
                                                 </div>
-                                                
-                                                {prayerNeeds && (
-                                                    <div className="bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-white/5 p-6 md:p-8 backdrop-blur-sm mt-8 -mx-8 -mb-8 md:-mx-10 md:-mb-10">
-                                                       <div className="flex items-start gap-5">
-                                                           <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0 mt-1 border border-orange-500/20">
-                                                               <i className="fas fa-pray"></i>
-                                                           </div>
-                                                            <div>
-                                                                <h4 className="font-bold text-base text-slate-900 dark:text-white mb-2">Prayer Needs</h4>
-                                                                <div className="text-slate-600 dark:text-slate-400 whitespace-pre-line text-sm italic leading-relaxed">
-                                                                    {prayerNeeds}
-                                                                </div>
-                                                            </div>
-                                                       </div>
-                                                   </div>
-                                               )}
-                                           </div>
-                                       </div>
+                                                 
+                                                {/* Read More Button */}
+                                                <div className="mt-auto">
+                                                    <Link 
+                                                        href={`/ministry/${ministry.id}`}
+                                                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all hover:scale-105 shadow-lg shadow-purple-900/30"
+                                                    >
+                                                        <span>{language === 'vi' ? 'Đọc thêm' : 'Read More'}</span>
+                                                        <i className="fas fa-arrow-right text-sm"></i>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                    </div>
                                    );

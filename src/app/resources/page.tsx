@@ -4,15 +4,43 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
-import { ResourceItem, mockDocuments, mockSongs, mockPosts, mockTestimonies } from '@/data/mockResources';
-import { useLanguage } from '@/context/LanguageContext'; // Added import
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { ResourceItem, mockDocuments, mockSongs } from '@/data/mockResources';
+import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 
+// Post type from Firestore
+interface FirestorePost {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    type: 'post' | 'testimony';
+    status: 'draft' | 'published';
+    coverImage?: string;
+    author: string;
+    createdAt: any;
+}
 
+// Convert Firestore post to ResourceItem format
+const postToResourceItem = (post: FirestorePost): ResourceItem => ({
+    id: post.id,
+    slug: post.slug || post.id,
+    title: post.title,
+    category: post.type === 'testimony' ? 'Testimony' : 'Post',
+    description: post.excerpt,
+    coverImage: post.coverImage || '',
+    date: post.createdAt?.seconds 
+        ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() 
+        : '',
+    author: post.author,
+    type: post.type,
+});
 
 // --- Components ---
 
-    const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
+const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
     const { t } = useLanguage(); 
     const menuItems = [
         { id: 'all', label: t('resources.tabs.all'), icon: 'fas fa-th-large' },
@@ -35,7 +63,7 @@ import { useLanguage } from '@/context/LanguageContext'; // Added import
                     }`}
                 >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'
+                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                     }`}>
                         <i className={`${item.icon} text-lg`}></i>
                     </div>
@@ -46,50 +74,49 @@ import { useLanguage } from '@/context/LanguageContext'; // Added import
     );
 };
 
-
-
 const ResourceCard = ({ item }: { item: ResourceItem }) => {
     const { t } = useLanguage();
-    // Determine Link based on type
-    const href = item.type === 'blog' ? `/blogs/${item.slug || item.id}` : `/resources/${item.slug}`;
-    const icon = item.type === 'blog' ? 'fa-pen' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
-    const isBlog = item.type === 'blog';
+    // Determine Link based on type - posts/testimonies go to /resources/post/[slug]
+    const isPostOrTestimony = item.type === 'post' || item.type === 'testimony';
+    const href = isPostOrTestimony ? `/resources/post/${item.slug}` : `/resources/${item.slug}`;
+    const icon = item.type === 'post' ? 'fa-newspaper' : item.type === 'testimony' ? 'fa-comment-medical' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
     
     return (
         <Link href={href} className="group bg-white dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-900/20 hover:-translate-y-1 transition-all duration-300 border border-slate-100 dark:border-white/5 flex flex-col h-full hover:border-purple-500/30">
-            {/* Show cover image only if NOT a blog */}
-            {!isBlog && (
-                <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                    {item.coverImage && !item.coverImage.includes('placehold') ? (
-                        <Image 
-                            src={item.coverImage} 
-                            alt={item.title} 
-                            fill 
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-400 dark:text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
-                            <i className={`fas ${icon}`}></i>
-                        </div>
-                    )}
-                    <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm flex items-center gap-1 border border-slate-200 dark:border-white/10">
-                        <i className={`fas ${icon} text-[10px]`}></i> {item.category}
+            {/* Show cover image */}
+            <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                {item.coverImage && !item.coverImage.includes('placehold') ? (
+                    <Image 
+                        src={item.coverImage} 
+                        alt={item.title} 
+                        fill 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-400 dark:text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
+                        <i className={`fas ${icon}`}></i>
                     </div>
+                )}
+                <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm flex items-center gap-1 border border-slate-200 dark:border-white/10">
+                    <i className={`fas ${icon} text-[10px]`}></i> {item.category}
                 </div>
-            )}
+            </div>
             
             <div className="p-5 flex flex-col flex-grow">
-                {/* For blogs, we might want a small category badge since image is gone */}
-                {isBlog && (
+                {isPostOrTestimony && (
                      <div className="mb-2">
-                        <span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-blue-500/20">
-                            <i className="fas fa-pen-nib text-[10px]"></i> {t('resources.tabs.blogs')}
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                            item.type === 'testimony' 
+                                ? 'bg-orange-500/10 text-orange-500 border-orange-500/20'
+                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                        }`}>
+                            <i className={`fas ${icon} text-[10px]`}></i> {item.type === 'testimony' ? 'Testimony' : 'Post'}
                         </span>
                      </div>
                 )}
 
-                <h3 className={`text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${isBlog ? 'text-xl' : ''}`}>
+                <h3 className={`text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${isPostOrTestimony ? 'text-xl' : ''}`}>
                     {item.title}
                 </h3>
                 <p className="text-slate-500 dark:text-slate-400 text-xs line-clamp-3 mb-4 flex-grow">
@@ -120,23 +147,45 @@ const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string,
     );
 };
 
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-
-// ... (keep imports)
-
-
-
-// ... (keep SectionHeader)
-
 export default function ResourcesDashboard() {
-    const { user } = useAuth();
-    const router = useRouter();
-    const { t } = useLanguage(); // Use hook
+    const { isAdmin } = useAuth();
+    const { t, language } = useLanguage();
     const [activeTab, setActiveTab] = useState('all');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    
+    // Firestore posts
+    const [firestorePosts, setFirestorePosts] = useState<ResourceItem[]>([]);
+    const [firestoreTestimonies, setFirestoreTestimonies] = useState<ResourceItem[]>([]);
 
+    useEffect(() => {
+        // Fetch published posts from Firestore
+        const postsQuery = query(
+            collection(db, "posts"),
+            where("status", "==", "published"),
+            orderBy("createdAt", "desc")
+        );
+        
+        const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+            const posts: ResourceItem[] = [];
+            const testimonies: ResourceItem[] = [];
+            
+            snapshot.forEach((doc) => {
+                const data = { id: doc.id, ...doc.data() } as FirestorePost;
+                const item = postToResourceItem(data);
+                if (data.type === 'testimony') {
+                    testimonies.push(item);
+                } else {
+                    posts.push(item);
+                }
+            });
+            
+            setFirestorePosts(posts);
+            setFirestoreTestimonies(testimonies);
+            setLoading(false);
+        });
 
+        return () => unsubscribe();
+    }, []);
 
     const renderContent = () => {
         if (loading) return <div className="p-12 text-center text-slate-500">{t('resources.loading')}</div>;
@@ -144,25 +193,25 @@ export default function ResourcesDashboard() {
         if (activeTab === 'all') {
             return (
                 <div className="space-y-12">
-                     {/* ... (keep existing structure) ... */}
-                    {/* Blogs Section */}
-
-
                     {/* Posts Section */}
-                    <section>
-                        <SectionHeader title={t('resources.sections.posts') || 'Posts'} icon="fa-newspaper" onSeeAll={() => setActiveTab('posts')} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {mockPosts.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                        </div>
-                    </section>
+                    {firestorePosts.length > 0 && (
+                        <section>
+                            <SectionHeader title={t('resources.sections.posts') || 'Posts'} icon="fa-newspaper" onSeeAll={() => setActiveTab('posts')} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {firestorePosts.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Testimonies Section */}
-                    <section>
-                        <SectionHeader title={t('resources.sections.testimonies') || 'Testimonies'} icon="fa-comment-medical" onSeeAll={() => setActiveTab('testimonies')} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {mockTestimonies.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                        </div>
-                    </section>
+                    {firestoreTestimonies.length > 0 && (
+                        <section>
+                            <SectionHeader title={t('resources.sections.testimonies') || 'Testimonies'} icon="fa-comment-medical" onSeeAll={() => setActiveTab('testimonies')} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {firestoreTestimonies.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Documents Section */}
                     <section>
@@ -186,8 +235,8 @@ export default function ResourcesDashboard() {
         // Specific Tab Views
         let items: ResourceItem[] = [];
         let title = '';
-        if (activeTab === 'posts') { items = mockPosts; title = t('resources.tabs.posts') || 'Posts'; }
-        if (activeTab === 'testimonies') { items = mockTestimonies; title = t('resources.tabs.testimonies') || 'Testimonies'; }
+        if (activeTab === 'posts') { items = firestorePosts; title = t('resources.tabs.posts') || 'Posts'; }
+        if (activeTab === 'testimonies') { items = firestoreTestimonies; title = t('resources.tabs.testimonies') || 'Testimonies'; }
         if (activeTab === 'documents') { items = mockDocuments; title = t('resources.tabs.documents'); }
         if (activeTab === 'songs') { items = mockSongs; title = t('resources.tabs.songs'); }
 
@@ -199,12 +248,35 @@ export default function ResourcesDashboard() {
                         <p className="text-slate-500 dark:text-slate-400 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
                     </div>
                     
-                     {/* Write Button (Only visible for 'blogs' tab if logged in) */}
-
+                    {/* Write Button for Admin */}
+                    {isAdmin && (activeTab === 'posts' || activeTab === 'testimonies') && (
+                        <Link 
+                            href="/admin/posts/create"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-900/30"
+                        >
+                            <i className="fas fa-plus"></i>
+                            <span>{language === 'vi' ? 'Viết bài mới' : 'Write New'}</span>
+                        </Link>
+                    )}
                  </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {items.map(item => <ResourceCard key={item.id} item={item} />)}
-                 </div>
+                 
+                 {items.length === 0 ? (
+                     <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                         <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                             <i className="fas fa-file-alt text-2xl text-slate-400"></i>
+                         </div>
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                             {language === 'vi' ? 'Chưa có bài viết' : 'No posts yet'}
+                         </h3>
+                         <p className="text-slate-500 dark:text-slate-400">
+                             {language === 'vi' ? 'Các bài viết sẽ xuất hiện ở đây' : 'Posts will appear here'}
+                         </p>
+                     </div>
+                 ) : (
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {items.map(item => <ResourceCard key={item.id} item={item} />)}
+                     </div>
+                 )}
             </div>
         );
     };
@@ -254,8 +326,6 @@ export default function ResourcesDashboard() {
                     </div>
                 </div>
             </div>
-
-
         </main>
     );
 }

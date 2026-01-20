@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp, getDocs, collection, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
+import RichTextEditor from "@/components/RichTextEditor";
 import { useModal } from "@/context/ModalContext";
 import AdminGuard from "@/components/admin/AdminGuard";
 import { logActivity } from '@/lib/activity-logger';
@@ -376,16 +377,16 @@ export default function EditMinistryPage() {
                 
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Description <span className="text-slate-500 font-normal">({activeTab.toUpperCase()})</span></label>
-                    <textarea 
-                        name={`description_${activeTab}`} 
-                        required
-                        rows={6}
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                        <i className="fas fa-info-circle mr-1"></i>
+                        Use the toolbar to format text, add images, and import Word documents.
+                    </p>
+                    <RichTextEditor
                         // @ts-ignore
-                        value={formData[`description_${activeTab}`]} 
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
+                        value={formData[`description_${activeTab}`]}
+                        onChange={(html: string) => setFormData(prev => ({ ...prev, [`description_${activeTab}`]: html }))}
                         placeholder={activeTab === 'en' ? "Describe the ministry works..." : "Mô tả công việc của mục vụ..."}
-                    ></textarea>
+                    />
                 </div>
 
                  <div className="space-y-2">
