@@ -96,6 +96,10 @@ export default function AdminGoalsList() {
             });
             setGoals(list);
             setLoading(false);
+        }, (error) => {
+            console.error("Error fetching goals:", error);
+            showAlert("Error", "Failed to load goals. Check console for details.");
+            setLoading(false);
         });
         return () => unsubscribe();
     }, [user]);

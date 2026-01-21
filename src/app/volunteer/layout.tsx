@@ -54,10 +54,7 @@ export default function VolunteerDashboardLayout({ children }: { children: React
                             Goals
                         </Link>
 
-                        <Link href="/volunteer/expenses" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/expenses')}`}>
-                            <i className="fas fa-wallet w-5 text-center"></i>
-                            Expenses
-                        </Link>
+
 
                         <Link href="/volunteer/prayers" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive('/volunteer/prayers')}`}>
                             <i className="fas fa-praying-hands w-5 text-center"></i>

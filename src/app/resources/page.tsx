@@ -2,330 +2,281 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { ResourceItem, mockDocuments, mockSongs } from '@/data/mockResources';
-import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
+import { db } from '@/lib/firebase';
+import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 
-// Post type from Firestore
-interface FirestorePost {
-    id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    type: 'post' | 'testimony';
-    status: 'draft' | 'published';
-    coverImage?: string;
-    author: string;
-    createdAt: any;
-}
+// Mock Data for items not yet in Firestore
+const DOCUMENTS = [
+  { id: '1', title: 'Worship Team Lessons', type: 'PDF', size: '3.8 MB', date: 'Jan 10, 2024', url: '/resources/bible_study/_worship_team_lessons.pdf' },
+  { id: '2', title: 'Be Blessed in Honoring Parents', type: 'PDF', size: '91 KB', date: 'Dec 15, 2023', url: '/resources/sharing/_be_bless_in_honoring_parents.pdf' },
+  { id: '3', title: 'Can I Help You?', type: 'PDF', size: '320 KB', date: 'Jan 05, 2024', url: '/resources/sharing/_can_i_help_you.pdf' },
+  { id: '4', title: 'Reason for Coming', type: 'PDF', size: '172 KB', date: 'Jan 08, 2024', url: '/resources/sharing/_reason_for_coming.pdf' },
+];
 
-// Convert Firestore post to ResourceItem format
-const postToResourceItem = (post: FirestorePost): ResourceItem => ({
-    id: post.id,
-    slug: post.slug || post.id,
-    title: post.title,
-    category: post.type === 'testimony' ? 'Testimony' : 'Post',
-    description: post.excerpt,
-    coverImage: post.coverImage || '',
-    date: post.createdAt?.seconds 
-        ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() 
-        : '',
-    author: post.author,
-    type: post.type,
-});
+const SONGS = [
+  { id: '1', title: 'Man of Sorrow', artist: 'Worship Team', duration: 'PDF', cover: '', url: '/resources/songs/_man_of_sorrow.pdf', type: 'sheet' },
+];
 
-// --- Components ---
+export default function ResourcesPage() {
+  const { user, isAdmin } = useAuth();
+  const [activeTab, setActiveTab] = useState('posts');
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const Sidebar = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) => {
-    const { t } = useLanguage(); 
-    const menuItems = [
-        { id: 'all', label: t('resources.tabs.all'), icon: 'fas fa-th-large' },
-        { id: 'posts', label: t('resources.tabs.posts') || 'Posts', icon: 'fas fa-newspaper' },
-        { id: 'testimonies', label: t('resources.tabs.testimonies') || 'Testimonies', icon: 'fas fa-comment-medical' },
-        { id: 'documents', label: t('resources.tabs.documents'), icon: 'fas fa-file-pdf' },
-        { id: 'songs', label: t('resources.tabs.songs'), icon: 'fas fa-music' },
-    ];
+  useEffect(() => {
+    setLoading(true);
+    let unsubscribe = () => {};
 
-    return (
-        <nav className="space-y-4">
-            {menuItems.map(item => (
-                <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-4 px-6 py-5 rounded-2xl font-bold transition-all duration-300 text-left shadow-lg ${
-                        activeTab === item.id
-                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-purple-900/30 scale-105'
-                            : 'bg-white/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white hover:shadow-xl border border-slate-200 dark:border-white/5'
-                    }`}
-                >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
-                    }`}>
-                        <i className={`${item.icon} text-lg`}></i>
-                    </div>
-                    <span className="text-base tracking-wide">{item.label}</span>
-                </button>
-            ))}
-        </nav>
-    );
-};
-
-const ResourceCard = ({ item }: { item: ResourceItem }) => {
-    const { t } = useLanguage();
-    // Determine Link based on type - posts/testimonies go to /resources/post/[slug]
-    const isPostOrTestimony = item.type === 'post' || item.type === 'testimony';
-    const href = isPostOrTestimony ? `/resources/post/${item.slug}` : `/resources/${item.slug}`;
-    const icon = item.type === 'post' ? 'fa-newspaper' : item.type === 'testimony' ? 'fa-comment-medical' : item.type === 'song' ? 'fa-music' : 'fa-file-pdf';
-    
-    return (
-        <Link href={href} className="group bg-white dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-900/20 hover:-translate-y-1 transition-all duration-300 border border-slate-100 dark:border-white/5 flex flex-col h-full hover:border-purple-500/30">
-            {/* Show cover image */}
-            <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                {item.coverImage && !item.coverImage.includes('placehold') ? (
-                    <Image 
-                        src={item.coverImage} 
-                        alt={item.title} 
-                        fill 
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 text-slate-400 dark:text-slate-600 text-4xl group-hover:text-purple-500 transition-colors">
-                        <i className={`fas ${icon}`}></i>
-                    </div>
-                )}
-                <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm flex items-center gap-1 border border-slate-200 dark:border-white/10">
-                    <i className={`fas ${icon} text-[10px]`}></i> {item.category}
-                </div>
-            </div>
-            
-            <div className="p-5 flex flex-col flex-grow">
-                {isPostOrTestimony && (
-                     <div className="mb-2">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                            item.type === 'testimony' 
-                                ? 'bg-orange-500/10 text-orange-500 border-orange-500/20'
-                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                        }`}>
-                            <i className={`fas ${icon} text-[10px]`}></i> {item.type === 'testimony' ? 'Testimony' : 'Post'}
-                        </span>
-                     </div>
-                )}
-
-                <h3 className={`text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${isPostOrTestimony ? 'text-xl' : ''}`}>
-                    {item.title}
-                </h3>
-                <p className="text-slate-500 dark:text-slate-400 text-xs line-clamp-3 mb-4 flex-grow">
-                    {item.description}
-                </p>
-                <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500">
-                    <span>{item.date}</span>
-                    <span className="font-semibold text-slate-600 dark:text-slate-300">{item.author}</span>
-                </div>
-            </div>
-        </Link>
-    );
-};
-
-const SectionHeader = ({ title, icon, onSeeAll }: { title: string, icon: string, onSeeAll?: () => void }) => {
-    const { t } = useLanguage();
-    return (
-        <div className="flex items-center justify-between mb-6 mt-2">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i className={`fas ${icon} text-purple-500`}></i> {title}
-            </h2>
-            {onSeeAll && (
-                <button onClick={onSeeAll} className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline">
-                    {t('resources.sections.view_all')}
-                </button>
-            )}
-        </div>
-    );
-};
-
-export default function ResourcesDashboard() {
-    const { isAdmin } = useAuth();
-    const { t, language } = useLanguage();
-    const [activeTab, setActiveTab] = useState('all');
-    const [loading, setLoading] = useState(true);
-    
-    // Firestore posts
-    const [firestorePosts, setFirestorePosts] = useState<ResourceItem[]>([]);
-    const [firestoreTestimonies, setFirestoreTestimonies] = useState<ResourceItem[]>([]);
-
-    useEffect(() => {
-        // Fetch published posts from Firestore
-        const postsQuery = query(
-            collection(db, "posts"),
-            where("status", "==", "published"),
-            orderBy("createdAt", "desc")
-        );
-        
-        const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-            const posts: ResourceItem[] = [];
-            const testimonies: ResourceItem[] = [];
-            
-            snapshot.forEach((doc) => {
-                const data = { id: doc.id, ...doc.data() } as FirestorePost;
-                const item = postToResourceItem(data);
-                if (data.type === 'testimony') {
-                    testimonies.push(item);
-                } else {
-                    posts.push(item);
-                }
-            });
-            
-            setFirestorePosts(posts);
-            setFirestoreTestimonies(testimonies);
-            setLoading(false);
+    if (activeTab === 'posts' || activeTab === 'testimonies') {
+      // Fetch from Firestore
+      const collectionName = activeTab === 'posts' ? 'posts' : 'testimonies';
+      const q = query(collection(db, collectionName), orderBy('createdAt', 'desc'));
+      
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetchedItems: any[] = [];
+        snapshot.forEach((doc) => {
+          fetchedItems.push({ id: doc.id, ...doc.data() });
         });
+        setItems(fetchedItems);
+        setLoading(false);
+      });
+    } else if (activeTab === 'documents') {
+      setItems(DOCUMENTS);
+      setLoading(false);
+    } else if (activeTab === 'songs') {
+      setItems(SONGS);
+      setLoading(false);
+    }
 
-        return () => unsubscribe();
-    }, []);
+    return () => unsubscribe();
+  }, [activeTab]);
 
-    const renderContent = () => {
-        if (loading) return <div className="p-12 text-center text-slate-500">{t('resources.loading')}</div>;
+  const tabs = [
+    { id: 'posts', label: 'Blog Posts', icon: 'fas fa-newspaper' },
+    { id: 'testimonies', label: 'Testimonies', icon: 'fas fa-bullhorn' },
+    { id: 'documents', label: 'Documents', icon: 'fas fa-file-alt' },
+    { id: 'songs', label: 'Worship Songs', icon: 'fas fa-music' },
+  ];
 
-        if (activeTab === 'all') {
-            return (
-                <div className="space-y-12">
-                    {/* Posts Section */}
-                    {firestorePosts.length > 0 && (
-                        <section>
-                            <SectionHeader title={t('resources.sections.posts') || 'Posts'} icon="fa-newspaper" onSeeAll={() => setActiveTab('posts')} />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {firestorePosts.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                            </div>
-                        </section>
-                    )}
+  return (
+    <main className="bg-white dark:bg-slate-950 min-h-screen font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300">
+      
+      {/* SECTION: HERO */}
+      <section className="relative pt-32 pb-24 overflow-hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-white/5">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/5 dark:bg-violet-600/5 rounded-full blur-[150px]"></div>
+        </div>
 
-                    {/* Testimonies Section */}
-                    {firestoreTestimonies.length > 0 && (
-                        <section>
-                            <SectionHeader title={t('resources.sections.testimonies') || 'Testimonies'} icon="fa-comment-medical" onSeeAll={() => setActiveTab('testimonies')} />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {firestoreTestimonies.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                            </div>
-                        </section>
-                    )}
+        <div className="container container-custom relative z-10 text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6">
+                Resources <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">Hub</span>
+            </h1>
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                Equipping the saints for the work of ministry, for building up the body of Christ.
+            </p>
+        </div>
+      </section>
 
-                    {/* Documents Section */}
-                    <section>
-                        <SectionHeader title={t('resources.sections.documents')} icon="fa-file-pdf" onSeeAll={() => setActiveTab('documents')} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {mockDocuments.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                        </div>
-                    </section>
+      {/* SECTION: CONTENT */}
+      <section className="py-16 md:py-24">
+        <div className="container container-custom">
+           <div className="flex flex-col lg:flex-row gap-12">
+               
+               {/* SIDEBAR NAVIGATION */}
+               <div className="w-full lg:w-1/4">
+                   <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-3xl sticky top-28 border border-slate-200 dark:border-white/5">
+                       <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 py-2 mb-2">Categories</h3>
+                       <div className="flex flex-col gap-2">
+                           {tabs.map(tab => (
+                               <button
+                                  key={tab.id}
+                                  onClick={() => setActiveTab(tab.id)}
+                                  className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 font-bold ${
+                                      activeTab === tab.id 
+                                        ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-lg shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700' 
+                                        : 'text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300'
+                                  }`}
+                               >
+                                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                                       activeTab === tab.id 
+                                         ? 'bg-violet-50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400' 
+                                         : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
+                                   }`}>
+                                       <i className={tab.icon}></i>
+                                   </div>
+                                   {tab.label}
+                               </button>
+                           ))}
+                       </div>
 
-                    {/* Songs Section */}
-                    <section>
-                        <SectionHeader title={t('resources.sections.songs')} icon="fa-music" onSeeAll={() => setActiveTab('songs')} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {mockSongs.slice(0, 4).map(item => <ResourceCard key={item.id} item={item} />)}
-                        </div>
-                    </section>
-                </div>
-            );
-        }
+                       {isAdmin && (activeTab === 'posts' || activeTab === 'testimonies') && (
+                           <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 px-2">
+                               <Link 
+                                  href={`/admin/${activeTab}/create`} 
+                                  className="w-full py-3 bg-violet-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all"
+                               >
+                                   <i className="fas fa-plus"></i> Add New
+                               </Link>
+                           </div>
+                       )}
+                   </div>
+               </div>
 
-        // Specific Tab Views
-        let items: ResourceItem[] = [];
-        let title = '';
-        if (activeTab === 'posts') { items = firestorePosts; title = t('resources.tabs.posts') || 'Posts'; }
-        if (activeTab === 'testimonies') { items = firestoreTestimonies; title = t('resources.tabs.testimonies') || 'Testimonies'; }
-        if (activeTab === 'documents') { items = mockDocuments; title = t('resources.tabs.documents'); }
-        if (activeTab === 'songs') { items = mockSongs; title = t('resources.tabs.songs'); }
+               {/* MAIN CONTENT GRID */}
+               <div className="w-full lg:w-3/4 min-h-[500px]">
+                   <div className="flex items-center justify-between mb-8">
+                       <h2 className="text-3xl font-bold text-slate-900 dark:text-white capitalize">{activeTab}</h2>
+                       <div className="text-sm text-slate-500 font-medium">
+                           Showing {items.length} results
+                       </div>
+                   </div>
 
-        return (
-            <div>
-                 <div className="mb-8 flex items-end justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{title}</h1>
-                        <p className="text-slate-500 dark:text-slate-400 mt-1">{t('resources.found_items').replace('{{count}}', items.length.toString())}</p>
-                    </div>
-                    
-                    {/* Write Button for Admin */}
-                    {isAdmin && (activeTab === 'posts' || activeTab === 'testimonies') && (
-                        <Link 
-                            href="/admin/posts/create"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-900/30"
-                        >
-                            <i className="fas fa-plus"></i>
-                            <span>{language === 'vi' ? 'Viết bài mới' : 'Write New'}</span>
-                        </Link>
-                    )}
-                 </div>
-                 
-                 {items.length === 0 ? (
-                     <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-                         <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                             <i className="fas fa-file-alt text-2xl text-slate-400"></i>
-                         </div>
-                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                             {language === 'vi' ? 'Chưa có bài viết' : 'No posts yet'}
-                         </h3>
-                         <p className="text-slate-500 dark:text-slate-400">
-                             {language === 'vi' ? 'Các bài viết sẽ xuất hiện ở đây' : 'Posts will appear here'}
-                         </p>
-                     </div>
-                 ) : (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {items.map(item => <ResourceCard key={item.id} item={item} />)}
-                     </div>
-                 )}
-            </div>
-        );
-    };
+                   {loading ? (
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           {[1, 2, 3, 4].map(i => (
+                               <div key={i} className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-900 animate-pulse"></div>
+                           ))}
+                       </div>
+                   ) : items.length === 0 ? (
+                       <div className="text-center py-24 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                           <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300 dark:text-slate-600">
+                               <i className="fas fa-folder-open text-4xl"></i>
+                           </div>
+                           <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Items Found</h3>
+                           <p className="text-slate-500">There are no {activeTab} to display at the moment.</p>
+                       </div>
+                   ) : (
+                       <div className={`grid gap-8 ${activeTab === 'posts' || activeTab === 'testimonies' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                           {items.map(item => (
+                               <div key={item.id} className="group premium-card rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 relative">
+                                   
+                                   {/* POSTS & TESTIMONIES CARD */}
+                                   {(activeTab === 'posts' || activeTab === 'testimonies') && (
+                                       <>
+                                           <div className="h-56 bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
+                                               {item.coverImage ? (
+                                                   <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                               ) : (
+                                                   <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-slate-300 dark:text-slate-600">
+                                                       <i className={`fas ${activeTab === 'posts' ? 'fa-pen-nib' : 'fa-quote-left'} text-5xl opacity-50`}></i>
+                                                   </div>
+                                               )}
+                                               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                           </div>
+                                           <div className="p-8">
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                                                        activeTab === 'posts' 
+                                                            ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' 
+                                                            : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                                                    }`}>
+                                                        {activeTab === 'posts' ? 'Article' : 'Story'}
+                                                    </span>
+                                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wide">
+                                                        {item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : item.date || 'Recently'}
+                                                    </span>
+                                                </div>
+                                               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                                   {item.title}
+                                               </h3>
+                                               <p className="text-slate-600 dark:text-slate-400 line-clamp-3 mb-6 leading-relaxed">
+                                                   {item.excerpt || item.content?.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                                               </p>
+                                               <Link 
+                                                  href={`/resources/${item.id}`} 
+                                                  className="inline-flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                                               >
+                                                   Read Full {activeTab === 'posts' ? 'Article' : 'Testimony'} <i className="fas fa-arrow-right"></i>
+                                               </Link>
+                                           </div>
+                                       </>
+                                   )}
 
-    return (
-        <main className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-20 font-sans transition-colors duration-300">
-             {/* Mobile Tab Select */}
-            <div className="lg:hidden bg-slate-900/80 backdrop-blur-md border-b border-white/5 sticky top-[72px] z-30 px-4 py-3 overflow-x-auto whitespace-nowrap hide-scrollbar shadow-lg">
-                {['all', 'posts', 'testimonies', 'documents', 'songs'].map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`inline-block px-4 py-2 rounded-full text-sm font-bold mr-2 ${
-                            activeTab === tab 
-                            ? 'bg-purple-600 text-white' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-                        }`}
-                    >
-                        {t(`resources.tabs.${tab}`)}
-                    </button>
-                ))}
-            </div>
+                                   {/* DOCUMENTS CARD */}
+                                   {activeTab === 'documents' && (
+                                       <div className="p-6 flex items-center gap-6">
+                                           <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-500 dark:text-rose-400 text-2xl shrink-0">
+                                               <i className="fas fa-file-pdf"></i>
+                                           </div>
+                                           <div className="flex-1">
+                                               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-rose-500 transition-colors">
+                                                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                    {item.title}
+                                                 </a>
+                                               </h3>
+                                               <p className="text-sm text-slate-500 flex items-center gap-3">
+                                                   <span>{item.size}</span>
+                                                   <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                   <span>{item.date}</span>
+                                               </p>
+                                           </div>
+                                           <a 
+                                             href={item.url} 
+                                             target="_blank" 
+                                             rel="noopener noreferrer"
+                                             className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-all"
+                                           >
+                                               <i className="fas fa-download"></i>
+                                           </a>
+                                       </div>
+                                   )}
 
-            <div className="container container-custom pb-20" style={{ paddingTop: '40px' }}>
-                {/* Header Section */}
-                <div className="max-w-4xl mb-12 md:mb-16">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
-                        {t('resources.title') || 'Resources'}
-                    </h1>
-                     <p className="text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
-                        {t('resources.subtitle') || 'Explore our collection of spiritual resources including blogs, documents, and songs.'}
-                    </p>
-                    <div className="mt-8 h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                </div>
+                                    {/* SONGS CARD */}
+                                   {activeTab === 'songs' && (
+                                       <div className="p-4 flex items-center gap-6">
+                                            <a 
+                                                href={item.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-16 h-16 rounded-xl bg-slate-200 dark:bg-slate-800 relative overflow-hidden shrink-0 group-hover:shadow-lg transition-all flex items-center justify-center"
+                                            >
+                                                {item.type === 'sheet' ? (
+                                                     <i className="fas fa-file-pdf text-3xl text-slate-400 group-hover:text-violet-600 transition-colors"></i>
+                                                ) : (
+                                                    <>
+                                                        <div className="absolute inset-0 bg-violet-600/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                            <i className="fas fa-play text-white drop-shadow-md"></i>
+                                                        </div>
+                                                        {item.cover ? (
+                                                            <img src={item.cover} alt="Cover" className="w-full h-full object-cover" /> 
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-800">
+                                                                <i className="fas fa-music"></i>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </a>
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{item.title}</a>
+                                                </h3>
+                                                <p className="text-sm text-slate-500">{item.artist}</p>
+                                            </div>
+                                            <div className="text-sm font-bold text-slate-400 font-mono tracking-wider">
+                                                {item.duration}
+                                            </div>
+                                            <a 
+                                                href={item.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                                            >
+                                                <i className="fas fa-download"></i>
+                                            </a>
+                                       </div>
+                                   )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-                     {/* Left Sidebar */}
-                    <div className="lg:col-span-3 hidden lg:block">
-                        <div>
-                            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-                        </div>
-                    </div>
+                               </div>
+                           ))}
+                       </div>
+                   )}
+               </div>
+           </div>
+        </div>
+      </section>
 
-                    {/* Right Content */}
-                    <div className="lg:col-span-9">
-                        {renderContent()}
-                    </div>
-                </div>
-            </div>
-        </main>
-    );
+    </main>
+  );
 }
