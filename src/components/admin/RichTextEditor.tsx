@@ -57,7 +57,11 @@ export default function RichTextEditor({ value, onChange, placeholder, className
                 .dark .rich-text-editor .ql-container {
                     background: #1e293b;
                     border-color: rgba(255,255,255,0.1) !important;
-                    color: white;
+                    color: white !important;
+                }
+                .dark .rich-text-editor .ql-container * {
+                    color: white !important;
+                    stroke: white !important;
                 }
 
                 .rich-text-editor .ql-editor.ql-blank::before {
