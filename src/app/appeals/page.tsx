@@ -143,7 +143,7 @@ export default function AppealsPage() {
                     {isAdmin && (
                         <div className="flex-shrink-0 mb-2">
                              <Link 
-                                href="/admin/appeals/create" 
+                                href="/admin/ministry-updates/create" 
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white hover:bg-black rounded-lg font-semibold transition-all shadow-sm hover:shadow-md active:transform active:scale-95"
                             >
                                 <i className="fas fa-plus"></i>

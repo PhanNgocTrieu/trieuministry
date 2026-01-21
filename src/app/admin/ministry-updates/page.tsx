@@ -82,9 +82,8 @@ export default function AdminMinistryUpdatesPage() {
                             <i className="fas fa-external-link-alt"></i>
                             View Page
                         </Link>
-                        {/* Note: You'll likely need to update the Create page for this too, or reuse appeals/create with a type param */}
                         <Link 
-                            href="/admin/appeals/create?type=official" 
+                            href="/admin/ministry-updates/create" 
                             className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg shadow-blue-900/20 flex items-center gap-2 transition-all"
                         >
                             <i className="fas fa-plus"></i>
@@ -131,7 +130,7 @@ export default function AdminMinistryUpdatesPage() {
                                                 <td className="px-6 py-4 text-right">
                                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <Link 
-                                                            href={`/admin/appeals/${update.id}/edit`}
+                                                            href={`/admin/ministry-updates/${update.id}/edit`}
                                                             className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
                                                             title="Edit"
                                                         >
