@@ -7,16 +7,8 @@ import { db } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 
 // Mock Data for items not yet in Firestore
-const DOCUMENTS = [
-  { id: '1', title: 'Worship Team Lessons', type: 'PDF', size: '3.8 MB', date: 'Jan 10, 2024', url: '/resources/bible_study/_worship_team_lessons.pdf' },
-  { id: '2', title: 'Be Blessed in Honoring Parents', type: 'PDF', size: '91 KB', date: 'Dec 15, 2023', url: '/resources/sharing/_be_bless_in_honoring_parents.pdf' },
-  { id: '3', title: 'Can I Help You?', type: 'PDF', size: '320 KB', date: 'Jan 05, 2024', url: '/resources/sharing/_can_i_help_you.pdf' },
-  { id: '4', title: 'Reason for Coming', type: 'PDF', size: '172 KB', date: 'Jan 08, 2024', url: '/resources/sharing/_reason_for_coming.pdf' },
-];
-
-const SONGS = [
-  { id: '1', title: 'Man of Sorrow', artist: 'Worship Team', duration: 'PDF', cover: '', url: '/resources/songs/_man_of_sorrow.pdf', type: 'sheet' },
-];
+// Mock Data for items not yet in Firestore (Deprecated imports removed)
+// import { mockDocuments, mockSongs } from '@/data/mockResources';
 
 export default function ResourcesPage() {
   const { user, isAdmin } = useAuth();
@@ -42,11 +34,36 @@ export default function ResourcesPage() {
         setLoading(false);
       });
     } else if (activeTab === 'documents') {
-      setItems(DOCUMENTS);
-      setLoading(false);
+       const q = query(collection(db, 'documents'), orderBy('createdAt', 'desc'));
+       unsubscribe = onSnapshot(q, (snapshot) => {
+         const fetchedItems: any[] = [];
+         snapshot.forEach((doc) => {
+           const data = doc.data();
+           fetchedItems.push({
+             id: doc.id,
+             ...data,
+             date: data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).getFullYear().toString() : '2025', // Fallback or format
+           });
+         });
+         setItems(fetchedItems);
+         setLoading(false);
+       });
     } else if (activeTab === 'songs') {
-      setItems(SONGS);
-      setLoading(false);
+       const q = query(collection(db, 'songs'), orderBy('createdAt', 'desc'));
+       unsubscribe = onSnapshot(q, (snapshot) => {
+         const fetchedItems: any[] = [];
+         snapshot.forEach((doc) => {
+            const data = doc.data();
+            fetchedItems.push({
+                id: doc.id,
+                ...data,
+                // Ensure fields match what Card expects
+                author: data.artist || data.author, 
+            });
+         });
+         setItems(fetchedItems);
+         setLoading(false);
+       });
     }
 
     return () => unsubscribe();
@@ -56,14 +73,14 @@ export default function ResourcesPage() {
     { id: 'posts', label: 'Blog Posts', icon: 'fas fa-newspaper' },
     { id: 'testimonies', label: 'Testimonies', icon: 'fas fa-bullhorn' },
     { id: 'documents', label: 'Documents', icon: 'fas fa-file-alt' },
-    { id: 'songs', label: 'Worship Songs', icon: 'fas fa-music' },
+    { id: 'songs', label: 'Translated Songs', icon: 'fas fa-music' },
   ];
 
   return (
     <main className="bg-white dark:bg-slate-950 min-h-screen font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300">
       
       {/* SECTION: HERO */}
-      <section className="relative pt-32 pb-24 overflow-hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-white/5">
+      <section className="relative pt-32 pb-20 overflow-hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-white/5">
         <div className="absolute inset-0 z-0 pointer-events-none">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/5 dark:bg-violet-600/5 rounded-full blur-[150px]"></div>
         </div>
@@ -79,14 +96,14 @@ export default function ResourcesPage() {
       </section>
 
       {/* SECTION: CONTENT */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 md:py-20">
         <div className="container container-custom">
-           <div className="flex flex-col lg:flex-row gap-12">
+           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                
                {/* SIDEBAR NAVIGATION */}
                <div className="w-full lg:w-1/4">
-                   <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-3xl sticky top-28 border border-slate-200 dark:border-white/5">
-                       <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 py-2 mb-2">Categories</h3>
+                   <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-3xl sticky top-28 border border-slate-200 dark:border-white/5 shadow-sm">
+                       <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 py-3 mb-2">Library</h3>
                        <div className="flex flex-col gap-2">
                            {tabs.map(tab => (
                                <button
@@ -94,14 +111,14 @@ export default function ResourcesPage() {
                                   onClick={() => setActiveTab(tab.id)}
                                   className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 font-bold ${
                                       activeTab === tab.id 
-                                        ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-lg shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700' 
-                                        : 'text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-xl shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700/50' 
+                                        : 'text-slate-500 hover:bg-white/60 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300'
                                   }`}
                                >
                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
                                        activeTab === tab.id 
                                          ? 'bg-violet-50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400' 
-                                         : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
+                                         : 'bg-slate-200 dark:bg-slate-800/50 text-slate-400'
                                    }`}>
                                        <i className={tab.icon}></i>
                                    </div>
@@ -114,9 +131,10 @@ export default function ResourcesPage() {
                            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 px-2">
                                <Link 
                                   href={`/admin/${activeTab}/create`} 
-                                  className="w-full py-3 bg-violet-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all"
+                                  className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all border border-violet-500"
                                >
-                                   <i className="fas fa-plus"></i> Add New
+                                   <i className="fas fa-plus"></i>
+                                   <span>Compose New</span>
                                </Link>
                            </div>
                        )}
@@ -124,49 +142,52 @@ export default function ResourcesPage() {
                </div>
 
                {/* MAIN CONTENT GRID */}
-               <div className="w-full lg:w-3/4 min-h-[500px]">
-                   <div className="flex items-center justify-between mb-8">
-                       <h2 className="text-3xl font-bold text-slate-900 dark:text-white capitalize">{activeTab}</h2>
-                       <div className="text-sm text-slate-500 font-medium">
-                           Showing {items.length} results
+               <div className="w-full lg:w-3/4 min-h-[600px]">
+                   <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
+                       <h2 className="text-3xl font-bold text-slate-900 dark:text-white capitalize tracking-tight">{activeTab}</h2>
+                       <div className="px-4 py-2 bg-slate-100 dark:bg-slate-900 rounded-full text-xs font-bold text-slate-500 border border-slate-200 dark:border-white/5">
+                           {items.length} RESULTS
                        </div>
                    </div>
 
                    {loading ? (
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                            {[1, 2, 3, 4].map(i => (
-                               <div key={i} className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-900 animate-pulse"></div>
+                               <div key={i} className="h-72 rounded-3xl bg-slate-100 dark:bg-slate-900 animate-pulse"></div>
                            ))}
                        </div>
                    ) : items.length === 0 ? (
-                       <div className="text-center py-24 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
-                           <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300 dark:text-slate-600">
-                               <i className="fas fa-folder-open text-4xl"></i>
+                       <div className="text-center py-24 bg-slate-50 dark:bg-slate-900/40 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                           <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300 dark:text-slate-700">
+                               <i className="fas fa-folder-open text-5xl"></i>
                            </div>
                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Items Found</h3>
                            <p className="text-slate-500">There are no {activeTab} to display at the moment.</p>
                        </div>
                    ) : (
-                       <div className={`grid gap-8 ${activeTab === 'posts' || activeTab === 'testimonies' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                       <div className={`grid gap-6 ${['posts', 'testimonies', 'documents'].includes(activeTab) ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
                            {items.map(item => (
-                               <div key={item.id} className="group premium-card rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 relative">
+                               <div key={item.id} className="group premium-card rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 transition-all duration-300 relative bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5">
                                    
                                    {/* POSTS & TESTIMONIES CARD */}
                                    {(activeTab === 'posts' || activeTab === 'testimonies') && (
                                        <>
                                            <div className="h-56 bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
                                                {item.coverImage ? (
-                                                   <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                   <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                                ) : (
-                                                   <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-slate-300 dark:text-slate-600">
-                                                       <i className={`fas ${activeTab === 'posts' ? 'fa-pen-nib' : 'fa-quote-left'} text-5xl opacity-50`}></i>
+                                                   <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-700">
+                                                       <div className="text-center">
+                                                          <i className={`fas ${activeTab === 'posts' ? 'fa-pen-nib' : 'fa-quote-left'} text-5xl opacity-30 mb-2`}></i>
+                                                          <div className="text-xs font-bold opacity-30 uppercase tracking-widest">{activeTab}</div>
+                                                       </div>
                                                    </div>
                                                )}
                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                            </div>
                                            <div className="p-8">
                                                 <div className="flex items-center gap-3 mb-4">
-                                                    <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                                                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${
                                                         activeTab === 'posts' 
                                                             ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' 
                                                             : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
@@ -180,11 +201,11 @@ export default function ResourcesPage() {
                                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                                                    {item.title}
                                                </h3>
-                                               <p className="text-slate-600 dark:text-slate-400 line-clamp-3 mb-6 leading-relaxed">
+                                               <p className="text-slate-600 dark:text-slate-400 line-clamp-3 mb-6 leading-relaxed text-sm">
                                                    {item.excerpt || item.content?.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
                                                </p>
                                                <Link 
-                                                  href={`/resources/${item.id}`} 
+                                                  href={`/resources/post/${item.slug || item.id}`} 
                                                   className="inline-flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
                                                >
                                                    Read Full {activeTab === 'posts' ? 'Article' : 'Testimony'} <i className="fas fa-arrow-right"></i>
@@ -193,75 +214,88 @@ export default function ResourcesPage() {
                                        </>
                                    )}
 
-                                   {/* DOCUMENTS CARD */}
+                                   {/* DOCUMENTS CARD - Redesigned */}
                                    {activeTab === 'documents' && (
-                                       <div className="p-6 flex items-center gap-6">
-                                           <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-500 dark:text-rose-400 text-2xl shrink-0">
-                                               <i className="fas fa-file-pdf"></i>
-                                           </div>
-                                           <div className="flex-1">
-                                               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-rose-500 transition-colors">
-                                                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                    {item.title}
-                                                 </a>
+                                       <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 relative group-hover:border-rose-200 dark:group-hover:border-rose-500/30 transition-colors">
+                                           {/* Decorative Top Accent */}
+                                           <div className="h-1.5 w-full bg-gradient-to-r from-rose-500 to-orange-500"></div>
+
+                                           <div className="p-8 flex-1 flex flex-col">
+                                               {/* Header: Icon & Type */}
+                                               <div className="flex items-start justify-between mb-6">
+                                                   <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-50 dark:text-rose-400 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                                       <i className="fas fa-book-open"></i>
+                                                   </div>
+                                                   <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest border border-slate-200 dark:border-white/10">
+                                                      {item.category || 'PDF'}
+                                                   </div>
+                                               </div>
+
+                                               {/* Content */}
+                                               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                                                   {item.title}
                                                </h3>
-                                               <p className="text-sm text-slate-500 flex items-center gap-3">
-                                                   <span>{item.size}</span>
-                                                   <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                                   <span>{item.date}</span>
+                                               
+                                               {item.author && (
+                                                   <div className="flex items-center gap-2 mb-4 text-sm font-bold text-slate-400">
+                                                       <i className="fas fa-feather-alt text-xs text-rose-400"></i>
+                                                       <span>{item.author}</span>
+                                                   </div>
+                                               )}
+
+                                               <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
+                                                   {item.description}
                                                </p>
+                                               
+                                               {/* Footer: Meta & Action */}
+                                               <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                                                   <div className="flex flex-col text-xs font-bold text-slate-400">
+                                                       <span>Since {item.date}</span>
+                                                       <span className="text-slate-300 dark:text-slate-600">{item.size}</span>
+                                                   </div>
+                                                   
+                                                   <a 
+                                                     href={item.fileUrl} 
+                                                     target="_blank" 
+                                                     rel="noopener noreferrer"
+                                                     className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl font-bold text-sm hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all shadow-sm group-hover:shadow-md"
+                                                   >
+                                                       <span>Download</span>
+                                                       <i className="fas fa-cloud-download-alt"></i>
+                                                   </a>
+                                               </div>
                                            </div>
-                                           <a 
-                                             href={item.url} 
-                                             target="_blank" 
-                                             rel="noopener noreferrer"
-                                             className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-all"
-                                           >
-                                               <i className="fas fa-download"></i>
-                                           </a>
                                        </div>
                                    )}
 
                                     {/* SONGS CARD */}
                                    {activeTab === 'songs' && (
-                                       <div className="p-4 flex items-center gap-6">
+                                       <div className="p-6 flex items-center gap-6">
                                             <a 
-                                                href={item.url}
+                                                href={item.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-16 h-16 rounded-xl bg-slate-200 dark:bg-slate-800 relative overflow-hidden shrink-0 group-hover:shadow-lg transition-all flex items-center justify-center"
+                                                className="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-800 relative overflow-hidden shrink-0 group-hover:shadow-lg transition-all flex items-center justify-center border border-slate-100 dark:border-white/5"
                                             >
-                                                {item.type === 'sheet' ? (
-                                                     <i className="fas fa-file-pdf text-3xl text-slate-400 group-hover:text-violet-600 transition-colors"></i>
-                                                ) : (
-                                                    <>
-                                                        <div className="absolute inset-0 bg-violet-600/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                                            <i className="fas fa-play text-white drop-shadow-md"></i>
-                                                        </div>
-                                                        {item.cover ? (
-                                                            <img src={item.cover} alt="Cover" className="w-full h-full object-cover" /> 
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-800">
-                                                                <i className="fas fa-music"></i>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                )}
+                                                {/* Use PDF icon always as these are documents mostly, or check type if we have audio */}
+                                                 <i className="fas fa-file-pdf text-3xl text-slate-400 group-hover:text-violet-600 transition-colors"></i>
                                             </a>
                                             <div className="flex-1">
                                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                                                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{item.title}</a>
+                                                    <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{item.title}</a>
                                                 </h3>
-                                                <p className="text-sm text-slate-500">{item.artist}</p>
-                                            </div>
-                                            <div className="text-sm font-bold text-slate-400 font-mono tracking-wider">
-                                                {item.duration}
+                                                <p className="text-sm text-slate-500 mb-2">{item.author}</p>
+                                                {item.category && (
+                                                    <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 uppercase">
+                                                        <i className="fas fa-tag text-[8px]"></i> {item.category}
+                                                    </div>
+                                                )}
                                             </div>
                                             <a 
-                                                href={item.url}
+                                                href={item.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                                                className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 hover:bg-violet-600 hover:text-white dark:hover:bg-violet-600 transition-all shadow-sm"
                                             >
                                                 <i className="fas fa-download"></i>
                                             </a>

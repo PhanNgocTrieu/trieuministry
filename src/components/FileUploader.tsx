@@ -5,7 +5,7 @@ import { storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 interface FileUploaderProps {
-    onFileUploaded: (url: string) => void;
+    onFileUploaded: (url: string, fileName: string) => void;
     currentFile?: string;
     folder?: string;
     accept?: string;
@@ -64,7 +64,7 @@ export default function FileUploader({
             async () => {
                 const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
                 setFileUrl(downloadURL);
-                onFileUploaded(downloadURL);
+                onFileUploaded(downloadURL, file.name);
                 setUploading(false);
                 setProgress(0);
             }
@@ -109,7 +109,7 @@ export default function FileUploader({
                          onClick={() => {
                             setFileUrl('');
                             setFileName('');
-                            onFileUploaded('');
+                            onFileUploaded('', '');
                          }}
                          className="text-gray-400 hover:text-red-500 p-2 transition-colors"
                          title="Remove file"

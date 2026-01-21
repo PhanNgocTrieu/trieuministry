@@ -1,7 +1,7 @@
 import { db } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-export type ActivityType = 'prayer' | 'blog' | 'appeal' | 'user' | 'system' | 'task' | 'sponsor' | 'expense' | 'goal' | 'ministry' | 'posts' | 'ministry_update';
+export type ActivityType = 'prayer' | 'blog' | 'appeal' | 'user' | 'system' | 'task' | 'sponsor' | 'expense' | 'goal' | 'ministry' | 'posts' | 'ministry_update' | 'testimonies' | 'documents' | 'songs';
 export type ActivityAction = 'create' | 'update' | 'delete' | 'login' | 'register' | 'publish' | 'other';
 
 export interface ActivityLog {

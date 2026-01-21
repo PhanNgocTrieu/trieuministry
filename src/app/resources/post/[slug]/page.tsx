@@ -37,18 +37,39 @@ export default function PostDetailPage() {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                // Query by slug
+                // 1. Try querying by slug first
                 const q = query(
                     collection(db, "posts"),
                     where("slug", "==", slug)
                 );
                 const snapshot = await getDocs(q);
                 
-                if (snapshot.empty) {
-                    setNotFoundState(true);
-                } else {
+                if (!snapshot.empty) {
                     const doc = snapshot.docs[0];
                     setPost({ id: doc.id, ...doc.data() } as Post);
+                } else {
+                    // 2. If slug not found, try fetching by ID directly
+                    try {
+                        const { doc, getDoc } = await import('firebase/firestore');
+                        const docRef = doc(db, "posts", slug);
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (docSnap.exists()) {
+                            setPost({ id: docSnap.id, ...docSnap.data() } as Post);
+                        } else {
+                            // 3. Check testimonies collection just in case
+                            const testimonyRef = doc(db, "testimonies", slug);
+                            const testimonySnap = await getDoc(testimonyRef);
+                            
+                            if (testimonySnap.exists()) {
+                                setPost({ id: testimonySnap.id, ...testimonySnap.data() } as Post);
+                            } else {
+                                setNotFoundState(true);
+                            }
+                        }
+                    } catch (e) {
+                         setNotFoundState(true);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching post:", error);
@@ -135,7 +156,7 @@ export default function PostDetailPage() {
                                 </div>
                                 {isAdmin && (
                                     <Link 
-                                        href={`/admin/posts/${post.id}/edit`}
+                                        href={`/admin/resources/posts/${post.id}/edit`}
                                         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
                                     >
                                         <i className="fas fa-edit"></i>
@@ -185,7 +206,7 @@ export default function PostDetailPage() {
                             </div>
                             {isAdmin && (
                                 <Link 
-                                    href={`/admin/posts/${post.id}/edit`}
+                                    href={`/admin/resources/posts/${post.id}/edit`}
                                     className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition-colors"
                                 >
                                     <i className="fas fa-edit"></i>

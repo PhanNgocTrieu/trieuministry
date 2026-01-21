@@ -4,12 +4,20 @@ import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext'; 
+import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import RoleGuard from "@/components/RoleGuard";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile toggle only
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
+
+  const switchLanguage = (lang: 'en' | 'vi') => {
+      setLanguage(lang);
+  };
 
   const isActive = (path: string) => {
     if (path === '/admin') {
@@ -40,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         items: [
              { href: '/admin/users', label: 'Users', icon: 'fas fa-users' },
              { href: '/admin/ministries', label: 'Ministries', icon: 'fas fa-church' },
-             { href: '/admin/posts', label: 'Blog Posts', icon: 'fas fa-rss' },
+             { href: '/admin/resources', label: 'Resources', icon: 'fas fa-layer-group' },
              { href: '/admin/wallets', label: 'Wallets', icon: 'fas fa-wallet' },
              { href: '/admin/settings', label: 'Settings', icon: 'fas fa-cogs' },
         ]
@@ -122,19 +130,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         ))}
                     </div>
 
-                    {/* User Profile Footer */}
-                    <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-900/50">
-                        <div className="flex items-center gap-3">
-                            <img 
-                                src={user?.photoURL || "https://ui-avatars.com/api/?name=Admin+User"} 
-                                alt="Admin" 
-                                className="w-10 h-10 rounded-xl bg-slate-200 border border-slate-200 dark:border-white/10 shrink-0"
-                            />
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.displayName || 'Admin'}</p>
-                                <button onClick={logout} className="text-xs text-rose-500 hover:text-rose-600 font-bold uppercase tracking-wider flex items-center gap-1">
-                                    <i className="fas fa-sign-out-alt"></i> Logout
+                     {/* Preferences & User Footer */}
+                     <div className="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-white/5">
+                        
+                        {/* Controls */}
+                        <div className="px-6 py-3 flex items-center justify-between border-b border-slate-100 dark:border-white/5">
+                             <button
+                                onClick={toggleTheme}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                                title="Toggle Theme"
+                             >
+                                {theme === 'dark' ? <i className="fas fa-sun text-xs"></i> : <i className="fas fa-moon text-xs"></i>}
+                             </button>
+
+                             <div className="flex bg-white dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-white/10">
+                                <button 
+                                  onClick={() => switchLanguage('vi')} 
+                                  className={`px-2 py-1 text-[10px] rounded font-bold transition-all ${language === 'vi' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                  VI
                                 </button>
+                                <button 
+                                  onClick={() => switchLanguage('en')} 
+                                  className={`px-2 py-1 text-[10px] rounded font-bold transition-all ${language === 'en' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                  EN
+                                </button>
+                             </div>
+                        </div>
+
+                        {/* User */}
+                        <div className="p-4">
+                            <div className="flex items-center gap-3">
+                                <img 
+                                    src={user?.photoURL || "https://ui-avatars.com/api/?name=Admin+User"} 
+                                    alt="Admin" 
+                                    className="w-10 h-10 rounded-xl bg-slate-200 border border-slate-200 dark:border-white/10 shrink-0"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.displayName || 'Admin'}</p>
+                                    <button onClick={logout} className="text-xs text-rose-500 hover:text-rose-600 font-bold uppercase tracking-wider flex items-center gap-1">
+                                        <i className="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,7 +187,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <i className="fas fa-bars text-xl"></i>
                     </button>
                     <span className="font-bold text-slate-900 dark:text-white">Admin Panel</span>
-                    <div className="w-8"></div> {/* Spacer */}
+                    <button onClick={toggleTheme} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400">
+                         {theme === 'dark' ? <i className="fas fa-sun"></i> : <i className="fas fa-moon"></i>}
+                    </button>
                 </header>
 
                 <main className="p-4 md:p-8 lg:p-10 max-w-[1920px] mx-auto w-full">

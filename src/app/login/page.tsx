@@ -26,10 +26,11 @@ export default function LoginPage() {
     } catch (err: any) {
       if (err.code === 'auth/invalid-credential') {
         setError("Incorrect email or password. Please try again.");
+        // Don't log expected auth errors
       } else {
         setError("Failed to sign in. Please check your connection and try again.");
+        console.error(err);
       }
-      console.error(err);
     } finally {
       setLoading(false);
     }

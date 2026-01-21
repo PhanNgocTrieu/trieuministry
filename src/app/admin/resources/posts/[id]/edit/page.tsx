@@ -50,7 +50,7 @@ export default function EditPostPage() {
                     setCoverImage(data.coverImage || "");
                 } else {
                     showAlert("Error", "Post not found");
-                    router.push("/admin/posts");
+                    router.push("/admin/resources");
                 }
             } catch (error) {
                 console.error("Error fetching post:", error);
@@ -104,7 +104,7 @@ export default function EditPostPage() {
             await logActivity('posts', 'update', `Updated ${formData.type}: ${formData.title}`);
 
             showAlert("Success", "Post updated successfully!");
-            router.push("/admin/posts");
+            router.push("/admin/resources");
         } catch (error) {
             console.error("Error updating post:", error);
             showAlert("Error", "Failed to update post");
@@ -128,10 +128,11 @@ export default function EditPostPage() {
             <div className="max-w-4xl mx-auto mb-20">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
-                    <Link href="/admin/posts" className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                        <i className="fas fa-arrow-left"></i> Back
-                    </Link>
-                    <div className="flex-1">
+                    <Link href="/admin/resources" className="inline-flex items-center gap-2 text-slate-500 hover:text-violet-600 transition-colors mb-6">
+                    <i className="fas fa-arrow-left"></i>
+                    <span>Back to Resources</span>
+                </Link>
+                <div className="flex-1">
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Edit Post</h1>
                         <p className="text-xs text-slate-500">ID: {id}</p>
                     </div>
@@ -261,7 +262,7 @@ export default function EditPostPage() {
                     {/* Submit Buttons */}
                     <div className="pt-6 border-t border-slate-200 dark:border-white/10 flex justify-end gap-3">
                         <Link
-                            href="/admin/posts"
+                            href="/admin/resources"
                             className="px-6 py-2.5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             Cancel

@@ -330,7 +330,7 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Select Document</label>
                                     <FileUploader 
-                                        onFileUploaded={(url) => setFormData(prev => ({ ...prev, pdfUrl: url }))}
+                                        onFileUploaded={(url, name) => setFormData(prev => ({ ...prev, pdfUrl: url }))}
                                         currentFile={formData.pdfUrl}
                                         folder="ministry_updates/documents"
                                         label="Upload Full Report (PDF, DOC, DOCX)"

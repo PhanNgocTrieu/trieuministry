@@ -12,7 +12,7 @@ import ImageUploader from "@/components/ImageUploader";
 import { useModal } from "@/context/ModalContext";
 import { logActivity } from "@/lib/activity-logger";
 
-export default function CreatePostPage() {
+export default function CreateTestimonyPage() {
     const router = useRouter();
     const { user } = useAuth();
     const { showAlert } = useModal();
@@ -22,7 +22,6 @@ export default function CreatePostPage() {
         title: "",
         excerpt: "",
         content: "",
-        type: "post" as "post" | "testimony",
         status: "draft" as "draft" | "published",
     });
 
@@ -54,12 +53,11 @@ export default function CreatePostPage() {
                 .replace(/\s+/g, '-')
                 .substring(0, 60);
 
-            await addDoc(collection(db, "posts"), {
+            await addDoc(collection(db, "testimonies"), {
                 title: formData.title,
                 slug: slug,
                 excerpt: formData.excerpt || formData.content.replace(/<[^>]*>/g, '').substring(0, 150),
                 content: formData.content,
-                type: formData.type,
                 status: formData.status,
                 coverImage: coverImage,
                 author: user?.displayName || "Admin",
@@ -68,13 +66,13 @@ export default function CreatePostPage() {
                 updatedAt: serverTimestamp(),
             });
 
-            await logActivity('posts', 'create', `Created new ${formData.type}: ${formData.title}`);
+            await logActivity('testimonies', 'create', `Created new testimony: ${formData.title}`);
 
-            showAlert("Success", `${formData.type === 'testimony' ? 'Testimony' : 'Post'} created successfully!`);
-            router.push("/admin/posts");
+            showAlert("Success", "Testimony created successfully!");
+            router.push("/admin/resources");
         } catch (error) {
-            console.error("Error creating post:", error);
-            showAlert("Error", "Failed to create post");
+            console.error("Error creating testimony:", error);
+            showAlert("Error", "Failed to create testimony");
         } finally {
             setLoading(false);
         }
@@ -85,58 +83,26 @@ export default function CreatePostPage() {
             <div className="max-w-4xl mx-auto mb-20">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
-                    <Link href="/admin/posts" className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                        <i className="fas fa-arrow-left"></i> Back
-                    </Link>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Create New Post</h1>
+                    <Link href="/admin/resources" className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors mb-6">
+                    <i className="fas fa-arrow-left"></i>
+                    <span>Back to Resources</span>
+                </Link>    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Create New Testimony</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 space-y-6">
                     
-                    {/* Type & Status Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Type</label>
-                            <div className="flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, type: 'post' })}
-                                    className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                                        formData.type === 'post'
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
-                                    }`}
-                                >
-                                    <i className="fas fa-newspaper"></i>
-                                    Post
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, type: 'testimony' })}
-                                    className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                                        formData.type === 'testimony'
-                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-900/30'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
-                                    }`}
-                                >
-                                    <i className="fas fa-comment-medical"></i>
-                                    Testimony
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Status</label>
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white font-medium"
-                            >
-                                <option value="draft">📝 Draft</option>
-                                <option value="published">🌐 Published</option>
-                            </select>
-                        </div>
+                    {/* Status Row */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Status</label>
+                        <select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white font-medium"
+                        >
+                            <option value="draft">📝 Draft</option>
+                            <option value="published">🌐 Published</option>
+                        </select>
                     </div>
 
                     {/* Title */}
@@ -148,23 +114,23 @@ export default function CreatePostPage() {
                             required
                             value={formData.title}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white text-lg font-medium placeholder-slate-400"
-                            placeholder="Enter a compelling title..."
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white text-lg font-medium placeholder-slate-400"
+                            placeholder="Enter the title..."
                         />
                     </div>
 
                     {/* Excerpt */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-400">
-                            Excerpt <span className="font-normal text-slate-500">(optional - auto-generated if empty)</span>
+                            Excerpt <span className="font-normal text-slate-500">(optional)</span>
                         </label>
                         <textarea
                             name="excerpt"
                             rows={2}
                             value={formData.excerpt}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder-slate-400"
-                            placeholder="Brief summary of your post..."
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white placeholder-slate-400"
+                            placeholder="Brief summary..."
                         />
                     </div>
 
@@ -189,10 +155,10 @@ export default function CreatePostPage() {
                                     <div className="w-full max-w-[200px]">
                                         <ImageUploader
                                             onImageUploaded={(url) => setCoverImage(url)}
-                                            folder="posts"
+                                            folder="testimonies"
                                         />
                                     </div>
-                                    <p className="text-sm text-slate-500 mt-4">Upload a cover image for your post</p>
+                                    <p className="text-sm text-slate-500 mt-4">Upload a cover image</p>
                                 </div>
                             )}
                         </div>
@@ -201,21 +167,17 @@ export default function CreatePostPage() {
                     {/* Content */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Content *</label>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                            <i className="fas fa-info-circle mr-1"></i>
-                            Use the toolbar to format text, add images, and import Word documents.
-                        </p>
                         <RichTextEditor
                             value={formData.content}
                             onChange={(html) => setFormData({ ...formData, content: html })}
-                            placeholder="Write your post content here..."
+                            placeholder="Share the testimony..."
                         />
                     </div>
 
                     {/* Submit Buttons */}
                     <div className="pt-6 border-t border-slate-200 dark:border-white/10 flex justify-end gap-3">
                         <Link
-                            href="/admin/posts"
+                            href="/admin/resources"
                             className="px-6 py-2.5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             Cancel
@@ -223,7 +185,7 @@ export default function CreatePostPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-6 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-500 transition-colors shadow-lg shadow-purple-900/30 disabled:opacity-50 flex items-center gap-2"
+                            className="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-900/30 disabled:opacity-50 flex items-center gap-2"
                         >
                             {loading ? (
                                 <>
@@ -233,7 +195,7 @@ export default function CreatePostPage() {
                             ) : (
                                 <>
                                     <i className="fas fa-save"></i>
-                                    Create Post
+                                    Create Testimony
                                 </>
                             )}
                         </button>
