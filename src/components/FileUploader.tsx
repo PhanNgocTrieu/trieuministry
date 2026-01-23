@@ -9,6 +9,7 @@ interface FileUploaderProps {
     currentFile?: string;
     folder?: string;
     accept?: string;
+    acceptedFileTypes?: string[];
     label?: string;
 }
 
@@ -17,8 +18,11 @@ export default function FileUploader({
     currentFile, 
     folder = 'uploads', 
     accept = '.pdf',
+    acceptedFileTypes,
     label = 'Upload File'
 }: FileUploaderProps) {
+    const finalAccept = acceptedFileTypes ? acceptedFileTypes.join(',') : accept;
+
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [fileUrl, setFileUrl] = useState(currentFile || '');
@@ -77,7 +81,7 @@ export default function FileUploader({
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleFileChange} 
-                accept={accept} 
+                accept={finalAccept} 
                 className="hidden" 
             />
             
