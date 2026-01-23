@@ -67,8 +67,8 @@ export default function AddPrayerModal({ isOpen, onClose, onSuccess }: AddPrayer
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                     <h3 className="text-xl font-bold text-gray-800">Add Personal Prayer</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">

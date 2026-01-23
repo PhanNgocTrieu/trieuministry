@@ -69,8 +69,8 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
                   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 `}
             </style>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 print:p-0 print:bg-white print:absolute print:inset-0 print:z-[9999] print:block">
-                <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:h-auto print:overflow-visible">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 print:p-0 print:bg-white print:absolute print:inset-0 print:z-[9999] print:block" onClick={onClose}>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:h-auto print:overflow-visible" onClick={(e) => e.stopPropagation()}>
                     
                     {/* Header */}
                     <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0 print:bg-slate-50 print:dark:bg-slate-800/50">
