@@ -38,6 +38,16 @@ export default function WalletsList({ basePath }: { basePath: string }) {
     // Delete State
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; name: string }>({ isOpen: false, id: '', name: '' });
 
+    // Filter & Search State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterType, setFilterType] = useState<'all' | 'estimation' | 'management'>('all');
+
+    const filteredWallets = wallets.filter(wallet => {
+        const matchesSearch = wallet.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesType = filterType === 'all' || wallet.type === filterType;
+        return matchesSearch && matchesType;
+    });
+
     useEffect(() => {
         if (!user) return;
         fetchWallets();
@@ -144,9 +154,55 @@ export default function WalletsList({ basePath }: { basePath: string }) {
                 </button>
             </div>
 
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                    <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input
+                        type="text"
+                        placeholder="Search wallets by name..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setFilterType('all')}
+                        className={`px-4 py-2 rounded-xl font-bold transition-all border ${
+                            filterType === 'all'
+                            ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900 dark:border-white'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                        All
+                    </button>
+                    <button
+                        onClick={() => setFilterType('estimation')}
+                        className={`px-4 py-2 rounded-xl font-bold transition-all border ${
+                            filterType === 'estimation'
+                            ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-500/30'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                        Estimation
+                    </button>
+                    <button
+                        onClick={() => setFilterType('management')}
+                        className={`px-4 py-2 rounded-xl font-bold transition-all border ${
+                            filterType === 'management'
+                            ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-500/30'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-400 dark:border-white/10 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                        Management
+                    </button>
+                </div>
+            </div>
+
             {/* Wallets Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {wallets.map(wallet => (
+                {filteredWallets.map(wallet => (
                     <div key={wallet.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg p-6 hover:border-blue-500/30 transition-all group relative">
                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 

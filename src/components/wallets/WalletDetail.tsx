@@ -60,6 +60,8 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
     // Filter State
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
     const [filterBenefactorOf, setFilterBenefactorOf] = useState<string>('all');
+    const [filterCategory, setFilterCategory] = useState<string>('all');
+    const [searchTerm, setSearchTerm] = useState('');
     
     // Autocomplete State
     const [showBenefactorSuggestions, setShowBenefactorSuggestions] = useState(false);
@@ -129,8 +131,23 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             result = result.filter(item => item.benefactorOf === filterBenefactorOf);
         }
 
+        // Filter by Category
+        if (filterCategory !== 'all') {
+            result = result.filter(item => item.category === filterCategory);
+        }
+
+        // Filter by Search Term
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            result = result.filter(item => 
+                (item.content && item.content.toLowerCase().includes(term)) ||
+                (item.item && item.item.toLowerCase().includes(term)) ||
+                (item.pic && item.pic.toLowerCase().includes(term))
+            );
+        }
+
         return result;
-    }, [items, filterType, filterBenefactorOf]);
+    }, [items, filterType, filterBenefactorOf, filterCategory, searchTerm]);
 
     // Unique Benefactor Of Options
     const benefactorOfOptions = useMemo(() => {
@@ -145,6 +162,12 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
             name.toLowerCase().includes(formData.benefactorOf.toLowerCase())
         );
     }, [benefactorOfOptions, formData.benefactorOf]);
+
+    // All unique categories for filter
+    const allCategories = useMemo(() => {
+        const unique = new Set(items.map(i => i.category).filter((c): c is string => !!c));
+        return Array.from(unique).sort();
+    }, [items]);
 
     // Dynamic Category Suggestion Logic
     const expenseCategories = useMemo(() => {
@@ -781,33 +804,59 @@ export default function WalletDetail({ walletId, basePath }: { walletId: string,
                     >
                         Expense
                     </button>
-                    
-                    {/* Benefactor Of FilterDropdown */}
-                    {benefactorOfOptions.length > 0 && (
-                        <div className="ml-2">
-                            <select
-                                value={filterBenefactorOf}
-                                onChange={(e) => setFilterBenefactorOf(e.target.value)}
-                                className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                            >
-                                <option value="all">All Beneficiaries</option>
-                                {benefactorOfOptions.map(name => (
-                                    <option key={name} value={name}>{name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
                 </div>
 
-                {/* Filtered Total Display - DEBUG VERIFICATION */}
-                <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-lg border-2 border-blue-500 flex items-center gap-3 shadow-md" style={{ minWidth: '200px', display: 'flex', zIndex: 10 }}>
+                <div className="flex gap-2 flex-wrap items-center mt-2 md:mt-0">
+                    {/* Search Input */}
+                    <div className="relative">
+                        <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input
+                            type="text"
+                            placeholder="Search items..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-8 pr-3 py-1.5 rounded-lg text-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-48"
+                        />
+                    </div>
+
+                    {/* Category Filter */}
+                    <select
+                        value={filterCategory}
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none max-w-[150px]"
+                    >
+                        <option value="all">All Categories</option>
+                        {allCategories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+
+                    {/* Benefactor Of FilterDropdown */}
+                    {benefactorOfOptions.length > 0 && (
+                         <select
+                            value={filterBenefactorOf}
+                            onChange={(e) => setFilterBenefactorOf(e.target.value)}
+                            className="px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none max-w-[150px]"
+                        >
+                            <option value="all">All Beneficiaries</option>
+                            {benefactorOfOptions.map(name => (
+                                <option key={name} value={name}>{name}</option>
+                            ))}
+                        </select>
+                    )}
+                </div>
+            </div>
+
+            {/* Filtered Total Display - DEBUG VERIFICATION */}
+            <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-lg border-2 border-blue-500 flex items-center justify-between shadow-md mb-6">
+                 <div className="flex items-center gap-3">
                      <span className="text-xs font-bold text-blue-700 dark:text-blue-200 uppercase">
                          {filterType === 'all' ? 'Current Balance' : filterType === 'income' ? 'Current Income' : 'Current Expense'}
                      </span>
                      <span className={`text-lg font-bold font-mono ${filteredTotal >= 0 ? 'text-blue-800 dark:text-white' : 'text-red-600 dark:text-red-300'}`}>
                          {filteredTotal >= 0 ? '+' : ''}{filteredTotal?.toLocaleString() || '0'} ₫
                      </span>
-                </div>
+                 </div>
             </div>
 
             {/* Table */}
