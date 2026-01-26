@@ -6,7 +6,7 @@ import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, d
 import { useAuth } from '@/context/AuthContext';
 import AdminGuard from '@/components/admin/AdminGuard';
 import TaskItem from '@/components/admin/tasks/TaskItem';
-import TaskFormModal from '@/components/admin/tasks/TaskFormModal';
+import { TaskFormModal } from '@/components/admin/tasks/TaskFormModal';
 import TaskStatsModal from '@/components/admin/tasks/TaskStatsModal';
 import { Task, TaskFormData } from '@/components/admin/tasks/types';
 import { useModal } from '@/context/ModalContext';

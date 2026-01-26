@@ -1,7 +1,7 @@
 "use client";
 
 
-// Force rebuild check 2
+
 import React, { useState, useEffect } from 'react';
 import { Task, TaskFormData } from './types';
 import { db } from '@/lib/firebase';
@@ -15,7 +15,7 @@ interface TaskFormModalProps {
     initialData?: Task;
 }
 
-export default function TaskFormModal({ isOpen, onClose, onSubmit, initialData }: TaskFormModalProps) {
+export function TaskFormModal({ isOpen, onClose, onSubmit, initialData }: TaskFormModalProps) {
     if (!isOpen) return null;
 
     const [loading, setLoading] = useState(false);

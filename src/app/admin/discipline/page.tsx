@@ -27,8 +27,7 @@ export default function DisciplinePage() {
     const [logs, setLogs] = useState<DisciplineLog[]>([]);
     const [loading, setLoading] = useState(true);
 
-// Inputs for today (removed)
-    // const [scripture, setScripture] = useState("");
+    const [scriptureContent, setScriptureContent] = useState("");
 
     // Identify if today is logged
     const [todayLogs, setTodayLogs] = useState<{ [key in LogType]: boolean }>({
@@ -82,7 +81,7 @@ export default function DisciplinePage() {
             todaySnap.forEach(doc => {
                 const data = doc.data() as DisciplineLog;
                 todayStatus[data.type] = true;
-                // if (data.type === 'scripture') setScripture(data.content || "");
+                if (data.type === 'scripture') setScriptureContent(data.content || "");
             });
             setTodayLogs(todayStatus);
 
@@ -269,8 +268,14 @@ export default function DisciplinePage() {
                                             </div>
                                         )}
                                         {hasScripture && (
-                                            <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20">
-                                                <i className="fas fa-book-open text-[10px]"></i> <span className="hidden md:inline">Scripture</span>
+                                            <div 
+                                                title={dayLogs.find(l => l.type === 'scripture')?.content || 'Scripture Read'}
+                                                className="flex items-center gap-1 text-orange-600 dark:text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20 cursor-help"
+                                            >
+                                                <i className="fas fa-book-open text-[10px]"></i> 
+                                                <span className="hidden md:inline truncate max-w-[60px]">
+                                                    {dayLogs.find(l => l.type === 'scripture')?.content || 'Scripture'}
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -285,7 +290,7 @@ export default function DisciplinePage() {
                 
                 <div className="mt-8">
                     {/* Scripture Today */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto">
                         <div className="relative shrink-0">
                              <div className="w-24 h-24 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 text-4xl group-hover:scale-110 transition-transform duration-500">
                                 <i className="fas fa-book-open"></i>
@@ -295,24 +300,37 @@ export default function DisciplinePage() {
                             </div>
                         </div>
                         
-                        <div className="flex-1 text-center md:text-left">
+                        <div className="flex-1 text-center md:text-left w-full">
                             <h4 className="font-bold text-2xl text-slate-900 dark:text-white mb-2">Scripture Today</h4>
                             <p className="text-slate-500 dark:text-slate-400 mb-4 text-lg">
                                 "Your word is a lamp for my feet, a light on my path." - Psalm 119:105
                             </p>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                    What did you read today?
+                                </label>
+                                <input
+                                    type="text"
+                                    value={scriptureContent}
+                                    onChange={(e) => setScriptureContent(e.target.value)}
+                                    placeholder="e.g. Genesis 1, Psalm 23..."
+                                    className="w-full md:w-2/3 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                                />
+                            </div>
                             
                             <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
                                 <button 
-                                    onClick={() => handleLog('scripture', "Read")}
-                                    disabled={todayLogs.scripture}
+                                    onClick={() => handleLog('scripture', scriptureContent)}
+                                    disabled={!scriptureContent.trim()}
                                     className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg ${
-                                        todayLogs.scripture 
+                                        todayLogs.scripture && !scriptureContent.trim()
                                             ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
-                                            : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:scale-105 active:scale-95 shadow-orange-500/20'
+                                            : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:scale-105 active:scale-95 shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                                     }`}
                                 >
                                      {todayLogs.scripture ? (
-                                         <><i className="fas fa-check-circle text-xl"></i> Completed Today</>
+                                         <><i className="fas fa-sync-alt"></i> Update Log</>
                                      ) : (
                                          <><i className="fas fa-book-reader"></i> Mark as Read</>
                                      )}
