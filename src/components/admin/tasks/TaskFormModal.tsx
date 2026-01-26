@@ -16,8 +16,6 @@ interface TaskFormModalProps {
 }
 
 export function TaskFormModal({ isOpen, onClose, onSubmit, initialData }: TaskFormModalProps) {
-    if (!isOpen) return null;
-
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<TaskFormData>({
         content: '',
@@ -98,6 +96,8 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, initialData }: TaskFo
             setLoading(false);
         }
     };
+
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
