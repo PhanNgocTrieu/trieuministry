@@ -35,41 +35,40 @@ export default function RichTextEditor({ value, onChange, placeholder, className
         <div className={`rich-text-editor ${className}`}>
             <style jsx global>{`
                 .rich-text-editor .ql-toolbar {
-                    background: #f8fafc;
-                    border-color: #cbd5e1 !important;
-                    border-top-left-radius: 0.5rem;
-                    border-top-right-radius: 0.5rem;
+                    background: transparent;
+                    border: none !important;
+                    border-bottom: 1px solid #e2e8f0 !important;
+                    padding: 1rem;
                 }
                 .dark .rich-text-editor .ql-toolbar {
-                    background: #1e293b;
-                    border-color: rgba(255,255,255,0.1) !important;
+                    background: transparent;
+                    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
                 }
 
                 .rich-text-editor .ql-container {
-                    background: #ffffff;
-                    border-color: #cbd5e1 !important;
-                    border-bottom-left-radius: 0.5rem;
-                    border-bottom-right-radius: 0.5rem;
-                    font-size: 1rem;
-                    color: #0f172a;
+                    background: transparent;
+                    border: none !important;
+                    font-size: 1.1rem;
+                    color: #334155;
                     min-height: 200px;
                 }
                 .dark .rich-text-editor .ql-container {
-                    background: #1e293b;
-                    border-color: rgba(255,255,255,0.1) !important;
-                    color: white !important;
+                    color: #e2e8f0 !important;
                 }
+                
+                .rich-text-editor .ql-editor {
+                    padding: 2rem;
+                    line-height: 1.8;
+                }
+                .rich-text-editor .ql-editor.ql-blank::before {
+                    left: 2rem;
+                    color: #94a3b8;
+                    font-style: italic;
+                }
+
                 .dark .rich-text-editor .ql-container * {
                     color: white !important;
                     stroke: white !important;
-                }
-
-                .rich-text-editor .ql-editor.ql-blank::before {
-                    color: #94a3b8;
-                    font-style: normal;
-                }
-                .dark .rich-text-editor .ql-editor.ql-blank::before {
-                    color: #475569;
                 }
 
                 .rich-text-editor .ql-stroke {
@@ -95,11 +94,13 @@ export default function RichTextEditor({ value, onChange, placeholder, className
 
                 .rich-text-editor .ql-picker-options {
                     background-color: #ffffff !important;
-                    border-color: #cbd5e1 !important;
+                    border: 1px solid #cbd5e1 !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    border-radius: 0.5rem;
                 }
                 .dark .rich-text-editor .ql-picker-options {
                     background-color: #1e293b !important;
-                    border-color: rgba(255,255,255,0.1) !important;
+                    border: 1px solid rgba(255,255,255,0.1) !important;
                 }
 
                 .rich-text-editor .ql-active .ql-stroke {
