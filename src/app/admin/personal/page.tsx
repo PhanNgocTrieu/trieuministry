@@ -106,56 +106,68 @@ export default function PersonalPrayerPage() {
     return (
         <AdminGuard>
             <div className="max-w-5xl mx-auto mb-20 p-4">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Personal Prayers</h1>
-                        <p className="text-slate-500 dark:text-slate-400">Keep your prayer points in one place.</p>
-                    </div>
-                    
-                    <div className="flex gap-3">
-                        <button
-                            onClick={handleSave}
-                            disabled={!hasUnsavedChanges || saving}
-                            className={`px-6 py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${
-                                hasUnsavedChanges
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-                            }`}
-                        >
-                            {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
-                            {hasUnsavedChanges ? 'Save Changes' : 'Saved'}
-                        </button>
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-8 md:p-12 mb-8 shadow-2xl text-white">
+                    <div className="absolute top-0 right-0 p-32 bg-purple-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -mr-16 -mt-16"></div>
+                    <div className="absolute bottom-0 left-0 p-32 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -ml-16 -mb-16"></div>
 
-                        <button
-                            onClick={handleCompletePrayer}
-                            disabled={isPrayedToday}
-                            className={`px-6 py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 ${
-                                isPrayedToday
-                                    ? 'bg-green-100 text-green-700 border border-green-200 cursor-default'
-                                    : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105 shadow-green-500/30'
-                            }`}
-                        >
-                            {isPrayedToday ? (
-                                <><i className="fas fa-check-circle"></i> Prayed Today</>
-                            ) : (
-                                <><i className="fas fa-praying-hands"></i> Mark as Prayed</>
-                            )}
-                        </button>
+                    <div className="relative flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="text-center md:text-left space-y-2">
+                            <h1 className="text-3xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
+                                Personal Prayers
+                            </h1>
+                            <p className="text-lg text-purple-200 font-medium max-w-xl">
+                                "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God."
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={handleSave}
+                                disabled={!hasUnsavedChanges || saving}
+                                className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
+                                    hasUnsavedChanges
+                                        ? 'bg-white text-indigo-900 hover:bg-indigo-50 hover:shadow-white/20'
+                                        : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/5'
+                                }`}
+                            >
+                                {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                                {hasUnsavedChanges ? 'Save Changes' : 'Saved'}
+                            </button>
+
+                            <button
+                                onClick={handleCompletePrayer}
+                                disabled={isPrayedToday}
+                                className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
+                                    isPrayedToday
+                                        ? 'bg-green-500/20 border border-green-500/50 text-green-300 cursor-default backdrop-blur-sm'
+                                        : 'bg-gradient-to-r from-emerald-500 to-green-400 text-white hover:shadow-green-500/30 hover:scale-105'
+                                }`}
+                            >
+                                {isPrayedToday ? (
+                                    <><i className="fas fa-check-circle"></i> Prayed Today</>
+                                ) : (
+                                    <><i className="fas fa-praying-hands"></i> Mark as Prayed</>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden">
+                <div className="bg-white dark:bg-slate-900/50 rounded-3xl shadow-xl border border-slate-200 dark:border-white/5 overflow-hidden backdrop-blur-sm">
                     {loading ? (
-                         <div className="h-96 flex items-center justify-center">
-                            <i className="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                         <div className="h-[600px] flex items-center justify-center flex-col gap-4 text-slate-400">
+                            <i className="fas fa-spinner fa-spin text-4xl text-purple-500"></i>
+                            <p>Loading your prayers...</p>
                          </div>
                     ) : (
-                        <RichTextEditor
-                            value={content}
-                            onChange={setContent}
-                            placeholder="Write your prayers here..."
-                            className="min-h-[500px]"
-                        />
+                        <div className="p-1">
+                             <RichTextEditor
+                                value={content}
+                                onChange={setContent}
+                                placeholder="Write your prayers here..."
+                                className="min-h-[600px] border-none"
+                            />
+                        </div>
                     )}
                 </div>
             </div>
