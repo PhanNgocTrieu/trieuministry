@@ -461,9 +461,17 @@ export default function BibleSchedulePage() {
                                                     <h4 className="font-bold text-slate-700 dark:text-slate-200">{book.name}</h4>
                                                     <span className={`text-xs px-2 py-0.5 rounded-full ${isComplete ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'}`}>{percent}%</span>
                                                 </div>
-                                                <div className="flex flex-wrap gap-1">
+                                                <div className="flex flex-wrap gap-1 mb-4">
                                                     {Array.from({ length: book.chapters }, (_, i) => i + 1).map(chap => renderChapterBox(book.name, chap))}
                                                 </div>
+                                                {!isComplete && (
+                                                    <button
+                                                        onClick={() => markBookAsRead(book)}
+                                                        className="w-full mt-2 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors border border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-300"
+                                                    >
+                                                        Mark All Read
+                                                    </button>
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -486,9 +494,17 @@ export default function BibleSchedulePage() {
                                                     <h4 className="font-bold text-slate-700 dark:text-slate-200">{book.name}</h4>
                                                     <span className={`text-xs px-2 py-0.5 rounded-full ${isComplete ? 'bg-red-100 text-red-700' : 'bg-slate-200 text-slate-600'}`}>{percent}%</span>
                                                 </div>
-                                                <div className="flex flex-wrap gap-1">
+                                                <div className="flex flex-wrap gap-1 mb-4">
                                                     {Array.from({ length: book.chapters }, (_, i) => i + 1).map(chap => renderChapterBox(book.name, chap))}
                                                 </div>
+                                                {!isComplete && (
+                                                    <button
+                                                        onClick={() => markBookAsRead(book)}
+                                                        className="w-full mt-2 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors border border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-300"
+                                                    >
+                                                        Mark All Read
+                                                    </button>
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -516,6 +532,60 @@ export default function BibleSchedulePage() {
             >
                 {chapter}
             </button>
+        );
+    }
+
+    async function markBookAsRead(book: BibleBook) {
+        if (!user) return;
+        
+        // Find all chapters for this book that are NOT read yet
+        const newChaptersToAdd: string[] = [];
+        for (let i = 1; i <= book.chapters; i++) {
+             const chapterId = `${book.name} ${i}`;
+             if (!progress.completedChapters.includes(chapterId)) {
+                 newChaptersToAdd.push(chapterId);
+             }
+        }
+
+        if (newChaptersToAdd.length === 0) return;
+
+        showConfirm(
+            `Mark ${book.name} as Read?`, 
+            `This will mark all ${book.chapters} chapters of ${book.name} as completed.`, 
+            async () => {
+                // Combine with existing
+                let newCompletedChapters = [...progress.completedChapters, ...newChaptersToAdd];
+
+                // Check for full completion
+                let newTotalCompletions = progress.totalCompletions;
+                
+                // If the new list length equals total Bible chapters
+                if (newCompletedChapters.length === TOTAL_BIBLE_CHAPTERS) {
+                     newTotalCompletions += 1;
+                     newCompletedChapters = []; // Reset!
+                     showAlert("Hallelujah!", `You have completed reading the Bible for the ${newTotalCompletions}th time! Progress has been reset.`);
+                }
+        
+                // Optimistic Update
+                setProgress(prev => ({
+                    ...prev,
+                    completedChapters: newCompletedChapters,
+                    totalCompletions: newTotalCompletions
+                }));
+        
+                try {
+                    const docRef = doc(db, 'bible_progress', user.uid);
+                    await updateDoc(docRef, {
+                        completedChapters: newCompletedChapters,
+                        totalCompletions: newTotalCompletions,
+                        updatedAt: serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error("Error batch marking book:", error);
+                    showAlert("Error", "Failed to mark book as read.");
+                    fetchProgress(); // Revert
+                }
+            }
         );
     }
 }
