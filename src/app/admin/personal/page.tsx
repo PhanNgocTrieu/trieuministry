@@ -17,6 +17,7 @@ export default function PersonalPrayerPage() {
     const [saving, setSaving] = useState(false);
     const [isPrayedToday, setIsPrayedToday] = useState(false);
     const [lastSavedContent, setLastSavedContent] = useState('');
+    const [history, setHistory] = useState<any[]>([]);
 
     useEffect(() => {
         if (user) {
@@ -49,6 +50,9 @@ export default function PersonalPrayerPage() {
                 setIsPrayedToday(true);
             }
 
+            // 3. Fetch History
+            await fetchHistory();
+
         } catch (error) {
             console.error("Error fetching data:", error);
             showAlert("Error", "Failed to load personal data.");
@@ -56,6 +60,21 @@ export default function PersonalPrayerPage() {
             setLoading(false);
         }
     };
+
+    const fetchHistory = async () => {
+        if (!user) return;
+        try {
+            const historyRef = collection(db, 'user_personal_data', user.uid, 'history');
+            const q = query(historyRef); // Order by date desc if needed, but for now simple query
+            const snapshot = await getDocs(q);
+            const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Client side sort for simplicity or use orderBy if index exists
+            logs.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            setHistory(logs);
+        } catch (error) {
+            console.error("Error fetching history:", error);
+        }
+    }
 
     const handleSave = async () => {
         if (!user) return;
@@ -82,9 +101,10 @@ export default function PersonalPrayerPage() {
         
         try {
             const todayStr = format(new Date(), 'yyyy-MM-dd');
+            
+            // 1. Log Discipline
             const logId = `${user.uid}_${todayStr}_personal_prayer`;
             const logRef = doc(db, 'discipline_logs', logId);
-
             await setDoc(logRef, {
                 userId: user.uid,
                 date: todayStr,
@@ -93,8 +113,22 @@ export default function PersonalPrayerPage() {
                 updatedAt: serverTimestamp()
             }, { merge: true });
 
+            // 2. Save Snapshot to History
+            // We use the date as ID to prevent duplicate snapshots per day, or use auto-ID if multiple allowed.
+            // Requirement says "create a new card", suggesting daily snapshots. 
+            // Let's use auto-ID to allow multiple updates if content changes, or date-based if single.
+            // Let's use date-based to keep it clean: one snapshot per day (the latest one).
+            const historyId = todayStr; 
+            const historyRef = doc(db, 'user_personal_data', user.uid, 'history', historyId);
+            await setDoc(historyRef, {
+                date: todayStr,
+                content: content,
+                createdAt: serverTimestamp()
+            });
+
             setIsPrayedToday(true);
-            showAlert("Amen!", "Prayer discipline recorded for today.");
+            await fetchHistory(); // Refresh list
+            showAlert("Amen!", "Prayer recorded and snapshot saved.");
         } catch (error) {
             console.error("Error logging prayer:", error);
             showAlert("Error", "Failed to update discipline log.");
@@ -136,15 +170,17 @@ export default function PersonalPrayerPage() {
 
                             <button
                                 onClick={handleCompletePrayer}
-                                disabled={isPrayedToday}
+                                // Allow re-praying to update snapshot if needed, or disable? 
+                                // User request: "create a new card ... (list)". 
+                                // Let's allow updating today's snapshot by clicking again.
                                 className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
                                     isPrayedToday
-                                        ? 'bg-green-500/20 border border-green-500/50 text-green-300 cursor-default backdrop-blur-sm'
+                                        ? 'bg-green-500/20 border border-green-500/50 text-green-300 backdrop-blur-sm'
                                         : 'bg-gradient-to-r from-emerald-500 to-green-400 text-white hover:shadow-green-500/30 hover:scale-105'
                                 }`}
                             >
                                 {isPrayedToday ? (
-                                    <><i className="fas fa-check-circle"></i> Prayed Today</>
+                                    <><i className="fas fa-check-circle"></i> Update Today's Snapshot</>
                                 ) : (
                                     <><i className="fas fa-praying-hands"></i> Mark as Prayed</>
                                 )}
@@ -153,7 +189,7 @@ export default function PersonalPrayerPage() {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900/50 rounded-3xl shadow-xl border border-slate-200 dark:border-white/5 overflow-hidden backdrop-blur-sm">
+                <div className="bg-white dark:bg-slate-900/50 rounded-3xl shadow-xl border border-slate-200 dark:border-white/5 overflow-hidden backdrop-blur-sm mb-12">
                     {loading ? (
                          <div className="h-[600px] flex items-center justify-center flex-col gap-4 text-slate-400">
                             <i className="fas fa-spinner fa-spin text-4xl text-purple-500"></i>
@@ -170,6 +206,33 @@ export default function PersonalPrayerPage() {
                         </div>
                     )}
                 </div>
+
+                {/* History Section */}
+                {history.length > 0 && (
+                    <div className="animate-fadeIn">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+                            <i className="fas fa-history text-purple-500"></i> Prayer History
+                        </h2>
+                        <div className="grid grid-cols-1 gap-6">
+                            {history.map((log) => (
+                                <div key={log.id} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                                        <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold">
+                                            <i className="fas fa-calendar-day"></i>
+                                            {format(new Date(log.date), 'EEEE, MMMM do, yyyy')}
+                                        </div>
+                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                            Snapshot
+                                        </div>
+                                    </div>
+                                    <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+                                        <div dangerouslySetInnerHTML={{ __html: log.content }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </AdminGuard>
     );
