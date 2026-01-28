@@ -4,10 +4,77 @@ import React, { useState, useEffect } from 'react';
 import AdminGuard from '@/components/admin/AdminGuard';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, collection, query, getDocs } from 'firebase/firestore';
 import RichTextEditor from '@/components/admin/RichTextEditor';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import { useModal } from '@/context/ModalContext';
 import { format } from 'date-fns';
+
+// --- Internal Component: History Item ---
+const HistoryItem = ({ log, onDelete }: { log: any, onDelete: (id: string) => void }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isLongContent, setIsLongContent] = useState(false);
+    const contentRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            setIsLongContent(contentRef.current.scrollHeight > 150);
+        }
+    }, [log.content]);
+
+    return (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                        <i className="fas fa-calendar-day"></i>
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-slate-900 dark:text-white">
+                            {format(new Date(log.date), 'EEEE, MMMM do, yyyy')}
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold">Snapshot</p>
+                    </div>
+                </div>
+                <button 
+                    onClick={() => onDelete(log.id)}
+                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    title="Delete Snapshot"
+                >
+                    <i className="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            
+            <div className="p-6">
+                <div 
+                    ref={contentRef}
+                    className={`prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 relative ${!isExpanded && isLongContent ? 'max-h-[150px] overflow-hidden mask-bottom' : ''}`}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: log.content }} />
+                    
+                    {!isExpanded && isLongContent && (
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
+                    )}
+                </div>
+
+                {isLongContent && (
+                    <div className="mt-4 flex justify-center">
+                        <button 
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline flex items-center gap-1"
+                        >
+                            {isExpanded ? (
+                                <>Show Less <i className="fas fa-chevron-up"></i></>
+                            ) : (
+                                <>Show More <i className="fas fa-chevron-down"></i></>
+                            )}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
 
 export default function PersonalPrayerPage() {
     const { user } = useAuth();
@@ -18,6 +85,10 @@ export default function PersonalPrayerPage() {
     const [isPrayedToday, setIsPrayedToday] = useState(false);
     const [lastSavedContent, setLastSavedContent] = useState('');
     const [history, setHistory] = useState<any[]>([]);
+
+    // Delete Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -65,10 +136,9 @@ export default function PersonalPrayerPage() {
         if (!user) return;
         try {
             const historyRef = collection(db, 'user_personal_data', user.uid, 'history');
-            const q = query(historyRef); // Order by date desc if needed, but for now simple query
+            const q = query(historyRef); 
             const snapshot = await getDocs(q);
             const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Client side sort for simplicity or use orderBy if index exists
             logs.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
             setHistory(logs);
         } catch (error) {
@@ -114,10 +184,6 @@ export default function PersonalPrayerPage() {
             }, { merge: true });
 
             // 2. Save Snapshot to History
-            // We use the date as ID to prevent duplicate snapshots per day, or use auto-ID if multiple allowed.
-            // Requirement says "create a new card", suggesting daily snapshots. 
-            // Let's use auto-ID to allow multiple updates if content changes, or date-based if single.
-            // Let's use date-based to keep it clean: one snapshot per day (the latest one).
             const historyId = todayStr; 
             const historyRef = doc(db, 'user_personal_data', user.uid, 'history', historyId);
             await setDoc(historyRef, {
@@ -132,6 +198,24 @@ export default function PersonalPrayerPage() {
         } catch (error) {
             console.error("Error logging prayer:", error);
             showAlert("Error", "Failed to update discipline log.");
+        }
+    };
+
+    const confirmDelete = (id: string) => {
+        setSelectedLogId(id);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteSnapshot = async () => {
+        if (!user || !selectedLogId) return;
+
+        try {
+            await deleteDoc(doc(db, 'user_personal_data', user.uid, 'history', selectedLogId));
+            setHistory(prev => prev.filter(log => log.id !== selectedLogId));
+            showAlert("Deleted", "Snapshot deleted.");
+        } catch (error) {
+            console.error("Error deleting:", error);
+            showAlert("Error", "Failed to delete snapshot.");
         }
     };
 
@@ -170,9 +254,6 @@ export default function PersonalPrayerPage() {
 
                             <button
                                 onClick={handleCompletePrayer}
-                                // Allow re-praying to update snapshot if needed, or disable? 
-                                // User request: "create a new card ... (list)". 
-                                // Let's allow updating today's snapshot by clicking again.
                                 className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
                                     isPrayedToday
                                         ? 'bg-green-500/20 border border-green-500/50 text-green-300 backdrop-blur-sm'
@@ -215,24 +296,25 @@ export default function PersonalPrayerPage() {
                         </h2>
                         <div className="grid grid-cols-1 gap-6">
                             {history.map((log) => (
-                                <div key={log.id} className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-                                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                                        <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold">
-                                            <i className="fas fa-calendar-day"></i>
-                                            {format(new Date(log.date), 'EEEE, MMMM do, yyyy')}
-                                        </div>
-                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                            Snapshot
-                                        </div>
-                                    </div>
-                                    <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-                                        <div dangerouslySetInnerHTML={{ __html: log.content }} />
-                                    </div>
-                                </div>
+                                <HistoryItem 
+                                    key={log.id} 
+                                    log={log} 
+                                    onDelete={confirmDelete} 
+                                />
                             ))}
                         </div>
                     </div>
                 )}
+
+                <ConfirmModal
+                    isOpen={deleteModalOpen}
+                    onClose={() => setDeleteModalOpen(false)}
+                    onConfirm={handleDeleteSnapshot}
+                    title="Delete Snapshot?"
+                    message="Are you sure you want to delete this prayer snapshot? This action cannot be undone."
+                    confirmText="Delete"
+                    isDangerous={true}
+                />
             </div>
         </AdminGuard>
     );
