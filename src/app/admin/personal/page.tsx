@@ -285,13 +285,34 @@ export default function PersonalPrayerPage() {
                             <p>Loading your prayers...</p>
                          </div>
                     ) : (
-                        <div className="p-1">
-                             <RichTextEditor
-                                value={content}
-                                onChange={setContent}
-                                placeholder="Write your prayers here..."
-                                className="min-h-[600px] border-none"
-                            />
+                        <div className="flex flex-col">
+                            <div className="p-1">
+                                <RichTextEditor
+                                    value={content}
+                                    onChange={setContent}
+                                    placeholder="Write your prayers here..."
+                                    className="min-h-[600px] border-none"
+                                />
+                            </div>
+                            
+                            {/* Bottom Actions Bar */}
+                            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end gap-3">
+                                <span className={`text-sm flex items-center gap-2 transition-opacity duration-300 ${hasUnsavedChanges ? 'opacity-100 text-amber-500' : 'opacity-0'}`}>
+                                    <i className="fas fa-exclamation-circle"></i> Unsaved changes
+                                </span>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={!hasUnsavedChanges || saving}
+                                    className={`px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
+                                        hasUnsavedChanges
+                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/30'
+                                            : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                    }`}
+                                >
+                                    {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                                    Save Prayers
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
