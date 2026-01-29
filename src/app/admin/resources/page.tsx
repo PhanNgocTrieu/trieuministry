@@ -27,20 +27,31 @@ export default function AdminResourcesPage() {
 
                 {/* Tabs */}
                 <div className="flex flex-wrap gap-2 mb-8 bg-white dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-white/5 backdrop-blur-sm">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-200 ${
-                                activeTab === tab.id
-                                    ? `bg-${tab.color}-600 text-white shadow-lg shadow-${tab.color}-900/30`
-                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            <i className={tab.icon}></i>
-                            <span>{tab.label}</span>
-                        </button>
-                    ))}
+                    {tabs.map(tab => {
+                        const isActive = activeTab === tab.id;
+                        let activeClass = "";
+                        
+                        // Explicit static classes so Tailwind picks them up
+                        if (tab.color === 'violet') activeClass = "bg-violet-600 text-white shadow-lg shadow-violet-900/30";
+                        else if (tab.color === 'indigo') activeClass = "bg-indigo-600 text-white shadow-lg shadow-indigo-900/30";
+                        else if (tab.color === 'rose') activeClass = "bg-rose-600 text-white shadow-lg shadow-rose-900/30";
+                        else if (tab.color === 'amber') activeClass = "bg-amber-600 text-white shadow-lg shadow-amber-900/30";
+
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-200 ${
+                                    isActive
+                                        ? activeClass
+                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                }`}
+                            >
+                                <i className={tab.icon}></i>
+                                <span>{tab.label}</span>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Content Area */}
