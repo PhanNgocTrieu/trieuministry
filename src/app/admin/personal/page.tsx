@@ -247,18 +247,7 @@ export default function PersonalPrayerPage() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button
-                                onClick={handleSave}
-                                disabled={!hasUnsavedChanges || saving}
-                                className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 transform active:scale-95 ${
-                                    hasUnsavedChanges
-                                        ? 'bg-white text-indigo-900 hover:bg-indigo-50 hover:shadow-white/20'
-                                        : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/5'
-                                }`}
-                            >
-                                {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
-                                {hasUnsavedChanges ? 'Save Changes' : 'Saved'}
-                            </button>
+
 
                             <button
                                 onClick={handleCompletePrayer}
