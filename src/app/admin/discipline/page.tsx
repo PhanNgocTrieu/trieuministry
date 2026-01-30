@@ -288,9 +288,60 @@ export default function DisciplinePage() {
                 {/* Entry Sections */}
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Today's Log: <span className="text-blue-600 dark:text-blue-400">{format(new Date(), 'EEEE, MMMM do')}</span></h3>
                 
-                <div className="mt-8">
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {/* Personal Prayer */}
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-green-500/20 p-8 flex flex-col items-center text-center hover:shadow-xl transition-all group">
+                         <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 text-3xl mb-4 group-hover:scale-110 transition-transform">
+                            <i className="fas fa-praying-hands"></i>
+                        </div>
+                        <h4 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Personal Prayer</h4>
+                        <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
+                            Connect with God through personal prayer and thanksgiving.
+                        </p>
+                        <button 
+                            onClick={() => handleLog('personal_prayer', 'Daily Personal Prayer')}
+                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg w-full justify-center ${
+                                todayLogs.personal_prayer 
+                                    ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
+                                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:scale-105 active:scale-95 shadow-green-500/20'
+                            }`}
+                        >
+                                {todayLogs.personal_prayer ? (
+                                    <><i className="fas fa-check"></i> Completed</>
+                                ) : (
+                                    <><i className="fas fa-plus"></i> Mark as Done</>
+                                )}
+                        </button>
+                    </div>
+
+                    {/* Intercession */}
+                     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-purple-500/20 p-8 flex flex-col items-center text-center hover:shadow-xl transition-all group">
+                         <div className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 text-3xl mb-4 group-hover:scale-110 transition-transform">
+                            <i className="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h4 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Intercession</h4>
+                        <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
+                            Pray for others, the church, and the world.
+                        </p>
+                        <button 
+                            onClick={() => handleLog('intercession', 'Daily Intercession')}
+                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg w-full justify-center ${
+                                todayLogs.intercession 
+                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-500 border border-purple-500/20 cursor-default' 
+                                    : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:scale-105 active:scale-95 shadow-purple-500/20'
+                            }`}
+                        >
+                                {todayLogs.intercession ? (
+                                    <><i className="fas fa-check"></i> Completed</>
+                                ) : (
+                                    <><i className="fas fa-plus"></i> Mark as Done</>
+                                )}
+                        </button>
+                    </div>
+
                     {/* Scripture Today */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto col-span-1 md:col-span-2 w-full">
                         <div className="relative shrink-0">
                              <div className="w-24 h-24 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 text-4xl group-hover:scale-110 transition-transform duration-500">
                                 <i className="fas fa-book-open"></i>
@@ -335,9 +386,6 @@ export default function DisciplinePage() {
                                          <><i className="fas fa-book-reader"></i> Mark as Read</>
                                      )}
                                 </button>
-                                <Link href="/admin/my-prayers" className="px-6 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
-                                    Manage Prayers <i className="fas fa-arrow-right"></i>
-                                </Link>
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, deleteDoc, doc, updateDoc, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc, orderBy, query, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import TableSkeleton from "@/components/admin/TableSkeleton";
 import { useModal } from "@/context/ModalContext";
@@ -171,6 +171,105 @@ export default function AdminMinistriesPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Prayer Requests Management */}
+            <div className="mt-12">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Prayer Requests Management</h1>
+                </div>
+
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 overflow-hidden">
+                    <PrayerRequestsList />
+                </div>
+            </div>
         </div>
+    );
+}
+
+function PrayerRequestsList() {
+    const { showAlert, showConfirm } = useModal();
+    const [prayers, setPrayers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(collection(db, "prayers"), orderBy("createdAt", "desc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+             const list: any[] = [];
+             snapshot.forEach((doc) => {
+                 const data = doc.data();
+                 // Only showing approved or relevant ones? User said "xoá các request đã hoàn thành". 
+                 // Showing all Approved allows admin to clean them up.
+                 if (data.approvalStatus === 'approved') {
+                     list.push({ id: doc.id, ...data });
+                 }
+             });
+             setPrayers(list);
+             setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleDelete = async (id: string) => {
+         showConfirm(
+            "Delete Prayer Request",
+            "Are you sure you want to delete this prayer request?",
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "prayers", id));
+                    showAlert("Success", "Prayer request deleted.");
+                } catch (error) {
+                    console.error("Error deleting prayer:", error);
+                    showAlert("Error", "Failed to delete.");
+                }
+            }
+         );
+    };
+
+    if (loading) return <div className="p-8 text-center text-slate-500">Loading prayers...</div>;
+
+    return (
+        <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+            <thead className="text-xs text-slate-700 dark:text-slate-400 uppercase bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-white/5">
+                <tr>
+                    <th scope="col" className="px-6 py-3">Author</th>
+                    <th scope="col" className="px-6 py-3">Content</th>
+                    <th scope="col" className="px-6 py-3">Status</th>
+                    <th scope="col" className="px-6 py-3">Pray Count</th>
+                    <th scope="col" className="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-white/5">
+                {prayers.map((item) => (
+                    <tr key={item.id} className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                        <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
+                            {item.authorName}
+                            {item.isPrivate && <span className="ml-2 text-[10px] uppercase bg-slate-100 text-slate-500 px-1 rounded">Private</span>}
+                        </td>
+                        <td className="px-6 py-4 max-w-md">
+                            <div className="line-clamp-2">{item.content}</div>
+                            <div className="text-xs text-slate-400 mt-1">{item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : ''}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                            <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
+                                item.status === 'prayed' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                            }`}>
+                                {item.status === 'not_prayed' ? 'Needs Prayer' : 'Prayed'}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold">
+                            {item.prayCount}
+                        </td>
+                        <td className="px-6 py-4">
+                            <button onClick={() => handleDelete(item.id)} className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300" title="Delete">
+                                <i className="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+                {prayers.length === 0 && (
+                     <tr><td colSpan={5} className="px-6 py-8 text-center text-slate-500">No active prayer requests found.</td></tr>
+                )}
+            </tbody>
+        </table>
     );
 }

@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, serverTimestamp, increment } from 'firebase/firestore';
 import { useLanguage } from '@/context/LanguageContext';
-import IntercessoryList from '@/components/admin/prayer/IntercessoryList';
+
 
 interface Prayer {
   id: string;
@@ -14,17 +14,18 @@ interface Prayer {
   authorId?: string; // Optional: link to user profile
   createdAt: any;
   status: 'not_prayed' | 'prayed';
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
   prayCount: number;
   isPrivate: boolean;
   tags?: string[];
 }
 
 export default function PrayersPage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'community' | 'intercessory'>('community');
+
   
   // New Prayer Form
   const [showAddModal, setShowAddModal] = useState(false);
@@ -36,7 +37,7 @@ export default function PrayersPage() {
   const [selectedPrayerId, setSelectedPrayerId] = useState<string | null>(null);
 
   // Filters
-  const [filterStatus, setFilterStatus] = useState<'all' | 'not_prayed' | 'prayed'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'not_prayed' | 'prayed' | 'pending'>('all'); // Added pending for admins
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -44,19 +45,62 @@ export default function PrayersPage() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const prayersList: Prayer[] = [];
       snapshot.forEach((doc) => {
-        prayersList.push({ id: doc.id, ...doc.data() } as Prayer);
+        const data = doc.data() as Prayer;
+        // Logic:
+        // 1. If Admin: Show everything (sort of, or let filters handle it)
+        // 2. If User: Show 'approved' OR 'private' & yours
+        // 3. If Anonymous/Visitor: Only 'approved'
+
+        const isAuthor = user?.uid && data.authorId === user.uid;
+        const isApproved = data.approvalStatus === 'approved';
+        const isPending = data.approvalStatus === 'pending' || !data.approvalStatus; // Treat undefined as pending if needed, or handle legacy
+
+        if (isAdmin) {
+             // Admin sees everything
+             prayersList.push({ ...data, id: doc.id });
+        } else {
+             // Regular user
+             if (isApproved && !data.isPrivate) {
+                 prayersList.push({ ...data, id: doc.id });
+             } else if (isAuthor) {
+                 // Author sees their own notes (pending or private)
+                 prayersList.push({ ...data, id: doc.id });
+             }
+        }
       });
       setPrayers(prayersList);
       setLoading(false);
-      
-      // Select first prayer by default if none selected and list not empty (desktop only ideally)
-      if (!selectedPrayerId && prayersList.length > 0 && window.innerWidth >= 768) {
-          // Don't auto-select for now to keep UI clean
-      }
     });
 
     return () => unsubscribe();
-  }, [selectedPrayerId]);
+  }, [user, isAdmin]); // Re-run when auth state changes
+
+  const handleApprove = async (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      try {
+          await updateDoc(doc(db, "prayers", id), {
+              approvalStatus: 'approved',
+              approvedAt: serverTimestamp(),
+              approvedBy: user?.uid
+          });
+          // Optional: toast success
+      } catch (err) {
+          console.error("Error approving:", err);
+      }
+  };
+
+  const handleReject = async (e: React.MouseEvent, id: string) => {
+      e.stopPropagation();
+      if(!window.confirm("Are you sure you want to reject/delete this request?")) return;
+      try {
+          await updateDoc(doc(db, "prayers", id), {
+              approvalStatus: 'rejected' // or deleteDoc
+          });
+          // Or delete: await deleteDoc(doc(db, "prayers", id));
+      } catch (err) {
+          console.error("Error rejecting:", err);
+      }
+  };
 
   const handleAddPrayer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,16 +110,17 @@ export default function PrayersPage() {
       await addDoc(collection(db, "prayers"), {
         content: newPrayerContent,
         authorName: isAnonymous ? "Anonymous" : (user?.displayName || "Anonymous"),
-        authorId: isAnonymous ? null : user?.uid,
+        authorId: isAnonymous ? null : (user?.uid || null),
         createdAt: serverTimestamp(),
         status: 'not_prayed',
+        approvalStatus: 'pending', 
         prayCount: 0,
         isPrivate: isPrivate,
         tags: []
       });
       setNewPrayerContent('');
       setShowAddModal(false);
-      // Show success toast?
+      alert("Thank you! Your prayer request has been submitted and is pending approval.");
     } catch (error) {
       console.error("Error adding prayer:", error);
     }
@@ -86,7 +131,7 @@ export default function PrayersPage() {
     try {
         await updateDoc(prayerRef, {
             prayCount: increment(1),
-            status: 'prayed' // Once someone prays, mark as prayed (or keep logic as is)
+            status: 'prayed'
         });
     } catch (error) {
         console.error("Error updating prayer count:", error);
@@ -94,14 +139,22 @@ export default function PrayersPage() {
   };
 
   const filteredPrayers = prayers.filter(p => {
-    // 1. Private filter: Only show private if author is current user
-    if (p.isPrivate && p.authorId !== user?.uid) return false;
-
+    // 1. Private filter (already handled in fetching/snapshot logic mainly, but double check)
+    // If not admin and private and not ours -> hidden (already filtered above)
+    
     // 2. Status filter
-    if (filterStatus !== 'all' && p.status !== filterStatus) return false;
+    // If filter is 'pending' -> only show pending
+    if (filterStatus === 'pending') {
+        return p.approvalStatus === 'pending';
+    }
+    // If filter is others, standard check
+    if (filterStatus !== 'all' && filterStatus !== 'pending' && (p.status as string) !== filterStatus) return false;
 
     // 3. Search query
     if (searchQuery && !p.content.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+
+    // 4. Hide Rejected unless specifically looking for them (or just hide always)
+    if (p.approvalStatus === 'rejected' && !isAdmin) return false; // Admins might see rejected if they want?
 
     return true;
   });
@@ -110,7 +163,6 @@ export default function PrayersPage() {
 
   const handlePrayerSelect = (id: string) => {
       setSelectedPrayerId(id);
-      // Scroll to detail view on mobile
       if (window.innerWidth < 768) {
           const detailElement = document.getElementById('prayer-detail-view');
           if (detailElement) detailElement.scrollIntoView({ behavior: 'smooth' });
@@ -122,14 +174,15 @@ export default function PrayersPage() {
       
       {/* SECTION 1: HERO */}
       <section className="relative pt-32 pb-16 overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-500 border-b border-slate-200 dark:border-white/5">
-         {/* Background Gradients */}
+         {/* ... Backgrounds ... */}
          <div className="absolute inset-0 z-0 pointer-events-none">
             <div className="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"></div>
             <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-600/10 rounded-full blur-[100px]"></div>
         </div>
 
         <div className="container container-custom relative z-10 text-center">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-bold mb-6 border border-indigo-200 dark:border-indigo-500/30">
+            {/* ... Hero Content ... */}
+             <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-bold mb-6 border border-indigo-200 dark:border-indigo-500/30">
                <i className="fas fa-praying-hands mr-2"></i> Prayer Wall
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
@@ -139,26 +192,12 @@ export default function PrayersPage() {
                "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God." - Philippians 4:6
             </p>
             
-            <div className="flex justify-center gap-4 mb-12">
-               <button 
-                  onClick={() => setActiveTab('community')}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 'community' ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
-               >
-                  Community Prayers
-               </button>
-               <button 
-                  onClick={() => setActiveTab('intercessory')}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 'intercessory' ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
-               >
-                  Intercessory List
-               </button>
-            </div>
+
         </div>
       </section>
 
       {/* SECTION 2: CONTENT */}
-      {activeTab === 'community' ? (
-        <section className="py-12 bg-white dark:bg-slate-950 min-h-screen">
+      <section className="py-12 bg-white dark:bg-slate-950 min-h-screen">
           <div className="container container-custom">
              <div className="flex flex-col lg:flex-row gap-8">
                 
@@ -167,6 +206,7 @@ export default function PrayersPage() {
                    
                    {/* Search & Actions */}
                    <div className="mb-6 space-y-4">
+                      {/* Search Input ... */}
                       <div className="relative">
                          <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                          <input 
@@ -182,6 +222,9 @@ export default function PrayersPage() {
                          <button onClick={() => setFilterStatus('all')} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filterStatus === 'all' ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>All</button>
                          <button onClick={() => setFilterStatus('not_prayed')} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filterStatus === 'not_prayed' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>Needs Prayer</button>
                          <button onClick={() => setFilterStatus('prayed')} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filterStatus === 'prayed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>Prayed For</button>
+                         {isAdmin && (
+                            <button onClick={() => setFilterStatus('pending')} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filterStatus === 'pending' ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>Pending Approval</button>
+                         )}
                       </div>
                       
                       <button 
@@ -228,7 +271,7 @@ export default function PrayersPage() {
                                
                                <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-3 leading-relaxed">
                                   {prayer.content}
-                               </p>
+                                </p>
                                
                                <div className="flex items-center justify-between">
                                   <div className="flex gap-2">
@@ -240,10 +283,26 @@ export default function PrayersPage() {
                                      {prayer.isPrivate && (
                                          <span className="text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700"><i className="fas fa-lock mr-1"></i> Private</span>
                                      )}
+                                     {isAdmin && prayer.approvalStatus === 'pending' && (
+                                         <span className="text-[10px] font-bold uppercase bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-500/20"><i className="fas fa-clock mr-1"></i> Pending</span>
+                                     )}
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-violet-600 dark:text-violet-400 text-xs font-bold bg-violet-50 dark:bg-violet-500/10 px-2 py-1 rounded-lg">
-                                     <i className="fas fa-praying-hands"></i> {prayer.prayCount}
-                                  </div>
+                                  
+                                  {/* Admin Actions */}
+                                  {isAdmin && prayer.approvalStatus === 'pending' ? (
+                                      <div className="flex gap-1.5">
+                                          <button onClick={(e) => handleApprove(e, prayer.id)} className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 flex items-center justify-center transition-colors" title="Approve">
+                                              <i className="fas fa-check text-xs"></i>
+                                          </button>
+                                          <button onClick={(e) => handleReject(e, prayer.id)} className="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/30 flex items-center justify-center transition-colors" title="Reject">
+                                              <i className="fas fa-times text-xs"></i>
+                                          </button>
+                                       </div>
+                                  ) : (
+                                      <div className="flex items-center gap-1.5 text-violet-600 dark:text-violet-400 text-xs font-bold bg-violet-50 dark:bg-violet-500/10 px-2 py-1 rounded-lg">
+                                         <i className="fas fa-praying-hands"></i> {prayer.prayCount}
+                                      </div>
+                                  )}
                                </div>
                             </div>
                          ))
@@ -369,12 +428,7 @@ export default function PrayersPage() {
                 )}
              </div>
           </div>
-        </section>
-      ) : (
-        <section className="bg-white dark:bg-slate-950 min-h-screen">
-            <IntercessoryList />
-        </section>
-      )}
+      </section>
 
       {/* Add Prayer Modal */}
       {showAddModal && (
