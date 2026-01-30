@@ -23,15 +23,6 @@ const HistoryItem = ({ log, onDelete }: { log: any, onDelete: (id: string) => vo
 
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
-            <style jsx global>{`
-                .history-content.dark-mode-fix * {
-                    color: inherit !important;
-                }
-                .dark .history-content.dark-mode-fix * {
-                    color: #cbd5e1 !important; /* slate-300 */
-                    background-color: transparent !important;
-                }
-            `}</style>
             <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
@@ -56,9 +47,9 @@ const HistoryItem = ({ log, onDelete }: { log: any, onDelete: (id: string) => vo
             <div className="p-6">
                 <div 
                     ref={contentRef}
-                    className={`history-content dark-mode-fix prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 relative ${!isExpanded && isLongContent ? 'max-h-[150px] overflow-hidden mask-bottom' : ''}`}
+                    className={`ql-snow history-content max-w-none text-slate-600 dark:text-slate-300 relative ${!isExpanded && isLongContent ? 'max-h-[150px] overflow-hidden mask-bottom' : ''}`}
                 >
-                    <div dangerouslySetInnerHTML={{ __html: log.content }} />
+                    <div className="ql-editor !p-0 !min-h-0 !overflow-visible" dangerouslySetInnerHTML={{ __html: log.content }} style={{ height: 'auto' }} />
                     
                     {!isExpanded && isLongContent && (
                         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-slate-900 to-transparent pointer-events-none"></div>
