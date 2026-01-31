@@ -161,6 +161,20 @@ export default function BibleSchedulePage() {
         return Math.round((completed / days.length) * 100);
     };
 
+    // Calculate Book Progress based on SCHEDULE (completed days)
+    const getScheduleBookProgress = (bookName: string) => {
+        // Find all days that involve this book
+        const relevantDays = plan.filter(p => 
+            p.readings.some(r => r.startsWith(bookName + " "))
+        );
+        
+        if (relevantDays.length === 0) return 0;
+
+        const completedRelevantDays = relevantDays.filter(p => progress.completedDays.includes(p.day)).length;
+        
+        return Math.round((completedRelevantDays / relevantDays.length) * 100);
+    };
+
     // --- Bible Markdown Logic ---
     const [activeTab, setActiveTab] = useState<'schedule' | 'markdown'>('schedule');
 
@@ -375,6 +389,75 @@ export default function BibleSchedulePage() {
                                     </div>
                                 );
                             })}
+                        </div>
+
+                        {/* Automatic Book Tracker Section */}
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-white/10 mb-12">
+                             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Schedule Books Progress</h3>
+                                    <p className="text-slate-500 dark:text-slate-400">Track books completed based on your Daily Schedule plan.</p>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-3xl font-black text-slate-900 dark:text-white">
+                                        {[...OT_BOOKS, ...NT_BOOKS].filter(b => getScheduleBookProgress(b.name) === 100).length} <span className="text-lg text-slate-400 font-medium">/ 66</span>
+                                    </div>
+                                    <div className="text-xs text-slate-500 uppercase tracking-wider font-bold">Books Completed</div>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Old Testament</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {OT_BOOKS.map(book => {
+                                            const percent = getScheduleBookProgress(book.name);
+                                            const isComplete = percent === 100;
+                                            return (
+                                                <div 
+                                                    key={book.name}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-2 transition-all cursor-default relative group/tooltip ${
+                                                        isComplete 
+                                                            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30' 
+                                                            : percent > 0 
+                                                                ? 'bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                                                                : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 border-slate-200 dark:border-slate-700'
+                                                    }`}
+                                                >
+                                                    {book.name}
+                                                    {isComplete && <i className="fas fa-check"></i>}
+                                                    {!isComplete && percent > 0 && <span className="text-[10px] opacity-70">{percent}%</span>}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">New Testament</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {NT_BOOKS.map(book => {
+                                            const percent = getScheduleBookProgress(book.name);
+                                            const isComplete = percent === 100;
+                                            return (
+                                                <div 
+                                                    key={book.name}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-2 transition-all cursor-default ${
+                                                        isComplete 
+                                                            ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-500/30' 
+                                                            : percent > 0 
+                                                                ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
+                                                                : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 border-slate-200 dark:border-slate-700'
+                                                    }`}
+                                                >
+                                                    {book.name}
+                                                    {isComplete && <i className="fas fa-check"></i>}
+                                                    {!isComplete && percent > 0 && <span className="text-[10px] opacity-70">{percent}%</span>}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
