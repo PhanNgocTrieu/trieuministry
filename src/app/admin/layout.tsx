@@ -39,6 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
              { href: '/admin/sponsors', label: 'Sponsors', icon: 'fas fa-hand-holding-heart' },
              { href: '/admin/goals', label: 'Goals', icon: 'fas fa-bullseye' },
              { href: '/admin/discipline', label: 'Discipline', icon: 'fas fa-dumbbell' },
+             { href: '/admin/intercessory', label: 'Intercessory', icon: 'fas fa-hands-helping' },
              { href: '/admin/tasks', label: 'Tasks', icon: 'fas fa-tasks' },
              { href: '/admin/personal', label: 'Personal Prayers', icon: 'fas fa-praying-hands' },
              { href: '/admin/expenses', label: 'My Expenses', icon: 'fas fa-coins' },

@@ -27,8 +27,6 @@ export default function DisciplinePage() {
     const [logs, setLogs] = useState<DisciplineLog[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const [scriptureContent, setScriptureContent] = useState("");
-
     // Identify if today is logged
     const [todayLogs, setTodayLogs] = useState<{ [key in LogType]: boolean }>({
         personal_prayer: false,
@@ -81,7 +79,6 @@ export default function DisciplinePage() {
             todaySnap.forEach(doc => {
                 const data = doc.data() as DisciplineLog;
                 todayStatus[data.type] = true;
-                if (data.type === 'scripture') setScriptureContent(data.content || "");
             });
             setTodayLogs(todayStatus);
 
@@ -225,6 +222,125 @@ export default function DisciplinePage() {
                     </div>
                 </div>
 
+                {/* Entry Sections - Compact */}
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    Today's Discipline <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({format(new Date(), 'MMM do')})</span>
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    
+                    {/* Personal Prayer - Compact */}
+                    <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
+                        todayLogs.personal_prayer 
+                            ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' 
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-green-300 dark:hover:border-green-700'
+                    }`}>
+                        <div className="flex items-center gap-3">
+                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                                 todayLogs.personal_prayer 
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                             }`}>
+                                <i className="fas fa-praying-hands"></i>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-900 dark:text-white">Personal Prayer</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Daily connection</p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onClick={() => handleLog('personal_prayer', 'Daily Personal Prayer')}
+                            disabled={todayLogs.personal_prayer}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
+                                todayLogs.personal_prayer 
+                                    ? 'text-green-600 dark:text-green-500 cursor-default' 
+                                    : 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
+                            }`}
+                        >
+                                {todayLogs.personal_prayer ? (
+                                    <><i className="fas fa-check"></i> Done</>
+                                ) : (
+                                    'Mark Done'
+                                )}
+                        </button>
+                    </div>
+
+                    {/* Intercession - Compact */}
+                     <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
+                        todayLogs.intercession 
+                            ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/30' 
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700'
+                    }`}>
+                         <div className="flex items-center gap-3">
+                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                                 todayLogs.intercession 
+                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' 
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                             }`}>
+                                <i className="fas fa-hand-holding-heart"></i>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-900 dark:text-white">Intercession</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Praying for others</p>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => handleLog('intercession', 'Daily Intercession')}
+                            disabled={todayLogs.intercession}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
+                                todayLogs.intercession 
+                                    ? 'text-purple-600 dark:text-purple-500 cursor-default' 
+                                    : 'bg-purple-500 text-white hover:bg-purple-600 shadow-sm'
+                            }`}
+                        >
+                                {todayLogs.intercession ? (
+                                    <><i className="fas fa-check"></i> Done</>
+                                ) : (
+                                    'Mark Done'
+                                )}
+                        </button>
+                    </div>
+
+                    {/* Scripture - Compact */}
+                    <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
+                        todayLogs.scripture 
+                            ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/30' 
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-700'
+                    }`}>
+                         <div className="flex items-center gap-3">
+                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                                 todayLogs.scripture 
+                                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' 
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                             }`}>
+                                <i className="fas fa-book-open"></i>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-900 dark:text-white">Scripture</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Daily reading</p>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => handleLog('scripture', 'Daily Scripture Reading')}
+                            disabled={todayLogs.scripture}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
+                                todayLogs.scripture 
+                                    ? 'text-orange-600 dark:text-orange-500 cursor-default' 
+                                    : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                            }`}
+                        >
+                                {todayLogs.scripture ? (
+                                    <><i className="fas fa-check"></i> Done</>
+                                ) : (
+                                    'Mark Done'
+                                )}
+                        </button>
+                    </div>
+                </div>
+
                 {/* Calendar Grid */}
                 <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-white/5 p-6 mb-8 transition-colors">
                     <div className="grid grid-cols-7 gap-2 mb-2 text-center text-sm font-bold text-slate-500 uppercase tracking-wider">
@@ -282,112 +398,6 @@ export default function DisciplinePage() {
                                 </div>
                             );
                         })}
-                    </div>
-                </div>
-
-                {/* Entry Sections */}
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Today's Log: <span className="text-blue-600 dark:text-blue-400">{format(new Date(), 'EEEE, MMMM do')}</span></h3>
-                
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
-                    {/* Personal Prayer */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-green-500/20 p-8 flex flex-col items-center text-center hover:shadow-xl transition-all group">
-                         <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 text-3xl mb-4 group-hover:scale-110 transition-transform">
-                            <i className="fas fa-praying-hands"></i>
-                        </div>
-                        <h4 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Personal Prayer</h4>
-                        <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
-                            Connect with God through personal prayer and thanksgiving.
-                        </p>
-                        <button 
-                            onClick={() => handleLog('personal_prayer', 'Daily Personal Prayer')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg w-full justify-center ${
-                                todayLogs.personal_prayer 
-                                    ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
-                                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:scale-105 active:scale-95 shadow-green-500/20'
-                            }`}
-                        >
-                                {todayLogs.personal_prayer ? (
-                                    <><i className="fas fa-check"></i> Completed</>
-                                ) : (
-                                    <><i className="fas fa-plus"></i> Mark as Done</>
-                                )}
-                        </button>
-                    </div>
-
-                    {/* Intercession */}
-                     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-purple-500/20 p-8 flex flex-col items-center text-center hover:shadow-xl transition-all group">
-                         <div className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 text-3xl mb-4 group-hover:scale-110 transition-transform">
-                            <i className="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h4 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Intercession</h4>
-                        <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
-                            Pray for others, the church, and the world.
-                        </p>
-                        <button 
-                            onClick={() => handleLog('intercession', 'Daily Intercession')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg w-full justify-center ${
-                                todayLogs.intercession 
-                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-500 border border-purple-500/20 cursor-default' 
-                                    : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:scale-105 active:scale-95 shadow-purple-500/20'
-                            }`}
-                        >
-                                {todayLogs.intercession ? (
-                                    <><i className="fas fa-check"></i> Completed</>
-                                ) : (
-                                    <><i className="fas fa-plus"></i> Mark as Done</>
-                                )}
-                        </button>
-                    </div>
-
-                    {/* Scripture Today */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-orange-500/20 p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-xl transition-all group max-w-4xl mx-auto col-span-1 md:col-span-2 w-full">
-                        <div className="relative shrink-0">
-                             <div className="w-24 h-24 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 text-4xl group-hover:scale-110 transition-transform duration-500">
-                                <i className="fas fa-book-open"></i>
-                            </div>
-                            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center text-white text-xs">
-                                <i className="fas fa-check"></i>
-                            </div>
-                        </div>
-                        
-                        <div className="flex-1 text-center md:text-left w-full">
-                            <h4 className="font-bold text-2xl text-slate-900 dark:text-white mb-2">Scripture Today</h4>
-                            <p className="text-slate-500 dark:text-slate-400 mb-4 text-lg">
-                                "Your word is a lamp for my feet, a light on my path." - Psalm 119:105
-                            </p>
-
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    What did you read today?
-                                </label>
-                                <input
-                                    type="text"
-                                    value={scriptureContent}
-                                    onChange={(e) => setScriptureContent(e.target.value)}
-                                    placeholder="e.g. Genesis 1, Psalm 23..."
-                                    className="w-full md:w-2/3 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                                />
-                            </div>
-                            
-                            <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-                                <button 
-                                    onClick={() => handleLog('scripture', scriptureContent)}
-                                    disabled={!scriptureContent.trim()}
-                                    className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg ${
-                                        todayLogs.scripture && !scriptureContent.trim()
-                                            ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20 cursor-default' 
-                                            : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:scale-105 active:scale-95 shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
-                                    }`}
-                                >
-                                     {todayLogs.scripture ? (
-                                         <><i className="fas fa-sync-alt"></i> Update Log</>
-                                     ) : (
-                                         <><i className="fas fa-book-reader"></i> Mark as Read</>
-                                     )}
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

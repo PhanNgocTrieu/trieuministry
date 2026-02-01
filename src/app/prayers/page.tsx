@@ -147,8 +147,10 @@ export default function PrayersPage() {
     if (filterStatus === 'pending') {
         return p.approvalStatus === 'pending';
     }
-    // If filter is others, standard check
-    if (filterStatus !== 'all' && filterStatus !== 'pending' && (p.status as string) !== filterStatus) return false;
+    
+    if (filterStatus !== 'all' && p.status !== filterStatus) {
+        return false;
+    }
 
     // 3. Search query
     if (searchQuery && !p.content.toLowerCase().includes(searchQuery.toLowerCase())) return false;
