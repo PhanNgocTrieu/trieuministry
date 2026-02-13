@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -13,11 +13,12 @@ import Link from 'next/link';
 import ImageUploader from '@/components/ImageUploader';
 import FileUploader from '@/components/FileUploader';
 
-export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: string }> }) {
-    const resolvedParams = params ? use(params) : null;
-    const isEdit = !!resolvedParams?.id;
-    const id = resolvedParams?.id;
-    
+interface AppealFormProps {
+    id?: string;
+}
+
+export default function AppealForm({ id }: AppealFormProps) {
+    const isEdit = !!id;
     const router = useRouter();
     const { user } = useAuth();
     const { showAlert } = useModal();
@@ -104,8 +105,6 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                 }
             };
             fetchDoc();
-        } else {
-            setLoading(false);
         }
     }, [isEdit, id, router, showAlert]);
 

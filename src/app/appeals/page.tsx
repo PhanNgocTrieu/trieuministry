@@ -4,43 +4,28 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
-
-interface MinistrySection {
-    title: string;
-    titleEn?: string;
-    description: string;
-    descriptionEn?: string;
-    images: string[];
-}
 
 interface Appeal {
     id: string;
     title: string;
     titleEn?: string;
-    content?: string;
-    ministrySections?: MinistrySection[];
-    fundraisingImages?: string[];
-    fundraisingDescription?: string;
-    fundraisingDescriptionEn?: string;
+    pdfUrl?: string;
+    pdfUrlEn?: string;
     coverImage?: string;
     createdAt: any;
     status: string;
     type?: string;
     authorName?: string;
-    pdfUrl?: string; // Adding this here as well to match previous implementation
 }
 
 export default function AppealsPage() {
     const { t, language } = useLanguage();
-    const { user, isAdmin } = useAuth(); // Correctly get isAdmin from context
+    const { user, isAdmin } = useAuth();
     const [appeals, setAppeals] = useState<Appeal[]>([]);
     const [loading, setLoading] = useState(true);
-
-    // const isAdmin = userData?.role === 'admin'; // Removed incorrect line
 
     const [financialReports, setFinancialReports] = useState<any[]>([]);
     const [selectedReport, setSelectedReport] = useState<any>(null);
@@ -50,16 +35,10 @@ export default function AppealsPage() {
         return vi || '';
     };
 
-    const getPreviewText = (appeal: Appeal) => {
-        if (appeal.content && appeal.content.trim().length > 0) {
-            return appeal.content;
-        }
-        if (appeal.ministrySections && appeal.ministrySections.length > 0) {
-            // Use localized description of the first section
-            return getContent(appeal.ministrySections[0].description, appeal.ministrySections[0].descriptionEn);
-        }
-        return '';
-    };
+    const getPdfUrl = (appeal: Appeal) => {
+        if (language === 'en' && appeal.pdfUrlEn) return appeal.pdfUrlEn;
+        return appeal.pdfUrl;
+    }
 
     useEffect(() => {
         // Fetch only Published and Official appeals
@@ -118,8 +97,14 @@ export default function AppealsPage() {
         );
     }
 
-    const latestAppeal = appeals.length > 0 ? appeals[0] : null;
-    const previousAppeals = appeals.length > 1 ? appeals.slice(1) : [];
+    // Logic to find the absolute latest item between appeals and reports to highlight
+    // However, user asked to highlight the latest financial report AND the latest appeal separately/specifically
+    // "1) giữ nguyên hiển thị financial reports nhưng cần lighlight cái mới nhất lên"
+    // "2) đổi chung layout giống với financial reports cho appeal letter, cũng có hiển thị bản mới nhất"
+    // So distinct lists, but similar layout.
+
+    const latestAppealId = appeals.length > 0 ? appeals[0].id : null;
+    const latestReportId = financialReports.length > 0 ? financialReports[0].id : null;
 
     return (
         <main className="min-h-screen bg-gray-50/50 dark:bg-slate-950 pb-20 font-sans selection:bg-blue-100 dark:selection:bg-blue-900">
@@ -165,31 +150,143 @@ export default function AppealsPage() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {financialReports.map(report => (
-                                <button
-                                    key={report.id}
-                                    onClick={() => setSelectedReport(report)}
-                                    className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/30 transition-all text-left flex items-start gap-4 group"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0 group-hover:bg-green-600 group-hover:text-white transition-colors">
-                                        <i className="fas fa-file-invoice-dollar text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                            Financial Report - {new Date(report.year, report.month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                                        </h4>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                            Income: {report.totalIncome.toLocaleString('vi-VN')} ₫
-                                        </p>
-                                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                            Published: {report.publishedAt?.toDate().toLocaleDateString('vi-VN')}
-                                        </p>
-                                    </div>
-                                </button>
-                            ))}
+                            {financialReports.map(report => {
+                                const isLatest = report.id === latestReportId;
+                                return (
+                                    <button
+                                        key={report.id}
+                                        onClick={() => setSelectedReport(report)}
+                                        className={`bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border transition-all text-left flex items-start gap-4 group relative overflow-hidden
+                                            ${isLatest 
+                                                ? 'border-green-500 ring-1 ring-green-500 dark:border-green-400 dark:ring-green-400/50 shadow-green-100 dark:shadow-none' 
+                                                : 'border-gray-100 dark:border-white/5 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/30'
+                                            }`}
+                                    >
+                                        {isLatest && (
+                                            <div className="absolute top-0 right-0">
+                                                <div className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider">
+                                                    Latest
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
+                                            ${isLatest 
+                                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                                                : 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 group-hover:bg-green-600 group-hover:text-white'
+                                            }`}>
+                                            <i className="fas fa-file-invoice-dollar text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className={`font-bold transition-colors ${isLatest ? 'text-green-700 dark:text-green-400' : 'text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
+                                                Financial Report - {new Date(report.year, report.month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                            </h4>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                Income: {report.totalIncome.toLocaleString('vi-VN')} ₫
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                                                Published: {report.publishedAt?.toDate().toLocaleDateString('vi-VN')}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
+                
+                {/* Appeals Section - Grid Layout */}
+                <div className="mb-16">
+                    <div className="flex items-center gap-4 mb-8">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                            {t('appeals.latest_title') || 'Appeal Letters'}
+                        </h3>
+                        <div className="h-px bg-gray-200 dark:bg-white/10 flex-1"></div>
+                    </div>
+
+                    {appeals.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {appeals.map(appeal => {
+                                const isLatest = appeal.id === latestAppealId;
+                                const pdfUrl = getPdfUrl(appeal);
+                                const otherPdfUrl = language === 'en' ? appeal.pdfUrl : appeal.pdfUrlEn;
+                                const hasEn = !!appeal.pdfUrlEn;
+                                const hasVi = !!appeal.pdfUrl;
+
+                                return (
+                                    <div 
+                                        key={appeal.id}
+                                        className={`bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border transition-all flex flex-col gap-4 group relative overflow-hidden h-full
+                                            ${isLatest 
+                                                ? 'border-blue-500 ring-1 ring-blue-500 dark:border-blue-400 dark:ring-blue-400/50 shadow-blue-100 dark:shadow-none' 
+                                                : 'border-gray-100 dark:border-white/5 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/30'
+                                            }`}
+                                    >
+                                         {isLatest && (
+                                            <div className="absolute top-0 right-0">
+                                                <div className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider">
+                                                    Latest
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="flex items-start gap-4">
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
+                                                ${isLatest 
+                                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' 
+                                                    : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white'
+                                                }`}>
+                                                <i className="fas fa-file-pdf text-xl"></i>
+                                            </div>
+                                            
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className={`font-bold transition-colors line-clamp-2 mb-1 ${isLatest ? 'text-blue-700 dark:text-blue-400' : 'text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
+                                                    {getContent(appeal.title, appeal.titleEn)}
+                                                </h4>
+                                                <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                                                    <span>{formatDate(appeal.createdAt)}</span>
+                                                    <span>•</span>
+                                                    <span>{appeal.authorName || 'Admin'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex gap-2">
+                                            {hasEn && (
+                                                 <a 
+                                                    href={appeal.pdfUrlEn} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg text-sm font-medium transition-colors"
+                                                >
+                                                    <i className="fas fa-download text-xs"></i> English
+                                                </a>
+                                            )}
+                                            {hasVi && (
+                                                 <a 
+                                                    href={appeal.pdfUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg text-sm font-medium transition-colors"
+                                                >
+                                                    <i className="fas fa-download text-xs"></i> Tiếng Việt
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                         <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-gray-200 dark:border-white/10 max-w-2xl mx-auto">
+                            <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300 dark:text-gray-600">
+                                <i className="fas fa-feather-alt text-xl"></i>
+                            </div>
+                            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">No updates yet</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">We haven't posted any appeal letters recently.</p>
+                        </div>
+                    )}
+                </div>
 
                 {/* Report Detail Modal */}
                 {selectedReport && (
@@ -350,118 +447,6 @@ export default function AppealsPage() {
                         </div>
                     </div>
                 )}
-                
-                {/* Content Area */}
-                <div className="space-y-12">
-                    {latestAppeal ? (
-                        <section className="max-w-4xl mx-auto">
-                            <div className="flex items-center gap-4 mb-8">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
-                                    {t('appeals.latest_title') || 'Latest Appeal Letter'}
-                                </h3>
-                                <div className="h-px bg-gray-200 dark:bg-white/10 flex-1"></div>
-                            </div>
-                            <div className="bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-slate-800/50 rounded-2xl p-8 lg:p-10 border border-blue-100 dark:border-white/10 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
-                                <div className="absolute top-0 right-0 p-6 opacity-5 dark:opacity-10">
-                                    <i className="fas fa-feather-alt text-9xl text-blue-900 dark:text-white transform rotate-45"></i>
-                                </div>
-                                
-                                <div className="relative z-10">
-                                    <div className="flex items-center gap-3 mb-4 text-sm">
-                                        <span className="px-3 py-1 bg-blue-600 text-white rounded-full font-bold text-xs uppercase tracking-wider shadow-sm">
-                                            Latest Update
-                                        </span>
-                                        <span className="text-gray-500 dark:text-gray-400 font-medium flex items-center gap-2">
-                                            <i className="far fa-calendar-alt"></i>
-                                            {formatDate(latestAppeal.createdAt)}
-                                        </span>
-                                    </div>
-
-                                    <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight">
-                                        <Link href={`/appeals/${latestAppeal.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                            {getContent(latestAppeal.title, latestAppeal.titleEn)}
-                                        </Link>
-                                    </h2>
-
-                                    <div 
-                                        className="prose prose-lg dark:prose-invert text-gray-600 dark:text-gray-200 mb-8 max-w-none line-clamp-3 leading-relaxed [&_*]:!text-lg dark:[&_*]:!text-gray-200"
-                                        dangerouslySetInnerHTML={{ __html: getPreviewText(latestAppeal) }}
-                                    />
-
-                                    <div>
-                                        <Link 
-                                            href={`/appeals/${latestAppeal.id}`} 
-                                            className="inline-flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold hover:text-blue-800 dark:hover:text-blue-300 transition-colors group/btn"
-                                        >
-                                            {t('common.read_more') || 'Read Full Letter'}
-                                            <i className="fas fa-arrow-right transform group-btn-hover:translate-x-1 transition-transform"></i>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    ) : (
-                        <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-gray-200 dark:border-white/10 max-w-4xl mx-auto">
-                            <div className="w-16 h-16 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300 dark:text-gray-600">
-                                <i className="fas fa-feather-alt text-2xl"></i>
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No updates yet</h3>
-                            <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm">We haven't posted any appeal letters recently.</p>
-                        </div>
-                    )}
-
-                    {/* Previous Appeals - Compact List Layout */}
-                    {previousAppeals.length > 0 && (
-                        <section className="max-w-4xl mx-auto">
-                            <div className="flex items-center gap-4 mb-8">
-                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
-                                    {t('appeals.previous') || 'Previous Letters'}
-                                </h3>
-                                <div className="h-px bg-gray-200 dark:bg-white/10 flex-1"></div>
-                            </div>
-                            
-                            <div className="flex flex-col gap-4">
-                                {previousAppeals.map(appeal => (
-                                    <article key={appeal.id} className="group bg-white dark:bg-slate-900 rounded-xl p-6 border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-md hover:border-blue-100 dark:hover:border-blue-500/30 transition-all duration-200">
-                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-2 font-medium">
-                                                    <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">
-                                                        {formatDate(appeal.createdAt)}
-                                                    </span>
-                                                    <span>•</span>
-                                                    <span>{appeal.authorName || 'Admin'}</span>
-                                                </div>
-                                                
-                                                <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                    <Link href={`/appeals/${appeal.id}`}>
-                                                        {getContent(appeal.title, appeal.titleEn)}
-                                                    </Link>
-                                                </h4>
-                                                
-                                                <div 
-                                                    className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed max-w-2xl"
-                                                    dangerouslySetInnerHTML={{ __html: getPreviewText(appeal).replace(/<[^>]+>/g, '') }}
-                                                />
-                                            </div>
-                                            
-                                            <div className="flex-shrink-0 pt-1">
-                                                <Link 
-                                                    href={`/appeals/${appeal.id}`}
-                                                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-[-45deg]"
-                                                >
-                                                    <i className="fas fa-arrow-right text-sm"></i>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </article>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-                </div>
             </div>
         </main>
     );
