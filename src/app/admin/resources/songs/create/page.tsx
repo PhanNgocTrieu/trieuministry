@@ -32,7 +32,7 @@ export default function CreateSongPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleFileUploaded = (url: string, name: string) => {
+    const handleFileUploaded = (url: string, type: 'image' | 'pdf', name: string) => {
         setFileData({ url, name });
     };
 
@@ -199,7 +199,7 @@ export default function CreateSongPage() {
                                 <FileUploader
                                     onFileUploaded={handleFileUploaded}
                                     folder="songs"
-                                    acceptedFileTypes={['application/pdf']}
+                                    accept=".pdf"
                                 />
                             )}
                         </div>

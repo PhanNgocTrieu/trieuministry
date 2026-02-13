@@ -67,7 +67,7 @@ export default function EditSongPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleFileUploaded = (url: string, name: string) => {
+    const handleFileUploaded = (url: string, type: 'image' | 'pdf', name: string) => {
         setFileUrl(url);
     };
 

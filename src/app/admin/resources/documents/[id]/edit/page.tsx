@@ -66,7 +66,7 @@ export default function EditDocumentPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleFileUploaded = (url: string, name: string) => {
+    const handleFileUploaded = (url: string, type: 'image' | 'pdf', name: string) => {
         setFileUrl(url);
         // In a real scenario, you might want to get the size from metadata, 
         // but FileUploader might need to pass it back. 

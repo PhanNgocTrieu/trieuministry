@@ -31,7 +31,7 @@ export default function CreateDocumentPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleFileUploaded = (url: string, name: string) => {
+    const handleFileUploaded = (url: string, type: 'image' | 'pdf', name: string) => {
         // Since FileUploader doesn't return size, we might skip it or estimate it
         // Ideally FileUploader should return metadata. For now just set URL and Name.
         setFileData({ url, name, size: 'Unknown' }); 
@@ -184,7 +184,7 @@ export default function CreateDocumentPage() {
                                 <FileUploader
                                     onFileUploaded={handleFileUploaded}
                                     folder="documents"
-                                    acceptedFileTypes={['application/pdf']}
+                                    accept="application/pdf"
                                 />
                             )}
                         </div>

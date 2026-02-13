@@ -171,47 +171,56 @@ export default function ResourcesPage() {
                                    
                                    {/* POSTS & TESTIMONIES CARD */}
                                    {(activeTab === 'posts' || activeTab === 'testimonies') && (
-                                       <>
-                                           <div className="h-56 bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
-                                               {item.coverImage ? (
-                                                   <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                               ) : (
-                                                   <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-700">
-                                                       <div className="text-center">
-                                                          <i className={`fas ${activeTab === 'posts' ? 'fa-pen-nib' : 'fa-quote-left'} text-5xl opacity-30 mb-2`}></i>
-                                                          <div className="text-xs font-bold opacity-30 uppercase tracking-widest">{activeTab}</div>
-                                                       </div>
-                                                   </div>
-                                               )}
-                                               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                           </div>
-                                           <div className="p-8">
-                                                <div className="flex items-center gap-3 mb-4">
-                                                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${
+                                       <div className="p-6 flex flex-col h-full relative group hover:border-violet-500/50 transition-colors border-l-4 border-l-transparent hover:border-l-violet-500 bg-white dark:bg-slate-900">
+                                            {/* Header */}
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                                                         activeTab === 'posts' 
-                                                            ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' 
-                                                            : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                                                            ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400' 
+                                                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
                                                     }`}>
                                                         {activeTab === 'posts' ? 'Article' : 'Story'}
                                                     </span>
-                                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wide">
+                                                    <span className="text-xs text-slate-400 font-bold">
                                                         {item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : item.date || 'Recently'}
                                                     </span>
                                                 </div>
-                                               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                                                   {item.title}
-                                               </h3>
-                                               <p className="text-slate-600 dark:text-slate-400 line-clamp-3 mb-6 leading-relaxed text-sm">
-                                                   {item.excerpt || item.content?.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
-                                               </p>
-                                               <Link 
-                                                  href={`/resources/post/${item.slug || item.id}`} 
-                                                  className="inline-flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
-                                               >
-                                                   Read Full {activeTab === 'posts' ? 'Article' : 'Testimony'} <i className="fas fa-arrow-right"></i>
-                                               </Link>
-                                           </div>
-                                       </>
+                                                {/* File Icon */}
+                                                <div className="text-slate-300 dark:text-slate-700">
+                                                     <i className={`fas ${item.fileUrl?.includes('.pdf') ? 'fa-file-pdf' : 'fa-file-image'} text-xl`}></i>
+                                                </div>
+                                            </div>
+
+                                            {/* Title */}
+                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                                 {item.fileUrl ? (
+                                                     <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="hover:underline focus:outline-none before:absolute before:inset-0">
+                                                         {item.title}
+                                                     </a>
+                                                 ) : (
+                                                     item.title
+                                                 )}
+                                            </h3>
+
+                                            {/* Excerpt */}
+                                            {item.excerpt && (
+                                                <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4 leading-relaxed">
+                                                    {item.excerpt}
+                                                </p>
+                                            )}
+
+                                            {/* Action - pushed to bottom */}
+                                            <div className="mt-auto pt-4 flex items-center text-sm font-bold text-violet-600 dark:text-violet-400">
+                                                {item.fileUrl ? (
+                                                     <span className="flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                                                         {item.fileUrl.includes('.pdf') ? 'View PDF' : 'View Image'} <i className="fas fa-external-link-alt text-xs"></i>
+                                                     </span>
+                                                ) : (
+                                                    <span className="text-slate-400 italic font-normal">No file attached</span>
+                                                )}
+                                            </div>
+                                       </div>
                                    )}
 
                                    {/* DOCUMENTS CARD - Redesigned */}

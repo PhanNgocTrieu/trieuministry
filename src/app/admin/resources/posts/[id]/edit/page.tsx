@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import AdminGuard from "@/components/admin/AdminGuard";
-import RichTextEditor from "@/components/RichTextEditor";
+import FileUploader from "@/components/FileUploader";
 import ImageUploader from "@/components/ImageUploader";
 import { useModal } from "@/context/ModalContext";
 import { logActivity } from "@/lib/activity-logger";
@@ -25,7 +25,7 @@ export default function EditPostPage() {
     const [formData, setFormData] = useState({
         title: "",
         excerpt: "",
-        content: "",
+        fileUrl: "",
         type: "post" as "post" | "testimony",
         status: "draft" as "draft" | "published",
     });
@@ -43,7 +43,7 @@ export default function EditPostPage() {
                     setFormData({
                         title: data.title || "",
                         excerpt: data.excerpt || "",
-                        content: data.content || "",
+                        fileUrl: data.fileUrl || "",
                         type: data.type || "post",
                         status: data.status || "draft",
                     });
@@ -74,8 +74,8 @@ export default function EditPostPage() {
             showAlert("Error", "Please enter a title");
             return;
         }
-        if (!formData.content.trim()) {
-            showAlert("Error", "Please enter content");
+        if (!formData.fileUrl) {
+            showAlert("Error", "Please upload a file");
             return;
         }
 
@@ -93,8 +93,8 @@ export default function EditPostPage() {
             await updateDoc(docRef, {
                 title: formData.title,
                 slug: slug,
-                excerpt: formData.excerpt || formData.content.replace(/<[^>]*>/g, '').substring(0, 150),
-                content: formData.content,
+                excerpt: formData.excerpt,
+                fileUrl: formData.fileUrl,
                 type: formData.type,
                 status: formData.status,
                 coverImage: coverImage,
@@ -245,18 +245,16 @@ export default function EditPostPage() {
                         </div>
                     </div>
 
-                    {/* Content */}
+                    {/* Content File Upload */}
                     <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Content *</label>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                            <i className="fas fa-info-circle mr-1"></i>
-                            Use the toolbar to format text, add images, and import Word documents.
-                        </p>
-                        <RichTextEditor
-                            value={formData.content}
-                            onChange={(html) => setFormData({ ...formData, content: html })}
-                            placeholder="Write your post content here..."
-                        />
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-400">File Content (PDF/Image) *</label>
+                        <div className="border border-slate-200 dark:border-white/10 rounded-xl p-6 bg-slate-50 dark:bg-slate-800/50">
+                            <FileUploader 
+                                currentFile={formData.fileUrl}
+                                onFileUploaded={(url) => setFormData({ ...formData, fileUrl: url })}
+                                folder="posts_files"
+                            />
+                        </div>
                     </div>
 
                     {/* Submit Buttons */}
