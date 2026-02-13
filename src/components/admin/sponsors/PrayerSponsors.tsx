@@ -355,6 +355,12 @@ export default function PrayerSponsors() {
     // Get all unique tags for filter dropdown
     const allTags = Array.from(new Set(sponsors.flatMap(s => s.tags || []))).sort();
 
+    // Stats Calculation
+    const totalPartners = sponsors.length;
+    const vietnameseCount = sponsors.filter(s => s.group === 'vietnamese').length;
+    const foreignerCount = sponsors.filter(s => s.group === 'foreigner').length;
+    const phoneCount = sponsors.filter(s => s.phoneNumber && s.phoneNumber.trim().length > 0).length;
+
     return (
         <div className="space-y-8 pb-20">
             {/* Header */}
@@ -389,6 +395,54 @@ export default function PrayerSponsors() {
                     >
                         <i className="fas fa-plus"></i> Add Partner
                     </button>
+                </div>
+            </div>
+
+            {/* Stats Dashboard */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl">
+                            <i className="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Partners</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalPartners}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400 text-xl">
+                            <i className="fas fa-flag"></i>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Vietnamese</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{vietnameseCount}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl">
+                            <i className="fas fa-globe"></i>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Foreigners</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{foreignerCount}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 text-xl">
+                            <i className="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">SMS Ready</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{phoneCount}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 

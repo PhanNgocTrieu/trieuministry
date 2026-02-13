@@ -5,7 +5,7 @@ import AdminGuard from '@/components/admin/AdminGuard';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, startOfYear, endOfYear, addMonths, subMonths, addYears, subYears } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, startOfYear, endOfYear, addMonths, subMonths, addYears, subYears, isSameDay, isAfter, startOfDay } from 'date-fns';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 
@@ -23,30 +23,24 @@ interface DisciplineLog {
 export default function DisciplinePage() {
     const { user } = useAuth();
     const { showAlert } = useModal();
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [viewDate, setViewDate] = useState(new Date()); // Controls the calendar view (Month/Year)
+    const [selectedDate, setSelectedDate] = useState(new Date()); // Controls the active date for logging
     const [logs, setLogs] = useState<DisciplineLog[]>([]);
     const [loading, setLoading] = useState(true);
-
-    // Identify if today is logged
-    const [todayLogs, setTodayLogs] = useState<{ [key in LogType]: boolean }>({
-        personal_prayer: false,
-        intercession: false,
-        scripture: false
-    });
 
     useEffect(() => {
         if (user) {
             fetchLogs();
         }
-    }, [user, currentDate]);
+    }, [user, viewDate]); // Re-fetch when viewDate changes (year/month navigation)
 
     const fetchLogs = async () => {
         if (!user) return;
         setLoading(true);
         try {
-            // Fetch for the whole YEAR to allow yearly stats
-            const start = format(startOfYear(currentDate), 'yyyy-MM-dd');
-            const end = format(endOfYear(currentDate), 'yyyy-MM-dd');
+            // Fetch for the whole YEAR of the viewDate to allow yearly stats & smooth navigation
+            const start = format(startOfYear(viewDate), 'yyyy-MM-dd');
+            const end = format(endOfYear(viewDate), 'yyyy-MM-dd');
 
             const q = query(
                 collection(db, 'discipline_logs'),
@@ -62,26 +56,6 @@ export default function DisciplinePage() {
             });
             setLogs(fetchedLogs);
 
-            // Check today's status specifically
-            const todayStr = format(new Date(), 'yyyy-MM-dd');
-            const todayStatus = {
-                personal_prayer: false,
-                intercession: false,
-                scripture: false
-            };
-            
-            const todayQ = query(
-                collection(db, 'discipline_logs'),
-                where('userId', '==', user.uid),
-                where('date', '==', todayStr)
-            );
-            const todaySnap = await getDocs(todayQ);
-            todaySnap.forEach(doc => {
-                const data = doc.data() as DisciplineLog;
-                todayStatus[data.type] = true;
-            });
-            setTodayLogs(todayStatus);
-
         } catch (error) {
             console.error("Error fetching logs:", error);
         } finally {
@@ -91,23 +65,31 @@ export default function DisciplinePage() {
 
     const handleLog = async (type: LogType, content: string) => {
         if (!user) return;
-        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
         try {
-            const docId = `${user.uid}_${todayStr}_${type}`;
+            const docId = `${user.uid}_${dateStr}_${type}`;
             const docRef = doc(db, 'discipline_logs', docId);
 
-            await setDoc(docRef, {
+            const newLog = {
+                id: docId,
                 userId: user.uid,
-                date: todayStr,
+                date: dateStr,
                 type: type,
                 content: content,
                 completed: true,
-                updatedAt: serverTimestamp()
-            }, { merge: true });
+                updatedAt: serverTimestamp() // distinct from dateStr
+            };
 
-            setTodayLogs(prev => ({ ...prev, [type]: true }));
-            fetchLogs();
+            await setDoc(docRef, newLog, { merge: true });
+
+            // Optimistically update logs
+            setLogs(prev => {
+                // Remove existing log of this type/date if any (though merge:true keeps it, we want to update the entry in FE state)
+                const filtered = prev.filter(l => !(l.date === dateStr && l.type === type));
+                return [...filtered, newLog as any]; // Cast to any because serverTimestamp is incompatible with Date in FE usually, but here we ignore updatedAt in UI
+            });
+            
             showAlert("Success", "Updated successfully!");
         } catch (error) {
             console.error("Error logging:", error);
@@ -116,8 +98,8 @@ export default function DisciplinePage() {
     };
 
     const daysInMonth = eachDayOfInterval({
-        start: startOfMonth(currentDate),
-        end: endOfMonth(currentDate)
+        start: startOfMonth(viewDate),
+        end: endOfMonth(viewDate)
     });
 
     const getDayLogs = (date: Date) => {
@@ -125,16 +107,32 @@ export default function DisciplinePage() {
         return logs.filter(log => log.date === dateStr);
     };
 
-    const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-    const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-    const nextYear = () => setCurrentDate(addYears(currentDate, 1));
-    const prevYear = () => setCurrentDate(subYears(currentDate, 1));
-    const goToToday = () => setCurrentDate(new Date());
+    const nextMonth = () => setViewDate(addMonths(viewDate, 1));
+    const prevMonth = () => setViewDate(subMonths(viewDate, 1));
+    const nextYear = () => setViewDate(addYears(viewDate, 1));
+    const prevYear = () => setViewDate(subYears(viewDate, 1));
+    const goToToday = () => {
+        const today = new Date();
+        setViewDate(today);
+        setSelectedDate(today);
+    };
+
+    // Derived state for logging buttons
+    const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+    const logsForSelectedDate = logs.filter(l => l.date === selectedDateStr);
+    const selectedDateStatus = {
+        personal_prayer: logsForSelectedDate.some(l => l.type === 'personal_prayer'),
+        intercession: logsForSelectedDate.some(l => l.type === 'intercession'),
+        scripture: logsForSelectedDate.some(l => l.type === 'scripture')
+    };
+
+    // Prevent logging for future dates
+    const isFutureDate = isAfter(startOfDay(selectedDate), startOfDay(new Date()));
 
     // Calculate Stats
-    const currentMonthStr = format(currentDate, 'yyyy-MM');
-    const monthlyLogs = logs.filter(l => l.date. startsWith(currentMonthStr));
-    const currentYear = format(currentDate, 'yyyy');
+    const currentMonthStr = format(viewDate, 'yyyy-MM');
+    const monthlyLogs = logs.filter(l => l.date.startsWith(currentMonthStr));
+    const currentYear = format(viewDate, 'yyyy');
     
     const stats = {
         month: {
@@ -162,7 +160,7 @@ export default function DisciplinePage() {
                             <i className="fas fa-chevron-left"></i>
                         </button>
                         
-                        <h2 className="text-lg font-bold w-40 text-center text-slate-900 dark:text-white">{format(currentDate, 'MMMM yyyy')}</h2>
+                        <h2 className="text-lg font-bold w-40 text-center text-slate-900 dark:text-white">{format(viewDate, 'MMMM yyyy')}</h2>
                         
                         <button onClick={nextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors" title="Next Month">
                             <i className="fas fa-chevron-right"></i>
@@ -172,7 +170,7 @@ export default function DisciplinePage() {
                         </button>
                     </div>
                     <button onClick={goToToday} className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-500/20 text-sm font-bold transition-colors border border-blue-500/20">
-                        Current Month
+                        Back to Today
                     </button>
                 </div>
 
@@ -224,20 +222,30 @@ export default function DisciplinePage() {
 
                 {/* Entry Sections - Compact */}
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    Today's Discipline <span className="text-sm font-normal text-slate-500 dark:text-slate-400">({format(new Date(), 'MMM do')})</span>
+                    {isToday(selectedDate) ? "Today's Discipline" : `Discipline for ${format(selectedDate, 'MMMM do, yyyy')}`} 
+                    <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+                        ({isToday(selectedDate) ? format(new Date(), 'MMM do') : 'Backfill Mode'})
+                    </span>
+                    {isFutureDate && (
+                        <span className="text-xs font-bold text-red-500 ml-2 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded">
+                            Future Date - Cannot Log
+                        </span>
+                    )}
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     
                     {/* Personal Prayer - Compact */}
                     <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
-                        todayLogs.personal_prayer 
+                        selectedDateStatus.personal_prayer 
                             ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' 
-                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-green-300 dark:hover:border-green-700'
+                            : isFutureDate 
+                                ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-60' 
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-green-300 dark:hover:border-green-700'
                     }`}>
                         <div className="flex items-center gap-3">
                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                                 todayLogs.personal_prayer 
+                                 selectedDateStatus.personal_prayer 
                                     ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                              }`}>
@@ -251,14 +259,16 @@ export default function DisciplinePage() {
                         
                         <button 
                             onClick={() => handleLog('personal_prayer', 'Daily Personal Prayer')}
-                            disabled={todayLogs.personal_prayer}
+                            disabled={selectedDateStatus.personal_prayer || isFutureDate}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                                todayLogs.personal_prayer 
+                                selectedDateStatus.personal_prayer 
                                     ? 'text-green-600 dark:text-green-500 cursor-default' 
-                                    : 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
+                                    : isFutureDate
+                                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                        : 'bg-green-500 text-white hover:bg-green-600 shadow-sm'
                             }`}
                         >
-                                {todayLogs.personal_prayer ? (
+                                {selectedDateStatus.personal_prayer ? (
                                     <><i className="fas fa-check"></i> Done</>
                                 ) : (
                                     'Mark Done'
@@ -268,13 +278,15 @@ export default function DisciplinePage() {
 
                     {/* Intercession - Compact */}
                      <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
-                        todayLogs.intercession 
+                        selectedDateStatus.intercession 
                             ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/30' 
-                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700'
+                            : isFutureDate 
+                                ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-60' 
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700'
                     }`}>
                          <div className="flex items-center gap-3">
                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                                 todayLogs.intercession 
+                                 selectedDateStatus.intercession 
                                     ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' 
                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                              }`}>
@@ -288,14 +300,16 @@ export default function DisciplinePage() {
 
                         <button 
                             onClick={() => handleLog('intercession', 'Daily Intercession')}
-                            disabled={todayLogs.intercession}
+                            disabled={selectedDateStatus.intercession || isFutureDate}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                                todayLogs.intercession 
+                                selectedDateStatus.intercession 
                                     ? 'text-purple-600 dark:text-purple-500 cursor-default' 
-                                    : 'bg-purple-500 text-white hover:bg-purple-600 shadow-sm'
+                                    : isFutureDate
+                                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                        : 'bg-purple-500 text-white hover:bg-purple-600 shadow-sm'
                             }`}
                         >
-                                {todayLogs.intercession ? (
+                                {selectedDateStatus.intercession ? (
                                     <><i className="fas fa-check"></i> Done</>
                                 ) : (
                                     'Mark Done'
@@ -305,13 +319,15 @@ export default function DisciplinePage() {
 
                     {/* Scripture - Compact */}
                     <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
-                        todayLogs.scripture 
+                        selectedDateStatus.scripture 
                             ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/30' 
-                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-700'
+                            : isFutureDate 
+                                ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-60' 
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-700'
                     }`}>
                          <div className="flex items-center gap-3">
                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                                 todayLogs.scripture 
+                                 selectedDateStatus.scripture 
                                     ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' 
                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                              }`}>
@@ -325,14 +341,16 @@ export default function DisciplinePage() {
 
                         <button 
                             onClick={() => handleLog('scripture', 'Daily Scripture Reading')}
-                            disabled={todayLogs.scripture}
+                            disabled={selectedDateStatus.scripture || isFutureDate}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                                todayLogs.scripture 
+                                selectedDateStatus.scripture 
                                     ? 'text-orange-600 dark:text-orange-500 cursor-default' 
-                                    : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                                    : isFutureDate
+                                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                        : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
                             }`}
                         >
-                                {todayLogs.scripture ? (
+                                {selectedDateStatus.scripture ? (
                                     <><i className="fas fa-check"></i> Done</>
                                 ) : (
                                     'Mark Done'
@@ -348,7 +366,8 @@ export default function DisciplinePage() {
                     </div>
                     <div className="grid grid-cols-7 gap-2">
                         {/* Empty cells for offset */}
-                        {Array.from({ length: startOfMonth(currentDate).getDay() }).map((_, i) => (
+                        {/* Empty cells for offset */}
+                        {Array.from({ length: startOfMonth(viewDate).getDay() }).map((_, i) => (
                             <div key={`empty-${i}`} className="h-24 md:h-32 bg-slate-50 dark:bg-slate-800/30 rounded-lg"></div>
                         ))}
                         
@@ -358,17 +377,24 @@ export default function DisciplinePage() {
                             const hasIntercession = dayLogs.some(l => l.type === 'intercession');
                             const hasScripture = dayLogs.some(l => l.type === 'scripture');
                             const isTodayDate = isToday(day);
+                            const isSelected = isSameDay(day, selectedDate);
 
                             return (
                                 <div key={day.toISOString()} 
-                                     className={`h-24 md:h-32 border rounded-lg p-2 flex flex-col justify-between transition-colors ${
-                                        isTodayDate 
-                                            ? 'border-blue-500/50 bg-blue-50 dark:bg-blue-900/10' 
-                                            : 'border-slate-200 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-white/10'
+                                     onClick={() => setSelectedDate(day)}
+                                     className={`h-24 md:h-32 border rounded-lg p-2 flex flex-col justify-between transition-all cursor-pointer ${
+                                        isSelected
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500/20'
+                                            : isTodayDate
+                                                ? 'border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800' // Today but not selected
+                                                : 'border-slate-200 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-white/10'
                                      }`}
                                 >
                                     <div className="text-right">
-                                        <span className={`text-sm font-medium ${isTodayDate ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500'}`}>
+                                        <span className={`text-sm font-medium ${
+                                            isSelected ? 'text-blue-700 dark:text-blue-400 font-bold' :
+                                            isTodayDate ? 'text-blue-600 dark:text-blue-500' : 'text-slate-500'
+                                        }`}>
                                             {format(day, 'd')}
                                         </span>
                                     </div>
