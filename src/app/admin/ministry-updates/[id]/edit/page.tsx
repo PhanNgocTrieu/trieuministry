@@ -41,6 +41,10 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
         type: 'official',
         coverImage: '',
         authorName: '',
+        
+        // New fields for month/year sorting
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
     });
 
     const [isCustomCategory, setIsCustomCategory] = useState(false);
@@ -79,6 +83,17 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                     const snap = await getDoc(docRef);
                     if (snap.exists()) {
                         const data = snap.data();
+                        
+                        // Determine month/year if not present
+                        let loadedMonth = data.month;
+                        let loadedYear = data.year;
+                        
+                        if (!loadedMonth || !loadedYear) {
+                           const d = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
+                           if (!loadedMonth) loadedMonth = d.getMonth() + 1;
+                           if (!loadedYear) loadedYear = d.getFullYear();
+                        }
+
                         setFormData({
                             title_en: data.titleEn || '',
                             pdfUrl_en: data.pdfUrlEn || '',
@@ -91,6 +106,9 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                             type: 'official',
                             coverImage: data.coverImage || '',
                             authorName: data.authorName || '',
+                            
+                            month: loadedMonth,
+                            year: loadedYear,
                         });
                     } else {
                         showAlert("Error", "Document not found");
@@ -146,6 +164,9 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                 type: 'official',
                 coverImage: formData.coverImage,
                 
+                month: Number(formData.month),
+                year: Number(formData.year),
+                
                 updatedAt: serverTimestamp()
             };
 
@@ -173,6 +194,8 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
     };
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
+
+    const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i + 1); // Next year down to 10 years ago
 
     return (
         <AdminGuard>
@@ -223,6 +246,37 @@ export default function MinistryUpdateForm({ params }: { params?: Promise<{ id: 
                                 className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400"
                                 placeholder={activeTab === 'en' ? "e.g. Monthly Update" : "Ví dụ: Cập nhật tháng"}
                             />
+                        </div>
+
+                         {/* Date Selection */}
+                         <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Month</label>
+                            <select
+                                name="month"
+                                value={formData.month}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                            >
+                                {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                                    <option key={m} value={m}>
+                                        {new Date(0, m - 1).toLocaleString('default', { month: 'long' })}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 dark:text-slate-400">Year</label>
+                            <select
+                                name="year"
+                                value={formData.year}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                            >
+                                {years.map(y => (
+                                    <option key={y} value={y}>{y}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="space-y-2 md:col-span-2">

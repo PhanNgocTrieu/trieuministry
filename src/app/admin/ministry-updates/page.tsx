@@ -11,10 +11,13 @@ import { logActivity } from '@/lib/activity-logger';
 interface MinistryUpdate {
     id: string;
     title: string;
+    titleEn?: string;
     status: string; // 'published', 'draft'
     createdAt: any;
     authorName?: string;
     type?: string; 
+    month?: number;
+    year?: number;
 }
 
 export default function AdminMinistryUpdatesPage() {
@@ -25,13 +28,33 @@ export default function AdminMinistryUpdatesPage() {
     useEffect(() => {
         // Fetch valid "Ministry Updates" (formerly Official Appeals)
         // We look for type == "official"
-        const q = query(collection(db, "appeals"), where("type", "==", "official"), orderBy("createdAt", "desc"));
+        // We remove orderBy("createdAt") from query to sort client-side by custom month/year
+        const q = query(collection(db, "appeals"), where("type", "==", "official"));
         
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             } as MinistryUpdate));
+
+            // Client-side sort: Year DESC -> Month DESC -> CreatedAt DESC
+            data.sort((a, b) => {
+                const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
+                const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
+
+                const yearA = a.year || dateA.getFullYear();
+                const yearB = b.year || dateB.getFullYear();
+                
+                if (yearB !== yearA) return yearB - yearA;
+
+                const monthA = a.month || (dateA.getMonth() + 1);
+                const monthB = b.month || (dateB.getMonth() + 1);
+                
+                if (monthB !== monthA) return monthB - monthA;
+
+                return dateB.getTime() - dateA.getTime();
+            });
+
             setUpdates(data);
             setLoading(false);
         }, (error) => {
@@ -103,9 +126,10 @@ export default function AdminMinistryUpdatesPage() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-white/5 text-xs uppercase text-slate-500 dark:text-slate-400 sticky top-0">
-                                        <th className="px-6 py-4 font-bold">Title</th>
+                                        <th className="px-6 py-4 font-bold">Title (VI / EN)</th>
+                                        <th className="px-6 py-4 font-bold">Month/Year</th>
                                         <th className="px-6 py-4 font-bold">Status</th>
-                                        <th className="px-6 py-4 font-bold">Date</th>
+                                        <th className="px-6 py-4 font-bold">Date Created</th>
                                         <th className="px-6 py-4 font-bold text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -115,7 +139,19 @@ export default function AdminMinistryUpdatesPage() {
                                             <tr key={update.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
                                                 <td className="px-6 py-4">
                                                     <div className="font-bold text-slate-900 dark:text-white">{update.title || 'Untitled'}</div>
-                                                    {update.authorName && <div className="text-xs text-slate-500">by {update.authorName}</div>}
+                                                    {update.titleEn && (
+                                                        <div className="text-sm text-slate-500 italic">{update.titleEn}</div>
+                                                    )}
+                                                    {update.authorName && <div className="text-xs text-slate-400 mt-1">by {update.authorName}</div>}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {update.month && update.year ? (
+                                                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                                                            {update.month}/{update.year}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-slate-400 italic text-xs">Not set</span>
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border

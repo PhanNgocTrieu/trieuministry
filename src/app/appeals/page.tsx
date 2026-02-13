@@ -19,6 +19,8 @@ interface Appeal {
     status: string;
     type?: string;
     authorName?: string;
+    month?: number;
+    year?: number;
 }
 
 export default function AppealsPage() {
@@ -42,11 +44,11 @@ export default function AppealsPage() {
 
     useEffect(() => {
         // Fetch only Published and Official appeals
+        // We fetching everything and Sort client-side because mixture of legacy data (no year/month) and new data
         const q = query(
             collection(db, "appeals"), 
             where("status", "==", "published"),
-            where("type", "==", "official"),
-            orderBy("createdAt", "desc")
+            where("type", "==", "official")
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -54,6 +56,28 @@ export default function AppealsPage() {
                 id: doc.id,
                 ...doc.data()
             } as Appeal));
+            
+            // Custom Sort: Year DESC -> Month DESC -> CreatedAt DESC
+            data.sort((a, b) => {
+                // Determine effective year/month for comparison
+                // Fallback to createdAt if year/month are missing
+                const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
+                const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
+
+                const yearA = a.year || dateA.getFullYear();
+                const yearB = b.year || dateB.getFullYear();
+                
+                if (yearB !== yearA) return yearB - yearA;
+
+                const monthA = a.month || (dateA.getMonth() + 1);
+                const monthB = b.month || (dateB.getMonth() + 1);
+                
+                if (monthB !== monthA) return monthB - monthA;
+                
+                // Final tie-breaker: createdAt
+                return dateB.getTime() - dateA.getTime();
+            });
+
             setAppeals(data);
             setLoading(false);
         }, (error) => {

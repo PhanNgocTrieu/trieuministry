@@ -59,13 +59,6 @@ export default function Home() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
                 <Link 
-                  href="/prayers" 
-                  className="group relative px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full font-bold text-base transition-all hover:scale-105 hover:shadow-xl shadow-lg shadow-slate-900/20 dark:shadow-white/10 flex items-center justify-center gap-2"
-                >
-                  <span>{t('home.hero.cta_prayer')}</span>
-                  <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </Link>
-                <Link 
                   href="/donate" 
                   className="px-8 py-3.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-full font-bold text-base transition-all hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 flex items-center justify-center gap-2"
                 >
@@ -128,9 +121,6 @@ export default function Home() {
                    <p className="text-white/80 text-base leading-relaxed mb-6">
                       {t('home.mission.mission_2.content')}
                    </p>
-                   <Link href="/prayers" className="inline-flex px-5 py-2.5 bg-white text-violet-600 rounded-xl font-bold items-center gap-2 hover:bg-violet-50 transition-colors shadow-lg text-sm">
-                      Join Prayer Wall
-                   </Link>
                 </div>
                 <div className="relative z-10 w-full md:w-1/3 flex justify-center">
                     <div className="w-28 h-28 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 text-4xl text-white animate-pulse-slow">

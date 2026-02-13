@@ -144,24 +144,8 @@ export default function AccountPage() {
             </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* My Prayers Section */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-               <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold flex items-center gap-2">
-                     <i className="fas fa-praying-hands text-blue-600"></i> My Prayers
-                  </h3>
-                  <button onClick={() => router.push('/prayers')} className="text-blue-600 text-sm font-bold hover:underline">View All</button>
-               </div>
-               
-               <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-xl">
-                  <i className="fas fa-bible text-4xl mb-3 opacity-20"></i>
-                  <p>Check your prayer requests status.</p>
-                  <button onClick={() => router.push('/prayers')} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700">
-                     Go to Prayers
-                  </button>
-               </div>
-            </div>
+        <div className="max-w-2xl mx-auto">
+
 
             {/* Account Settings */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
