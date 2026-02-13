@@ -24,7 +24,7 @@ import { useModal } from '@/context/ModalContext';
 export default function FinancialSponsors() {
     const [sponsors, setSponsors] = useState<Sponsor[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'incomplete'>('all');
+    const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'incomplete'>('incomplete');
     const { showAlert, showConfirm } = useModal();
     
     // Modal & Form State
@@ -331,7 +331,7 @@ export default function FinancialSponsors() {
 
             {/* Filters */}
              <div className="bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm inline-flex gap-1">
-                {(['all', 'incomplete', 'completed'] as const).map((status) => (
+                {(['incomplete', 'completed', 'all'] as const).map((status) => (
                     <button
                         key={status}
                         onClick={() => setFilterStatus(status)}
