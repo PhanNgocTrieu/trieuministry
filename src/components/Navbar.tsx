@@ -80,8 +80,8 @@ const Navbar = () => {
      { href: '/ministry', label: t('nav.ministry') },
    ];
 
-   // Don't render Navbar on admin pages, or on /lib if not logged in
-   if (pathname?.startsWith('/admin') || (pathname?.startsWith('/lib') && !user)) {
+   // Don't render Navbar on admin pages, or on /lib or /room if not logged in
+   if (pathname?.startsWith('/admin') || ((pathname?.startsWith('/lib') || pathname?.startsWith('/room')) && !user)) {
      return null;
    }
 

@@ -25,8 +25,8 @@ const Footer = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Don't render Footer on admin pages, or on /lib if not logged in
-  if (pathname?.startsWith('/admin') || (pathname?.startsWith('/lib') && !user)) {
+  // Don't render Footer on admin pages, or on /lib or /room if not logged in
+  if (pathname?.startsWith('/admin') || ((pathname?.startsWith('/lib') || pathname?.startsWith('/room')) && !user)) {
     return null;
   }
 

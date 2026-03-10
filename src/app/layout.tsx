@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import VisitTracker from "@/components/VisitTracker";
+import FloatingThemeToggle from "@/components/FloatingThemeToggle";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -53,6 +54,7 @@ export default function RootLayout({
             <main className="min-h-screen">
               {children}
             </main>
+            <FloatingThemeToggle />
             <Footer />
           </Providers>
         </ThemeProvider>

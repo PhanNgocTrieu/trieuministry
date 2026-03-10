@@ -10,6 +10,7 @@ interface BookingModalProps {
     onSuccess: (bookings: RoomBooking[]) => void;
     initialDate?: Date;
     initialTimeStr?: string; // format "HH:mm"
+    editingBooking?: RoomBooking | null;
 }
 
 export default function BookingModal({
@@ -17,7 +18,8 @@ export default function BookingModal({
     onClose,
     onSuccess,
     initialDate,
-    initialTimeStr
+    initialTimeStr,
+    editingBooking
 }: BookingModalProps) {
     const [name, setName] = useState("");
     const [dateStr, setDateStr] = useState("");
@@ -31,27 +33,39 @@ export default function BookingModal({
 
     useEffect(() => {
         if (isOpen) {
-            setName("");
             setError("");
-            setRecurringMode("none");
             
-            const baseDate = initialDate || new Date();
-            setDateStr(format(baseDate, "yyyy-MM-dd"));
-            // Default recurring end date to 1 month from now
-            setRecurringEndDateStr(format(addMonths(baseDate, 1), "yyyy-MM-dd"));
-            
-            if (initialTimeStr) {
-                setStartTimeStr(initialTimeStr);
-                // default end time to 30 mins later
-                const parsedStart = parse(initialTimeStr, "HH:mm", new Date());
-                const endInitial = new Date(parsedStart.getTime() + 30 * 60000);
-                setEndTimeStr(format(endInitial, "HH:mm"));
+            if (editingBooking) {
+                setName(editingBooking.name);
+                const startDate = new Date(editingBooking.startTime);
+                const endDate = new Date(editingBooking.endTime);
+                setDateStr(format(startDate, "yyyy-MM-dd"));
+                setStartTimeStr(format(startDate, "HH:mm"));
+                setEndTimeStr(format(endDate, "HH:mm"));
+                setRecurringMode(editingBooking.recurringMode || "none");
+                setRecurringEndDateStr(editingBooking.recurringEndDate ? format(new Date(editingBooking.recurringEndDate), "yyyy-MM-dd") : format(addMonths(startDate, 1), "yyyy-MM-dd"));
             } else {
-                setStartTimeStr("08:00");
-                setEndTimeStr("08:30");
+                setName("");
+                setRecurringMode("none");
+                
+                const baseDate = initialDate || new Date();
+                setDateStr(format(baseDate, "yyyy-MM-dd"));
+                // Default recurring end date to 1 month from now
+                setRecurringEndDateStr(format(addMonths(baseDate, 1), "yyyy-MM-dd"));
+                
+                if (initialTimeStr) {
+                    setStartTimeStr(initialTimeStr);
+                    // default end time to 30 mins later
+                    const parsedStart = parse(initialTimeStr, "HH:mm", new Date());
+                    const endInitial = new Date(parsedStart.getTime() + 30 * 60000);
+                    setEndTimeStr(format(endInitial, "HH:mm"));
+                } else {
+                    setStartTimeStr("08:00");
+                    setEndTimeStr("08:30");
+                }
             }
         }
-    }, [isOpen, initialDate, initialTimeStr]);
+    }, [isOpen, initialDate, initialTimeStr, editingBooking]);
 
     if (!isOpen) return null;
 
@@ -101,8 +115,11 @@ export default function BookingModal({
                 recurringEndDate: finalRecurringEnd
             };
             
-            const res = await fetch("/api/room/bookings", {
-                method: "POST",
+            const url = editingBooking ? `/api/room/bookings/${editingBooking.id}` : "/api/room/bookings";
+            const method = editingBooking ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
@@ -112,8 +129,9 @@ export default function BookingModal({
             if (!res.ok) {
                 setError(data.error || "Có lỗi xảy ra khi đăng ký.");
             } else {
-                // If the response is an array, it's successful occurrences
-                onSuccess(data as RoomBooking[]);
+                // Return array of bookings whether create or update
+                const successData = editingBooking ? [data.updated] : (data as RoomBooking[]);
+                onSuccess(successData);
                 onClose();
             }
         } catch (err: any) {
@@ -137,7 +155,7 @@ export default function BookingModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden max-h-[90vh] flex flex-col">
                 <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center shrink-0">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">Đăng ký phòng</h2>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">{editingBooking ? "Chỉnh sửa phòng" : "Đăng ký phòng"}</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
                         <i className="fas fa-times text-lg"></i>
                     </button>
@@ -205,7 +223,8 @@ export default function BookingModal({
                             <select
                                 value={recurringMode}
                                 onChange={e => setRecurringMode(e.target.value as RecurringMode)}
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all mb-3"
+                                disabled={!!editingBooking}
+                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all mb-3 disabled:opacity-50"
                             >
                                 <option value="none">Không lặp lại (1 lần)</option>
                                 <option value="weekly">Hàng Tuần (Mỗi {dateStr ? format(parse(dateStr, 'yyyy-MM-dd', new Date()), 'EEEE') : 'tuần'})</option>

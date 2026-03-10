@@ -11,9 +11,30 @@ export async function GET() {
         const snapshot = await db.collection("room_bookings").orderBy("startTime").get();
         const bookings: RoomBooking[] = [];
         
+        // Setup 1 month ago cutoff
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        const cutoffISO = oneMonthAgo.toISOString();
+        
+        const batch = db.batch();
+        let deleteCount = 0;
+        
         snapshot.forEach(doc => {
-            bookings.push({ id: doc.id, ...doc.data() } as RoomBooking);
+            const data = doc.data() as RoomBooking;
+            if (data.endTime < cutoffISO) {
+                 if (deleteCount < 500) { // Firestore batch limit
+                     batch.delete(doc.ref);
+                     deleteCount++;
+                 }
+            } else {
+                 bookings.push({ ...data, id: doc.id });
+            }
         });
+        
+        // Execute delete asynchronously so we don't slow down the response
+        if (deleteCount > 0) {
+            batch.commit().catch(e => console.error("Error auto-deleting old bookings:", e));
+        }
         
         return NextResponse.json(bookings);
     } catch (error: any) {

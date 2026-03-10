@@ -23,13 +23,20 @@ export default function RoomBookingPage() {
                     </p>
                 </div>
 
-                <CalendarView isAdmin={isAdmin} />
-                
-                {/* Contact Info Footer */}
-                <div className="mt-16 bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center text-2xl mb-6">
-                        <i className="fas fa-headset"></i>
-                    </div>
+                {/* Booking Notes */}
+                <div className="mb-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-lg font-bold text-amber-800 dark:text-amber-500 mb-3 flex items-center gap-2">
+                        <i className="fas fa-exclamation-triangle"></i>
+                        Lưu ý quan trọng khi đặt phòng
+                    </h3>
+                    <ul className="list-disc list-inside space-y-2 text-amber-700 dark:text-amber-400/90 ml-2">
+                        <li>Khi mới đặt lịch họp, bạn chỉ có quyền tự <strong>xóa/chỉnh sửa trong vòng 2 phút đầu tiên</strong>. Sau 2 phút, thông tin sẽ được khóa lại.</li>
+                        <li>Để thay đổi thông tin sau thời gian này, vui lòng liên hệ trực tiếp với người chịu trách nhiệm quản lý.</li>
+                    </ul>
+                </div>
+
+                {/* Contact Info Footer (Moved to top) */}
+                <div className="mb-8 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                         Thông tin hỗ trợ
                     </h3>
@@ -37,7 +44,7 @@ export default function RoomBookingPage() {
                         Nếu bạn có nhu cầu thay đổi, hủy lịch hoặc cần hỗ trợ khác, vui lòng liên hệ Admin qua các kênh sau:
                     </p>
                     
-                    <div className="flex flex-col md:flex-row gap-6 justify-center w-full max-w-3xl">
+                    <div className="flex flex-col md:flex-row gap-6 justify-center w-full max-w-5xl">
                         <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl flex-1 border border-slate-100 dark:border-slate-800">
                             <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700">
                                 <i className="fas fa-user text-sm"></i>
@@ -64,11 +71,13 @@ export default function RoomBookingPage() {
                             </div>
                             <div className="text-left py-1 overflow-hidden">
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email</div>
-                                <div className="font-semibold text-slate-800 dark:text-white text-sm whitespace-nowrap truncate max-w-[130px]">phantrieu580@gmail.com</div>
+                                <div className="font-semibold text-slate-800 dark:text-white text-sm whitespace-nowrap">phantrieu580@gmail.com</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <CalendarView isAdmin={isAdmin} />
 
             </div>
         </div>

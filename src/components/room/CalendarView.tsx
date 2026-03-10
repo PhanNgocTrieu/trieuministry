@@ -20,11 +20,25 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedTimeStr, setSelectedTimeStr] = useState<string>("08:00");
+    const [bookingToEdit, setBookingToEdit] = useState<RoomBooking | null>(null);
     
     // Delete Modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [bookingToDelete, setBookingToDelete] = useState<RoomBooking | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Current time for 2-minute rule
+    const [nowTime, setNowTime] = useState(Date.now());
+    useEffect(() => {
+        const interval = setInterval(() => setNowTime(Date.now()), 10000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const isWithin2Mins = (booking: RoomBooking) => {
+        if (!booking.createdAt) return false;
+        const diffValid = (nowTime - new Date(booking.createdAt).getTime()) / 60000;
+        return diffValid <= 2;
+    };
 
     const fetchBookings = async () => {
         try {
@@ -61,18 +75,29 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
     const handleToday = () => setCurrentDate(new Date());
 
     const handleSlotClick = (dayStr: Date, timeStr: string) => {
+        setBookingToEdit(null);
         setSelectedDate(dayStr);
         setSelectedTimeStr(timeStr);
         setIsModalOpen(true);
     };
 
-    const handleBookingSuccess = (newBookings: RoomBooking[]) => {
-        setBookings([...bookings, ...newBookings]);
+    const handleEditBookingClick = (booking: RoomBooking) => {
+        setBookingToEdit(booking);
+        setIsModalOpen(true);
+    };
+
+    const handleBookingSuccess = (updatedBookings: RoomBooking[]) => {
+        if (bookingToEdit && updatedBookings.length === 1) {
+             const updated = updatedBookings[0];
+             setBookings(bookings.map(b => b.id === updated.id ? { ...b, ...updated } : b));
+        } else {
+             setBookings([...bookings, ...updatedBookings]);
+        }
     };
 
     const handleDeleteBookingClick = async (booking: RoomBooking) => {
         if (!booking.groupId) {
-             if (confirm(`Admin: Bạn có chắc chắn muốn xoá lịch đặt phòng của ${booking.name}?`)) {
+             if (confirm(`Bạn có chắc chắn muốn xoá lịch đặt phòng của ${booking.name}?`)) {
                  // Direct delete for non-recurring
                  setBookingToDelete(booking);
                  // We need to wait for state to set, but it's simpler to just call a modified executeDelete
@@ -166,7 +191,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                      <button onClick={handleToday} className="px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                          Hôm nay
                      </button>
-                     <button onClick={() => { setSelectedDate(new Date()); setIsModalOpen(true); }} className="px-4 py-2 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-500/20 transition-all">
+                     <button onClick={() => { setBookingToEdit(null); setSelectedDate(new Date()); setIsModalOpen(true); }} className="px-4 py-2 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-500/20 transition-all">
                          <i className="fas fa-plus mr-2"></i> Đăng ký
                      </button>
                  </div>
@@ -222,7 +247,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                             onClick={() => !booking && handleSlotClick(day, time)}
                                         >
                                             {isStartOfBooking && booking && (
-                                                <div className="absolute inset-x-1 top-1 z-10 p-1.5 px-2 bg-rose-500 text-white rounded-md shadow-md text-xs font-medium leading-tight override-height cursor-default group" style={{ minHeight: '38px' }}>
+                                                <div className="absolute inset-x-1 top-1 z-10 p-1.5 px-2 bg-rose-500 text-white rounded-md shadow-md text-xs font-medium leading-tight override-height cursor-default group hover:z-20" style={{ minHeight: '38px' }}>
                                                     <div className="font-bold truncate pr-3" title={booking.name}>
                                                         {booking.recurringMode && booking.recurringMode !== "none" && (
                                                              <i className="fas fa-sync-alt mr-1 text-[10px] opacity-70"></i>
@@ -230,14 +255,23 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                                         {booking.name}
                                                     </div>
                                                     
-                                                    {isAdmin && (
-                                                        <button 
-                                                            onClick={(e) => { e.stopPropagation(); handleDeleteBookingClick(booking); }}
-                                                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 w-5 h-5 bg-white/20 hover:bg-white text-white hover:text-red-500 rounded-sm flex items-center justify-center transition-all"
-                                                            title="Xoá lịch"
-                                                        >
-                                                            <i className="fas fa-times text-[10px]"></i>
-                                                        </button>
+                                                    {(isAdmin || isWithin2Mins(booking)) && (
+                                                        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 flex gap-1 transition-all">
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); handleEditBookingClick(booking); }}
+                                                                className="w-5 h-5 bg-white/20 hover:bg-white text-white hover:text-blue-500 rounded-sm flex items-center justify-center transition-all bg-white/20 shadow-sm"
+                                                                title="Chỉnh sửa (Chỉ có thể sửa trong 2 phút đầu)"
+                                                            >
+                                                                <i className="fas fa-edit text-[9px]"></i>
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteBookingClick(booking); }}
+                                                                className="w-5 h-5 bg-white/20 hover:bg-white text-white hover:text-red-500 rounded-sm flex items-center justify-center transition-all bg-red-800/20 shadow-sm"
+                                                                title="Xoá lịch"
+                                                            >
+                                                                <i className="fas fa-times text-[9px]"></i>
+                                                            </button>
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
@@ -261,6 +295,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                 onSuccess={handleBookingSuccess}
                 initialDate={selectedDate}
                 initialTimeStr={selectedTimeStr}
+                editingBooking={bookingToEdit}
             />
 
             {/* Custom Delete Modal */}
