@@ -43,7 +43,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
     const fetchBookings = async () => {
         try {
             setLoading(true);
-            const res = await fetch("/api/room/bookings");
+            const res = await fetch("/api/room/bookings", { cache: "no-store" });
             const data = await res.json();
             if (Array.isArray(data)) {
                 setBookings(data);

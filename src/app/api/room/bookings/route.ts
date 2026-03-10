@@ -38,7 +38,11 @@ export async function GET() {
             batch.commit().catch(e => console.error("Error auto-deleting old bookings:", e));
         }
         
-        return NextResponse.json(bookings);
+        return NextResponse.json(bookings, {
+            headers: {
+                "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+            }
+        });
     } catch (error: any) {
          console.error("Error fetching bookings:", error);
          return NextResponse.json({ error: error.message }, { status: 500 });
