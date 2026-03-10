@@ -3,6 +3,8 @@ import { initAdmin } from "@/lib/firebase-admin";
 import * as admin from "firebase-admin";
 import { RoomBooking, RoomBookingPayload } from "@/types/room";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
     try {
         await initAdmin();
