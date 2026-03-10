@@ -95,10 +95,46 @@ export default function LibraryManPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-6">
       
+      {/* Contact Section */}
+      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+        <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700 dark:from-blue-400 dark:to-indigo-400 mb-3 flex items-center gap-2">
+          <i className="fas fa-id-card"></i> Thông tin liên hệ
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-gray-700 dark:text-gray-300">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+              <i className="fas fa-user"></i>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider font-semibold text-gray-500">Phụ trách</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">Phan Ngọc Triều</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 shrink-0">
+              <i className="fas fa-phone-alt"></i>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider font-semibold text-gray-500">SĐT / Zalo</p>
+              <a href="tel:0974210249" className="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">0974 210 249</a>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+              <i className="fas fa-envelope"></i>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider font-semibold text-gray-500">Email</p>
+              <a href="mailto:phantrieu580@gmail.com" className="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 break-all">phantrieu580@gmail.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Top Controls: Search, Filter, Sort, Add Button */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         
         <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full">
           {/* Search */}

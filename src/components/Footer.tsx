@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 const Footer = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { t } = useLanguage();
   const pathname = usePathname();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,8 +25,8 @@ const Footer = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Don't render Footer on admin pages
-  if (pathname?.startsWith('/admin')) {
+  // Don't render Footer on admin pages, or on /lib if not logged in
+  if (pathname?.startsWith('/admin') || (pathname?.startsWith('/lib') && !user)) {
     return null;
   }
 
