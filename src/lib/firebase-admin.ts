@@ -9,6 +9,7 @@ interface FirebaseAdminConfig {
 }
 
 function formatPrivateKey(key: string) {
+    if (!key) return "";
     return key.replace(/\\n/g, "\n");
 }
 
@@ -17,6 +18,10 @@ export function createFirebaseAdminApp(params: FirebaseAdminConfig) {
 
     if (admin.apps.length > 0) {
         return admin.app();
+    }
+
+    if (!privateKey) {
+        console.error("Firebase Admin Error: FIREBASE_PRIVATE_KEY is missing or empty.");
     }
 
     const cert = admin.credential.cert({
