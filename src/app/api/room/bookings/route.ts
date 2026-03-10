@@ -126,36 +126,42 @@ export async function POST(req: NextRequest) {
             }
         }
         
-        // Insert all occurrences
-        const batch = db.batch();
+        // Insert all occurrences (Chunked into max 500 operations per batch)
         const groupId = occurrences.length > 1 ? db.collection("room_bookings").doc().id : undefined; // generate a pseudo ID for group
         const createdRecords: RoomBooking[] = [];
         const nowIso = new Date().toISOString();
         
-        for (const occ of occurrences) {
-            const docRef = db.collection("room_bookings").doc();
-            const recordData: any = {
-                name,
-                startTime: new Date(occ.start).toISOString(),
-                endTime: new Date(occ.end).toISOString(),
-                createdAt: nowIso,
-                recurringMode,
-            };
-            if (groupId) {
-                recordData.groupId = groupId;
-                recordData.recurringEndDate = recurringEndDate;
+        // Firestore bulk write limitation is 500 operations per batch
+        const CHUNK_SIZE = 450; 
+        for (let i = 0; i < occurrences.length; i += CHUNK_SIZE) {
+            const batch = db.batch();
+            const chunk = occurrences.slice(i, i + CHUNK_SIZE);
+
+            for (const occ of chunk) {
+                const docRef = db.collection("room_bookings").doc();
+                const recordData: any = {
+                    name,
+                    startTime: new Date(occ.start).toISOString(),
+                    endTime: new Date(occ.end).toISOString(),
+                    createdAt: nowIso,
+                    recurringMode,
+                };
+                if (groupId) {
+                    recordData.groupId = groupId;
+                    recordData.recurringEndDate = recurringEndDate;
+                }
+                
+                batch.set(docRef, recordData);
+                createdRecords.push({ id: docRef.id, ...recordData });
             }
             
-            batch.set(docRef, recordData);
-            createdRecords.push({ id: docRef.id, ...recordData });
+            await batch.commit();
         }
-        
-        await batch.commit();
         
         return NextResponse.json(createdRecords); // return array of created bookings
     } catch (error: any) {
          console.error("Error creating booking:", error);
-         return NextResponse.json({ error: "Lỗi hệ thống khi đăng ký phòng." }, { status: 500 });
+         return NextResponse.json({ error: error.message || "Lỗi hệ thống khi đăng ký phòng. Vui lòng thử lại." }, { status: 500 });
     }
 }
 
