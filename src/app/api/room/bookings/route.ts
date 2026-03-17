@@ -52,7 +52,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     try {
         const payload: RoomBookingPayload = await req.json();
-        const { name, startTime, endTime, recurringMode = "none", recurringEndDate } = payload;
+        const { name, startTime, endTime, recurringMode = "none", recurringEndDate, personInCharge, phone, color } = payload;
         
         if (!name || !startTime || !endTime) {
             return NextResponse.json({ error: "Thiếu thông tin đăng ký." }, { status: 400 });
@@ -151,6 +151,9 @@ export async function POST(req: NextRequest) {
                     endTime: new Date(occ.end).toISOString(),
                     createdAt: nowIso,
                     recurringMode,
+                    personInCharge,
+                    phone,
+                    color
                 };
                 if (groupId) {
                     recordData.groupId = groupId;

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { format, parse, addMonths } from "date-fns";
 import { RoomBookingPayload, RoomBooking, RecurringMode } from "@/types/room";
+import { useAuth } from "@/context/AuthContext";
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -21,12 +22,17 @@ export default function BookingModal({
     initialTimeStr,
     editingBooking
 }: BookingModalProps) {
+    const { user } = useAuth();
+    
     const [name, setName] = useState("");
     const [dateStr, setDateStr] = useState("");
     const [startTimeStr, setStartTimeStr] = useState("");
     const [endTimeStr, setEndTimeStr] = useState("");
     const [recurringMode, setRecurringMode] = useState<RecurringMode>("none");
     const [recurringEndDateStr, setRecurringEndDateStr] = useState("");
+    const [personInCharge, setPersonInCharge] = useState("");
+    const [phone, setPhone] = useState("");
+    const [color, setColor] = useState("#8b5cf6"); // violet-500
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -44,9 +50,15 @@ export default function BookingModal({
                 setEndTimeStr(format(endDate, "HH:mm"));
                 setRecurringMode(editingBooking.recurringMode || "none");
                 setRecurringEndDateStr(editingBooking.recurringEndDate ? format(new Date(editingBooking.recurringEndDate), "yyyy-MM-dd") : format(addMonths(startDate, 1), "yyyy-MM-dd"));
+                setPersonInCharge(editingBooking.personInCharge || "");
+                setPhone(editingBooking.phone || "");
+                setColor(editingBooking.color || "#8b5cf6");
             } else {
                 setName("");
                 setRecurringMode("none");
+                setPersonInCharge("");
+                setPhone("");
+                setColor("#8b5cf6");
                 
                 const baseDate = initialDate || new Date();
                 setDateStr(format(baseDate, "yyyy-MM-dd"));
@@ -112,15 +124,30 @@ export default function BookingModal({
                 startTime: startDateTime.toISOString(),
                 endTime: endDateTime.toISOString(),
                 recurringMode,
-                recurringEndDate: finalRecurringEnd
+                recurringEndDate: finalRecurringEnd,
+                personInCharge: personInCharge.trim(),
+                phone: phone.trim(),
+                color
             };
             
             const url = editingBooking ? `/api/room/bookings/${editingBooking.id}` : "/api/room/bookings";
             const method = editingBooking ? "PUT" : "POST";
 
+            let userToken = "";
+            if (user) {
+                userToken = await user.getIdToken();
+            }
+
+            const headers: Record<string, string> = {
+                "Content-Type": "application/json"
+            };
+            if (userToken) {
+                headers["Authorization"] = `Bearer ${userToken}`;
+            }
+
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify(payload)
             });
             
@@ -182,6 +209,56 @@ export default function BookingModal({
                                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 required
                             />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                    Người chịu trách nhiệm
+                                </label>
+                                <input
+                                    type="text"
+                                    value={personInCharge}
+                                    onChange={e => setPersonInCharge(e.target.value)}
+                                    placeholder="Nhập tên..."
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                    Số điện thoại
+                                </label>
+                                <input
+                                    type="text"
+                                    value={phone}
+                                    onChange={e => setPhone(e.target.value)}
+                                    placeholder="Nhập SĐT..."
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Màu sắc hiển thị</label>
+                            <div className="flex gap-3">
+                                {[
+                                    { value: '#8b5cf6', name: 'Tím' },
+                                    { value: '#3b82f6', name: 'Xanh dương' },
+                                    { value: '#10b981', name: 'Xanh ngọc' },
+                                    { value: '#f59e0b', name: 'Vàng' },
+                                    { value: '#ef4444', name: 'Đỏ' },
+                                    { value: '#ec4899', name: 'Hồng' }
+                                ].map((c) => (
+                                    <button
+                                        key={c.value}
+                                        type="button"
+                                        onClick={() => setColor(c.value)}
+                                        className={`w-8 h-8 rounded-full border-2 transition-all ${color === c.value ? 'border-slate-800 dark:border-white scale-110 shadow-md' : 'border-transparent hover:scale-110'}`}
+                                        style={{ backgroundColor: c.value }}
+                                        title={c.name}
+                                    />
+                                ))}
+                            </div>
                         </div>
                         
                         <div>

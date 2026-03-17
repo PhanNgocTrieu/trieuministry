@@ -138,7 +138,7 @@ export async function PUT(
         }
 
         const payload = await req.json();
-        const { name, startTime, endTime } = payload;
+        const { name, startTime, endTime, personInCharge, phone, color } = payload;
 
         if (!name || !startTime || !endTime) {
             return NextResponse.json({ error: "Thiếu thông tin đăng ký." }, { status: 400 });
@@ -170,10 +170,13 @@ export async function PUT(
              name: name.trim(),
              startTime,
              endTime,
+             personInCharge,
+             phone,
+             color
              // Note: we don't allow modifying recurring mode for an existing single/group booking to keep it simple
         });
 
-        return NextResponse.json({ success: true, updated: { id, name: name.trim(), startTime, endTime } });
+        return NextResponse.json({ success: true, updated: { id, name: name.trim(), startTime, endTime, personInCharge, phone, color } });
 
     } catch (error: any) {
         console.error("Error updating booking:", error);
