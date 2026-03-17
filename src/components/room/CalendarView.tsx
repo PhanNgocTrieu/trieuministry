@@ -90,11 +90,16 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
     };
 
     const handleBookingSuccess = (updatedBookings: RoomBooking[]) => {
-        if (bookingToEdit && updatedBookings.length === 1) {
-             const updated = updatedBookings[0];
-             setBookings(bookings.map(b => b.id === updated.id ? { ...b, ...updated } : b));
+        if (bookingToEdit) {
+            // Replace any booking whose ID matches one of the updated ones
+            setBookings(prev => {
+                const updatedIds = new Set(updatedBookings.map(b => b.id));
+                const nonUpdated = prev.filter(b => !updatedIds.has(b.id));
+                return [...nonUpdated, ...updatedBookings];
+            });
         } else {
-             setBookings([...bookings, ...updatedBookings]);
+            // It's a creation, just append
+            setBookings(prev => [...prev, ...updatedBookings]);
         }
     };
 

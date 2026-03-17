@@ -33,6 +33,7 @@ export default function BookingModal({
     const [personInCharge, setPersonInCharge] = useState("");
     const [phone, setPhone] = useState("");
     const [color, setColor] = useState("#8b5cf6"); // violet-500
+    const [editFuture, setEditFuture] = useState(false);
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -53,12 +54,14 @@ export default function BookingModal({
                 setPersonInCharge(editingBooking.personInCharge || "");
                 setPhone(editingBooking.phone || "");
                 setColor(editingBooking.color || "#8b5cf6");
+                setEditFuture(false);
             } else {
                 setName("");
                 setRecurringMode("none");
                 setPersonInCharge("");
                 setPhone("");
                 setColor("#8b5cf6");
+                setEditFuture(false);
                 
                 const baseDate = initialDate || new Date();
                 setDateStr(format(baseDate, "yyyy-MM-dd"));
@@ -127,7 +130,8 @@ export default function BookingModal({
                 recurringEndDate: finalRecurringEnd,
                 personInCharge: personInCharge.trim(),
                 phone: phone.trim(),
-                color
+                color,
+                editFuture
             };
             
             const url = editingBooking ? `/api/room/bookings/${editingBooking.id}` : "/api/room/bookings";
@@ -157,7 +161,7 @@ export default function BookingModal({
                 setError(data.error || "Có lỗi xảy ra khi đăng ký.");
             } else {
                 // Return array of bookings whether create or update
-                const successData = editingBooking ? [data.updated] : (data as RoomBooking[]);
+                const successData = editingBooking ? (Array.isArray(data.updated) ? data.updated : [data.updated]) : (data as RoomBooking[]);
                 onSuccess(successData);
                 onClose();
             }
@@ -324,6 +328,28 @@ export default function BookingModal({
                                     <p className="mt-2 text-xs text-violet-600/70 dark:text-violet-400/70">
                                         Hệ thống sẽ tự động đăng ký các ngày tương tự cho đến ngày này. Tối đa 500 buổi.
                                     </p>
+                                </div>
+                            )}
+
+                            {editingBooking && editingBooking.groupId && (
+                                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl flex items-start gap-3">
+                                    <div className="flex-shrink-0 pt-0.5">
+                                        <input
+                                            type="checkbox"
+                                            id="editFuture"
+                                            checked={editFuture}
+                                            onChange={(e) => setEditFuture(e.target.checked)}
+                                            className="w-4 h-4 text-blue-600 rounded border-blue-300 focus:ring-blue-500 dark:bg-slate-800 dark:border-blue-700 cursor-pointer"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="editFuture" className="block text-sm font-medium text-blue-800 dark:text-blue-300 cursor-pointer">
+                                            Áp dụng cho tất cả các kiện lặp lại sau này
+                                        </label>
+                                        <p className="text-xs text-blue-600/70 dark:text-blue-400/70 mt-1">
+                                            Nếu chọn, mọi thay đổi (tên, giờ, màu...) ở sự kiện này sẽ được sửa đồng loạt cho các sự kiện tiếp theo trong chuỗi.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
                         </div>

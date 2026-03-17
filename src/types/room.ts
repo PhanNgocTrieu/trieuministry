@@ -23,5 +23,6 @@ export interface RoomBookingPayload {
   personInCharge?: string;
   phone?: string;
   color?: string;
+  editFuture?: boolean;
 }
 

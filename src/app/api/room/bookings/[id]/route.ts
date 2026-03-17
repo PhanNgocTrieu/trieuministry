@@ -138,7 +138,7 @@ export async function PUT(
         }
 
         const payload = await req.json();
-        const { name, startTime, endTime, personInCharge, phone, color } = payload;
+        const { name, startTime, endTime, personInCharge, phone, color, editFuture } = payload;
 
         if (!name || !startTime || !endTime) {
             return NextResponse.json({ error: "Thiếu thông tin đăng ký." }, { status: 400 });
@@ -151,32 +151,103 @@ export async function PUT(
              return NextResponse.json({ error: "Thời gian bắt đầu phải trước thời gian kết thúc." }, { status: 400 });
         }
 
-        // Check for overlap, excluding the current booking itself
-        const snapshot = await db.collection("room_bookings")
-             .where("endTime", ">", startTime)
-             .get();
-             
-        for (const doc of snapshot.docs) {
-             if (doc.id === id) continue; // skip self
-             const data = doc.data();
-             const existStart = new Date(data.startTime).getTime();
-             const existEnd = new Date(data.endTime).getTime();
-             if (startBase < existEnd && endBase > existStart) {
-                 return NextResponse.json({ error: `Đã có trùng lặp vào khoảng thời gian này. Vui lòng chọn giờ khác.` }, { status: 400 });
-             }
+        const isBulkEdit = editFuture === true && !!bookingData.groupId;
+        let updatedBookings: any[] = [];
+        
+        if (isBulkEdit) {
+            // Find all future occurrences in the series
+            const currentBookingStartTime = new Date(bookingData.startTime).getTime();
+            const seriesSnapshot = await db.collection("room_bookings")
+                .where("groupId", "==", bookingData.groupId)
+                .get();
+                
+            const futureDocs = seriesSnapshot.docs.filter((doc) => {
+                const docStart = new Date(doc.data().startTime).getTime();
+                return docStart >= currentBookingStartTime;
+            });
+            
+            // Calculate time shift delta relative to the original booking
+            const startTimeDeltaMs = startBase - currentBookingStartTime;
+            const originalDurationMs = new Date(bookingData.endTime).getTime() - currentBookingStartTime;
+            const newDurationMs = endBase - startBase;
+
+            // Prepare all the specific time blocks we'll be trying to book
+            const newTimeBlocks = futureDocs.map((doc) => {
+                 const docData = doc.data() as any;
+                 const originalDocStart = new Date(docData.startTime).getTime();
+                 const newDocStart = originalDocStart + startTimeDeltaMs;
+                 const newDocEnd = newDocStart + newDurationMs;
+                 return { id: doc.id, newStart: newDocStart, newEnd: newDocEnd, ...docData };
+            });
+
+            // Minimum timestamp of any overlapping potential
+            const earliestStart = Math.min(...newTimeBlocks.map(b => b.newStart));
+            const overlapSnapshot = await db.collection("room_bookings")
+                 .where("endTime", ">", new Date(earliestStart).toISOString())
+                 .get();
+            
+            // Check for overlap against ANY doc that isn't part of the ones we're updating
+            const docsToUpdateIds = new Set(newTimeBlocks.map(b => b.id));
+            
+            for (const doc of overlapSnapshot.docs) {
+                 if (docsToUpdateIds.has(doc.id)) continue; // skip the ones we're moving
+                 
+                 const data = doc.data();
+                 const existStart = new Date(data.startTime).getTime();
+                 const existEnd = new Date(data.endTime).getTime();
+                 
+                 for (const block of newTimeBlocks) {
+                     if (block.newStart < existEnd && block.newEnd > existStart) {
+                         return NextResponse.json({ error: `Đã có trùng lặp vào khoảng thời gian của một hoặc nhiều sự kiện lặp lại (ví dụ vào lúc ${new Date(block.newStart).toLocaleString('vi-VN')}). Vui lòng chọn giờ khác.` }, { status: 400 });
+                     }
+                 }
+            }
+
+            // Execute batch update
+            const batch = db.batch();
+            for (const block of newTimeBlocks) {
+                const docRef = db.collection("room_bookings").doc(block.id);
+                const updateData = {
+                    name: name.trim(),
+                    startTime: new Date(block.newStart).toISOString(),
+                    endTime: new Date(block.newEnd).toISOString(),
+                    personInCharge,
+                    phone,
+                    color
+                };
+                batch.update(docRef, updateData);
+                updatedBookings.push({ id: block.id, ...updateData, groupId: bookingData.groupId, recurringMode: block.recurringMode, recurringEndDate: block.recurringEndDate });
+            }
+            await batch.commit();
+            
+        } else {
+            // Check for single overlap, excluding the current booking itself
+            const snapshot = await db.collection("room_bookings")
+                 .where("endTime", ">", startTime)
+                 .get();
+                 
+            for (const doc of snapshot.docs) {
+                 if (doc.id === id) continue; // skip self
+                 const data = doc.data();
+                 const existStart = new Date(data.startTime).getTime();
+                 const existEnd = new Date(data.endTime).getTime();
+                 if (startBase < existEnd && endBase > existStart) {
+                     return NextResponse.json({ error: `Đã có trùng lặp vào khoảng thời gian này. Vui lòng chọn giờ khác.` }, { status: 400 });
+                 }
+            }
+    
+            await db.collection("room_bookings").doc(id).update({
+                 name: name.trim(),
+                 startTime,
+                 endTime,
+                 personInCharge,
+                 phone,
+                 color
+            });
+            updatedBookings.push({ id, name: name.trim(), startTime, endTime, personInCharge, phone, color, groupId: bookingData.groupId, recurringMode: bookingData.recurringMode, recurringEndDate: bookingData.recurringEndDate });
         }
 
-        await db.collection("room_bookings").doc(id).update({
-             name: name.trim(),
-             startTime,
-             endTime,
-             personInCharge,
-             phone,
-             color
-             // Note: we don't allow modifying recurring mode for an existing single/group booking to keep it simple
-        });
-
-        return NextResponse.json({ success: true, updated: { id, name: name.trim(), startTime, endTime, personInCharge, phone, color } });
+        return NextResponse.json({ success: true, updated: updatedBookings });
 
     } catch (error: any) {
         console.error("Error updating booking:", error);
