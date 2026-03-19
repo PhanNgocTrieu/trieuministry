@@ -266,12 +266,21 @@ export default function LibraryManPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
                       onClick={() => {
-                        setBorrowingBook(book);
-                        setIsBorrowModalOpen(true);
+                        if (book.quantity > 0) {
+                          setBorrowingBook(book);
+                          setIsBorrowModalOpen(true);
+                        } else {
+                          alert('Sách hiện không còn trong văn phòng');
+                        }
                       }}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-md transition-colors mr-2 sm:mr-4"
+                      disabled={book.quantity <= 0}
+                      className={`px-3 py-1.5 rounded-md transition-colors mr-2 sm:mr-4 ${
+                        book.quantity > 0 
+                        ? 'text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30' 
+                        : 'text-gray-400 bg-gray-100 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
+                      }`}
                     >
-                      Mượn
+                      {book.quantity > 0 ? 'Mượn' : 'Out of stock'}
                     </button>
                     
                     {isAdmin && (
@@ -537,7 +546,13 @@ function BorrowFormModal({ book, booksList, onClose, onSuccess }: { book: Book |
               }}
             >
               {booksList.map(b => (
-                <option key={b.id} value={b.id}>{b.title}</option>
+                <option 
+                  key={b.id} 
+                  value={b.id} 
+                  disabled={b.quantity <= 0 && b.id !== formData.bookId}
+                >
+                  {b.title} {b.quantity <= 0 && b.id !== formData.bookId ? '(Out of stock)' : ''}
+                </option>
               ))}
             </select>
           </div>

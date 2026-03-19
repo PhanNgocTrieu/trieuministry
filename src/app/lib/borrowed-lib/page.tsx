@@ -4,13 +4,17 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { libraryService } from '@/services/libraryService';
 import { BorrowedBook } from '@/types/library';
-import { FiSearch, FiCheckCircle, FiClock, FiTrash2, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiCheckCircle, FiClock, FiTrash2, FiAlertCircle, FiEdit2 } from 'react-icons/fi';
 
 export default function BorrowedLibPage() {
   const { isAdmin } = useAuth();
   
   const [borrowedBooks, setBorrowedBooks] = useState<BorrowedBook[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Edit Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<BorrowedBook | null>(null);
   
   // Filters
   const [searchBorrower, setSearchBorrower] = useState('');
@@ -188,7 +192,18 @@ export default function BorrowedLibPage() {
                           Xác nhận trả
                         </button>
                       )}
-                      
+                      {record.status !== 'returned' && (
+                        <button
+                          onClick={() => {
+                            setEditingRecord(record);
+                            setIsEditModalOpen(true);
+                          }}
+                          className="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 p-1.5 rounded-md transition-colors"
+                          title="Sửa bản ghi"
+                        >
+                          <FiEdit2 size={18} />
+                        </button>
+                      )}
                         <button
                           onClick={() => handleDeleteRecord(record.id)}
                           className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 p-1.5 rounded-md transition-colors"
@@ -206,6 +221,118 @@ export default function BorrowedLibPage() {
         </table>
       </div>
       
+      {/* Edit Form Modal */}
+      {isEditModalOpen && editingRecord && (
+        <EditBorrowFormModal
+          record={editingRecord}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            setIsEditModalOpen(false);
+            fetchBorrowedBooks();
+            alert('Cập nhật thông tin thành công!');
+          }}
+        />
+      )}
+      
+    </div>
+  );
+}
+
+// --- Internal Components for Modals ---
+
+function EditBorrowFormModal({ record, onClose, onSuccess }: { record: BorrowedBook, onClose: () => void, onSuccess: () => void }) {
+  const [formData, setFormData] = useState({
+    borrowerName: record.borrowerName,
+    groupRole: record.groupRole,
+    borrowDate: new Date(record.borrowDate).toISOString().split('T')[0],
+    returnDate: new Date(record.returnDate).toISOString().split('T')[0],
+    phone: record.phone,
+    facebook: record.facebook || '',
+    email: record.email || ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await libraryService.updateBorrowedBook(record.id, {
+        borrowerName: formData.borrowerName,
+        groupRole: formData.groupRole,
+        borrowDate: new Date(formData.borrowDate).toISOString(),
+        returnDate: new Date(formData.returnDate).toISOString(),
+        phone: formData.phone,
+        facebook: formData.facebook,
+        email: formData.email
+      });
+      onSuccess();
+    } catch (error) {
+      console.error('Update error:', error);
+      alert('Lỗi cập nhật. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold dark:text-white">Sửa thông tin người mượn</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400">&times;</button>
+        </div>
+        
+        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+          <p className="text-sm text-gray-700 dark:text-gray-300"><strong>Sách đang mượn:</strong> {record.bookTitle}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tên người mượn <span className="text-red-500">*</span></label>
+              <input required type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.borrowerName} onChange={e => setFormData({...formData, borrowerName: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Vai trò nhóm nhỏ <span className="text-red-500">*</span></label>
+              <input required type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.groupRole} onChange={e => setFormData({...formData, groupRole: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Ngày mượn <span className="text-red-500">*</span></label>
+              <input required type="date" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.borrowDate} onChange={e => setFormData({...formData, borrowDate: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Ngày trả dự kiến <span className="text-red-500">*</span></label>
+              <input required type="date" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.returnDate} onChange={e => setFormData({...formData, returnDate: e.target.value})} />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Số điện thoại <span className="text-red-500">*</span></label>
+            <input required type="tel" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Facebook Link</label>
+              <input type="url" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.facebook} onChange={e => setFormData({...formData, facebook: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+              <input type="email" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-3 mt-6">
+            <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Hủy</button>
+            <button type="submit" disabled={loading} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+              {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
