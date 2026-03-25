@@ -26,3 +26,21 @@ export interface RoomBookingPayload {
   editFuture?: boolean;
 }
 
+export const BookingColorCategories = [
+    { value: '#3b82f6', label: 'Lịch cố định' }, // Xanh dương
+    { value: '#10b981', label: 'Lịch linh hoạt' }, // Xanh ngọc
+    { value: '#f59e0b', label: 'Sự kiện' }, // Vàng
+    { value: '#ef4444', label: 'Lịch mới' } // Đỏ
+];
+
+export interface RoomCleaning {
+    id: string;
+    date: string; // YYYY-MM-DD
+    cleanerName: string;
+    createdAt: string;
+}
+
+export interface RoomCleaningPayload {
+    date: string; // YYYY-MM-DD
+    cleanerName: string;
+}

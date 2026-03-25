@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { RoomBooking } from "@/types/room";
+import { RoomBooking, RoomCleaning, BookingColorCategories } from "@/types/room";
 import BookingModal from "./BookingModal";
+import CleaningModal from "./CleaningModal";
 import { useAuth } from "@/context/AuthContext";
 
 interface CalendarViewProps {
@@ -14,7 +15,13 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
     const { user } = useAuth();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [bookings, setBookings] = useState<RoomBooking[]>([]);
+    const [cleanings, setCleanings] = useState<RoomCleaning[]>([]);
     const [loading, setLoading] = useState(true);
+    
+    // Cleaning Modal state
+    const [isCleaningModalOpen, setIsCleaningModalOpen] = useState(false);
+    const [cleaningToEdit, setCleaningToEdit] = useState<RoomCleaning | null>(null);
+    const [selectedCleaningDate, setSelectedCleaningDate] = useState<Date>(new Date());
     
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,23 +50,31 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
         return diffValid <= 2;
     };
 
-    const fetchBookings = async () => {
+    const fetchAllData = async () => {
         try {
             setLoading(true);
-            const res = await fetch("/api/room/bookings", { cache: "no-store" });
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setBookings(data);
+            const [bookRes, cleanRes] = await Promise.all([
+                fetch("/api/room/bookings", { cache: "no-store" }),
+                fetch("/api/room/cleanings", { cache: "no-store" })
+            ]);
+            
+            if (bookRes.ok) {
+                const bookData = await bookRes.json();
+                if (Array.isArray(bookData)) setBookings(bookData);
+            }
+            if (cleanRes.ok) {
+                const cleanData = await cleanRes.json();
+                if (Array.isArray(cleanData)) setCleanings(cleanData);
             }
         } catch (error) {
-            console.error("Error fetching bookings:", error);
+            console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchBookings();
+        fetchAllData();
     }, []);
 
     const startDate = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday as first day
@@ -100,6 +115,37 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
         } else {
             // It's a creation, just append
             setBookings(prev => [...prev, ...updatedBookings]);
+        }
+    };
+
+    const handleCleaningSuccess = (updatedCleaning: RoomCleaning) => {
+        setCleanings(prev => {
+            const exists = prev.find(c => c.id === updatedCleaning.id);
+            if (exists) {
+                return prev.map(c => c.id === updatedCleaning.id ? updatedCleaning : c);
+            }
+            return [...prev, updatedCleaning];
+        });
+    };
+    
+    // Delete cleaning
+    const handleDeleteCleaning = async (cleaning: RoomCleaning) => {
+        if (!confirm(`Bạn có chắc muốn xoá lịch dọn phòng vệ sinh ngày ${format(new Date(cleaning.date), 'dd/MM/yyyy')}?`)) return;
+        
+        try {
+            let userToken = "";
+            if (user) userToken = await user.getIdToken();
+            const res = await fetch(`/api/room/cleanings/${cleaning.id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${userToken}` }
+            });
+            if (res.ok) {
+                setCleanings(prev => prev.filter(c => c.id !== cleaning.id));
+            } else {
+                alert("Lỗi khi xoá lịch dọn phòng vệ sinh");
+            }
+        } catch(e) {
+            console.error(e);
         }
     };
 
@@ -179,6 +225,12 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
         });
     };
 
+    const fixedSchedules = Array.from(new Set(
+        bookings
+            .filter(b => b.color === BookingColorCategories[0].value || b.recurringMode === 'weekly' || b.recurringMode === 'monthly')
+            .map(b => b.name)
+    )).sort();
+
     return (
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
             {/* Calendar Header */}
@@ -224,6 +276,43 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                  </div>
             </div>
 
+            {/* Legend / Category Guide */}
+            <div className="px-6 py-4 flex flex-wrap gap-4 border-b border-slate-100 dark:border-slate-800/50">
+                <div className="text-sm font-semibold text-slate-500 dark:text-slate-400 mr-2 flex items-center shrink-0">
+                    <i className="fas fa-info-circle mr-1.5"></i> Chú thích:
+                </div>
+                {BookingColorCategories.map(c => (
+                    <div key={c.value} className="flex items-center gap-1.5 shrink-0 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                        <div className="w-2.5 h-2.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: c.value }}></div>
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">{c.label}</span>
+                    </div>
+                ))}
+                <div className="flex items-center gap-1.5 shrink-0 bg-emerald-50 dark:bg-emerald-900/10 px-2.5 py-1 rounded-md border border-emerald-100 dark:border-emerald-900/30">
+                    <div className="w-4 h-4 rounded text-emerald-600 dark:text-emerald-500 bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-[10px] shrink-0"><i className="fas fa-broom"></i></div>
+                    <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400 whitespace-nowrap">Lịch dọn phòng vệ sinh</span>
+                </div>
+                
+                {fixedSchedules.length > 0 && (
+                    <div className="w-full mt-2 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-2 bg-blue-50/50 dark:bg-blue-900/10 p-2.5 rounded-lg border border-blue-100/50 dark:border-blue-800/30">
+                        <i className="fas fa-bookmark text-blue-500 mt-0.5 shrink-0"></i>
+                        <div>
+                            <span className="font-semibold text-blue-700 dark:text-blue-400">Các lịch cố định hiện có: </span>
+                            <span className="text-slate-600 dark:text-slate-300">
+                                {fixedSchedules.join("; ")}
+                            </span>
+                        </div>
+                    </div>
+                )}
+                
+                <div className="w-full mt-1 text-xs text-amber-700 dark:text-amber-400 flex flex-col gap-1.5 bg-amber-50/50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-200/50 dark:border-amber-800/30">
+                    <div className="font-bold flex items-center gap-1.5"><i className="fas fa-exclamation-triangle"></i> Lưu ý khi sử dụng phòng:</div>
+                    <ul className="list-decimal list-inside pl-1 space-y-1">
+                        <li>Sau khi sử dụng phòng nhớ dọn dẹp văn phòng trước khi ra về.</li>
+                        <li>Lịch dọn <strong>phòng vệ sinh</strong> đã được cập nhật (phía dưới mỗi ngày trên lịch).</li>
+                    </ul>
+                </div>
+            </div>
+
             {/* Calendar Grid */}
             <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
@@ -234,13 +323,51 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                         </div>
                         {weekDays.map((day, idx) => {
                             const isToday = isSameDay(day, new Date());
+                            const dayDateStr = format(day, "yyyy-MM-dd");
+                            const cleaningForDay = cleanings.find(c => c.date === dayDateStr);
+
                             return (
-                                <div key={idx} className={`p-4 text-center border-r border-slate-200 dark:border-slate-800 ${isToday ? 'bg-violet-50 dark:bg-violet-900/20' : ''}`}>
+                                <div key={idx} className={`p-4 text-center border-r border-slate-200 dark:border-slate-800 flex flex-col items-center ${isToday ? 'bg-violet-50 dark:bg-violet-900/20' : ''}`}>
                                     <div className={`text-xs font-bold uppercase mb-1 ${isToday ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'}`}>
                                         {format(day, "EEEE")}
                                     </div>
                                     <div className={`text-xl font-black ${isToday ? 'text-violet-600 dark:text-violet-400' : 'text-slate-800 dark:text-white'}`}>
                                         {format(day, "dd")}
+                                    </div>
+                                    <div className="mt-2 text-xs font-medium w-full min-h-[32px] flex items-center justify-center relative group">
+                                         {cleaningForDay ? (
+                                             <div className="flex flex-col items-center gap-1 px-2 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg w-full justify-center shadow-sm border border-emerald-200/50 dark:border-emerald-800/50">
+                                                 <i className="fas fa-broom text-[10px] shrink-0"></i>
+                                                 <span className="text-center whitespace-normal break-words w-full px-1 leading-tight" title={cleaningForDay.cleanerName}>{cleaningForDay.cleanerName}</span>
+                                             </div>
+                                         ) : (
+                                             <div className="text-slate-400/50 dark:text-slate-500/50 italic text-[10px]">- chưa có -</div>
+                                         )}
+                                         
+                                         {isAdmin && (
+                                             <div className="absolute inset-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 flex gap-1 items-center justify-center transition-all shadow-md z-10 border border-slate-200 dark:border-slate-700">
+                                                 <button 
+                                                     onClick={() => {
+                                                         setCleaningToEdit(cleaningForDay || null);
+                                                         setSelectedCleaningDate(day);
+                                                         setIsCleaningModalOpen(true);
+                                                     }}
+                                                     className="w-7 h-7 bg-emerald-50 dark:bg-emerald-900/50 hover:bg-emerald-100 dark:hover:bg-emerald-800 text-emerald-600 dark:text-emerald-400 rounded flex items-center justify-center transition-colors"
+                                                     title={cleaningForDay ? "Sửa phân công dọn phòng" : "Gán người dọn phòng"}
+                                                 >
+                                                     <i className={`fas ${cleaningForDay ? 'fa-edit' : 'fa-plus'} text-xs`}></i>
+                                                 </button>
+                                                 {cleaningForDay && (
+                                                     <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleDeleteCleaning(cleaningForDay); }}
+                                                        className="w-7 h-7 bg-red-50 dark:bg-red-900/50 hover:bg-red-100 dark:hover:bg-red-800 text-red-600 dark:text-red-400 rounded flex items-center justify-center transition-colors"
+                                                        title="Xoá phân công dọn phòng"
+                                                     >
+                                                         <i className="fas fa-trash-alt text-xs"></i>
+                                                     </button>
+                                                 )}
+                                             </div>
+                                         )}
                                     </div>
                                 </div>
                             );
@@ -267,7 +394,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                     // otherwise just render it colored
                                     const isStartOfBooking = booking && new Date(booking.startTime).getTime() === new Date(`${format(day, "yyyy-MM-dd")}T${time}:00`).getTime();
                                     
-                                    let slotHeightStyle = {};
+                                    let slotHeightStyle: React.CSSProperties = {};
                                     if (isStartOfBooking && booking) {
                                         const durMins = (new Date(booking.endTime).getTime() - new Date(booking.startTime).getTime()) / 60000;
                                         const slotsCount = durMins / 30;
@@ -293,7 +420,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                                     style={{ ...slotHeightStyle, backgroundColor: booking.color || '#8b5cf6' }}
                                                     onClick={(e) => { e.stopPropagation(); setBookingForInfo(booking); }}
                                                 >
-                                                    <div className="font-bold truncate pr-4" title={booking.name}>
+                                                    <div className="font-bold leading-snug break-words pr-4 whitespace-normal h-full overflow-hidden" title={booking.name}>
                                                         {booking.recurringMode && booking.recurringMode !== "none" && (
                                                              <i className="fas fa-sync-alt mr-1 text-[10px] opacity-70"></i>
                                                         )}
@@ -341,6 +468,14 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                 initialDate={selectedDate}
                 initialTimeStr={selectedTimeStr}
                 editingBooking={bookingToEdit}
+            />
+
+            <CleaningModal
+                isOpen={isCleaningModalOpen}
+                onClose={() => setIsCleaningModalOpen(false)}
+                onSuccess={handleCleaningSuccess}
+                initialDate={selectedCleaningDate}
+                editingCleaning={cleaningToEdit}
             />
 
             {/* Custom Info Modal */}

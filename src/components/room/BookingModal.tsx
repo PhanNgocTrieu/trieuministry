@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { format, parse, addMonths } from "date-fns";
-import { RoomBookingPayload, RoomBooking, RecurringMode } from "@/types/room";
+import { RoomBookingPayload, RoomBooking, RecurringMode, BookingColorCategories } from "@/types/room";
 import { useAuth } from "@/context/AuthContext";
 
 interface BookingModalProps {
@@ -32,7 +32,7 @@ export default function BookingModal({
     const [recurringEndDateStr, setRecurringEndDateStr] = useState("");
     const [personInCharge, setPersonInCharge] = useState("");
     const [phone, setPhone] = useState("");
-    const [color, setColor] = useState("#8b5cf6"); // violet-500
+    const [color, setColor] = useState(BookingColorCategories[0].value);
     const [editFuture, setEditFuture] = useState(false);
     
     const [loading, setLoading] = useState(false);
@@ -60,7 +60,7 @@ export default function BookingModal({
                 setRecurringMode("none");
                 setPersonInCharge("");
                 setPhone("");
-                setColor("#8b5cf6");
+                setColor(BookingColorCategories[0].value);
                 setEditFuture(false);
                 
                 const baseDate = initialDate || new Date();
@@ -89,7 +89,7 @@ export default function BookingModal({
         setError("");
         
         if (!name.trim()) {
-            setError("Vui lòng nhập tên người đăng ký.");
+            setError("Vui lòng nhập mục đích sử dụng.");
             return;
         }
         
@@ -203,13 +203,13 @@ export default function BookingModal({
                         
                         <div>
                             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                Tên người đăng ký <span className="text-red-500">*</span>
+                                Mục đích sử dụng <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                placeholder="Nhập tên..."
+                                placeholder="Nhập mục đích sử dụng..."
                                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 required
                             />
@@ -243,24 +243,18 @@ export default function BookingModal({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Màu sắc hiển thị</label>
-                            <div className="flex gap-3">
-                                {[
-                                    { value: '#8b5cf6', name: 'Tím' },
-                                    { value: '#3b82f6', name: 'Xanh dương' },
-                                    { value: '#10b981', name: 'Xanh ngọc' },
-                                    { value: '#f59e0b', name: 'Vàng' },
-                                    { value: '#ef4444', name: 'Đỏ' },
-                                    { value: '#ec4899', name: 'Hồng' }
-                                ].map((c) => (
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Phân loại lịch</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {BookingColorCategories.map((c) => (
                                     <button
                                         key={c.value}
                                         type="button"
                                         onClick={() => setColor(c.value)}
-                                        className={`w-8 h-8 rounded-full border-2 transition-all ${color === c.value ? 'border-slate-800 dark:border-white scale-110 shadow-md' : 'border-transparent hover:scale-110'}`}
-                                        style={{ backgroundColor: c.value }}
-                                        title={c.name}
-                                    />
+                                        className={`flex items-center gap-2 p-2 rounded-xl border-2 transition-all ${color === c.value ? 'border-violet-500 bg-violet-50 dark:border-violet-400 dark:bg-violet-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                                    >
+                                        <div className="w-5 h-5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: c.value }}></div>
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 text-left">{c.label}</span>
+                                    </button>
                                 ))}
                             </div>
                         </div>
