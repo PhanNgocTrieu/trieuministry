@@ -2,71 +2,33 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
-
-// Mock Data for items not yet in Firestore
-// Mock Data for items not yet in Firestore (Deprecated imports removed)
-// import { mockDocuments, mockSongs } from '@/data/mockResources';
 
 export default function ResourcesPage() {
-  const { user, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState('posts');
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    let unsubscribe = () => {};
 
-    if (activeTab === 'posts' || activeTab === 'testimonies') {
-      // Fetch from Firestore
-      const collectionName = activeTab === 'posts' ? 'posts' : 'testimonies';
-      const q = query(collection(db, collectionName), orderBy('createdAt', 'desc'));
-      
-      unsubscribe = onSnapshot(q, (snapshot) => {
-        const fetchedItems: any[] = [];
-        snapshot.forEach((doc) => {
-          fetchedItems.push({ id: doc.id, ...doc.data() });
+    fetch('/resources/metadata.json')
+      .then(res => res.json())
+      .then(data => {
+        const tabData = data[activeTab] || [];
+        // Sort items by createdAt if available, else date
+        const sortedData = [...tabData].sort((a: any, b: any) => {
+           const timeA = a.createdAt?.seconds || Date.parse(a.date) || 0;
+           const timeB = b.createdAt?.seconds || Date.parse(b.date) || 0;
+           return timeB - timeA;
         });
-        setItems(fetchedItems);
+        setItems(sortedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching metadata:', error);
+        setItems([]);
         setLoading(false);
       });
-    } else if (activeTab === 'documents') {
-       const q = query(collection(db, 'documents'), orderBy('createdAt', 'desc'));
-       unsubscribe = onSnapshot(q, (snapshot) => {
-         const fetchedItems: any[] = [];
-         snapshot.forEach((doc) => {
-           const data = doc.data();
-           fetchedItems.push({
-             id: doc.id,
-             ...data,
-             date: data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).getFullYear().toString() : '2025', // Fallback or format
-           });
-         });
-         setItems(fetchedItems);
-         setLoading(false);
-       });
-    } else if (activeTab === 'songs') {
-       const q = query(collection(db, 'songs'), orderBy('createdAt', 'desc'));
-       unsubscribe = onSnapshot(q, (snapshot) => {
-         const fetchedItems: any[] = [];
-         snapshot.forEach((doc) => {
-            const data = doc.data();
-            fetchedItems.push({
-                id: doc.id,
-                ...data,
-                // Ensure fields match what Card expects
-                author: data.artist || data.author, 
-            });
-         });
-         setItems(fetchedItems);
-         setLoading(false);
-       });
-    }
-
-    return () => unsubscribe();
   }, [activeTab]);
 
   const tabs = [
@@ -127,17 +89,7 @@ export default function ResourcesPage() {
                            ))}
                        </div>
 
-                       {isAdmin && (activeTab === 'posts' || activeTab === 'testimonies') && (
-                           <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 px-2">
-                               <Link 
-                                  href={`/admin/${activeTab}/create`} 
-                                  className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-500/20 transition-all border border-violet-500"
-                               >
-                                   <i className="fas fa-plus"></i>
-                                   <span>Compose New</span>
-                               </Link>
-                           </div>
-                       )}
+
                    </div>
                </div>
 

@@ -1,0 +1,55 @@
+{
+  "posts": [],
+  "testimonies": [],
+  "documents": [
+    {
+      "id": "doc-worship-team-lessons",
+      "title": "Worship Team Lessons",
+      "author": "TrieuMinistry",
+      "description": "Tài liệu hướng dẫn và bài học dành riêng cho ban thờ phượng/ca ngợi.",
+      "category": "Bible Study",
+      "date": "2025",
+      "size": "3.7 MB",
+      "fileUrl": "/resources/bible_study/_worship_team_lessons.pdf"
+    },
+    {
+      "id": "doc-be-bless-honoring-parents",
+      "title": "Be Bless In Honoring Parents",
+      "author": "TrieuMinistry",
+      "description": "Bài chia sẻ về phước hạnh trong việc hiếu kính với cha mẹ.",
+      "category": "Sharing",
+      "date": "2025",
+      "size": "91 KB",
+      "fileUrl": "/resources/sharing/_be_bless_in_honoring_parents.pdf"
+    },
+    {
+      "id": "doc-can-i-help-you",
+      "title": "Can I Help You",
+      "author": "TrieuMinistry",
+      "description": "Bài chia sẻ chủ đề Can I Help You.",
+      "category": "Sharing",
+      "date": "2025",
+      "size": "320 KB",
+      "fileUrl": "/resources/sharing/_can_i_help_you.pdf"
+    },
+    {
+      "id": "doc-reason-for-coming",
+      "title": "Reason For Coming",
+      "author": "TrieuMinistry",
+      "description": "Bài chia sẻ chủ đề Reason For Coming.",
+      "category": "Sharing",
+      "date": "2025",
+      "size": "173 KB",
+      "fileUrl": "/resources/sharing/_reason_for_coming.pdf"
+    }
+  ],
+  "songs": [
+    {
+      "id": "song-man-of-sorrow",
+      "title": "Man Of Sorrow",
+      "author": "TrieuMinistry",
+      "category": "Worship Song",
+      "fileUrl": "/resources/songs/_man_of_sorrow.pdf"
+    }
+  ]
+}

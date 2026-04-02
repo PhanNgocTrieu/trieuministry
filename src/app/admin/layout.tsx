@@ -51,7 +51,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         items: [
              { href: '/admin/users', label: 'Users', icon: 'fas fa-users' },
              { href: '/admin/ministries', label: 'Ministries', icon: 'fas fa-church' },
-             { href: '/admin/resources', label: 'Resources', icon: 'fas fa-layer-group' },
              { href: '/admin/wallets', label: 'Wallets', icon: 'fas fa-wallet' },
              { href: '/admin/settings', label: 'Settings', icon: 'fas fa-cogs' },
         ]
