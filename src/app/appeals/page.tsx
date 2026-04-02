@@ -43,49 +43,34 @@ export default function AppealsPage() {
     }
 
     useEffect(() => {
-        // Fetch only Published and Official appeals
-        // We fetching everything and Sort client-side because mixture of legacy data (no year/month) and new data
-        const q = query(
-            collection(db, "appeals"), 
-            where("status", "==", "published"),
-            where("type", "==", "official")
-        );
+        fetch('/resources/metadata.json')
+            .then(res => res.json())
+            .then(data => {
+                const fetchedAppeals = data.appeals || [];
+                // Sort by Year DESC -> Month DESC -> CreatedAt DESC
+                fetchedAppeals.sort((a: any, b: any) => {
+                    const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
+                    const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as Appeal));
-            
-            // Custom Sort: Year DESC -> Month DESC -> CreatedAt DESC
-            data.sort((a, b) => {
-                // Determine effective year/month for comparison
-                // Fallback to createdAt if year/month are missing
-                const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
-                const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
+                    const yearA = a.year || dateA.getFullYear();
+                    const yearB = b.year || dateB.getFullYear();
+                    
+                    if (yearB !== yearA) return yearB - yearA;
 
-                const yearA = a.year || dateA.getFullYear();
-                const yearB = b.year || dateB.getFullYear();
-                
-                if (yearB !== yearA) return yearB - yearA;
-
-                const monthA = a.month || (dateA.getMonth() + 1);
-                const monthB = b.month || (dateB.getMonth() + 1);
-                
-                if (monthB !== monthA) return monthB - monthA;
-                
-                // Final tie-breaker: createdAt
-                return dateB.getTime() - dateA.getTime();
+                    const monthA = a.month || (dateA.getMonth() + 1);
+                    const monthB = b.month || (dateB.getMonth() + 1);
+                    
+                    if (monthB !== monthA) return monthB - monthA;
+                    
+                    return dateB.getTime() - dateA.getTime();
+                });
+                setAppeals(fetchedAppeals);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching appeals:", error);
+                setLoading(false);
             });
-
-            setAppeals(data);
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching appeals:", error);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -149,17 +134,6 @@ export default function AppealsPage() {
                         </p>
                     </div>
 
-                    {isAdmin && (
-                        <div className="flex-shrink-0 mb-2">
-                             <Link 
-                                href="/admin/ministry-updates/create" 
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white hover:bg-black rounded-lg font-semibold transition-all shadow-sm hover:shadow-md active:transform active:scale-95"
-                            >
-                                <i className="fas fa-plus"></i>
-                                <span>New Appeal</span>
-                            </Link>
-                        </div>
-                    )}
                 </div>
 
                 {/* Financial Reports Section (Logged in only) */}

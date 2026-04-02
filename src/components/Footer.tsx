@@ -84,7 +84,7 @@ const Footer = () => {
                     {t('footer.links_title')}
                </h5>
                <ul className="space-y-4 text-slate-500 dark:text-slate-400">
-                  {['home', 'about', 'docs', 'prayers', 'donate'].map((link) => (
+                  {['home', 'about', 'donate'].map((link) => (
                       <li key={link}>
                         <Link href={link === 'home' ? '/' : link === 'about' ? '/profile' : `/${link}`} className="group flex items-center gap-3 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                             <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 group-hover:bg-violet-500 group-hover:scale-125 transition-all"></span>

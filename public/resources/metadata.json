@@ -1,4 +1,61 @@
 {
+  "appeals": [
+    {
+      "id": "appeal-2604",
+      "title": "Ministry Letter April 2026",
+      "titleEn": "Ministry Letter April 2026",
+      "pdfUrl": "/resources/appeals/2604/_ministry_letter_vietnamese.pdf",
+      "pdfUrlEn": "/resources/appeals/2604/_ministry_letter_english.pdf",
+      "authorName": "TrieuMinistry",
+      "month": 4,
+      "year": 2026,
+      "createdAt": { "seconds": 1775088000 }
+    },
+    {
+      "id": "appeal-2602",
+      "title": "Ministry Letter February 2026",
+      "titleEn": "Ministry Letter February 2026",
+      "pdfUrl": "/resources/appeals/2602/_ministry_letter_vietnamese.pdf",
+      "pdfUrlEn": "/resources/appeals/2602/_ministry_letter_english.pdf",
+      "authorName": "TrieuMinistry",
+      "month": 2,
+      "year": 2026,
+      "createdAt": { "seconds": 1769904000 }
+    },
+    {
+      "id": "appeal-2512",
+      "title": "Ministry Letter December 2025",
+      "titleEn": "Ministry Letter December 2025",
+      "pdfUrl": "/resources/appeals/2512/_ministry_letter_vietnamese.pdf",
+      "pdfUrlEn": "/resources/appeals/2512/_ministry_letter_english.pdf",
+      "authorName": "TrieuMinistry",
+      "month": 12,
+      "year": 2025,
+      "createdAt": { "seconds": 1764633600 }
+    },
+    {
+      "id": "appeal-2511",
+      "title": "Ministry Letter November 2025",
+      "titleEn": "Ministry Letter November 2025",
+      "pdfUrl": "/resources/appeals/2511/_ministry_letter_vietnamese.pdf",
+      "pdfUrlEn": "/resources/appeals/2511/_ministry_letter_english.pdf",
+      "authorName": "TrieuMinistry",
+      "month": 11,
+      "year": 2025,
+      "createdAt": { "seconds": 1762041600 }
+    },
+    {
+      "id": "appeal-2510",
+      "title": "Ministry Letter October 2025",
+      "titleEn": "Ministry Letter October 2025",
+      "pdfUrl": "/resources/appeals/2510/_ministry_letter_vietnamese.pdf",
+      "pdfUrlEn": "/resources/appeals/2510/_ministry_letter_english.pdf",
+      "authorName": "TrieuMinistry",
+      "month": 10,
+      "year": 2025,
+      "createdAt": { "seconds": 1759363200 }
+    }
+  ],
   "posts": [],
   "testimonies": [],
   "documents": [

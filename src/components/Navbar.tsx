@@ -76,8 +76,7 @@ const Navbar = () => {
    const navLinks = [
      { href: '/', label: t('nav.home') },
      { href: '/profile', label: t('nav.about') },
-     { href: '/resources', label: t('nav.resources') },
-     { href: '/ministry', label: t('nav.ministry') },
+     { href: '/resources', label: t('nav.resources') }
    ];
 
    // Don't render Navbar on admin pages, or on /lib or /room if not logged in

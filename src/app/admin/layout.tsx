@@ -35,13 +35,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         title: "Personal",
         items: [
              { href: '/admin', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-             { href: '/admin/ministry-updates', label: 'Ministry Updates', icon: 'fas fa-envelope-open-text' },
+             { href: '/appeals', label: 'Appeals', icon: 'fas fa-envelope-open-text' },
              { href: '/admin/sponsors', label: 'Sponsors', icon: 'fas fa-hand-holding-heart' },
              { href: '/admin/goals', label: 'Goals', icon: 'fas fa-bullseye' },
              { href: '/admin/discipline', label: 'Discipline', icon: 'fas fa-dumbbell' },
-             { href: '/admin/intercessory', label: 'Intercessory', icon: 'fas fa-hands-helping' },
              { href: '/admin/tasks', label: 'Tasks', icon: 'fas fa-tasks' },
-             { href: '/admin/personal', label: 'Personal Prayers', icon: 'fas fa-praying-hands' },
              { href: '/admin/expenses', label: 'My Expenses', icon: 'fas fa-coins' },
              { href: '/admin/bibleschedule', label: 'Bible Schedule', icon: 'fas fa-calendar-check' },
         ]
@@ -50,7 +48,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         title: "Management",
         items: [
              { href: '/admin/users', label: 'Users', icon: 'fas fa-users' },
-             { href: '/admin/ministries', label: 'Ministries', icon: 'fas fa-church' },
              { href: '/admin/wallets', label: 'Wallets', icon: 'fas fa-wallet' },
              { href: '/admin/settings', label: 'Settings', icon: 'fas fa-cogs' },
         ]

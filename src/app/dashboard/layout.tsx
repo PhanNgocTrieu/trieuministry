@@ -20,7 +20,6 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
     const navItems = [
         { href: '/dashboard/goals', label: 'My Goals', icon: 'fas fa-bullseye' },
         { href: '/dashboard/tasks', label: 'My Tasks', icon: 'fas fa-tasks' },
-        { href: '/dashboard/prayers', label: 'My Prayers', icon: 'fas fa-praying-hands' },
         { href: '/dashboard/wallets', label: 'My Wallets', icon: 'fas fa-briefcase' },
     ];
 
