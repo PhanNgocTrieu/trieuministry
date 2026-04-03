@@ -1,4 +1,11 @@
 {
+  "_FORMAT_DOCUMENTATION": {
+    "appeals": "{ id, title, titleEn, pdfUrl, pdfUrlEn, authorName, month, year, createdAt: { seconds } }",
+    "posts": "{ id, title, author, description, category, date, fileUrl }",
+    "testimonies": "{ id, title, author, category, date, fileUrl }",
+    "documents": "{ id, title, author, description, category, date, size, fileUrl }",
+    "songs": "{ id, title, author, category, fileUrl }"
+  },
   "appeals": [
     {
       "id": "appeal-2604",
@@ -56,7 +63,26 @@
       "createdAt": { "seconds": 1759363200 }
     }
   ],
-  "posts": [],
+  "posts": [
+    {
+      "id": "post-why-not-sabbath",
+      "title": "Why Not Sabbath",
+      "author": "TrieuMinistry",
+      "description": "Bài viết phân tích mở rộng về ngày Sa-bát.",
+      "category": "Blog",
+      "date": "2026",
+      "fileUrl": "/resources/blogs/_why_not_sabbath.pdf"
+    },
+    {
+      "id": "post-the-good-samaritan-problem",
+      "title": "The Good Samaritan Problem",
+      "author": "TrieuMinistry",
+      "description": "Bài viết phân tích về dụ ngôn Người Sa-ma-ri nhân lành.",
+      "category": "Blog",
+      "date": "2026",
+      "fileUrl": "/resources/blogs/_the_good_Samaritan_problem.pdf"
+    }
+  ],
   "testimonies": [],
   "documents": [
     {
