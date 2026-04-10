@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { libraryService } from '@/services/libraryService';
+import { excelService } from '@/services/excelService';
 import { Book, BorrowedBook } from '@/types/library';
-import { FiSearch, FiFilter, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiSearch, FiFilter } from 'react-icons/fi';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -22,11 +23,9 @@ export default function LibraryManPage() {
   const [sortAsc, setSortAsc] = useState(true);
   
   // Pagination state
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Modal states
-  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
-  const [editingBook, setEditingBook] = useState<Book | null>(null);
   
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
   const [borrowingBook, setBorrowingBook] = useState<Book | null>(null);
@@ -38,7 +37,7 @@ export default function LibraryManPage() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const data = await libraryService.getBooks();
+      const data = await excelService.getBooksFromExcel();
       setBooks(data);
     } catch (error) {
       console.error('Failed to fetch books:', error);
@@ -81,18 +80,6 @@ export default function LibraryManPage() {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-
-  const handleDeleteBook = async (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xoá cuốn sách này?')) {
-      try {
-        await libraryService.deleteBook(id);
-        setBooks(prev => prev.filter(b => b.id !== id));
-      } catch (error) {
-        console.error('Failed to delete book:', error);
-        alert('Lỗi khi xoá sách.');
-      }
-    }
-  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-6">
@@ -202,18 +189,6 @@ export default function LibraryManPage() {
           >
             Mượn sách
           </button>
-
-          {isAdmin && (
-            <button
-              onClick={() => {
-                setEditingBook(null);
-                setIsBookModalOpen(true);
-              }}
-              className="flex-shrink-0 flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            >
-              <FiPlus className="mr-2" /> Thêm sách
-            </button>
-          )}
         </div>
       </div>
 
@@ -282,28 +257,6 @@ export default function LibraryManPage() {
                     >
                       {book.quantity > 0 ? 'Mượn' : 'Out of stock'}
                     </button>
-                    
-                    {isAdmin && (
-                      <div className="inline-flex space-x-2 mt-2 sm:mt-0">
-                        <button
-                          onClick={() => {
-                            setEditingBook(book);
-                            setIsBookModalOpen(true);
-                          }}
-                          className="text-gray-600 hover:text-indigo-900 dark:text-gray-400 dark:hover:text-indigo-400 p-1"
-                          title="Sửa sách"
-                        >
-                          <FiEdit2 />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteBook(book.id)}
-                          className="text-gray-600 hover:text-red-900 dark:text-gray-400 dark:hover:text-red-400 p-1"
-                          title="Xoá sách"
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    )}
                   </td>
                 </tr>
               ))
@@ -359,18 +312,6 @@ export default function LibraryManPage() {
         </div>
       )}
 
-      {/* Book Form Modal (Admin) */}
-      {isBookModalOpen && (
-        <BookFormModal
-          book={editingBook}
-          onClose={() => setIsBookModalOpen(false)}
-          onSuccess={() => {
-            setIsBookModalOpen(false);
-            fetchBooks();
-          }}
-        />
-      )}
-
       {/* Borrow Form Modal */}
       {isBorrowModalOpen && borrowingBook && (
         <BorrowFormModal
@@ -389,92 +330,6 @@ export default function LibraryManPage() {
 }
 
 // --- Internal Components for Modals ---
-
-function BookFormModal({ book, onClose, onSuccess }: { book: Book | null, onClose: () => void, onSuccess: () => void }) {
-  const [formData, setFormData] = useState({
-    title: book?.title || '',
-    description: book?.description || 'update later',
-    author: book?.author || '',
-    category: book?.category || '',
-    theme: book?.theme || '',
-    quantity: book?.quantity?.toString() || '1',
-    location: book?.location || ''
-  });
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const dataToSave = {
-        ...formData,
-        quantity: parseInt(formData.quantity) || 0
-      };
-
-      if (book) {
-        await libraryService.updateBook(book.id, dataToSave);
-      } else {
-        await libraryService.addBook(dataToSave);
-      }
-      onSuccess();
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Lỗi khi lưu thông tin sách');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold dark:text-white">{book ? 'Sửa thông tin sách' : 'Thêm sách mới'}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400">&times;</button>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tên sách <span className="text-red-500">*</span></label>
-            <input required type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tác giả <span className="text-red-500">*</span></label>
-            <input required type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Thể loại</label>
-            <input type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Chủ đề</label>
-            <input type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.theme} onChange={e => setFormData({...formData, theme: e.target.value})} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Số lượng</label>
-              <input type="number" min="0" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Vị trí</label>
-              <input type="text" className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Mô tả</label>
-            <textarea className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:text-white" rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-          </div>
-          
-          <div className="flex justify-end gap-3 mt-6">
-            <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Hủy</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
-              {loading ? 'Đang lưu...' : 'Lưu lại'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function BorrowFormModal({ book, booksList, onClose, onSuccess }: { book: Book | null, booksList: Book[], onClose: () => void, onSuccess: () => void }) {
   // Setup default dates
