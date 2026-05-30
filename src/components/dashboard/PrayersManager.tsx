@@ -259,7 +259,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all placeholder:text-slate-400"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all placeholder:text-slate-400"
                                         placeholder="e.g., Healing for my family"
                                         value={editTitle}
                                         onChange={(e) => setEditTitle(e.target.value)}
@@ -273,7 +273,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                         Request Details <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all placeholder:text-slate-400"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all placeholder:text-slate-400"
                                         placeholder="Share what you need prayer for..."
                                         value={editContent}
                                         onChange={(e) => setEditContent(e.target.value)}
@@ -302,7 +302,7 @@ export default function PrayersManager({ mode }: PrayersManagerProps) {
                                         id="showName"
                                         checked={showName}
                                         onChange={(e) => setShowName(e.target.checked)}
-                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-purple-600 focus:ring-purple-500 bg-slate-100 dark:bg-slate-800"
+                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-700 focus:ring-blue-600 bg-slate-100 dark:bg-slate-800"
                                     />
                                     <label htmlFor="showName" className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
                                         Sign my name in the request

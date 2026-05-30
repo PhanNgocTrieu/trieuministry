@@ -258,7 +258,7 @@ export default function BibleSchedulePage() {
                         onClick={() => setActiveTab('markdown')}
                         className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${
                             activeTab === 'markdown'
-                                ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                                ? 'bg-white dark:bg-slate-700 text-blue-800 dark:text-blue-600 shadow-sm'
                                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                         }`}
                     >
@@ -272,7 +272,7 @@ export default function BibleSchedulePage() {
                         {/* Hero / Overall Progress Card */}
                         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white shadow-2xl">
                              <div className="absolute top-0 right-0 p-32 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -mr-16 -mt-16"></div>
-                             <div className="absolute bottom-0 left-0 p-32 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -ml-16 -mb-16"></div>
+                             <div className="absolute bottom-0 left-0 p-32 bg-blue-700 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -ml-16 -mb-16"></div>
                              
                              <div className="relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
                                 <div className="space-y-4 text-center md:text-left z-10">
@@ -385,7 +385,7 @@ export default function BibleSchedulePage() {
                                         </div>
                                         
                                         {/* Hover Effect Bar */}
-                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                                     </div>
                                 );
                             })}
@@ -521,7 +521,7 @@ export default function BibleSchedulePage() {
                                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Bible Markdown</h2>
                                 <p className="text-slate-500 dark:text-slate-400">Track book by book. {progress.completedChapters.length} / {TOTAL_BIBLE_CHAPTERS} chapters completed.</p>
                             </div>
-                            <div className="px-6 py-4 bg-indigo-600 text-white rounded-2xl shadow-lg flex flex-col items-center justify-center min-w-[150px]">
+                            <div className="px-6 py-4 bg-blue-800 text-white rounded-2xl shadow-lg flex flex-col items-center justify-center min-w-[150px]">
                                 <span className="text-sm font-medium opacity-80 uppercase tracking-wider">Total Reads</span>
                                 <span className="text-4xl font-black">{progress.totalCompletions}</span>
                             </div>

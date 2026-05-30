@@ -215,7 +215,7 @@ export default function UsersManagementPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         {(user.email === 'pntrieu200799@gmail.com' || user.email === 'phantrieu580@gmail.com') ? (
-                                            <span className="bg-purple-500/10 text-purple-400 text-xs font-bold px-2 py-1 rounded border border-purple-500/20">
+                                            <span className="bg-blue-600/10 text-blue-500 text-xs font-bold px-2 py-1 rounded border border-blue-600/20">
                                                 <i className="fas fa-lock mr-1"></i> Root Admin
                                             </span>
                                         ) : (
@@ -225,7 +225,7 @@ export default function UsersManagementPage() {
                                                     onChange={(e) => handleRoleSelect(user.uid, e.target.value)}
                                                     disabled={saving === user.uid}
                                                     className={`text-xs font-bold px-2 py-1 rounded border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${
-                                                        (pendingChanges[user.uid] || user.role) === 'admin' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' :
+                                                        (pendingChanges[user.uid] || user.role) === 'admin' ? 'bg-blue-600/10 text-blue-700 dark:text-blue-500 border-blue-600/20' :
                                                         (pendingChanges[user.uid] || user.role) === 'volunteer' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' :
                                                         'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 border-slate-200 dark:border-white/10'
                                                     }`}

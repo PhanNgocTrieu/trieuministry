@@ -51,7 +51,7 @@ export default function RootLayout({
           <Providers>
             <Navbar />
             <VisitTracker />
-            <main className="min-h-screen">
+            <main className="min-h-screen relative z-[1]">
               {children}
             </main>
             <FloatingThemeToggle />

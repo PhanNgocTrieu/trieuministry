@@ -210,7 +210,7 @@ export default function BookingModal({
                                 value={name}
                                 onChange={e => setName(e.target.value)}
                                 placeholder="Nhập mục đích sử dụng..."
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 required
                             />
                         </div>
@@ -225,7 +225,7 @@ export default function BookingModal({
                                     value={personInCharge}
                                     onChange={e => setPersonInCharge(e.target.value)}
                                     placeholder="Nhập tên..."
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 />
                             </div>
                             <div>
@@ -237,7 +237,7 @@ export default function BookingModal({
                                     value={phone}
                                     onChange={e => setPhone(e.target.value)}
                                     placeholder="Nhập SĐT..."
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -250,7 +250,7 @@ export default function BookingModal({
                                         key={c.value}
                                         type="button"
                                         onClick={() => setColor(c.value)}
-                                        className={`flex items-center gap-2 p-2 rounded-xl border-2 transition-all ${color === c.value ? 'border-violet-500 bg-violet-50 dark:border-violet-400 dark:bg-violet-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                                        className={`flex items-center gap-2 p-2 rounded-xl border-2 transition-all ${color === c.value ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                                     >
                                         <div className="w-5 h-5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: c.value }}></div>
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300 text-left">{c.label}</span>
@@ -265,7 +265,7 @@ export default function BookingModal({
                                 type="date"
                                 value={dateStr}
                                 onChange={e => setDateStr(e.target.value)}
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 required
                             />
                         </div>
@@ -276,7 +276,7 @@ export default function BookingModal({
                                 <select
                                     value={startTimeStr}
                                     onChange={e => setStartTimeStr(e.target.value)}
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 >
                                     {timeOptions.map(t => <option key={`start-${t}`} value={t}>{t}</option>)}
                                 </select>
@@ -286,7 +286,7 @@ export default function BookingModal({
                                 <select
                                     value={endTimeStr}
                                     onChange={e => setEndTimeStr(e.target.value)}
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
+                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all"
                                 >
                                     {timeOptions.map(t => <option key={`end-${t}`} value={t}>{t}</option>)}
                                 </select>
@@ -299,7 +299,7 @@ export default function BookingModal({
                                 value={recurringMode}
                                 onChange={e => setRecurringMode(e.target.value as RecurringMode)}
                                 disabled={!!editingBooking}
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all mb-3 disabled:opacity-50"
+                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800 dark:text-white outline-none transition-all mb-3 disabled:opacity-50"
                             >
                                 <option value="none">Không lặp lại (1 lần)</option>
                                 <option value="weekly">Hàng Tuần (Mỗi {dateStr ? format(parse(dateStr, 'yyyy-MM-dd', new Date()), 'EEEE') : 'tuần'})</option>
@@ -307,8 +307,8 @@ export default function BookingModal({
                             </select>
 
                             {recurringMode !== "none" && (
-                                <div className="p-4 bg-violet-50 dark:bg-violet-900/10 rounded-xl border border-violet-100 dark:border-violet-900/30">
-                                    <label className="block text-sm font-medium text-violet-800 dark:text-violet-300 mb-1">
+                                <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                    <label className="block text-sm font-medium text-blue-800 dark:text-blue-400 mb-1">
                                         Kết thúc lặp lại vào ngày
                                     </label>
                                     <input
@@ -316,10 +316,10 @@ export default function BookingModal({
                                         value={recurringEndDateStr}
                                         onChange={e => setRecurringEndDateStr(e.target.value)}
                                         min={dateStr}
-                                        className="w-full px-4 py-2 border border-violet-200 dark:border-violet-800 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent dark:bg-slate-800/80 dark:text-white outline-none transition-all text-sm"
+                                        className="w-full px-4 py-2 border border-blue-200 dark:border-blue-800 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-slate-800/80 dark:text-white outline-none transition-all text-sm"
                                         required
                                     />
-                                    <p className="mt-2 text-xs text-violet-600/70 dark:text-violet-400/70">
+                                    <p className="mt-2 text-xs text-blue-700/70 dark:text-blue-500/70">
                                         Hệ thống sẽ tự động đăng ký các ngày tương tự cho đến ngày này. Tối đa 500 buổi.
                                     </p>
                                 </div>
@@ -362,7 +362,7 @@ export default function BookingModal({
                         type="submit"
                         form="booking-form"
                         disabled={loading}
-                        className="flex-1 py-2.5 px-4 bg-violet-600 text-white rounded-xl font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex justify-center items-center shadow-lg shadow-violet-500/20"
+                        className="flex-1 py-2.5 px-4 bg-blue-700 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex justify-center items-center shadow-lg shadow-blue-600/20"
                     >
                         {loading ? <i className="fas fa-spinner fa-spin"></i> : "Xác nhận Lịch"}
                     </button>

@@ -54,12 +54,12 @@ export default function RegisterPage() {
        {/* Background Effects */}
        <div className="absolute inset-0 z-0 pointer-events-none">
             <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-sky-500/10 dark:bg-sky-600/10 rounded-full blur-[100px] animate-pulse"></div>
-            <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-violet-500/10 dark:bg-violet-600/10 rounded-full blur-[100px]"></div>
+            <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/10 dark:bg-blue-700/10 rounded-full blur-[100px]"></div>
        </div>
 
        <div className="w-full max-w-md relative z-10 animate-fade-in-up">
            <div className="text-center mb-10">
-               <Link href="/" className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/30 text-white mb-6 transform hover:scale-105 transition-transform">
+               <Link href="/" className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-800 shadow-lg shadow-blue-600/30 text-white mb-6 transform hover:scale-105 transition-transform">
                    <i className="fas fa-church text-2xl"></i>
                </Link>
                <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-3">Join Our Family</h1>
@@ -68,9 +68,9 @@ export default function RegisterPage() {
            
            <div className="premium-glass-panel p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden backdrop-blur-2xl">
                {error && (
-                   <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 flex items-start gap-3 fade-in">
-                       <i className="fas fa-exclamation-circle text-rose-500 mt-0.5"></i>
-                       <p className="text-sm font-medium text-rose-600 dark:text-rose-400">{error}</p>
+                   <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/20 flex items-start gap-3 fade-in">
+                       <i className="fas fa-exclamation-circle text-amber-600 mt-0.5"></i>
+                       <p className="text-sm font-medium text-red-600 dark:text-amber-500">{error}</p>
                    </div>
                )}
 
@@ -85,7 +85,7 @@ export default function RegisterPage() {
                                placeholder="John Doe"
                                value={name}
                                onChange={(e) => setName(e.target.value)}
-                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all dark:text-white font-medium"
+                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all dark:text-white font-medium"
                            />
                        </div>
                    </div>
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                                placeholder="you@example.com"
                                value={email}
                                onChange={(e) => setEmail(e.target.value)}
-                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all dark:text-white font-medium"
+                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all dark:text-white font-medium"
                            />
                        </div>
                    </div>
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                                placeholder="••••••••"
                                value={password}
                                onChange={(e) => setPassword(e.target.value)}
-                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all dark:text-white font-medium"
+                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all dark:text-white font-medium"
                            />
                        </div>
                    </div>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                                placeholder="••••••••"
                                value={confirmPassword}
                                onChange={(e) => setConfirmPassword(e.target.value)}
-                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all dark:text-white font-medium"
+                               className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all dark:text-white font-medium"
                            />
                        </div>
                    </div>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
                    <button
                        type="submit"
                        disabled={loading}
-                       className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                       className="w-full py-4 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                    >
                        {loading ? <div className="loading-spinner-sm border-white"></div> : 'Create Account'}
                    </button>
@@ -147,7 +147,7 @@ export default function RegisterPage() {
            
            <p className="text-center mt-8 text-slate-500 dark:text-slate-400">
                Already have an account?{' '}
-               <Link href="/login" className="font-bold text-violet-600 dark:text-violet-400 hover:underline">
+               <Link href="/login" className="font-bold text-blue-700 dark:text-blue-500 hover:underline">
                    Sign in instead
                </Link>
            </p>

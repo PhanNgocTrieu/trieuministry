@@ -75,7 +75,7 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
                     {/* Header */}
                     <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0 print:bg-slate-50 print:dark:bg-slate-800/50">
                         <div className="flex items-center gap-4">
-                            <div className="bg-purple-600 p-2 rounded-lg text-white print:bg-purple-600 print:text-white">
+                            <div className="bg-blue-700 p-2 rounded-lg text-white print:bg-blue-700 print:text-white">
                                 <i className="fas fa-chart-pie text-xl"></i>
                             </div>
                             <div>
@@ -91,7 +91,7 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
                              <select 
                                 value={year}
                                 onChange={(e) => setYear(e.target.value)}
-                                className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600"
                             >
                                 {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
                                     <option key={y} value={y}>{y}</option>
@@ -99,7 +99,7 @@ export default function TaskStatsModal({ isOpen, onClose, tasks }: TaskStatsModa
                             </select>
                             <button 
                                 onClick={() => window.print()} 
-                                className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 font-bold text-sm transition-colors"
+                                className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-500 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 font-bold text-sm transition-colors"
                             >
                                 <i className="fas fa-print mr-2"></i> Print
                             </button>

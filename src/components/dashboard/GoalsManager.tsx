@@ -143,9 +143,9 @@ export default function GoalsManager({ basePath }: GoalsManagerProps) {
                     <p className="text-xs text-slate-500 dark:text-slate-500 font-bold uppercase group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">In Progress</p>
                     <p className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-400 mt-2">{inProgressGoals}</p>
                 </div>
-                <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-purple-500/30 transition-colors">
-                    <p className="text-xs text-slate-500 dark:text-slate-500 font-bold uppercase group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Success Rate</p>
-                    <p className="text-3xl font-extrabold text-purple-600 dark:text-purple-400 mt-2">{completionRate}%</p>
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-blue-600/30 transition-colors">
+                    <p className="text-xs text-slate-500 dark:text-slate-500 font-bold uppercase group-hover:text-blue-700 dark:group-hover:text-blue-500 transition-colors">Success Rate</p>
+                    <p className="text-3xl font-extrabold text-blue-700 dark:text-blue-500 mt-2">{completionRate}%</p>
                 </div>
             </div>
 

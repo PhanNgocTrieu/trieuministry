@@ -198,7 +198,7 @@ export default function BorrowedLibPage() {
                             setEditingRecord(record);
                             setIsEditModalOpen(true);
                           }}
-                          className="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 p-1.5 rounded-md transition-colors"
+                          className="text-gray-500 hover:text-blue-800 dark:text-gray-400 dark:hover:text-blue-600 p-1.5 rounded-md transition-colors"
                           title="Sửa bản ghi"
                         >
                           <FiEdit2 size={18} />

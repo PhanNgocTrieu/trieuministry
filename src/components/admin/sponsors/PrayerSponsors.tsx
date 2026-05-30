@@ -424,7 +424,7 @@ export default function PrayerSponsors() {
                 </div>
                 <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl">
+                        <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-700 dark:text-blue-500 text-xl">
                             <i className="fas fa-globe"></i>
                         </div>
                         <div>
@@ -541,7 +541,7 @@ export default function PrayerSponsors() {
                                     <td className="px-6 py-4 align-top">
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
                                             sponsor.group === 'foreigner' 
-                                            ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700/50' 
+                                            ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50' 
                                             : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50'
                                         }`}>
                                             {sponsor.group === 'foreigner' ? 'Foreigner' : 'Vietnamese'}
@@ -661,11 +661,11 @@ export default function PrayerSponsors() {
                                         onClick={() => setFormData({...formData, group: 'foreigner'})}
                                         className={`px-4 py-3 rounded-xl border flex items-center justify-center gap-2 font-bold transition-all ${
                                             formData.group === 'foreigner'
-                                            ? 'bg-purple-50 border-purple-200 text-purple-600 dark:bg-purple-900/20 dark:border-purple-500/30'
+                                            ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600/30'
                                             : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 dark:bg-slate-800 dark:border-white/10 dark:text-slate-400 dark:hover:bg-slate-700'
                                         }`}
                                     >
-                                        <span className="w-3 h-3 rounded-full bg-purple-500"></span> Foreigner
+                                        <span className="w-3 h-3 rounded-full bg-blue-600"></span> Foreigner
                                     </button>
                                 </div>
                             </div>

@@ -54,7 +54,7 @@ export default function TaskReport() {
             {/* Controls */}
             <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between shadow-sm gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="bg-purple-100 dark:bg-purple-500/20 p-2 rounded-lg text-purple-600 dark:text-purple-400">
+                    <div className="bg-blue-100 dark:bg-blue-600/20 p-2 rounded-lg text-blue-700 dark:text-blue-500">
                          <i className="fas fa-chart-pie text-xl"></i>
                     </div>
                     <div>
@@ -67,7 +67,7 @@ export default function TaskReport() {
                     <select 
                         value={year}
                         onChange={(e) => setYear(e.target.value)}
-                        className="px-3 py-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 rounded-lg text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-600"
                     >
                         {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
                             <option key={y} value={y}>{y}</option>
@@ -78,7 +78,7 @@ export default function TaskReport() {
 
             {loading ? (
                 <div className="flex justify-center py-12">
-                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
                 </div>
             ) : (
                 <>

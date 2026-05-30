@@ -190,14 +190,14 @@ export default function DisciplinePage() {
                              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.month.personal_prayer} <span className="text-sm font-normal text-slate-400">/ {stats.year.personal_prayer}</span></div>
                         </div>
                     </div>
-                    <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20 flex items-center justify-between">
+                    <div className="bg-blue-600/10 rounded-xl p-4 border border-blue-600/20 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-500/30">
+                             <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-700 dark:text-blue-500 border border-blue-600/30">
                                 <i className="fas fa-hand-holding-heart"></i>
                             </div>
                              <div>
-                                <span className="block font-medium text-purple-700 dark:text-purple-400 leading-tight">Intercession</span>
-                                <span className="text-xs text-purple-600/70 dark:text-purple-500/70">Month / Year {currentYear}</span>
+                                <span className="block font-medium text-blue-800 dark:text-blue-500 leading-tight">Intercession</span>
+                                <span className="text-xs text-blue-700/70 dark:text-blue-600/70">Month / Year {currentYear}</span>
                             </div>
                         </div>
                          <div className="text-right">
@@ -279,15 +279,15 @@ export default function DisciplinePage() {
                     {/* Intercession - Compact */}
                      <div className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
                         selectedDateStatus.intercession 
-                            ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/30' 
+                            ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/30' 
                             : isFutureDate 
                                 ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-60' 
-                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700'
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-800'
                     }`}>
                          <div className="flex items-center gap-3">
                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
                                  selectedDateStatus.intercession 
-                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' 
+                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-500' 
                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                              }`}>
                                 <i className="fas fa-hand-holding-heart"></i>
@@ -303,10 +303,10 @@ export default function DisciplinePage() {
                             disabled={selectedDateStatus.intercession || isFutureDate}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
                                 selectedDateStatus.intercession 
-                                    ? 'text-purple-600 dark:text-purple-500 cursor-default' 
+                                    ? 'text-blue-700 dark:text-blue-600 cursor-default' 
                                     : isFutureDate
                                         ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-                                        : 'bg-purple-500 text-white hover:bg-purple-600 shadow-sm'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
                             }`}
                         >
                                 {selectedDateStatus.intercession ? (
@@ -405,7 +405,7 @@ export default function DisciplinePage() {
                                             </div>
                                         )}
                                         {hasIntercession && (
-                                            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">
+                                            <div className="flex items-center gap-1 text-blue-700 dark:text-blue-500 bg-blue-600/10 px-1.5 py-0.5 rounded border border-blue-600/20">
                                                 <i className="fas fa-hand-holding-heart text-[10px]"></i> <span className="hidden md:inline">Intercede</span>
                                             </div>
                                         )}

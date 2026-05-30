@@ -163,7 +163,7 @@ export default function AdminTasksPage() {
                             onClick={() => setIsStatsModalOpen(true)}
                             className="bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm font-bold text-sm transition-all flex items-center gap-2"
                         >
-                            <i className="fas fa-chart-pie text-purple-500"></i> Export Stats
+                            <i className="fas fa-chart-pie text-blue-600"></i> Export Stats
                         </button>
                         <button
                             onClick={() => {

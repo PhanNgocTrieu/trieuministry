@@ -84,7 +84,7 @@ export default function FileUploader({ onFileUploaded, currentFile, folder = 'up
             {!preview ? (
                 <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/10 transition-all ${uploading ? 'pointer-events-none opacity-50' : ''}`}
+                    className={`border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all ${uploading ? 'pointer-events-none opacity-50' : ''}`}
                 >
                     <div className="text-slate-400 mb-2 text-3xl">
                         <i className="fas fa-cloud-upload-alt"></i>
@@ -99,7 +99,7 @@ export default function FileUploader({ onFileUploaded, currentFile, folder = 'up
                         <img src={preview} alt="Uploaded" className="w-full h-64 object-cover" />
                     ) : (
                         <div className="h-64 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 gap-4">
-                            <i className="fas fa-file-pdf text-6xl text-rose-500"></i>
+                            <i className="fas fa-file-pdf text-6xl text-amber-600"></i>
                             <a href={preview} target="_blank" rel="noopener noreferrer" className="text-sm font-bold hover:underline truncate max-w-xs">
                                 View PDF
                             </a>
@@ -134,7 +134,7 @@ export default function FileUploader({ onFileUploaded, currentFile, folder = 'up
             {uploading && (
                 <div className="mt-3 h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div 
-                        className="h-full bg-violet-600 transition-all duration-300" 
+                        className="h-full bg-blue-700 transition-all duration-300" 
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>

@@ -34,6 +34,10 @@ export const excelService = {
         const name = row[0] ? String(row[0]).trim() : '';
         const author = row[1] ? String(row[1]).trim() : '';
         const category = row[2] ? String(row[2]).trim() : '';
+        const description = row[4] ? String(row[4]).trim() : '';
+        const quantity = row[3] ? String(row[3]).trim() : '';
+        const location = row[5] ? String(row[5]).trim() : '';
+        
         
         // Stop conditionally if the row is entirely empty
         if (!name && !author && !category) {
@@ -46,7 +50,6 @@ export const excelService = {
           author: author,
           category: category,
           description: '', // Fallback as not present in excel
-          theme: '', // Fallback
           quantity: 1, // Defaulting to 1 so borrow logic doesn't break entirely
           location: 'Thư viện', // Fallback
         } as Book);

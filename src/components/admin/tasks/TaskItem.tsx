@@ -52,7 +52,7 @@ export default function TaskItem({
                         {task.category}
                     </span>
                     {task.receiveFrom && (
-                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-500/20 flex items-center gap-1">
+                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-blue-50 dark:bg-blue-600/10 text-blue-700 dark:text-blue-500 border-blue-100 dark:border-blue-600/20 flex items-center gap-1">
                             <i className="fas fa-user-tag text-[8px]"></i> {task.receiveFrom}
                         </span>
                     )}

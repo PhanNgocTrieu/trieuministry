@@ -66,7 +66,12 @@
             "label": "Personnel",
             "role": "Founder",
             "quote": "\"I believe that everyone has a special mission in God's eternal plan.\"",
-            "bio": "My name is Phan Ngoc Trieu, I am {{age}} years old this year. I graduated with a degree in Electronics and Telecommunications Engineering from Da Nang University of Science and Technology. Before entering ministry, I was able to work at two technology companies in Da Nang (FPT Software and LGEDV) for about 4 years. I prayed to accept Jesus in 9th grade, but it wasn't until the summer of 2017 (my third year of university) that I personally encountered God during a Basic Bible Course held in Quang Nam (Da Nang) under the C&MA church (The Evangelical Church of Vietnam - South), and God has preserved my faith to this day."
+            "bio": "My name is Phan Ngoc Trieu, I am {{age}} years old this year. I graduated with a degree in Electronics and Telecommunications Engineering from Da Nang University of Science and Technology. Before entering ministry, I was able to work at two technology companies in Da Nang (FPT Software and LGEDV) for about 4 years. I prayed to accept Jesus in 9th grade, but it wasn't until the summer of 2017 (my third year of university) that I personally encountered God during a Basic Bible Course held in Quang Nam (Da Nang) under the C&MA church (The Evangelical Church of Vietnam - South), and God has preserved my faith to this day.",
+            "highlights": [
+                { "icon": "fa-graduation-cap", "label": "Da Nang University", "sub": "Electronics & Telecom" },
+                { "icon": "fa-briefcase", "label": "FPT · LGEDV", "sub": "4 years" },
+                { "icon": "fa-church", "label": "C&MA Church", "sub": "EVN South" }
+            ]
         },
         "calling": {
             "title": "The Call",
@@ -387,8 +392,15 @@
         "ministry": {
             "title": "Ministry Appeals",
             "badge": "Ministry",
-            "appeal": "Appeal Update",
+            "appeal": "Read appeal letters for specific ministry needs and download the PDF in your language.",
             "request_btn": "Submit Appeal Request"
+        },
+        "fundraising": {
+            "latest": "Latest",
+            "read_pdf": "Read letter (PDF)",
+            "download_vi": "Vietnamese",
+            "download_en": "English",
+            "empty_hint": "Add a folder under public/appeals/fundraising/ with PDF files ending in _vietnamese and _english (optional meta.json for titles)."
         },
         "form": {
             "title": "Submit Appeal Request",

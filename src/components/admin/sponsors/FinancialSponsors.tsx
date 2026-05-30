@@ -271,7 +271,7 @@ export default function FinancialSponsors() {
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="bg-purple-600 text-white px-5 py-2.5 rounded-xl hover:bg-purple-500 shadow-lg shadow-purple-900/20 font-bold flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
+                    className="bg-blue-700 text-white px-5 py-2.5 rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-900/20 font-bold flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
                 >
                     <i className="fas fa-plus"></i> New Commitment
                 </button>
@@ -305,11 +305,11 @@ export default function FinancialSponsors() {
                     </p>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-purple-500/20 shadow-lg relative overflow-hidden group">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-blue-600/20 shadow-lg relative overflow-hidden group">
                     <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i className="fas fa-piggy-bank text-5xl text-purple-500"></i>
+                        <i className="fas fa-piggy-bank text-5xl text-blue-600"></i>
                     </div>
-                    <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1">Total Year {currentYear}</p>
+                    <p className="text-xs font-bold text-blue-700 dark:text-blue-500 uppercase tracking-wider mb-1">Total Year {currentYear}</p>
                     <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
                         {yearlyIncome.toLocaleString('vi-VN')} ₫
                     </p>
@@ -337,7 +337,7 @@ export default function FinancialSponsors() {
                         onClick={() => setFilterStatus(status)}
                         className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all ${
                             filterStatus === status 
-                            ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 shadow-sm border border-purple-500/30' 
+                            ? 'bg-blue-600/20 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-600/30' 
                             : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
@@ -373,10 +373,10 @@ export default function FinancialSponsors() {
                                             <div className="text-sm text-slate-500 dark:text-slate-400 whitespace-pre-wrap">{sponsor.donorInfo}</div>
                                         </td>
                                         <td className="px-6 py-4 align-top">
-                                            <div className="font-bold text-purple-600 dark:text-purple-400 text-lg">
+                                            <div className="font-bold text-blue-700 dark:text-blue-500 text-lg">
                                                 {sponsor.amount.toLocaleString('vi-VN')} ₫
                                             </div>
-                                            <div className="inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 capitalize border border-purple-500/20">
+                                            <div className="inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-600/10 text-blue-700 dark:text-blue-500 capitalize border border-blue-600/20">
                                                 {sponsor.commitmentType}
                                             </div>
                                             <div className="text-xs text-slate-500 mt-2 font-medium">
@@ -388,7 +388,7 @@ export default function FinancialSponsors() {
                                             <div className="flex items-center gap-3 mb-3">
                                                 <div className="flex-1 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-300 dark:border-white/5">
                                                     <div 
-                                                        className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
+                                                        className="h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
                                                         style={{ width: `${progress}%` }}
                                                     ></div>
                                                 </div>
@@ -409,7 +409,7 @@ export default function FinancialSponsors() {
                                                             className={`px-2 py-1 text-[10px] font-bold rounded-md border transition-all ${
                                                                 isDone
                                                                     ? 'bg-green-600 border-green-600 text-white shadow-sm'
-                                                                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-500 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
+                                                                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-500 hover:border-blue-600/50 hover:text-blue-700 dark:hover:text-blue-500'
                                                             }`}
                                                         >
                                                             {m.label}
@@ -425,7 +425,7 @@ export default function FinancialSponsors() {
                                             <select
                                                 value={sponsor.isCompleted ? 'true' : 'false'}
                                                 onChange={(e) => handleQuickStatusUpdate(sponsor.id, e.target.value === 'true')}
-                                                className={`text-xs font-bold rounded-lg px-3 py-2 border-0 ring-1 ring-inset w-full cursor-pointer focus:ring-2 focus:ring-purple-500 bg-opacity-10 ${
+                                                className={`text-xs font-bold rounded-lg px-3 py-2 border-0 ring-1 ring-inset w-full cursor-pointer focus:ring-2 focus:ring-blue-600 bg-opacity-10 ${
                                                     sponsor.isCompleted 
                                                     ? 'bg-green-500/10 text-green-600 dark:text-green-400 ring-green-500/20' 
                                                     : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 ring-yellow-500/20'
@@ -496,7 +496,7 @@ export default function FinancialSponsors() {
                                             required
                                             value={formData.fullName}
                                             onChange={e => setFormData({...formData, fullName: e.target.value})}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600"
                                             placeholder="e.g. John Doe"
                                         />
                                     </div>
@@ -507,7 +507,7 @@ export default function FinancialSponsors() {
                                             <select
                                                 value={formData.commitmentType}
                                                 onChange={e => setFormData({...formData, commitmentType: e.target.value as any})}
-                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-bold text-slate-900 dark:text-white appearance-none"
+                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-bold text-slate-900 dark:text-white appearance-none"
                                             >
                                                 <option value="monthly">Monthly Recurring</option>
                                                 <option value="yearly">Yearly Recurring</option>
@@ -532,7 +532,7 @@ export default function FinancialSponsors() {
                                                 min="0"
                                                 value={formData.amount}
                                                 onChange={e => setFormData({...formData, amount: e.target.value})}
-                                                className="w-full pl-8 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-mono font-bold text-slate-900 dark:text-white text-lg placeholder-slate-400 dark:placeholder-slate-600"
+                                                className="w-full pl-8 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-mono font-bold text-slate-900 dark:text-white text-lg placeholder-slate-400 dark:placeholder-slate-600"
                                                 placeholder="0"
                                             />
                                         </div>
@@ -546,7 +546,7 @@ export default function FinancialSponsors() {
                                         <textarea 
                                             value={formData.donorInfo}
                                             onChange={e => setFormData({...formData, donorInfo: e.target.value})}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white resize-none h-[124px] placeholder-slate-400 dark:placeholder-slate-600"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white resize-none h-[124px] placeholder-slate-400 dark:placeholder-slate-600"
                                             placeholder="Contact info, specific requests..."
                                         />
                                     </div>
@@ -559,7 +559,7 @@ export default function FinancialSponsors() {
                                                 required
                                                 value={formData.startDate}
                                                 onChange={e => setFormData({...formData, startDate: e.target.value})}
-                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white"
+                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white"
                                             />
                                         </div>
                                         <div>
@@ -568,7 +568,7 @@ export default function FinancialSponsors() {
                                                 type="date" 
                                                 value={formData.endDate}
                                                 onChange={e => setFormData({...formData, endDate: e.target.value})}
-                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white"
+                                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-medium text-slate-900 dark:text-white"
                                             />
                                         </div>
                                     </div>
@@ -585,7 +585,7 @@ export default function FinancialSponsors() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-purple-900/50 hover:shadow-purple-900/70 transform hover:-translate-y-0.5 transition-all"
+                                    className="px-8 py-2.5 bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-xl font-bold shadow-lg shadow-blue-900/50 hover:shadow-blue-900/70 transform hover:-translate-y-0.5 transition-all"
                                 >
                                     {editingId ? 'Save Changes' : 'Create Commitment'}
                                 </button>

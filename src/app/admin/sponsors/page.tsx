@@ -27,7 +27,7 @@ export default function SponsorsPage() {
                     onClick={() => setActiveTab('financial')}
                     className={`px-6 py-3 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap flex-1 md:flex-initial justify-center ${
                         activeTab === 'financial'
-                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
+                        ? 'bg-blue-700 text-white shadow-lg shadow-blue-900/20'
                         : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                     }`}
                 >

@@ -203,9 +203,9 @@ export default function AdminSettingsPage() {
 
                 {/* Section 1: Database Management */}
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-white/5 overflow-hidden mb-10">
-                    <div className="p-6 border-b border-purple-100 dark:border-white/5 bg-gradient-to-r from-purple-50 to-white dark:from-slate-800 dark:to-slate-900">
+                    <div className="p-6 border-b border-blue-100 dark:border-white/5 bg-gradient-to-r from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i className="fas fa-database text-purple-600 dark:text-purple-400"></i>
+                            <i className="fas fa-database text-blue-700 dark:text-blue-500"></i>
                             Database Reset
                         </h2>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">

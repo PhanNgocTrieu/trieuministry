@@ -26,10 +26,10 @@ export default function PrayerCard({ id, name, description, category, status, cr
             btn: 'text-green-400 hover:bg-green-500/30' 
         },
         purple: { 
-            bg: 'bg-purple-500/20', 
-            border: 'border-purple-500/30', 
-            text: 'text-purple-400', 
-            btn: 'text-purple-400 hover:bg-purple-500/30' 
+            bg: 'bg-blue-600/20', 
+            border: 'border-blue-600/30', 
+            text: 'text-blue-500', 
+            btn: 'text-blue-500 hover:bg-blue-600/30' 
         },
         blue: { 
             bg: 'bg-blue-500/20', 

@@ -12,8 +12,8 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/') 
-        ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30' 
-        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-violet-600 dark:hover:text-white';
+        ? 'bg-blue-700 text-white shadow-lg shadow-blue-600/30' 
+        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-700 dark:hover:text-white';
     
     const handleLinkClick = () => setIsSidebarOpen(false);
 
@@ -42,7 +42,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                     ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}>
                     <div className="h-20 flex items-center px-6 border-b border-slate-100 dark:border-white/5 gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 text-lg">
+                         <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-600/20 flex items-center justify-center text-blue-700 dark:text-blue-500 text-lg">
                              <i className="fas fa-user-circle"></i>
                          </div>
                          <div className="flex-1">
@@ -89,7 +89,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                         </div>
                         <button 
                             onClick={() => logout()}
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-bold w-full transition-colors text-sm"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-amber-600 hover:bg-amber-50 dark:hover:bg-red-900/10 font-bold w-full transition-colors text-sm"
                         >
                             <i className="fas fa-sign-out-alt w-8 text-center"></i>
                             Sign Out
@@ -101,14 +101,14 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     <header className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/5 p-4 flex justify-between items-center z-30 sticky top-0">
                          <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-600/20 flex items-center justify-center text-blue-700 dark:text-blue-500">
                                  <i className="fas fa-user-circle"></i>
                              </div>
                              <span className="font-bold text-slate-900 dark:text-white">My Dashboard</span>
                          </div>
                          <button 
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 text-slate-500 hover:text-violet-600 focus:outline-none"
+                            className="p-2 text-slate-500 hover:text-blue-700 focus:outline-none"
                          >
                              <i className="fas fa-bars text-xl"></i>
                          </button>

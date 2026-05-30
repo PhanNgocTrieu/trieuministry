@@ -286,9 +286,9 @@ export default function AdminGoalsList() {
                                     <p className="text-xs font-bold text-green-500 uppercase">Completed</p>
                                     <p className="text-3xl font-black text-green-700 dark:text-green-400">{statsData.completed}</p>
                                 </div>
-                                <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-500/10 text-center">
-                                    <p className="text-xs font-bold text-purple-500 uppercase">Success Rate</p>
-                                    <p className="text-3xl font-black text-purple-700 dark:text-purple-400">{statsData.rate}%</p>
+                                <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-600/10 text-center">
+                                    <p className="text-xs font-bold text-blue-600 uppercase">Success Rate</p>
+                                    <p className="text-3xl font-black text-blue-800 dark:text-blue-500">{statsData.rate}%</p>
                                 </div>
                             </div>
 

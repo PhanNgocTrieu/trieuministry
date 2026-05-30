@@ -61,12 +61,12 @@ const Navbar = () => {
    const toggle = () => setIsOpen(!isOpen);
  
    const isActive = (path: string) => pathname === path 
-     ? 'text-violet-600 dark:text-violet-400 font-bold' 
-     : 'text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl';
+     ? 'text-blue-700 dark:text-blue-500 font-bold' 
+     : 'text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl';
    
    const isActiveMobile = (path: string) => pathname === path 
-     ? 'text-violet-600 dark:text-violet-400 font-bold bg-violet-50 dark:bg-violet-500/10 border-l-2 border-violet-500 pl-3' 
-     : 'text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-white pl-4';
+     ? 'text-blue-700 dark:text-blue-500 font-bold bg-blue-50 dark:bg-blue-600/10 border-l-2 border-blue-600 pl-3' 
+     : 'text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-white pl-4';
 
    const switchLanguage = (lang: 'en' | 'vi') => {
      setLanguage(lang);
@@ -85,18 +85,18 @@ const Navbar = () => {
    }
 
    return (
-     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
-       scrolled 
-         ? 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-slate-200/50 dark:border-white/5 py-3 shadow-lg shadow-slate-200/20 dark:shadow-none' 
-         : 'bg-transparent border-transparent py-5'
-     }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
+      scrolled 
+        ? 'glass-3d border-slate-200/50 dark:border-white/10 py-3' 
+        : 'bg-transparent border-transparent py-5'
+    }`}>
        <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center">
          {/* Brand */}
          <Link href="/" className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5 hover:scale-105 transition-transform group">
-           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/25 group-hover:shadow-violet-500/40 transition-shadow">
+           <div className="icon-3d w-9 h-9 rounded-xl bg-gradient-to-br from-blue-700 via-teal-600 to-blue-800 flex items-center justify-center text-white">
              <i className="fas fa-church text-sm"></i>
            </div>
-           <span className="tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">{t('nav.brand')}</span>
+           <span className="tracking-tight text-aurora font-black">{t('nav.brand')}</span>
          </Link>
 
          {/* Desktop Menu */}
@@ -129,7 +129,7 @@ const Navbar = () => {
                                className="object-cover"
                             />
                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xs font-bold">
                                {user.email?.charAt(0).toUpperCase()}
                             </div>
                          )}
@@ -138,7 +138,7 @@ const Navbar = () => {
                          {user.displayName?.split(' ')[0] || 'User'}
                       </span>
                       {isAdmin && (
-                        <span className="hidden xl:inline-block px-2 py-0.5 bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-300 border border-violet-200 dark:border-violet-500/30 text-[10px] font-bold uppercase rounded-md ml-1 whitespace-nowrap">{t('nav.admin_role')}</span>
+                        <span className="hidden xl:inline-block px-2 py-0.5 bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/30 text-[10px] font-bold uppercase rounded-md ml-1 whitespace-nowrap">{t('nav.admin_role')}</span>
                       )}
                       {isVolunteer && (
                         <span className="hidden xl:inline-block px-2 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold uppercase rounded-md ml-1 whitespace-nowrap">Volunteer</span>
@@ -154,7 +154,7 @@ const Navbar = () => {
                             <div className="flex items-center gap-2 mt-3">
                                 <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Role:</span>
                                 {isAdmin ? (
-                                    <span className="px-2 py-0.5 bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-300 border border-violet-200 dark:border-violet-500/30 text-[10px] font-bold uppercase rounded-md whitespace-nowrap">{t('nav.admin_role')}</span>
+                                    <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/30 text-[10px] font-bold uppercase rounded-md whitespace-nowrap">{t('nav.admin_role')}</span>
                                 ) : isVolunteer ? (
                                     <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold uppercase rounded-md whitespace-nowrap">Volunteer</span>
                                 ) : (
@@ -166,7 +166,7 @@ const Navbar = () => {
                          <div className="p-2">
                            <Link 
                               href="/admin" 
-                              className="flex items-center gap-3 px-4 py-3 text-sm text-violet-600 dark:text-violet-400 font-bold hover:bg-violet-50 dark:hover:bg-violet-500/10 transition-colors rounded-xl"
+                              className="flex items-center gap-3 px-4 py-3 text-sm text-blue-700 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-blue-600/10 transition-colors rounded-xl"
                               onClick={() => setUserDropdownOpen(false)}
                            >
                               <i className="fas fa-tachometer-alt w-5"></i> {t('nav.dashboard_admin')}
@@ -198,14 +198,14 @@ const Navbar = () => {
                </Link>
             )}
 
-            <Link href="/donate" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:shadow-lg hover:shadow-violet-500/30 text-white rounded-xl font-bold transition-all text-sm transform hover:-translate-y-0.5 whitespace-nowrap">
+            <Link href="/donate" className="btn-3d !py-2.5 !px-5 !text-sm whitespace-nowrap">
               {t('nav.donate')}
             </Link>
 
             {/* Theme Toggle */}
             <button
                onClick={toggleTheme}
-               className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all hover:scale-105"
+               className="icon-3d w-9 h-9 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                aria-label="Toggle Theme"
             >
                {theme === 'dark' ? <i className="fas fa-sun"></i> : <i className="fas fa-moon"></i>}
@@ -231,7 +231,7 @@ const Navbar = () => {
 
         {/* Mobile Toggle */}
         <button 
-          className="lg:hidden p-2.5 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-white focus:outline-none hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors"
+          className="lg:hidden p-2.5 text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-white focus:outline-none hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors"
           onClick={toggle}
           aria-label="Toggle navigation"
         >
@@ -269,7 +269,7 @@ const Navbar = () => {
                       </>
                    ) : (
                       <>
-                        <i className="fas fa-moon text-violet-500"></i> Dark Mode
+                        <i className="fas fa-moon text-blue-600"></i> Dark Mode
                       </>
                    )}
                 </button>
@@ -288,7 +288,7 @@ const Navbar = () => {
                               className="object-cover"
                            />
                         ) : (
-                           <div className="w-full h-full bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center text-white text-lg font-bold">
+                           <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-lg font-bold">
                               {user.email?.charAt(0).toUpperCase()}
                            </div>
                         )}
@@ -297,7 +297,7 @@ const Navbar = () => {
                         <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold text-slate-900 dark:text-white">{user.displayName || 'User'}</p>
                              {isAdmin ? (
-                                <span className="px-2 py-0.5 bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-300 border border-violet-200 dark:border-violet-500/30 text-[10px] font-bold uppercase rounded-md">{t('nav.admin_role')}</span>
+                                <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-600/30 text-[10px] font-bold uppercase rounded-md">{t('nav.admin_role')}</span>
                              ) : isVolunteer ? (
                                 <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold uppercase rounded-md">Volunteer</span>
                              ) : (
@@ -310,7 +310,7 @@ const Navbar = () => {
                   
                    <Link 
                       href="/admin"
-                      className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-violet-50 dark:bg-violet-600/20 text-violet-600 dark:text-violet-300 border border-violet-100 dark:border-violet-500/30 rounded-xl font-bold transition-all text-sm mb-3 hover:bg-violet-100 dark:hover:bg-violet-600/30"
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-50 dark:bg-blue-700/20 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-600/30 rounded-xl font-bold transition-all text-sm mb-3 hover:bg-blue-100 dark:hover:bg-blue-700/30"
                       onClick={() => setIsOpen(false)}
                    >
                       <i className="fas fa-tachometer-alt"></i> {t('nav.dashboard_admin')}
@@ -341,15 +341,15 @@ const Navbar = () => {
              )}
             <Link 
               href="/donate" 
-              className="w-full text-center px-5 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-violet-500/25"
+              className="btn-3d w-full text-center !py-3.5"
               onClick={() => setIsOpen(false)}
             >
               {t('nav.donate')}
             </Link>
              <div className="flex justify-center gap-4 py-3 mt-2">
-               <button onClick={() => switchLanguage('vi')} className={`font-bold transition-colors ${language === 'vi' ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'}`}>Tiếng Việt</button>
+               <button onClick={() => switchLanguage('vi')} className={`font-bold transition-colors ${language === 'vi' ? 'text-blue-700 dark:text-blue-500' : 'text-slate-500'}`}>Tiếng Việt</button>
                <span className="text-slate-300 dark:text-slate-700">|</span>
-               <button onClick={() => switchLanguage('en')} className={`font-bold transition-colors ${language === 'en' ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'}`}>English</button>
+               <button onClick={() => switchLanguage('en')} className={`font-bold transition-colors ${language === 'en' ? 'text-blue-700 dark:text-blue-500' : 'text-slate-500'}`}>English</button>
             </div>
           </div>
         </div>

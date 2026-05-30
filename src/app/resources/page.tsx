@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import AmbientBackground from '@/components/ui/AmbientBackground';
 
 export default function ResourcesPage() {
   const [activeTab, setActiveTab] = useState('posts');
@@ -42,14 +43,15 @@ export default function ResourcesPage() {
     <main className="bg-white dark:bg-slate-950 min-h-screen font-sans text-slate-900 dark:text-slate-200 transition-colors duration-300">
       
       {/* SECTION: HERO */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-white/5">
+      <section className="relative pt-32 pb-20 overflow-hidden border-b border-slate-200 dark:border-white/5">
+        <AmbientBackground variant="section" />
         <div className="absolute inset-0 z-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/5 dark:bg-violet-600/5 rounded-full blur-[150px]"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-blue-600/10" />
         </div>
 
         <div className="container container-custom relative z-10 text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6">
-                Resources <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">Hub</span>
+            <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-6">
+                Resources <span className="text-aurora">Hub</span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
                 Equipping the saints for the work of ministry, for building up the body of Christ.
@@ -73,13 +75,13 @@ export default function ResourcesPage() {
                                   onClick={() => setActiveTab(tab.id)}
                                   className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 font-bold ${
                                       activeTab === tab.id 
-                                        ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-xl shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700/50' 
+                                        ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-500 shadow-xl shadow-slate-200/50 dark:shadow-none ring-1 ring-slate-200 dark:ring-slate-700/50' 
                                         : 'text-slate-500 hover:bg-white/60 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-300'
                                   }`}
                                >
                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
                                        activeTab === tab.id 
-                                         ? 'bg-violet-50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400' 
+                                         ? 'bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-500' 
                                          : 'bg-slate-200 dark:bg-slate-800/50 text-slate-400'
                                    }`}>
                                        <i className={tab.icon}></i>
@@ -123,14 +125,14 @@ export default function ResourcesPage() {
                                    
                                    {/* POSTS & TESTIMONIES CARD */}
                                    {(activeTab === 'posts' || activeTab === 'testimonies') && (
-                                       <div className="p-6 flex flex-col h-full relative group hover:border-violet-500/50 transition-colors border-l-4 border-l-transparent hover:border-l-violet-500 bg-white dark:bg-slate-900">
+                                       <div className="p-6 flex flex-col h-full relative group hover:border-blue-600/50 transition-colors border-l-4 border-l-transparent hover:border-l-blue-600 bg-white dark:bg-slate-900">
                                             {/* Header */}
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                                                         activeTab === 'posts' 
-                                                            ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400' 
-                                                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                                                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-500' 
+                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-600'
                                                     }`}>
                                                         {activeTab === 'posts' ? 'Article' : 'Story'}
                                                     </span>
@@ -145,7 +147,7 @@ export default function ResourcesPage() {
                                             </div>
 
                                             {/* Title */}
-                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-blue-700 dark:group-hover:text-blue-500 transition-colors">
                                                  {item.fileUrl ? (
                                                      <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="hover:underline focus:outline-none before:absolute before:inset-0">
                                                          {item.title}
@@ -163,7 +165,7 @@ export default function ResourcesPage() {
                                             )}
 
                                             {/* Action - pushed to bottom */}
-                                            <div className="mt-auto pt-4 flex items-center text-sm font-bold text-violet-600 dark:text-violet-400">
+                                            <div className="mt-auto pt-4 flex items-center text-sm font-bold text-blue-700 dark:text-blue-500">
                                                 {item.fileUrl ? (
                                                      <span className="flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                                                          {item.fileUrl.includes('.pdf') ? 'View PDF' : 'View Image'} <i className="fas fa-external-link-alt text-xs"></i>
@@ -177,14 +179,14 @@ export default function ResourcesPage() {
 
                                    {/* DOCUMENTS CARD - Redesigned */}
                                    {activeTab === 'documents' && (
-                                       <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 relative group-hover:border-rose-200 dark:group-hover:border-rose-500/30 transition-colors">
+                                       <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 relative group-hover:border-amber-200 dark:group-hover:border-amber-600/30 transition-colors">
                                            {/* Decorative Top Accent */}
-                                           <div className="h-1.5 w-full bg-gradient-to-r from-rose-500 to-orange-500"></div>
+                                           <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 to-orange-500"></div>
 
                                            <div className="p-8 flex-1 flex flex-col">
                                                {/* Header: Icon & Type */}
                                                <div className="flex items-start justify-between mb-6">
-                                                   <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-50 dark:text-rose-400 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                                   <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-600/10 text-amber-50 dark:text-amber-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
                                                        <i className="fas fa-book-open"></i>
                                                    </div>
                                                    <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest border border-slate-200 dark:border-white/10">
@@ -193,13 +195,13 @@ export default function ResourcesPage() {
                                                </div>
 
                                                {/* Content */}
-                                               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                                               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-red-600 dark:group-hover:text-amber-500 transition-colors">
                                                    {item.title}
                                                </h3>
                                                
                                                {item.author && (
                                                    <div className="flex items-center gap-2 mb-4 text-sm font-bold text-slate-400">
-                                                       <i className="fas fa-feather-alt text-xs text-rose-400"></i>
+                                                       <i className="fas fa-feather-alt text-xs text-amber-500"></i>
                                                        <span>{item.author}</span>
                                                    </div>
                                                )}
@@ -219,7 +221,7 @@ export default function ResourcesPage() {
                                                      href={item.fileUrl} 
                                                      target="_blank" 
                                                      rel="noopener noreferrer"
-                                                     className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl font-bold text-sm hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all shadow-sm group-hover:shadow-md"
+                                                     className="flex items-center gap-2 px-5 py-2.5 bg-amber-50 dark:bg-amber-600/10 text-red-600 dark:text-amber-500 rounded-xl font-bold text-sm hover:bg-amber-100 dark:hover:bg-amber-600/20 transition-all shadow-sm group-hover:shadow-md"
                                                    >
                                                        <span>Download</span>
                                                        <i className="fas fa-cloud-download-alt"></i>
@@ -239,10 +241,10 @@ export default function ResourcesPage() {
                                                 className="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-800 relative overflow-hidden shrink-0 group-hover:shadow-lg transition-all flex items-center justify-center border border-slate-100 dark:border-white/5"
                                             >
                                                 {/* Use PDF icon always as these are documents mostly, or check type if we have audio */}
-                                                 <i className="fas fa-file-pdf text-3xl text-slate-400 group-hover:text-violet-600 transition-colors"></i>
+                                                 <i className="fas fa-file-pdf text-3xl text-slate-400 group-hover:text-blue-700 transition-colors"></i>
                                             </a>
                                             <div className="flex-1">
-                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-blue-700 dark:group-hover:text-blue-500 transition-colors">
                                                     <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{item.title}</a>
                                                 </h3>
                                                 <p className="text-sm text-slate-500 mb-2">{item.author}</p>
@@ -256,7 +258,7 @@ export default function ResourcesPage() {
                                                 href={item.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 hover:bg-violet-600 hover:text-white dark:hover:bg-violet-600 transition-all shadow-sm"
+                                                className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white dark:hover:bg-blue-700 transition-all shadow-sm"
                                             >
                                                 <i className="fas fa-download"></i>
                                             </a>

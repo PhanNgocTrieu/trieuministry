@@ -62,7 +62,7 @@ export default function FundraisingModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose}>
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg animate-scale-in flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                <div className="p-6 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-purple-600">
+                <div className="p-6 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-blue-700">
                     <h3 className="text-xl font-bold text-white">
                         <i className="fas fa-hand-holding-heart mr-2"></i>
                         Call for Support
@@ -79,7 +79,7 @@ export default function FundraisingModal({
                         <input 
                             type="number"
                             min="0"
-                            className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 text-lg font-bold text-purple-600 outline-none focus:ring-2 focus:ring-purple-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 text-lg font-bold text-blue-700 outline-none focus:ring-2 focus:ring-blue-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             value={targetPeople === 0 ? '' : targetPeople}
                             onChange={(e) => {
                                 const val = parseInt(e.target.value);
@@ -106,7 +106,7 @@ export default function FundraisingModal({
                     </div>
 
                      {/* Result Highlight */}
-                    <div className="bg-purple-600 text-white p-6 rounded-2xl text-center shadow-lg shadow-purple-500/20">
+                    <div className="bg-blue-700 text-white p-6 rounded-2xl text-center shadow-lg shadow-blue-600/20">
                         <p className="text-sm font-medium opacity-90 uppercase tracking-widest mb-1">Target Per Person</p>
                         <p className="text-4xl font-extrabold">{formatVND(Math.ceil(perPerson))}</p>
                         <p className="text-xs opacity-70 mt-2">
@@ -124,7 +124,7 @@ export default function FundraisingModal({
                     <button 
                         onClick={handleSave} 
                         disabled={saving}
-                        className="px-6 py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-500 shadow disabled:opacity-50 flex items-center gap-2"
+                        className="px-6 py-2 bg-blue-700 text-white rounded-lg font-bold hover:bg-blue-600 shadow disabled:opacity-50 flex items-center gap-2"
                     >
                         {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
                         Save & Apply

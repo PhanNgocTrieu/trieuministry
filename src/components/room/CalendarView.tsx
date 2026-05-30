@@ -270,7 +270,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                      <button onClick={handleToday} className="px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                          Hôm nay
                      </button>
-                     <button onClick={() => { setBookingToEdit(null); setSelectedDate(new Date()); setIsModalOpen(true); }} className="px-4 py-2 rounded-xl text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-500/20 transition-all">
+                     <button onClick={() => { setBookingToEdit(null); setSelectedDate(new Date()); setIsModalOpen(true); }} className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-700 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all">
                          <i className="fas fa-plus mr-2"></i> Đăng ký
                      </button>
                  </div>
@@ -327,11 +327,11 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                             const cleaningForDay = cleanings.find(c => c.date === dayDateStr);
 
                             return (
-                                <div key={idx} className={`p-4 text-center border-r border-slate-200 dark:border-slate-800 flex flex-col items-center ${isToday ? 'bg-violet-50 dark:bg-violet-900/20' : ''}`}>
-                                    <div className={`text-xs font-bold uppercase mb-1 ${isToday ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'}`}>
+                                <div key={idx} className={`p-4 text-center border-r border-slate-200 dark:border-slate-800 flex flex-col items-center ${isToday ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                    <div className={`text-xs font-bold uppercase mb-1 ${isToday ? 'text-blue-700 dark:text-blue-500' : 'text-slate-500'}`}>
                                         {format(day, "EEEE")}
                                     </div>
-                                    <div className={`text-xl font-black ${isToday ? 'text-violet-600 dark:text-violet-400' : 'text-slate-800 dark:text-white'}`}>
+                                    <div className={`text-xl font-black ${isToday ? 'text-blue-700 dark:text-blue-500' : 'text-slate-800 dark:text-white'}`}>
                                         {format(day, "dd")}
                                     </div>
                                     <div className="mt-2 text-xs font-medium w-full min-h-[32px] flex items-center justify-center relative group">
@@ -378,7 +378,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                     <div className="relative">
                         {loading && (
                             <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm z-10 flex items-center justify-center">
-                                <i className="fas fa-spinner fa-spin text-3xl text-violet-600"></i>
+                                <i className="fas fa-spinner fa-spin text-3xl text-blue-700"></i>
                             </div>
                         )}
                         
@@ -448,7 +448,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                                 </div>
                                             )}
                                             {!booking && (
-                                                <div className="opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center text-violet-400">
+                                                <div className="opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center text-blue-500">
                                                     <i className="fas fa-plus text-xs"></i>
                                                 </div>
                                             )}
@@ -519,7 +519,7 @@ export default function CalendarView({ isAdmin }: CalendarViewProps) {
                                  <div>
                                      <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Lặp lại</p>
                                      <p className="text-slate-800 dark:text-white font-medium">
-                                          <i className="fas fa-sync-alt mr-1.5 text-violet-500 text-xs"></i>
+                                          <i className="fas fa-sync-alt mr-1.5 text-blue-600 text-xs"></i>
                                           {bookingForInfo.recurringMode === "weekly" ? "Hàng tuần" : "Hàng tháng"}
                                      </p>
                                  </div>

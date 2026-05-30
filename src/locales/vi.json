@@ -66,7 +66,12 @@
             "label": "Nhân sự",
             "role": "Người sáng lập",
             "quote": "\"Tôi tin rằng mỗi người đều có một sứ mạng đặc biệt trong kế hoạch đời đời của Đức Chúa Trời.\"",
-            "bio": "Tôi tên là Phan Ngọc Triều, năm nay tôi {{age}} tuổi, tôi đã tốt nghiệp ngành Kỹ Sư Điện Tử Viễn Thông tại trường Đại Học Bách Khoa Đà Nẵng, tôi được Chúa cho phép làm việc tại 2 công ty phần mềm tại Đà Nẵng (FPT Software và LGEDV) trong vòng 4 năm. Tôi cầu nguyện tiếp nhận Chúa Jesus vào năm tôi lớp 9 nhưng mãi cho đến mùa hè năm 2017 (năm nhất đại học) tôi mới gặp Chúa cách cá nhân trong kỳ Thánh Kinh Căn Bản diễn ra tại Quảng Nam (Đà Nẵng) thuộc giáo hội CMA (Hội Thánh Tin Lành Việt Nam Miền Nam) và Chúa đã giữ gìn đức tin của tôi cho đến thời điểm hiện tại."
+            "bio": "Tôi tên là Phan Ngọc Triều, năm nay tôi {{age}} tuổi, tôi đã tốt nghiệp ngành Kỹ Sư Điện Tử Viễn Thông tại trường Đại Học Bách Khoa Đà Nẵng, tôi được Chúa cho phép làm việc tại 2 công ty phần mềm tại Đà Nẵng (FPT Software và LGEDV) trong vòng 4 năm. Tôi cầu nguyện tiếp nhận Chúa Jesus vào năm tôi lớp 9 nhưng mãi cho đến mùa hè năm 2017 (năm nhất đại học) tôi mới gặp Chúa cách cá nhân trong kỳ Thánh Kinh Căn Bản diễn ra tại Quảng Nam (Đà Nẵng) thuộc giáo hội CMA (Hội Thánh Tin Lành Việt Nam Miền Nam) và Chúa đã giữ gìn đức tin của tôi cho đến thời điểm hiện tại.",
+            "highlights": [
+                { "icon": "fa-graduation-cap", "label": "ĐH Bách Khoa ĐN", "sub": "Kỹ sư ĐTVT" },
+                { "icon": "fa-briefcase", "label": "FPT · LGEDV", "sub": "4 năm" },
+                { "icon": "fa-church", "label": "CMA", "sub": "Tin Lành VN MN" }
+            ]
         },
         "calling": {
             "title": "Tiếng Gọi",
@@ -385,10 +390,17 @@
             "content": "Cảm tạ Chúa vì đã cảm động tấm lòng của anh/chị/em để có thể hỗ trợ cho tôi, cảm ơn anh/chị/em đã rộng rãi trong sự dâng hiến và hỗ trợ này! Nguyện Chúa Jesus tiếp tục ban phước trên công việc, sức khoẻ, đời sống và mục vụ của anh/chị/em và nguyện Ngài tiếp tục dùng anh chị em cho sự vinh hiển Ngài!"
         },
         "ministry": {
-            "title": "Kêu gọi dâng hiến",
+            "title": "Thư kêu gọi mục vụ",
             "badge": "Mục vụ",
-            "appeal": "Cập nhật mục vụ",
+            "appeal": "Đọc các lá thư kêu gọi cho từng mục vụ cần thiết và tải bản PDF theo ngôn ngữ của bạn.",
             "request_btn": "Gửi yêu cầu kêu gọi"
+        },
+        "fundraising": {
+            "latest": "Mới nhất",
+            "read_pdf": "Đọc thư (PDF)",
+            "download_vi": "Tiếng Việt",
+            "download_en": "English",
+            "empty_hint": "Thêm thư mục trong public/appeals/fundraising/ kèm file PDF có đuôi _vietnamese và _english (có thể thêm meta.json để đặt tiêu đề)."
         },
         "form": {
             "title": "Gửi yêu cầu kêu gọi",
